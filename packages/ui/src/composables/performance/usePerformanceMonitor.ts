@@ -1,6 +1,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 import type { PerformanceMetrics } from '../../types/components'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 interface PerformanceMemory {
   usedJSHeapSize: number
@@ -160,7 +161,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     }
 
     // 定期更新内存使用情况
-    const memoryInterval = setInterval(updateMemoryUsage, 5000)
+    const memoryInterval = setInterval(updateMemoryUsage, TIME_CONSTANTS.MEMORY_CHECK_INTERVAL_MS)
     
     onUnmounted(() => {
       clearInterval(memoryInterval)
