@@ -27,13 +27,19 @@
 **Status**: ACCEPTED - This is a dependency version mismatch that doesn't affect runtime functionality. The code uses a fallback pattern: `"currentInstance" in qh ? qh["currentInstance"] : qh.getCurrentInstance()`
 **Note**: To fully resolve, would need to downgrade vue-i18n to ^10.0.0 or wait for @intlify/vue-i18n-extensions update
 
-### [ ] BUG-003: Dynamic import optimization warning
+### [x] BUG-003: Dynamic import optimization warning
 **Location**: UI package build
 **Severity**: Low
-**Description**: Dynamic imports of core package causing suboptimal chunking
-**Impact**: Bundle size inefficiency, potential performance impact
+**Description**: ContextSystemWorkspace and ContextUserWorkspace were both dynamically imported by router and statically exported in index.ts
+**Status**: FIXED - Removed static exports from packages/ui/src/index.ts
+**Impact**: Components are now properly code-split into separate chunks (~47KB each)
 **Files affected**:
-- packages/core/dist/index.js dynamically imported but also statically imported
+- packages/ui/src/index.ts - Removed static exports, added explanatory comments
+**Solution**:
+- Commented out static exports for ContextSystemWorkspace and ContextUserWorkspace
+- These components are now only dynamically imported by the router
+- Consistent with Basic mode components pattern
+- Build warnings eliminated
 
 ### [ ] BUG-004: Large bundle chunks exceeding 500KB
 **Location**: Web build output

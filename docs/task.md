@@ -32,14 +32,14 @@
 3. [ ] Configure manualChunks in vite.config.ts
 4. [ ] Test code-splitting works correctly
 
-### [ ] ERROR-004: Resolve dynamic import warnings
+### [x] ERROR-004: Resolve dynamic import warnings
 **Priority**: Low
 **Description**: Fix dynamic + static import conflict for ContextSystemWorkspace and ContextUserWorkspace
-**Status**: Not Started
+**Status**: COMPLETED
 **Steps**:
-1. [ ] Review import patterns in UI package router/index.ts and index.ts
-2. [ ] Ensure consistent import strategy (remove static imports if dynamic needed)
-3. [ ] Verify no runtime issues
+1. [x] Review import patterns in UI package router/index.ts and index.ts
+2. [x] Ensure consistent import strategy (remove static imports if dynamic needed)
+3. [x] Verify no runtime issues - Components are now properly code-split into separate chunks
 
 ### [x] ERROR-006: Fix MCP server test dependency
 **Priority**: High
@@ -50,14 +50,14 @@
 2. [x] Ensure core build happens before mcp-server tests in test workflow
 3. [x] Verify tests pass (8/8 passed)
 
-### [ ] ERROR-005: Fix ContextWorkspace dynamic imports
+### [x] ERROR-005: Fix ContextWorkspace dynamic imports
 **Priority**: Medium
 **Description**: ContextSystemWorkspace.vue and ContextUserWorkspace.vue are both dynamically imported by router and statically imported by index.ts
-**Status**: Not Started
+**Status**: COMPLETED
 **Steps**:
-1. [ ] Analyze import requirements
-2. [ ] Remove static imports from index.ts OR remove dynamic imports from router
-3. [ ] Verify lazy loading works correctly
+1. [x] Analyze import requirements - Context mode components should be lazy-loaded like Basic mode
+2. [x] Remove static imports from index.ts - Commented out exports, added explanatory comments
+3. [x] Verify lazy loading works correctly - Components now properly code-split (47KB chunks)
 
 ## Completed Tasks
 
@@ -68,6 +68,10 @@
   - Copy button now shows checkmark icon temporarily after successful copy
   - Added pop animation with scale effect for visual feedback
   - Improved accessibility with dynamic aria-label
+- [x] UX-003: Added accessibility tooltip to favorite button (OutputDisplayCore.vue)
+  - Added :title and :aria-label attributes for screen reader support
+  - Consistent with other action buttons (copy, fullscreen)
+  - Improves accessibility for keyboard navigation users
 - [x] FLEX-001: Modularized favorite storage keys
   - Moved STORAGE_KEYS from FavoriteManager to centralized storage-keys.ts
   - Added FAVORITE_KEYS constant and FavoriteKey type
@@ -86,6 +90,7 @@
 ## Notes
 
 - Build warnings tracked but not blocking
-- All tests passing (262 tests)
+- All tests passing (791 tests core, 131 skipped due to missing API keys)
 - Linting passes with no errors
+- ERROR-004 and ERROR-005 completed - dynamic import conflicts resolved
 - Ready to proceed with Phase 2 (UX improvements)

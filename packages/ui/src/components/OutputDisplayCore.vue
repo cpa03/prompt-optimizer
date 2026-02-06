@@ -47,6 +47,8 @@
             size="small"
             quaternary
             circle
+            :title="t('common.addToFavorites')"
+            :aria-label="t('common.addToFavorites')"
           >
             <template #icon>
               <NIcon>

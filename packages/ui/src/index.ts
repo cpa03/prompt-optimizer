@@ -107,8 +107,10 @@ export { default as CategoryManagerUI } from "./components/CategoryManager.vue";
 export { default as SaveFavoriteDialog } from "./components/SaveFavoriteDialog.vue";
 export { default as ContextModeActions } from "./components/context-mode/ContextModeActions.vue";
 export { default as PromptPreviewPanel } from "./components/PromptPreviewPanel.vue";
-export { default as ContextSystemWorkspace } from "./components/context-mode/ContextSystemWorkspace.vue";
-export { default as ContextUserWorkspace } from "./components/context-mode/ContextUserWorkspace.vue";
+// Note: ContextSystemWorkspace and ContextUserWorkspace are dynamically imported by router
+// to enable code-splitting. Import via router or use dynamic imports in consuming apps.
+// export { default as ContextSystemWorkspace } from "./components/context-mode/ContextSystemWorkspace.vue";
+// export { default as ContextUserWorkspace } from "./components/context-mode/ContextUserWorkspace.vue";
 export { default as ContextUserTestPanel } from "./components/context-mode/ContextUserTestPanel.vue";
 export { default as ConversationTestPanel } from "./components/context-mode/ConversationTestPanel.vue";
 export { default as FunctionModelManagerUI } from "./components/FunctionModelManager.vue";
@@ -117,6 +119,8 @@ export { default as FunctionModelManagerUI } from "./components/FunctionModelMan
 // 如需直接使用，请在应用层通过 router 注册或按需动态导入
 // export { default as BasicSystemWorkspace } from "./components/basic-mode/BasicSystemWorkspace.vue";
 // export { default as BasicUserWorkspace } from "./components/basic-mode/BasicUserWorkspace.vue";
+
+// 上下文模式组件同样由 router 动态导入，避免打包进主 bundle
 
 // App 布局组件
 export { AppHeaderActions, AppCoreNav, PromptOptimizerApp } from "./components/app-layout";
