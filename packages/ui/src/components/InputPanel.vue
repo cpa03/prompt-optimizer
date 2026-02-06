@@ -1,10 +1,10 @@
 <!-- 输入面板组件 - 纯Naive UI实现 -->
 <template>
-    <NSpace vertical :size="16">
+    <NSpace vertical :size="SPACING.LG">
         <!-- 标题区域 -->
         <NFlex justify="space-between" align="center" :wrap="false">
-            <NFlex align="center" :size="8">
-                <NText :depth="1" style="font-size: 18px; font-weight: 500">{{
+            <NFlex align="center" :size="SPACING.SM">
+                <NText :depth="1" :style="{ fontSize: FONT_SIZES.XXXL + 'px', fontWeight: 500 }">{{
                     label
                 }}</NText>
                 <!-- 🆕 帮助提示图标 -->
@@ -22,7 +22,7 @@
                             style="cursor: help; opacity: 0.6"
                         >
                             <template #icon>
-                                <NIcon :size="16">
+                                <NIcon :size="SPACING.LG">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -40,7 +40,7 @@
                             </template>
                         </NButton>
                     </template>
-                    <div style="max-width: 320px; line-height: 1.6">
+                    <div :style="{ maxWidth: '320px', lineHeight: 1.6 }">
                         {{ helpText }}
                     </div>
                 </NPopover>
@@ -166,13 +166,13 @@
         />
 
         <!-- 控制面板 -->
-        <NGrid :cols="24" :x-gap="8" responsive="screen">
+        <NGrid :cols="24" :x-gap="SPACING.SM" responsive="screen">
             <!-- 模型选择 -->
             <NGridItem :span="6" :xs="24" :sm="6">
-                <NSpace vertical :size="8">
+                <NSpace vertical :size="SPACING.SM">
                     <NText
                         :depth="2"
-                        style="font-size: 14px; font-weight: 500"
+                        :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: 500 }"
                         >{{ modelLabel }}</NText
                     >
                     <slot name="model-select"></slot>
@@ -181,10 +181,10 @@
 
             <!-- 提示词模板选择 -->
             <NGridItem v-if="templateLabel" :span="11" :xs="24" :sm="11">
-                <NSpace vertical :size="8">
+                <NSpace vertical :size="SPACING.SM">
                     <NText
                         :depth="2"
-                        style="font-size: 14px; font-weight: 500"
+                        :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: 500 }"
                         >{{ templateLabel }}</NText
                     >
                     <slot name="template-select"></slot>
@@ -263,6 +263,7 @@ import {
 import { useFullscreen } from '../composables/ui/useFullscreen';
 import FullscreenDialog from "./FullscreenDialog.vue";
 import { VariableAwareInput } from "./variable-extraction";
+import { SPACING, FONT_SIZES } from '../config/constants';
 
 /**
  * 输入面板组件

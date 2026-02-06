@@ -366,6 +366,7 @@ import {
 import { useResponsive } from "../../composables/ui/useResponsive";
 import { useClipboard } from "../../composables/ui/useClipboard";
 import { UI_DIMENSIONS } from "../../config/constants";
+import { truncateText } from "../../utils/text";
 import type {
     VariableManagerModalProps,
 } from "../../types/components";
@@ -629,7 +630,7 @@ const customTableColumns = computed<DataTableColumns<VariableRow>>(() => [
                     class: "cursor-pointer",
                     onClick: () => startInlineEdit(row.name, row.value),
                 },
-                truncateValue(row.value),
+                truncateText(row.value, 60),
             );
         },
     },
@@ -740,12 +741,6 @@ const customTableColumns = computed<DataTableColumns<VariableRow>>(() => [
         },
     },
 ]);
-
-// 工具函数
-const truncateValue = (value: string, maxLength: number = 60): string => {
-    if (value.length <= maxLength) return value;
-    return value.substring(0, maxLength) + "...";
-};
 
 const formatVariableName = (name: string): string => {
     return `{{${name}}}`;
