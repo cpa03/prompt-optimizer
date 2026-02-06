@@ -153,3 +153,50 @@ export const BREAKPOINTS = {
   DESKTOP: 1024,
   LARGE: 1200,
 } as const
+
+// Spacing system (in pixels) - for consistent margins, paddings, and gaps
+export const SPACING = {
+  // Base spacing units
+  XS: 4,
+  SM: 8,
+  MD: 12,
+  LG: 16,
+  XL: 20,
+  XXL: 24,
+  XXXL: 32,
+
+  // Component-specific spacing
+  GAP_SMALL: 8,
+  GAP_MEDIUM: 12,
+  GAP_LARGE: 16,
+
+  PADDING_SMALL: 12,
+  PADDING_MEDIUM: 16,
+  PADDING_LARGE: 24,
+
+  MARGIN_SMALL: 8,
+  MARGIN_MEDIUM: 12,
+  MARGIN_LARGE: 16,
+} as const
+
+// Font sizes (in pixels) - for consistent typography
+export const FONT_SIZES = {
+  XS: 12,
+  SM: 13,
+  BASE: 14,
+  LG: 16,
+  XL: 18,
+  XXL: 20,
+  XXXL: 24,
+} as const
+
+// Border radius values (in pixels or CSS values)
+export const BORDER_RADIUS = {
+  NONE: '0',
+  SM: '2px',
+  MD: '4px',
+  LG: '6px',
+  XL: '8px',
+  XXL: '12px',
+  FULL: '9999px',
+} as const

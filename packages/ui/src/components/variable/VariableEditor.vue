@@ -34,7 +34,7 @@
                 <template #feedback>
                     <NText
                         depth="3"
-                        style="font-size: 12px; display: block; margin-top: 4px"
+                        :style="{ fontSize: FONT_SIZES.XS + 'px', display: 'block', marginTop: SPACING.XS + 'px' }"
                     >
                         {{ t("variables.editor.variableNameHelp") }}
                     </NText>
@@ -61,7 +61,7 @@
                 <template #feedback>
                     <NText
                         depth="3"
-                        style="font-size: 12px; display: block; margin-top: 4px"
+                        :style="{ fontSize: FONT_SIZES.XS + 'px', display: 'block', marginTop: SPACING.XS + 'px' }"
                     >
                         {{ t("variables.editor.variableValueHelp") }}
                     </NText>
@@ -102,7 +102,7 @@ import {
     type FormInst,
     type FormRules,
 } from "naive-ui";
-import { UI_DIMENSIONS } from "../../config/constants";
+import { UI_DIMENSIONS, SPACING, FONT_SIZES } from "../../config/constants";
 
 const { t } = useI18n();
 
