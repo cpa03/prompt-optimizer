@@ -6,9 +6,10 @@
     @click="handleToggleFavorite"
     :title="isFavorited ? '取消收藏' : '添加到收藏'"
     class="favorite-button"
+    :class="{ 'favorite-pulse': isAnimating }"
   >
       <template #icon>
-      <n-icon>
+      <n-icon :class="{ 'favorite-icon-spin': isAnimating }">
         <Stars v-if="isFavorited" />
         <Star v-else />
       </n-icon>
@@ -145,6 +146,17 @@ const categories = ref<FavoriteCategory[]>([]);
 const isFavorited = ref(false);
 const favoriteId = ref<string | null>(null);
 
+// 动画状态
+const isAnimating = ref(false);
+
+// 触发收藏动画
+const triggerFavoriteAnimation = () => {
+  isAnimating.value = true;
+  setTimeout(() => {
+    isAnimating.value = false;
+  }, 400);
+};
+
 // 表单数据
 const favoriteForm = ref({
   title: '',
@@ -232,6 +244,7 @@ const handleToggleFavorite = () => {
     showFavoriteModal.value = true;
     initFavoriteForm();
   }
+  triggerFavoriteAnimation();
 };
 
 // 初始化收藏表单
@@ -356,5 +369,39 @@ watch(() => props.content, () => {
 
 .favorite-button:hover {
   transform: scale(1.05);
+}
+
+/* 收藏按钮脉冲动画 */
+.favorite-pulse {
+  animation: favorite-pulse 0.4s ease-out;
+}
+
+@keyframes favorite-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 图标旋转动画 */
+.favorite-icon-spin {
+  animation: favorite-icon-spin 0.4s ease-out;
+}
+
+@keyframes favorite-icon-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
 }
 </style>

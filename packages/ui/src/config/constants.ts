@@ -200,3 +200,78 @@ export const BORDER_RADIUS = {
   XXL: '12px',
   FULL: '9999px',
 } as const
+
+// Evaluation score colors - for consistent scoring visualization
+export const EVALUATION_COLORS = {
+  // Score level colors
+  EXCELLENT: '#18a058',      // Green - high scores
+  GOOD: '#2080f0',           // Blue - good scores
+  AVERAGE: '#f0a020',        // Orange/Yellow - average scores
+  POOR: '#d03050',           // Red - poor scores
+  CRITICAL: '#d03050',       // Red - critical scores (same as poor)
+  
+  // Background colors (with transparency)
+  EXCELLENT_BG: 'rgba(24, 160, 88, 0.15)',
+  GOOD_BG: 'rgba(32, 128, 240, 0.15)',
+  AVERAGE_BG: 'rgba(240, 160, 32, 0.15)',
+  POOR_BG: 'rgba(208, 48, 80, 0.15)',
+  CRITICAL_BG: 'rgba(208, 48, 80, 0.2)',
+  
+  // Text colors for dark backgrounds
+  TEXT_ON_EXCELLENT: '#ffffff',
+  TEXT_ON_GOOD: '#ffffff',
+  TEXT_ON_AVERAGE: '#000000',
+  TEXT_ON_POOR: '#ffffff',
+  TEXT_ON_CRITICAL: '#ffffff',
+} as const
+
+// Theme color palette - for consistent theming
+export const THEME_COLORS = {
+  // Primary colors
+  PRIMARY: '#2080f0',
+  PRIMARY_LIGHT: '#60a5fa',
+  PRIMARY_DARK: '#1a6bc7',
+  
+  // Success colors
+  SUCCESS: '#18a058',
+  SUCCESS_LIGHT: '#22c55e',
+  
+  // Warning colors
+  WARNING: '#f0a020',
+  WARNING_LIGHT: '#fbbf24',
+  
+  // Error colors
+  ERROR: '#d03050',
+  ERROR_LIGHT: '#ef4444',
+  
+  // Info colors
+  INFO: '#2080f0',
+  INFO_LIGHT: '#60a5fa',
+  
+  // Neutral colors
+  NEUTRAL_100: '#ffffff',
+  NEUTRAL_200: '#f5f5f5',
+  NEUTRAL_300: '#e0e0e6',
+  NEUTRAL_400: '#999999',
+  NEUTRAL_500: '#666666',
+  NEUTRAL_600: '#333333',
+  NEUTRAL_700: '#000000',
+} as const
+
+// Semantic colors - for specific UI elements
+export const SEMANTIC_COLORS = {
+  // Required field indicator
+  REQUIRED: '#ff4d4f',
+  
+  // Favorite/star
+  FAVORITE: '#f0a020',
+  FAVORITE_ACTIVE: '#f0a020',
+  
+  // Theme-specific
+  THEME_LIGHT: '#eab308',
+  THEME_DARK: '#60a5fa',
+  THEME_BLUE: '#2563eb',
+  THEME_GREEN: '#16a34a',
+  THEME_PURPLE: '#9333ea',
+  THEME_CLASSIC: '#b08968',
+} as const
