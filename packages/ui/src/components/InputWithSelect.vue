@@ -1,5 +1,5 @@
 <template>
-  <div ref="componentRef" class="relative">
+  <div ref="componentRef" class="relative" role="combobox" :aria-expanded="isOpen" aria-haspopup="listbox">
     <NInput
       ref="inputRef"
       :value="modelValue"
@@ -8,6 +8,7 @@
       :type="type"
       :placeholder="placeholder"
       :loading="isLoading"
+      :aria-activedescendant="isOpen && highlightedIndex >= 0 ? `option-${filteredOptions[highlightedIndex]?.value}` : undefined"
       clearable
     >
       <template #suffix>
@@ -17,11 +18,13 @@
           size="small"
           @click="toggleDropdown"
           :loading="isLoading"
+          :aria-label="isOpen ? 'Close dropdown' : 'Open dropdown'"
         >
           <template #icon>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4"
+              class="h-4 w-4 transition-transform duration-200"
+              :class="{ 'rotate-180': isOpen }"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -52,6 +55,8 @@
       size="small"
       class="absolute z-10 mt-1 w-full shadow-lg max-h-60 overflow-auto"
       :bordered="true"
+      role="listbox"
+      :aria-label="placeholder || 'Options'"
     >
       <NEmpty v-if="isLoading" size="small" :description="loadingText" />
       <NEmpty v-else-if="filteredOptions.length === 0" size="small" :description="noOptionsText" />
@@ -59,13 +64,18 @@
         <div
           v-for="(option, index) in filteredOptions"
           :key="option.value"
+          :id="`option-${option.value}`"
           @click="selectOption(option)"
           @mouseenter="highlightedIndex = index"
-          class="cursor-pointer px-2 py-1 rounded transition-colors"
+          class="cursor-pointer px-2 py-1.5 rounded transition-all duration-150"
           :class="{
-            'bg-blue-100 dark:bg-blue-900': modelValue === option.value,
-            'bg-gray-100 dark:bg-gray-700': highlightedIndex === index && modelValue !== option.value
+            'bg-blue-100 dark:bg-blue-900 font-medium': modelValue === option.value,
+            'bg-gray-100 dark:bg-gray-700 ring-1 ring-gray-300 dark:ring-gray-600': highlightedIndex === index && modelValue !== option.value
           }"
+          :role="'option'"
+          :aria-selected="modelValue === option.value"
+          :aria-current="highlightedIndex === index ? 'true' : undefined"
+          :ref="el => { if (el && highlightedIndex === index) highlightedElement = el }"
         >
           {{ option.label }}
         </div>
@@ -75,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 
 import { NInput, NButton, NCard, NEmpty, NSpace } from 'naive-ui';
 
@@ -132,6 +142,19 @@ const isOpen = ref(false);
 const inputRef = ref(null);
 const searchText = ref('');
 const highlightedIndex = ref(-1);
+const highlightedElement = ref(null);
+
+// Watch for highlighted index changes and scroll into view
+watch(highlightedIndex, (newIndex) => {
+  if (newIndex >= 0 && highlightedElement.value) {
+    nextTick(() => {
+      highlightedElement.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    });
+  }
+});
 
 // 根据输入内容筛选选项
 const filteredOptions = computed(() => {
@@ -217,15 +240,8 @@ const handleKeydown = (event) => {
 
 // Close dropdown when clicking outside
 const handleClickOutside = (event) => {
-  console.log('Click detected', {
-    isOpen: isOpen.value,
-    isComponent: componentRef.value && componentRef.value.contains(event.target),
-    target: event.target
-  });
-  
   // 只有在下拉菜单打开且点击的是组件外部时才关闭下拉菜单
   if (isOpen.value && componentRef.value && !componentRef.value.contains(event.target)) {
-    console.log('Closing dropdown');
     isOpen.value = false;
     searchText.value = '';
     highlightedIndex.value = -1;
