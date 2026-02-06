@@ -226,6 +226,7 @@ import {
 import type { PromptRecord, PromptRecordChain } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { formatDate } from '../utils/date'
+import { truncateText } from '../utils/text'
 
 const props = defineProps({
   show: Boolean,
@@ -320,12 +321,6 @@ const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
     chain
   })
   emit('update:show', false)
-}
-
-// 添加文本截断函数
-const truncateText = (text: string, maxLength: number) => {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...'
 }
 
 const isMessageOptimizationType = (recordType: string) => {

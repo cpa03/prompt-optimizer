@@ -116,7 +116,7 @@
             <NListItem v-for="[name, value] in Object.entries(previewVariables)" :key="name">
               <NSpace size="small">
                 <NText code>{{ formatVariableName(name) }}</NText>
-                <NText depth="2">{{ truncateValue(value) }}</NText>
+                <NText depth="2">{{ truncateText(value, 60) }}</NText>
               </NSpace>
             </NListItem>
           </NList>
@@ -165,6 +165,7 @@ import {
   type UploadFileInfo 
 } from 'naive-ui'
 import { UI_DIMENSIONS } from '../../config/constants'
+import { truncateText } from '../../utils/text'
 
 const { t } = useI18n()
 
@@ -206,12 +207,6 @@ const hasPreviewData = computed(() => {
 })
 
 const formatVariableName = (name: string) => `{{${name}}}`
-
-// 工具函数
-const truncateValue = (value: string, maxLength: number = 60): string => {
-  if (value.length <= maxLength) return value
-  return value.substring(0, maxLength) + '...'
-}
 
 // 文本输入相关的计算方法
 const getTextInputLabel = (): string => {

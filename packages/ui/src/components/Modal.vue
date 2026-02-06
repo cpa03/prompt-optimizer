@@ -98,17 +98,34 @@ const modalStyle = computed(() => ({
 }))
 
 const modalClass = computed(() => [
-  'modern-modal'
+  'modern-modal',
+  { 'modal-closing': isClosing.value }
 ])
 
 // 事件处理
 const handleConfirm = () => {
-  emit('confirm')
+  // 触发关闭动画
+  isClosing.value = true
+  // 短暂延迟后触发确认，让动画完成
+  setTimeout(() => {
+    isVisible.value = false
+    isClosing.value = false
+    emit('confirm')
+  }, 150)
 }
 
+// 添加关闭动画状态
+const isClosing = ref(false)
+
 const handleCancel = () => {
-  isVisible.value = false
-  emit('cancel')
+  // 触发关闭动画
+  isClosing.value = true
+  // 短暂延迟后实际关闭，让动画完成
+  setTimeout(() => {
+    isVisible.value = false
+    isClosing.value = false
+    emit('cancel')
+  }, 150)
 }
 
 const handleAfterLeave = () => {
@@ -129,5 +146,21 @@ const handleAfterLeave = () => {
 .modal-footer {
   padding-top: 16px;
   border-top: 1px solid var(--n-divider-color);
+}
+
+/* 关闭动画效果 */
+.modal-closing :deep(.n-card) {
+  animation: modal-close-scale 0.15s ease-out forwards;
+}
+
+@keyframes modal-close-scale {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.96);
+    opacity: 0.8;
+  }
 }
 </style> 
