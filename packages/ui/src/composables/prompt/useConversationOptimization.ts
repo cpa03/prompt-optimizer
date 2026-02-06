@@ -4,12 +4,9 @@ import { useI18n } from 'vue-i18n'
 import { getI18nErrorMessage } from '../../utils/error'
 import { v4 as uuidv4 } from 'uuid'
 import type {
-  IHistoryManager,
-  IPromptService,
   ConversationMessage,
   PromptRecordChain,
   OptimizationMode,
-  OptimizationRequest,
   MessageOptimizationRequest,
   Template
 } from '@prompt-optimizer/core'

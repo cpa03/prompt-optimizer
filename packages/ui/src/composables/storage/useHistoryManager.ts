@@ -25,7 +25,9 @@ export interface HistoryManagerHooks {
  * @returns HistoryManagerHooks
  */
 export function useHistoryManager(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   services: Ref<AppServices | null>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prompt: Ref<string>,
   optimizedPrompt: Ref<string>,
   currentChainId: Ref<string | null>,

@@ -177,13 +177,13 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     // 创建大小变化观察器
     if (!resizeObserver && typeof ResizeObserver !== 'undefined') {
       resizeObserver = new ResizeObserver((entries) => {
-        entries.forEach((entry) => {
+        entries.forEach((_entry) => {
           recordUpdate()
         })
       })
     }
 
-    // 创建DOM变化观察器  
+    // 创建DOM变化观察器
     if (!mutationObserver && typeof MutationObserver !== 'undefined') {
       mutationObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -196,10 +196,10 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
 
     try {
       resizeObserver?.observe(element)
-      mutationObserver?.observe(element, { 
-        childList: true, 
-        attributes: true, 
-        subtree: true 
+      mutationObserver?.observe(element, {
+        childList: true,
+        attributes: true,
+        subtree: true
       })
     } catch (e) {
       console.warn('Element observation failed:', e)

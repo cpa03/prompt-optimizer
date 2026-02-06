@@ -1,3 +1,5 @@
+import type { ElectronAPI } from './electron'
+
 export {};
 
 declare global {
@@ -8,6 +10,8 @@ declare global {
       warning?: (content: string) => void;
       info?: (content: string) => void;
     };
+    electronAPI?: ElectronAPI;
+    __TEST_DB_NAME__?: string;
   }
 }
 

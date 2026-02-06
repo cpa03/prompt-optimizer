@@ -6,13 +6,9 @@ import { getI18nErrorMessage } from '../../utils/error'
 
 import { v4 as uuidv4 } from 'uuid'
 import type {
-  IModelManager,
-  IHistoryManager,
   Template,
   PromptRecordChain,
   PromptRecordType,
-  IPromptService,
-  ITemplateManager,
   OptimizationMode,
   OptimizationRequest,
   ConversationMessage,

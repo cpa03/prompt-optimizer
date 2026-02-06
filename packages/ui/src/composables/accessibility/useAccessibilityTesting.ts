@@ -153,19 +153,19 @@ export function useAccessibilityTesting() {
       severity: 'serious' as const,
       test: (element: HTMLElement) => {
         const style = window.getComputedStyle(element)
-        const fontSize = parseFloat(style.fontSize)
-        const fontWeight = style.fontWeight
-        
+        // const fontSize = parseFloat(style.fontSize)
+        // const fontWeight = style.fontWeight
+
         // 简化的对比度检查（实际应用需要更复杂的算法）
         const backgroundColor = style.backgroundColor
         const color = style.color
-        
+
         // 如果是透明或继承的颜色，跳过检查
         if (backgroundColor === 'transparent' || backgroundColor === 'rgba(0, 0, 0, 0)' ||
             color === 'transparent' || color === 'rgba(0, 0, 0, 0)') {
           return { passed: true }
         }
-        
+
         // 这里应该实现真正的对比度计算
         // 现在只是一个占位符
         return { passed: true }
@@ -247,9 +247,9 @@ export function useAccessibilityTesting() {
           .filter(attr => attr.name.startsWith('aria-'))
         
         if (ariaAttributes.length === 0) return { passed: true }
-        
+
         // 检查常见的 ARIA 错误
-        const ariaLabel = element.getAttribute('aria-label')
+        // const ariaLabel = element.getAttribute('aria-label')
         const ariaLabelledby = element.getAttribute('aria-labelledby')
         
         if (ariaLabelledby) {

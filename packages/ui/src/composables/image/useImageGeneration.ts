@@ -1,4 +1,4 @@
-import { computed, ref, inject, type Ref } from 'vue'
+import { ref, inject, type Ref } from 'vue'
 
 import type { AppServices } from '../../types/services'
 import type {

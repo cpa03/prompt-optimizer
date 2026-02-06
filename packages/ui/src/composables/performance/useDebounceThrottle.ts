@@ -51,6 +51,7 @@ export function useDebounceThrottle() {
   const throttle = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
     delay: number = 100,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: string = 'default'
   ) => {
     let lastExecTime = 0
@@ -71,6 +72,7 @@ export function useDebounceThrottle() {
    */
   const rafThrottle = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: string = 'default'
   ) => {
     let rafId: number | null = null
@@ -121,7 +123,7 @@ export function useDebounceThrottle() {
    * 取消所有计时器
    */
   const cancelAll = () => {
-    timers.value.forEach((timerId) => {
+    timers.value.forEach((timerId, _key) => {
       clearTimeout(timerId)
     })
     timers.value.clear()

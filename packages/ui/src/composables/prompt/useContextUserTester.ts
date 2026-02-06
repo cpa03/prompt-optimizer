@@ -204,7 +204,7 @@ export function useContextUserTester(
 
         // ContextUser 模式：提示词作为用户输入
         // 固定 optimizationMode 为 'user'
-        const systemPrompt = ''
+        // const systemPrompt = ''
         const userPrompt = selectedPrompt
 
         // 变量：合并全局变量 + 测试变量

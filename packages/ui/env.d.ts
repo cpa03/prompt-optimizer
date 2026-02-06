@@ -9,10 +9,8 @@ declare module '*.vue' {
 
 // Vite 已经通过 /// <reference types="vite/client" /> 提供了内置的环境变量类型
 
-// E2E: 注入到 window 的测试辅助变量
-interface Window {
-  __TEST_DB_NAME__?: string
-}
+// E2E: 注入到 window 的测试辅助变量 - moved to src/types/window.d.ts
 
 // 引入 Electron 类型定义
 /// <reference path="./src/types/electron.d.ts" />
+/// <reference path="./src/types/window.d.ts" />

@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 
 interface LazyLoadOptions {
   root?: Element | null
@@ -297,7 +297,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
         return
       }
 
-      urls.forEach((url, index) => {
+      urls.forEach((url, _index) => {
         const img = new Image()
         
         const handleComplete = () => {

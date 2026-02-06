@@ -1,15 +1,9 @@
-import { computed, type ComputedRef, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 
 import type {
   UnifiedParameterDefinition,
-  TextModel,
-  TextModelConfig,
   ITextAdapterRegistry,
-  ITextProviderAdapter,
-  ImageModel,
-  ImageModelConfig,
-  IImageAdapterRegistry,
-  IImageProviderAdapter
+  IImageAdapterRegistry
 } from '@prompt-optimizer/core'
 
 type ParameterizedModel = {

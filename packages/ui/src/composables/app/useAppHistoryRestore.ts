@@ -88,7 +88,7 @@ export function useAppHistoryRestore(options: AppHistoryRestoreOptions): AppHist
     const {
         services,
         navigateToSubModeKey,
-        handleContextModeChange,
+        handleContextModeChange: _handleContextModeChange,
         handleSelectHistory,
         proMultiMessageSession,
         systemWorkspaceRef,

@@ -72,6 +72,13 @@
 
 ## Completed Tasks
 
+- [x] UX-005: Enhanced Icon.vue component with micro-UX improvements
+  - Added support for 6 icon types: refresh, check, copy, edit, delete, loading
+  - Added spinning animation for refresh and loading icons
+  - Added accessibility support with aria-label and role="img"
+  - Added i18n support for icon labels
+  - Added smooth hover transitions for interactive icons
+  - Added multiple size options (w-4, w-5, w-6)
 - [x] UX-001: Added FileText icon to OutputDisplay empty state (OutputDisplayCore.vue)
   - Improved visual appeal of empty state with 48px icon
   - Supports dark/light theme with appropriate colors
@@ -117,6 +124,15 @@
   - Extracted common CSS patterns from 6 workspace components
   - Consolidated test-area, variant-deck, split-pane, and mode-pill styles
   - Eliminated ~250 lines of duplicated CSS across workspace components
+- [x] FLEX-006: Added spacing and typography constants to constants.ts
+  - Added SPACING system (XS: 4px, SM: 8px, MD: 12px, LG: 16px, etc.)
+  - Added FONT_SIZES system (XS: 12px, SM: 13px, BASE: 14px, etc.)
+  - Added BORDER_RADIUS constants for consistent border radius values
+  - Eliminated hardcoded spacing values in favor of centralized constants
+- [x] FLEX-007: Applied modular constants to VariableEditor component
+  - Replaced hardcoded 'font-size: 12px' with FONT_SIZES.XS constant
+  - Replaced hardcoded 'margin-top: 4px' with SPACING.XS constant
+  - Demonstrates pattern for converting inline styles to use centralized constants
 - [x] STORX-002: Consolidated duplicate formatDate functions
   - Created centralized date.ts utility with formatDate, formatDateShort, formatTime, formatRelativeTime
   - Updated HistoryDrawer.vue to use centralized utility
