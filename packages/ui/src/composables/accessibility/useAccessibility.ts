@@ -193,7 +193,7 @@ export function useAccessibility(componentName: string = 'Component') {
   }
   
   // 宣布消息给屏幕阅读器
-  const announce = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
+  const announce = (message: string, _priority: 'polite' | 'assertive' = 'polite') => {
     announcements.value.push(message)
     liveRegionMessage.value = message
     

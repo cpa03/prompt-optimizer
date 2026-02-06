@@ -15,6 +15,7 @@
     <ActionButtonUI
         icon="📝"
         :text="$t('nav.templates')"
+        :title="$t('nav.templates') + ' (Ctrl+T)'"
         @click="emit('open-templates')"
         type="default"
         size="medium"
@@ -24,6 +25,7 @@
     <ActionButtonUI
         icon="📜"
         :text="$t('nav.history')"
+        :title="$t('nav.history') + ' (Ctrl+H)'"
         @click="emit('open-history')"
         type="default"
         size="medium"
@@ -33,6 +35,7 @@
     <ActionButtonUI
         icon="⚙️"
         :text="$t('nav.modelManager')"
+        :title="$t('nav.modelManager') + ' (Ctrl+M)'"
         @click="emit('open-model-manager')"
         type="default"
         size="medium"
@@ -42,6 +45,7 @@
     <ActionButtonUI
         icon="⭐"
         :text="$t('nav.favorites')"
+        :title="$t('nav.favorites') + ' (Ctrl+F)'"
         @click="emit('open-favorites')"
         type="default"
         size="medium"
@@ -51,6 +55,7 @@
     <ActionButtonUI
         icon="💾"
         :text="$t('nav.dataManager')"
+        :title="$t('nav.dataManager') + ' (Ctrl+D)'"
         @click="emit('open-data-manager')"
         type="default"
         size="medium"
@@ -60,6 +65,7 @@
     <ActionButtonUI
         icon="🔣"
         :text="$t('nav.variableManager')"
+        :title="$t('nav.variableManager') + ' (Ctrl+V)'"
         @click="emit('open-variables')"
         type="default"
         size="medium"

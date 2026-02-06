@@ -7,7 +7,7 @@ import { ref, computed, watch, onMounted, onUnmounted, type Ref, type ComputedRe
 
 import type { AppServices } from '../../types/services'
 import type { IVariableManager, ConversationMessage } from '../../types/variable'
-import { VariableManager, createVariableManager } from '../../services/VariableManager'
+import { createVariableManager } from '../../services/VariableManager'
 
 export interface VariableManagerOptions {
   autoSync?: boolean  // 是否自动同步变量状态

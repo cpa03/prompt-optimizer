@@ -9,6 +9,7 @@
     class="action-button"
     :ghost="ghost"
     :round="round"
+    :title="title || text"
   >
     <template #icon>
       <slot name="icon">
@@ -36,6 +37,7 @@ interface Props {
   size?: 'tiny' | 'small' | 'medium' | 'large'
   ghost?: boolean
   round?: boolean
+  title?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {

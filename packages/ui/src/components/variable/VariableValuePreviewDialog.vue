@@ -3,7 +3,7 @@
     v-model:show="visible"
     preset="dialog"
     :title="t('test.variableValueGeneration.dialogTitle')"
-    style="width: 900px"
+    :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_MEDIUM }"
     :positive-text="t('test.variableValueGeneration.batchApply', { count: selectedKeys.length })"
     :negative-text="t('common.cancel')"
     :positive-button-props="{ disabled: selectedKeys.length === 0 }"
@@ -62,6 +62,7 @@ import {
 } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import type { VariableValueGenerationResponse, GeneratedVariableValue } from '@prompt-optimizer/core'
+import { UI_DIMENSIONS } from '../../config/constants'
 
 type RowKey = string | number
 

@@ -459,12 +459,12 @@ export function useContextUserOptimization(
   syncTemplates()
 
   // 监听变化并同步（使用 Vue 的响应式系统自动处理）
-  const unwatchTemplate = () => {
-    state.selectedTemplate = selectedTemplate.value
-  }
-  const unwatchIterateTemplate = () => {
-    state.selectedIterateTemplate = selectedIterateTemplate.value
-  }
+  // const unwatchTemplate = () => {
+  //   state.selectedTemplate = selectedTemplate.value
+  // }
+  // const unwatchIterateTemplate = () => {
+  //   state.selectedIterateTemplate = selectedIterateTemplate.value
+  // }
 
   // 返回 reactive 对象
   return state

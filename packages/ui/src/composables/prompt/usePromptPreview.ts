@@ -20,6 +20,7 @@ import {
 export function usePromptPreview(
   content: Ref<string>,
   variables: Ref<Record<string, string>>,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   contextMode: Ref<ContextMode>,
 ) {
   /**

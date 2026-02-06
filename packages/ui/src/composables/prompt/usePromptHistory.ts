@@ -1,10 +1,9 @@
-import { ref, watch, computed, reactive, type Ref } from 'vue'
+import { watch, computed, reactive, type Ref } from 'vue'
 
 import { useToast } from '../ui/useToast'
 import { useI18n } from 'vue-i18n'
 
-import { v4 as uuidv4 } from 'uuid'
-import type { IHistoryManager, PromptRecordChain, PromptRecord } from '@prompt-optimizer/core'
+import type { PromptRecordChain, PromptRecord } from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 
 type PromptChain = PromptRecordChain
@@ -146,7 +145,7 @@ export function usePromptHistory(
   })
 
   // Watch version and chain changes, update history
-  watch([currentVersions, currentChainId], async (newValues, oldValues) => {
+  watch([currentVersions, currentChainId], async (_newValues, _oldValues) => {
     await refreshHistory()
   })
 
