@@ -36,11 +36,25 @@ describe('FileStorageProvider', () => {
 
   describe('constructor', () => {
     it('should create instance with provided user data path', () => {
-      expect(mockPath.join).toHaveBeenCalledWith(mockUserDataPath, 'prompt-optimizer-data.json');
+      // Constructor now stores path for later resolution during initialization
+      expect(() => new FileStorageProvider(mockUserDataPath)).not.toThrow();
     });
 
     it('should throw error when no path provided', () => {
       expect(() => new FileStorageProvider('')).toThrow(StorageError);
+    });
+  });
+
+  describe('path resolution', () => {
+    it('should resolve paths using path.join during initialization', async () => {
+      mockFs.access.mockRejectedValue(new Error('File not found'));
+      mockFs.mkdir.mockResolvedValue(undefined);
+      mockFs.writeFile.mockResolvedValue(undefined);
+      
+      await provider.getItem('test-key');
+      
+      // Path resolution happens during initialization
+      expect(mockPath.join).toHaveBeenCalledWith(mockUserDataPath, 'prompt-optimizer-data.json');
     });
   });
 

@@ -103,7 +103,7 @@ export { StorageFactory } from './services/storage/factory'
 export { DexieStorageProvider } from './services/storage/dexieStorageProvider'
 export { LocalStorageProvider } from './services/storage/localStorageProvider'
 export { MemoryStorageProvider } from './services/storage/memoryStorageProvider'
-export { FileStorageProvider } from './services/storage/fileStorageProvider'
+// Note: FileStorageProvider is available via '@prompt-optimizer/core/electron' entry point
 
 // 导出提示词服务相关
 export { PromptService } from './services/prompt/service'

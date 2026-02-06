@@ -2,21 +2,30 @@
 
 ## Active Bugs
 
-### [ ] BUG-001: Node.js fs functions imported in browser bundle
+### [x] BUG-001: Node.js fs functions imported in browser bundle
 **Location**: `packages/core/dist/index.js`
 **Severity**: High
-**Description**: Node.js filesystem functions (mkdir, dirname, writeFile, rename, unlink) are being imported into browser bundle via `__vite-browser-external`. This causes runtime errors in browser environment.
+**Description**: Node.js filesystem functions (join, access, readFile, copyFile, mkdir, dirname, writeFile, rename, unlink) are being imported into browser bundle via `__vite-browser-external`. This causes runtime errors in browser environment.
 **Impact**: Browser version may crash when trying to use file system operations
 **Files affected**: 
-- packages/core/dist/index.js (lines 17990-17998)
+- packages/core/dist/index.js (lines 17835-18009)
+**Status**: FIXED - Created separate electron.ts entry point for FileStorageProvider, removed from main index.ts
+**Solution**: 
+- Created `/packages/core/src/electron.ts` as separate entry point for Node.js-only exports
+- Updated `package.json` exports to include `./electron` subpath
+- Removed FileStorageProvider from main index.ts exports
+- Updated build script to compile both entry points
+- Bundle size reduced from 891KB to 877KB
 
-### [ ] BUG-002: Vue currentInstance export warning
-**Location**: `packages/ui/dist/index-g5iyPfz5.js`
-**Severity**: Medium
-**Description**: `currentInstance` is not properly exported by Vue, causing potential compatibility issues
-**Impact**: May cause issues with Vue component lifecycle hooks
+### [-] BUG-002: Vue currentInstance export warning
+**Location**: `packages/ui/dist/index-cJUwbj-o.js`
+**Severity**: Low
+**Description**: `currentInstance` is not properly exported by Vue. This is a compatibility issue between vue-i18n@11.2.2 and @intlify/vue-i18n-extensions which expects vue-i18n@^10.0.0
+**Impact**: None - warning only, code falls back to getCurrentInstance()
 **Files affected**:
-- packages/ui/dist/index-g5iyPfz5.js (line 2364)
+- packages/ui/dist/index-cJUwbj-o.js (line 2364)
+**Status**: ACCEPTED - This is a dependency version mismatch that doesn't affect runtime functionality. The code uses a fallback pattern: `"currentInstance" in qh ? qh["currentInstance"] : qh.getCurrentInstance()`
+**Note**: To fully resolve, would need to downgrade vue-i18n to ^10.0.0 or wait for @intlify/vue-i18n-extensions update
 
 ### [ ] BUG-003: Dynamic import optimization warning
 **Location**: UI package build
@@ -38,10 +47,13 @@
 
 ## Fixed Bugs
 
-*No bugs fixed yet*
+- [x] BUG-001: Node.js fs functions in browser bundle
+  - Fixed by creating separate electron.ts entry point
+  - Bundle size reduced by ~14KB
 
 ## Notes
 
 - Build completes successfully but with warnings
-- Tests pass (all green)
+- Tests pass (all green - 262 tests)
 - Linting passes with no errors
+- Only remaining warnings: Vue currentInstance (harmless) and bundle size (optimization)

@@ -1,7 +1,22 @@
-import * as fs from 'fs/promises';
-import * as path from 'path';
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+
+// Dynamic imports for Node.js modules (only loaded in Electron environment)
+let fs: typeof import('fs/promises') | null = null;
+let path: typeof import('path') | null = null;
+
+// Lazy load Node.js modules
+async function loadNodeModules() {
+  if (!fs || !path) {
+    try {
+      fs = await import('fs/promises');
+      path = await import('path');
+    } catch (error) {
+      throw new StorageError('FileStorageProvider requires Node.js environment (fs/path modules not available)', 'read');
+    }
+  }
+  return { fs, path };
+}
 
 /**
  * 基于文件的存储提供器 - 增强版
@@ -19,7 +34,7 @@ export class FileStorageProvider implements IStorageProvider {
   private filePath: string;
   private backupPath: string;
   private data: Map<string, string> = new Map();
-  private writeTimeout: NodeJS.Timeout | null = null;
+  private writeTimeout: ReturnType<typeof setTimeout> | null = null;
   private isDirty: boolean = false;
   private writeLock: Promise<void> = Promise.resolve();
   private updateLock: Promise<void> = Promise.resolve();
@@ -34,13 +49,28 @@ export class FileStorageProvider implements IStorageProvider {
   private flushAttempts = 0; // flush尝试次数
   private readonly MAX_FLUSH_ATTEMPTS = 3; // 最大flush尝试次数
   
+  private userDataPath: string;
+
   constructor(userDataPath: string) {
     if (!userDataPath) {
       throw new StorageError('FileStorageProvider requires userDataPath parameter', 'read');
     }
 
-    this.filePath = path.join(userDataPath, 'prompt-optimizer-data.json');
-    this.backupPath = path.join(userDataPath, 'prompt-optimizer-data.json' + this.BACKUP_FILE_SUFFIX);
+    this.userDataPath = userDataPath;
+    // Initialize with placeholder paths - will be resolved when Node modules are loaded
+    this.filePath = `${userDataPath}/prompt-optimizer-data.json`;
+    this.backupPath = `${userDataPath}/prompt-optimizer-data.json${this.BACKUP_FILE_SUFFIX}`;
+  }
+
+  /**
+   * Resolve file paths using Node.js path module
+   */
+  private async resolvePaths(): Promise<void> {
+    if (this.userDataPath) {
+      const { path } = await loadNodeModules();
+      this.filePath = path.join(this.userDataPath, 'prompt-optimizer-data.json');
+      this.backupPath = path.join(this.userDataPath, `prompt-optimizer-data.json${this.BACKUP_FILE_SUFFIX}`);
+    }
   }
   
   /**
@@ -68,6 +98,8 @@ export class FileStorageProvider implements IStorageProvider {
   private async initialize(): Promise<void> {
     try {
       console.log('[FileStorage] Initializing storage...');
+      // First resolve proper file paths using Node.js path module
+      await this.resolvePaths();
       await this.loadFromFileWithRecovery();
       this.initialized = true;
       console.log('[FileStorage] Storage initialized successfully');
@@ -148,6 +180,7 @@ export class FileStorageProvider implements IStorageProvider {
     data?: Map<string, string>;
     error?: string;
   }> {
+    const { fs } = await loadNodeModules();
     try {
       // 检查文件是否存在
       await fs.access(filePath);
@@ -192,6 +225,7 @@ export class FileStorageProvider implements IStorageProvider {
    * 检查文件是否存在
    */
   private async fileExists(filePath: string): Promise<boolean> {
+    const { fs } = await loadNodeModules();
     try {
       await fs.access(filePath);
       return true;
@@ -204,6 +238,7 @@ export class FileStorageProvider implements IStorageProvider {
    * 创建备份文件
    */
   private async createBackup(): Promise<void> {
+    const { fs } = await loadNodeModules();
     try {
       if (await this.fileExists(this.filePath)) {
         await fs.copyFile(this.filePath, this.backupPath);
@@ -264,11 +299,13 @@ export class FileStorageProvider implements IStorageProvider {
    * 原子写入文件
    */
   private async atomicWrite(data: string): Promise<void> {
+    const { fs, path } = await loadNodeModules();
     const tempPath = this.filePath + this.TEMP_FILE_SUFFIX;
     
     try {
       // 确保目录存在
-      await fs.mkdir(path.dirname(this.filePath), { recursive: true });
+      const dir = path.dirname(this.filePath);
+      await fs.mkdir(dir, { recursive: true });
       
       // 1. 写入临时文件
       await fs.writeFile(tempPath, data, 'utf8');
