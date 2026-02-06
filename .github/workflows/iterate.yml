@@ -2,6 +2,8 @@ name: iterate
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: 0 * * * *  
   pull_request:
     types:
       - synchronize
@@ -9,6 +11,7 @@ on:
       - opened
       - reopened
   push: 
+    branches: main
 
 permissions:
   contents: write
