@@ -54,6 +54,14 @@ export const FUNCTION_MODEL_KEYS = {
   EVALUATION_MODEL: "app:function-model:evaluation-model",
 } as const;
 
+// 收藏管理相关
+export const FAVORITE_KEYS = {
+  FAVORITES: "favorites", // 收藏提示词列表
+  CATEGORIES: "favorite_categories", // 收藏分类
+  STATS: "favorite_stats", // 收藏统计数据
+  TAGS: "favorite_tags", // 收藏标签
+} as const;
+
 /**
  * 生成模式覆盖的存储键
  * @param type 模型类型：'optimize' 或 'test'
@@ -76,6 +84,7 @@ export const ALL_STORAGE_KEYS = {
   ...TEMPLATE_SELECTION_KEYS,
   ...IMAGE_MODE_KEYS,
   ...FUNCTION_MODEL_KEYS,
+  ...FAVORITE_KEYS,
 } as const;
 
 // 导出所有键的数组（用于DataManager等需要遍历的场景）
@@ -92,5 +101,7 @@ export type ImageModeKey =
   (typeof IMAGE_MODE_KEYS)[keyof typeof IMAGE_MODE_KEYS];
 export type FunctionModelKey =
   (typeof FUNCTION_MODEL_KEYS)[keyof typeof FUNCTION_MODEL_KEYS];
+export type FavoriteKey =
+  (typeof FAVORITE_KEYS)[keyof typeof FAVORITE_KEYS];
 export type StorageKey =
   (typeof ALL_STORAGE_KEYS)[keyof typeof ALL_STORAGE_KEYS];

@@ -177,7 +177,13 @@
             :description="placeholder || t('common.noContent')"
             class="flex items-center justify-center"
             style="height: 100%;"
-          />
+          >
+            <template #icon>
+              <NIcon :size="48" class="text-gray-300 dark:text-gray-600">
+                <FileText />
+              </NIcon>
+            </template>
+          </NEmpty>
           <NText  v-else class="ml-2">{{ placeholder || t('common.loading') }}</NText>
         </NFlex>
       </NFlex>
@@ -195,7 +201,7 @@ import {
   NInput, NEmpty, NSpin, NScrollbar, NFlex, NText, NSpace
 } from 'naive-ui'
 import { useToast } from '../composables/ui/useToast'
-import { Star } from '@vicons/tabler'
+import { Star, FileText } from '@vicons/tabler'
 import { useClipboard } from '../composables/ui/useClipboard'
 import MarkdownRenderer from './MarkdownRenderer.vue'
 import TextDiffUI from './TextDiff.vue'
