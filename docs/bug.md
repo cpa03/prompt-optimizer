@@ -52,6 +52,15 @@
 - Configure manualChunks in rollupOptions
 - Lazy load heavy components
 
+### [x] BUG-007: MCP server tests fail without core build
+**Location**: packages/mcp-server tests
+**Severity**: High
+**Description**: Tests fail with "Failed to resolve entry for package @prompt-optimizer/core" when core dist files are missing
+**Impact**: CI/CD pipeline failures, blocking test execution
+**Status**: FIXED - Rebuilt core package with `pnpm -F @prompt-optimizer/core build`
+**Solution**: Ensure core package is built before running tests
+**Files affected**: All MCP server tests
+
 ### [-] BUG-006: Dynamic + static import conflict for @prompt-optimizer/core
 **Location**: UI package build output
 **Severity**: Medium
@@ -79,6 +88,17 @@
 - [x] BUG-005: MCP server test failure - package resolution error
   - Fixed by ensuring @prompt-optimizer/core is built before running tests
   - Root cause: Missing dist files when mcp-server tests run
+
+### [-] BUG-008: TypeScript module resolution errors with direct tsc
+**Location**: packages/core/src/services/
+**Severity**: Low
+**Description**: Running `tsc --noEmit` directly shows module resolution errors for service directories, but build works fine with tsup
+**Impact**: None - tsup handles module resolution correctly during build
+**Status**: ACCEPTED - This is a configuration difference between tsc and tsup
+**Analysis**: The project's build system uses tsup which handles path resolution differently than standalone tsc. The exports and imports are correct and work during actual builds.
+**Files affected**: 
+- packages/core/src/services/index.ts (export statements)
+- packages/core/src/services/template/default-templates/*/extraction*.ts
 
 ## Environment-Related (Not Code Bugs)
 
