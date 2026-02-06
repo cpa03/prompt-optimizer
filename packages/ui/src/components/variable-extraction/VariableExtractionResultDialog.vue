@@ -3,7 +3,7 @@
     v-model:show="visible"
     preset="dialog"
     :title="t('evaluation.variableExtraction.dialogTitle')"
-    style="width: 800px"
+    :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_MEDIUM }"
     :positive-text="t('evaluation.variableExtraction.batchCreate', { count: selectedKeys.length })"
     :negative-text="t('common.cancel')"
     :positive-button-props="{ disabled: selectedKeys.length === 0 }"
@@ -58,6 +58,7 @@ import {
   NText,
   type DataTableColumns,
 } from 'naive-ui'
+import { UI_DIMENSIONS } from "../../config/constants";
 import { useI18n } from 'vue-i18n'
 import type { ExtractedVariable, VariableExtractionResponse } from '@prompt-optimizer/core'
 

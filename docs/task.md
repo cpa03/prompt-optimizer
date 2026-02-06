@@ -82,6 +82,11 @@
   - Added PERFORMANCE_THRESHOLDS for FPS, memory, update frequency targets
   - Added BREAKPOINTS for responsive design
   - Updated OutputDisplayCore to use ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS
+- [x] FLEX-003: Centralized hardcoded modal widths to use UI_DIMENSIONS constants
+  - VariableEditor.vue: Updated to use UI_DIMENSIONS.MODAL_WIDTH_SMALL
+  - VariableExtractionResultDialog.vue: Updated to use UI_DIMENSIONS.MODAL_WIDTH_MEDIUM
+  - Eliminates hardcoded '600px' and '800px' values in favor of centralized constants
+  - Improves maintainability and consistency across the application
 - [x] STORX-001: Created workspace-common.css for shared styles
   - Extracted common CSS patterns from 6 workspace components
   - Consolidated test-area, variant-deck, split-pane, and mode-pill styles
