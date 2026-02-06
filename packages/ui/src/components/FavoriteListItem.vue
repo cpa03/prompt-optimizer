@@ -79,7 +79,7 @@
           <div class="footer-right">
             <n-space size="small">
               <n-text depth="3" style="font-size: 12px">
-                {{ formatDate(favorite.updatedAt) }}
+                {{ formatRelativeTime(favorite.updatedAt) }}
               </n-text>
               <n-text depth="3" style="font-size: 12px">
                 <template #icon>
@@ -131,6 +131,7 @@ import {
   Tag
 } from '@vicons/tabler';
 import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core';
+import { formatRelativeTime } from '../utils/date';
 
 interface Props {
   favorite: FavoritePrompt;
@@ -183,27 +184,7 @@ const actionMenuOptions = [
   }
 ];
 
-const formatDate = (timestamp: number) => {
-  const date = new Date(timestamp);
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (days === 0) {
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    if (hours === 0) {
-      const minutes = Math.floor(diff / (1000 * 60));
-      return minutes <= 1 ? '刚刚' : `${minutes}分钟前`;
-    }
-    return `${hours}小时前`;
-  } else if (days === 1) {
-    return '昨天';
-  } else if (days < 7) {
-    return `${days}天前`;
-  } else {
-    return date.toLocaleDateString();
-  }
-};
+;
 
 const handleActionSelect = (key: string) => {
   switch (key) {

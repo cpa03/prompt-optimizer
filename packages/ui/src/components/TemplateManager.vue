@@ -132,7 +132,7 @@
                     {{ template.metadata.description || t('common.noDescription') }}
                   </NText>
                   <NText depth="3" style="font-size: 12px;">
-                    {{ t('common.lastModified') }}: {{ formatDate(template.metadata.lastModified) }}
+                    {{ t('common.lastModified') }}: {{ formatTemplateDate(template.metadata.lastModified) }}
                   </NText>
                 </NSpace>
               </NSpace>
@@ -654,6 +654,7 @@ import { useProMultiMessageSession } from '../stores/session/useProMultiMessageS
 import { useProVariableSession } from '../stores/session/useProVariableSession'
 import { useImageText2ImageSession } from '../stores/session/useImageText2ImageSession'
 import { useImageImage2ImageSession } from '../stores/session/useImageImage2ImageSession'
+import { formatDate } from '../utils/date'
 
 const { t } = useI18n()
 
@@ -909,10 +910,10 @@ const loadTemplates = async () => {
   }
 }
 
-// 格式化日期
-const formatDate = (timestamp: number) => {
+// 格式化日期 - 使用集中式工具函数
+const formatTemplateDate = (timestamp: number) => {
   if (!timestamp) return t('template.unknownTime')
-  return new Date(timestamp).toLocaleString()
+  return formatDate(timestamp)
 }
 
 // 编辑提示词

@@ -217,6 +217,7 @@ import {
 } from 'naive-ui'
 import type { PromptRecord, PromptRecordChain } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
+import { formatDate } from '../utils/date'
 
 const props = defineProps({
   show: Boolean,
@@ -299,9 +300,7 @@ watch(() => props.show, (newShow) => {
   }
 })
 
-const formatDate = (timestamp: number) => {
-  return new Date(timestamp).toLocaleString()
-}
+
 
 const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
   emit('reuse', {
