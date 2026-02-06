@@ -52,8 +52,8 @@
                 :style="{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    padding: '2px 0',
+                    gap: SPACING.GAP_SMALL + 'px',
+                    padding: `${SPACING.XS / 2}px 0`,
                 }"
             >
                 <NTag
@@ -66,7 +66,7 @@
                               ? 'warning'
                               : 'default'
                     "
-                    :style="{ minWidth: '160px', maxWidth: '220px', flexShrink: 0 }"
+                    :style="{ minWidth: UI_DIMENSIONS.TABLE_COL_WIDTH_NAME + 'px', maxWidth: '220px', flexShrink: 0 }"
                 >
                     <span
                         :style="{
@@ -88,7 +88,7 @@
                         ></span>
                         <span
                             v-if="getVariableSourceLabel(varName)"
-                            :style="{ fontSize: '12px', opacity: 0.75, whiteSpace: 'nowrap' }"
+                            :style="{ fontSize: FONT_SIZES.XS + 'px', opacity: 0.75, whiteSpace: 'nowrap' }"
                         >
                             {{ getVariableSourceLabel(varName) }}
                         </span>
@@ -179,7 +179,7 @@
         :on-positive-click="handleAddVariable"
         :mask-closable="false"
     >
-        <NSpace vertical :size="12" style="margin-top: 16px">
+        <NSpace vertical :size="SPACING.MD" :style="{ marginTop: SPACING.LG + 'px' }">
             <NFormItem
                 :label="t('variableExtraction.variableName')"
                 :validation-status="newVariableNameError ? 'error' : undefined"
@@ -222,6 +222,7 @@ import {
 
 import { DeviceFloppy, Trash, Wand } from '@vicons/tabler'
 
+import { SPACING, FONT_SIZES, UI_DIMENSIONS } from '../../config/constants'
 import type { TestVariableManager } from '../../composables/variable/useTestVariableManager'
 
 interface Props {

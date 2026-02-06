@@ -73,7 +73,13 @@
 
 ## Completed Tasks
 
-- [x] UX-005: Enhanced Icon.vue component with micro-UX improvements
+- [x] UX-006: Enhanced InputWithSelect component with accessibility improvements
+  - Added ARIA attributes (role, aria-expanded, aria-haspopup, aria-activedescendant)
+  - Added scroll-into-view behavior for keyboard navigation
+  - Added visual focus ring for highlighted items
+  - Added dropdown arrow rotation animation
+  - Removed debug console.log statements
+  - Improved keyboard navigation UX with smooth scrolling
   - Added support for 6 icon types: refresh, check, copy, edit, delete, loading
   - Added spinning animation for refresh and loading icons
   - Added accessibility support with aria-label and role="img"
@@ -134,6 +140,11 @@
   - Replaced hardcoded 'font-size: 12px' with FONT_SIZES.XS constant
   - Replaced hardcoded 'margin-top: 4px' with SPACING.XS constant
   - Demonstrates pattern for converting inline styles to use centralized constants
+- [x] FLEX-008: Modularized TemporaryVariablesPanel component
+  - Replaced hardcoded gap values with SPACING.GAP_SMALL constant
+  - Replaced hardcoded font-size with FONT_SIZES.XS constant
+  - Replaced hardcoded margin and padding with SPACING constants
+  - Used UI_DIMENSIONS.TABLE_COL_WIDTH_NAME for consistent sizing
 - [x] STORX-002: Consolidated duplicate formatDate functions
   - Created centralized date.ts utility with formatDate, formatDateShort, formatTime, formatRelativeTime
   - Updated HistoryDrawer.vue to use centralized utility
@@ -141,6 +152,12 @@
   - Updated FavoriteListItem.vue to use centralized formatRelativeTime
   - Eliminated code duplication across 5 components
   - Improved maintainability with single source of truth for date formatting
+- [x] STORX-003: Consolidated BasicUserWorkspace styles to use shared CSS
+  - Removed duplicate .test-area-top, .test-area-label, .variant-deck styles
+  - Removed duplicate .variant-results-wrap, .variant-results styles
+  - Added import for workspace-common.css
+  - ~30 lines of duplicate CSS eliminated
+  - Components now rely on centralized workspace-common.css
 
 ## Notes
 

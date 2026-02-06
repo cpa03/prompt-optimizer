@@ -419,6 +419,7 @@
  */
  import { ref, reactive, computed, toRef, inject, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import '../../styles/workspace-common.css'
 import { useToast } from '../../composables/ui/useToast'
 import {
   useBasicUserSession,
@@ -1242,23 +1243,7 @@ defineExpose({
     outline: none;
 }
 
-.test-area-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-}
-
-.test-area-label {
-    white-space: nowrap;
-}
-
-.variant-deck {
-    display: grid;
-    gap: 12px;
-    width: 100%;
-}
+/* Note: .test-area-top, .test-area-label, .variant-deck styles are defined in workspace-common.css */
 
 .variant-cell {
     min-width: 0;
@@ -1295,18 +1280,7 @@ defineExpose({
     white-space: nowrap;
 }
 
-.variant-results-wrap {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.variant-results {
-    display: grid;
-    gap: 12px;
-    height: 100%;
-    min-height: 0;
-}
+/* Note: .variant-results-wrap, .variant-results styles are defined in workspace-common.css */
 
 .variant-result-card {
     height: 100%;
