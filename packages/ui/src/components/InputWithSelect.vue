@@ -4,6 +4,7 @@
       ref="inputRef"
       :value="modelValue"
       @update:value="handleInput"
+      @keydown="handleKeydown"
       :type="type"
       :placeholder="placeholder"
       :loading="isLoading"
@@ -56,12 +57,14 @@
       <NEmpty v-else-if="filteredOptions.length === 0" size="small" :description="noOptionsText" />
       <NSpace v-else vertical size="small">
         <div
-          v-for="option in filteredOptions"
+          v-for="(option, index) in filteredOptions"
           :key="option.value"
           @click="selectOption(option)"
-          class="cursor-pointer px-2 py-1 rounded transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
+          @mouseenter="highlightedIndex = index"
+          class="cursor-pointer px-2 py-1 rounded transition-colors"
           :class="{
-            'bg-blue-100 dark:bg-blue-900': modelValue === option.value
+            'bg-blue-100 dark:bg-blue-900': modelValue === option.value,
+            'bg-gray-100 dark:bg-gray-700': highlightedIndex === index && modelValue !== option.value
           }"
         >
           {{ option.label }}
@@ -128,6 +131,7 @@ const emit = defineEmits(['update:modelValue', 'select', 'fetchOptions']);
 const isOpen = ref(false);
 const inputRef = ref(null);
 const searchText = ref('');
+const highlightedIndex = ref(-1);
 
 // 根据输入内容筛选选项
 const filteredOptions = computed(() => {
@@ -150,6 +154,7 @@ const toggleDropdown = async () => {
   
   // 如果打开下拉菜单，聚焦到输入框
   if (isOpen.value) {
+    highlightedIndex.value = -1;
     emit('fetchOptions');
     // 等待DOM更新后聚焦
     setTimeout(() => {
@@ -157,6 +162,8 @@ const toggleDropdown = async () => {
         inputRef.value.focus();
       }
     }, 10);
+  } else {
+    highlightedIndex.value = -1;
   }
 };
 
@@ -166,6 +173,46 @@ const selectOption = (option) => {
   emit('select', option);
   isOpen.value = false;
   searchText.value = '';
+  highlightedIndex.value = -1;
+};
+
+// Handle keyboard navigation
+const handleKeydown = (event) => {
+  if (!isOpen.value) {
+    // Open dropdown on ArrowDown or ArrowUp when closed
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      toggleDropdown();
+    }
+    return;
+  }
+
+  const options = filteredOptions.value;
+  if (options.length === 0) return;
+
+  switch (event.key) {
+    case 'ArrowDown':
+      event.preventDefault();
+      highlightedIndex.value = (highlightedIndex.value + 1) % options.length;
+      break;
+    case 'ArrowUp':
+      event.preventDefault();
+      highlightedIndex.value = highlightedIndex.value <= 0 
+        ? options.length - 1 
+        : highlightedIndex.value - 1;
+      break;
+    case 'Enter':
+      event.preventDefault();
+      if (highlightedIndex.value >= 0 && highlightedIndex.value < options.length) {
+        selectOption(options[highlightedIndex.value]);
+      }
+      break;
+    case 'Escape':
+      event.preventDefault();
+      isOpen.value = false;
+      highlightedIndex.value = -1;
+      break;
+  }
 };
 
 // Close dropdown when clicking outside
@@ -181,6 +228,7 @@ const handleClickOutside = (event) => {
     console.log('Closing dropdown');
     isOpen.value = false;
     searchText.value = '';
+    highlightedIndex.value = -1;
   }
 };
 
