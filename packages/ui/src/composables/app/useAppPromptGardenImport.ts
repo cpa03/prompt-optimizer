@@ -321,8 +321,13 @@ const fetchPromptFromGarden = async (opts: {
       })
       .filter((v) => isValidVariableName(v.name))
 
-    const assets = isPlainObject((data as any).assets) ? ((data as any).assets as Record<string, unknown>) : null
-    const rawExamples = assets && Array.isArray((assets as any).examples) ? ((assets as any).examples as unknown[]) : []
+    // Define interface for assets structure
+    interface AssetsData {
+      examples?: unknown[]
+    }
+    
+    const assets: AssetsData | null = isPlainObject(data.assets) ? (data.assets as AssetsData) : null
+    const rawExamples: unknown[] = assets && Array.isArray(assets.examples) ? assets.examples : []
     const examples = rawExamples
       .map((ex): { id?: string; parameters?: Record<string, string>; inputImages?: string[] } => {
         if (!isPlainObject(ex)) return {}
@@ -330,7 +335,12 @@ const fetchPromptFromGarden = async (opts: {
         const id = typeof ex.id === 'string' ? ex.id.trim() : undefined
 
         const parameters = (() => {
-          const p = (ex as any).parameters
+          // Define interface for example structure
+          interface ExampleData {
+            parameters?: Record<string, unknown>
+          }
+          const exData = ex as ExampleData
+          const p = exData.parameters
           if (!isPlainObject(p)) return undefined
           const out: Record<string, string> = {}
           for (const [k, v] of Object.entries(p)) {
@@ -342,11 +352,19 @@ const fetchPromptFromGarden = async (opts: {
           return Object.keys(out).length ? out : undefined
         })()
 
-        const inputImages = Array.isArray((ex as any).inputImages)
-          ? ((ex as any).inputImages as unknown[])
+        const inputImages = (() => {
+          // Define interface for example structure
+          interface ExampleData {
+            inputImages?: unknown[]
+          }
+          const exData = ex as ExampleData
+          if (Array.isArray(exData.inputImages)) {
+            return exData.inputImages
               .map((u) => (typeof u === 'string' ? u.trim() : ''))
               .filter(Boolean)
-          : undefined
+          }
+          return undefined
+        })()
 
         return {
           id,
@@ -401,7 +419,14 @@ const fetchImageAsBase64 = async (absoluteUrl: string): Promise<{ b64: string; m
   const mimeType = typeof headerType === 'string' ? headerType.split(';')[0].trim() : ''
 
   // Tests run in Node where Buffer is available; browsers use FileReader.
-  const maybeBuffer = (globalThis as any).Buffer as any
+  // Define Buffer interface for Node.js environment
+  interface NodeBuffer {
+    from: (data: ArrayBuffer) => { toString: (encoding: string) => string }
+  }
+  interface GlobalWithBuffer {
+    Buffer?: NodeBuffer
+  }
+  const maybeBuffer = (globalThis as unknown as GlobalWithBuffer).Buffer
   if (maybeBuffer && typeof maybeBuffer.from === 'function') {
     const ab = await resp.arrayBuffer()
     const b64 = maybeBuffer.from(ab).toString('base64')
