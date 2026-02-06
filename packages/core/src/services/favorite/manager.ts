@@ -17,17 +17,13 @@ import {
 } from './errors';
 import { TypeMapper } from './type-mapper';
 import { TagTypeConverter } from './type-converter';
+import { FAVORITE_KEYS } from '../../constants/storage-keys';
 
 /**
  * 收藏管理器实现
  */
 export class FavoriteManager implements IFavoriteManager {
-  private readonly STORAGE_KEYS = {
-    FAVORITES: 'favorites',
-    CATEGORIES: 'favorite_categories',
-    STATS: 'favorite_stats',
-    TAGS: 'favorite_tags'
-  } as const;
+  private readonly STORAGE_KEYS = FAVORITE_KEYS;
 
   private initPromise: Promise<void>;
   private initialized = false;
