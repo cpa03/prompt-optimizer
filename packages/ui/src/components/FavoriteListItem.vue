@@ -184,8 +184,6 @@ const actionMenuOptions = [
   }
 ];
 
-;
-
 const handleActionSelect = (key: string) => {
   switch (key) {
     case 'edit':

@@ -91,6 +91,13 @@
   - Extracted common CSS patterns from 6 workspace components
   - Consolidated test-area, variant-deck, split-pane, and mode-pill styles
   - Eliminated ~250 lines of duplicated CSS across workspace components
+- [x] STORX-002: Consolidated duplicate formatDate functions
+  - Created centralized date.ts utility with formatDate, formatDateShort, formatTime, formatRelativeTime
+  - Updated HistoryDrawer.vue to use centralized utility
+  - Updated TemplateManager.vue to use centralized utility
+  - Updated FavoriteListItem.vue to use centralized formatRelativeTime
+  - Eliminated code duplication across 5 components
+  - Improved maintainability with single source of truth for date formatting
 
 ## Notes
 
