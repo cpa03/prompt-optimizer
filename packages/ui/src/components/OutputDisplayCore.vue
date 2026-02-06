@@ -60,12 +60,14 @@
             size="small"
             quaternary
             circle
-            :title="t('common.copy')"
-            :aria-label="t('common.copy')"
+            :title="copySuccess ? t('common.copied') : t('common.copy')"
+            :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
+            :class="{ 'copy-success': copySuccess }"
           >
             <template #icon>
-              <NIcon>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <NIcon :class="{ 'copy-icon-animate': copySuccess }">
+                <Check v-if="copySuccess" />
+                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
                 </svg>
               </NIcon>
@@ -205,7 +207,7 @@ import {
   NInput, NEmpty, NSpin, NScrollbar, NFlex, NText, NSpace
 } from 'naive-ui'
 import { useToast } from '../composables/ui/useToast'
-import { Star, FileText } from '@vicons/tabler'
+import { Star, FileText, Check } from '@vicons/tabler'
 import { useClipboard } from '../composables/ui/useClipboard'
 import MarkdownRenderer from './MarkdownRenderer.vue'
 import TextDiffUI from './TextDiff.vue'
@@ -216,6 +218,7 @@ import { useVariableAwareInputBridge } from '../composables/variable/useVariable
 import { useVariableManager } from '../composables/prompt/useVariableManager'
 import type { AppServices } from '../types/services'
 import { router as routerInstance } from '../router'
+import { ANIMATION_CONSTANTS } from '../config/constants'
 
 type ActionName = 'fullscreen' | 'diff' | 'copy' | 'edit' | 'reasoning' | 'favorite'
 
@@ -326,6 +329,10 @@ type ScrollbarLike = {
 const reasoningContentRef = ref<ScrollbarLike | null>(null)
 const userHasManuallyToggledReasoning = ref(false)
 
+// Copy feedback state
+const copySuccess = ref(false)
+const copySuccessTimeout = ref<number | null>(null)
+
 // 新的视图状态机
 const internalViewMode = ref<'render' | 'source' | 'diff'>('render')
 const EMPTY_COMPARE_RESULT: CompareResult = {
@@ -383,7 +390,7 @@ const handleSourceInput = (value: string) => {
 const handleCopy = (type: 'content' | 'reasoning' | 'all') => {
   let textToCopy = ''
   const emitType: 'content' | 'reasoning' | 'all' = type
-  
+
   switch (type) {
     case 'content':
       textToCopy = displayContent.value
@@ -398,10 +405,19 @@ const handleCopy = (type: 'content' | 'reasoning' | 'all') => {
       ].filter(Boolean).join('\n\n')
       break
   }
-  
+
   if (textToCopy) {
     copyText(textToCopy)
     emit('copy', textToCopy, emitType)
+
+    // Visual feedback: show checkmark temporarily
+    copySuccess.value = true
+    if (copySuccessTimeout.value) {
+      clearTimeout(copySuccessTimeout.value)
+    }
+    copySuccessTimeout.value = window.setTimeout(() => {
+      copySuccess.value = false
+    }, ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS)
   }
 }
 
@@ -565,3 +581,28 @@ watch(() => props.mode, (newMode) => {
 
 defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 </script>
+
+<style scoped>
+/* Copy button success animation */
+.copy-success {
+  color: var(--success-color, #18a058);
+}
+
+.copy-icon-animate {
+  animation: copySuccessPop 0.3s ease;
+}
+
+@keyframes copySuccessPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+</style>
