@@ -16,6 +16,7 @@ import {
   type VariableSource,
   type PredefinedVariable
 } from '../types/variable';
+import { TIME_CONSTANTS } from '../config/constants';
 
 // 存储键
 const STORAGE_KEYS = {
@@ -69,7 +70,7 @@ export class VariableManager implements IVariableManager {
 
   // 变量扫描缓存
   private scanCache: Map<string, ScanCacheEntry> = new Map();
-  private readonly CACHE_EXPIRY_MS = 5 * 60 * 1000; // 5分钟缓存
+  private readonly CACHE_EXPIRY_MS = TIME_CONSTANTS.CACHE_EXPIRY_MS; // 5分钟缓存
   private readonly MAX_CACHE_SIZE = 100; // 最大缓存条目数
 
   constructor(private preferenceService: IPreferenceService) {

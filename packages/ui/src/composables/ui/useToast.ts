@@ -1,4 +1,5 @@
 import type { MessageOptions, MessageReactive } from 'naive-ui'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 export interface Toast {
   id: number
@@ -40,7 +41,7 @@ export function useToast() {
     const message = getMessageApi()
 
     const normalizedOptions: MessageOptions = {
-      duration: 3000,
+      duration: TIME_CONSTANTS.TOAST_DURATION,
       closable: true,
       keepAliveOnHover: true,
       ...(typeof options === 'number' ? { duration: options } : options || {})

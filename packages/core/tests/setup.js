@@ -48,6 +48,13 @@ const localStorageMock = {
 // 全局注入 localStorage
 global.localStorage = localStorageMock;
 
+// 全局注入 navigator mock (用于浏览器API测试)
+global.navigator = {
+  language: 'en-US',
+  userAgent: 'node.js',
+  platform: 'node'
+};
+
 // 在每个测试之前重置 mock 状态
 beforeEach(() => {
   localStorageMock.store.clear();

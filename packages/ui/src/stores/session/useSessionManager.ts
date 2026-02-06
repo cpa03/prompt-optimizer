@@ -24,6 +24,7 @@ import { useProMultiMessageSession } from './useProMultiMessageSession'
 import { useProVariableSession } from './useProVariableSession'
 import { useImageText2ImageSession } from './useImageText2ImageSession'
 import { useImageImage2ImageSession } from './useImageImage2ImageSession'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 /**
  * 子模式 key 映射表
@@ -315,7 +316,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
       for (const key of keys) {
         await restoreSubModeSession(key)
         // Yield to the event loop to keep the UI responsive and reduce long-task pressure.
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
       }
       hasRestoredAllSessions.value = true
     })()
@@ -331,7 +332,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
   const saveAllSessions = async () => {
     // ⚠️ 等待当前保存完成（最多等待 5 秒）
     const startTime = Date.now()
-    const MAX_WAIT = 5000 // 5 秒超时
+    const MAX_WAIT = TIME_CONSTANTS.SESSION_TIMEOUT_MS // 5 秒超时
 
     await restoreAllSessions()
 
@@ -342,7 +343,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
         return
       }
       // 等待 50ms 后重试
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_RETRY_DELAY_MS))
     }
 
     // ⚠️ 记录是否是我获得的锁（防御性编程）
@@ -365,7 +366,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
       ]
       for (const key of keys) {
         await _saveSubModeSessionUnsafe(key)
-        await new Promise(resolve => setTimeout(resolve, 0))
+        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
       }
     } catch (error) {
       console.error('[SessionManager] 保存所有会话失败:', error)

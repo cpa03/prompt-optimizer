@@ -1,14 +1,15 @@
 <template>
-  <NSelect
-    :value="modelValue?.id || null"
-    @update:value="handleTemplateSelect"
-    :options="selectOptions"
-    :placeholder="t('template.select')"
-    :loading="!isReady"
-    size="medium"
-    @focus="handleFocus"
-    filterable
-  >
+  <div :class="['template-select-wrapper', { 'just-selected': recentlySelected }]">
+    <NSelect
+      :value="modelValue?.id || null"
+      @update:value="handleTemplateSelect"
+      :options="selectOptions"
+      :placeholder="t('template.select')"
+      :loading="!isReady"
+      size="medium"
+      @focus="handleFocus"
+      filterable
+    >
     <template #empty>
       <NSpace vertical align="center" class="py-4">
         <NText class="text-center text-gray-500">{{ t('template.noAvailableTemplates') }}</NText>
@@ -26,7 +27,8 @@
         </NButton>
       </NSpace>
     </template>
-  </NSelect>
+    </NSelect>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -120,6 +122,10 @@ const selectOptions = computed(() => {
   return [...templateOptions, configOption]
 })
 
+// 跟踪最近选择的模板以提供视觉反馈
+const recentlySelected = ref<string | null>(null)
+const recentlySelectedTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
 // 处理模板选择
 const handleTemplateSelect = (value: string | null) => {
   // 如果选择的是配置选项，不更新值，直接触发配置事件
@@ -130,6 +136,15 @@ const handleTemplateSelect = (value: string | null) => {
   
   const template = templates.value.find(t => t.id === value) || null
   if (template && template.id !== props.modelValue?.id) {
+    // 提供视觉反馈：短暂高亮选中的模板
+    recentlySelected.value = template.id
+    if (recentlySelectedTimeout.value) {
+      clearTimeout(recentlySelectedTimeout.value)
+    }
+    recentlySelectedTimeout.value = setTimeout(() => {
+      recentlySelected.value = null
+    }, 1000)
+    
     emit('update:modelValue', template)
     emit('select', template, true)
   }
@@ -310,5 +325,30 @@ defineExpose({
   refresh: refreshTemplates
 })
 </script>
+
+<style scoped>
+.template-select-wrapper {
+  transition: all 0.3s ease;
+}
+
+.template-select-wrapper.just-selected {
+  animation: success-pulse 1s ease;
+}
+
+@keyframes success-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.4);
+  }
+  50% {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 4px rgba(24, 160, 88, 0.1);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0);
+  }
+}
+</style>
 
  
