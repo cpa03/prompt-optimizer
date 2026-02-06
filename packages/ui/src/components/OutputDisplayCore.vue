@@ -60,6 +60,8 @@
             size="small"
             quaternary
             circle
+            :title="t('common.copy')"
+            :aria-label="t('common.copy')"
           >
             <template #icon>
               <NIcon>
@@ -75,6 +77,8 @@
             size="small"
             quaternary
             circle
+            :title="t('common.fullscreen')"
+            :aria-label="t('common.fullscreen')"
           >
             <template #icon>
               <NIcon>
