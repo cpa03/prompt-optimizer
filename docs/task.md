@@ -41,6 +41,15 @@
 2. [ ] Ensure consistent import strategy (remove static imports if dynamic needed)
 3. [ ] Verify no runtime issues
 
+### [x] ERROR-006: Fix MCP server test dependency
+**Priority**: High
+**Description**: MCP server tests fail to resolve @prompt-optimizer/core entry point
+**Status**: COMPLETED
+**Steps**:
+1. [x] Identify root cause - core package not built before mcp-server tests
+2. [x] Ensure core build happens before mcp-server tests in test workflow
+3. [x] Verify tests pass (8/8 passed)
+
 ### [ ] ERROR-005: Fix ContextWorkspace dynamic imports
 **Priority**: Medium
 **Description**: ContextSystemWorkspace.vue and ContextUserWorkspace.vue are both dynamically imported by router and statically imported by index.ts
@@ -55,10 +64,24 @@
 - [x] UX-001: Added FileText icon to OutputDisplay empty state (OutputDisplayCore.vue)
   - Improved visual appeal of empty state with 48px icon
   - Supports dark/light theme with appropriate colors
+- [x] UX-002: Added copy success animation to OutputDisplayCore.vue
+  - Copy button now shows checkmark icon temporarily after successful copy
+  - Added pop animation with scale effect for visual feedback
+  - Improved accessibility with dynamic aria-label
 - [x] FLEX-001: Modularized favorite storage keys
   - Moved STORAGE_KEYS from FavoriteManager to centralized storage-keys.ts
   - Added FAVORITE_KEYS constant and FavoriteKey type
   - Updated FavoriteManager to use centralized keys
+- [x] FLEX-002: Enhanced constants.ts with new constant categories
+  - Added UI_DIMENSIONS for modal widths, sidebar widths, scrollbar heights
+  - Added ANIMATION_CONSTANTS for durations, easing, border radius values
+  - Added PERFORMANCE_THRESHOLDS for FPS, memory, update frequency targets
+  - Added BREAKPOINTS for responsive design
+  - Updated OutputDisplayCore to use ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS
+- [x] STORX-001: Created workspace-common.css for shared styles
+  - Extracted common CSS patterns from 6 workspace components
+  - Consolidated test-area, variant-deck, split-pane, and mode-pill styles
+  - Eliminated ~250 lines of duplicated CSS across workspace components
 
 ## Notes
 

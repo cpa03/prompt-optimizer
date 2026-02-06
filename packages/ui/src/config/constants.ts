@@ -79,3 +79,76 @@ export const Z_INDEX = {
   TOAST: 4000,
   FOCUS_OVERLAY: 10000,
 } as const
+
+// UI Dimensions (widths, heights, in pixels or CSS values)
+export const UI_DIMENSIONS = {
+  // Modal widths
+  MODAL_WIDTH_SMALL: '600px',
+  MODAL_WIDTH_MEDIUM: '800px',
+  MODAL_WIDTH_LARGE: '1200px',
+  MODAL_WIDTH_XL: '1400px',
+
+  // Sidebar widths by mode
+  SIDEBAR_WIDTH_BASIC: 220,
+  SIDEBAR_WIDTH_IMAGE: 260,
+
+  // Scrollbar max heights
+  SCROLLBAR_MAX_HEIGHT_SMALL: 200,
+  SCROLLBAR_MAX_HEIGHT_MEDIUM: 400,
+  SCROLLBAR_MAX_HEIGHT_LARGE: 500,
+
+  // Column widths for tables
+  TABLE_COL_WIDTH_NAME: 200,
+  TABLE_COL_WIDTH_TYPE: 80,
+  TABLE_COL_WIDTH_VALUE: 200,
+  TABLE_COL_WIDTH_ACTIONS: 160,
+} as const
+
+// Animation and transition constants
+export const ANIMATION_CONSTANTS = {
+  // Durations (in ms)
+  TRANSITION_DURATION_MS: 120,
+  HOVER_TRANSITION_MS: 200,
+  FEEDBACK_ANIMATION_MS: 300,
+  COPY_SUCCESS_DURATION_MS: 1500,
+
+  // Easing functions
+  TRANSITION_EASING: 'ease',
+  TRANSITION_CUBIC_BEZIER: 'cubic-bezier(0.4, 0, 0.2, 1)',
+
+  // Border radius values
+  BORDER_RADIUS_PILL: '999px',
+  BORDER_RADIUS_SMALL: '2px',
+  BORDER_RADIUS_MEDIUM: '4px',
+  BORDER_RADIUS_LARGE: '6px',
+  BORDER_RADIUS_XL: '8px',
+  BORDER_RADIUS_ROUND: '50%',
+} as const
+
+// Performance thresholds
+export const PERFORMANCE_THRESHOLDS = {
+  // Frame timing (60fps = 16.67ms)
+  TARGET_FPS_MS: 16,
+  MAX_RENDER_TIME_MS: 32,
+
+  // Memory thresholds (in bytes)
+  MEMORY_WARNING_BYTES: 50 * 1024 * 1024, // 50MB
+  MEMORY_CRITICAL_BYTES: 100 * 1024 * 1024, // 100MB
+
+  // Update frequency
+  UPDATE_COUNT_WARNING: 50,
+  UPDATE_COUNT_CRITICAL: 100,
+  UPDATE_RENDER_RATIO_WARNING: 10,
+
+  // Timeouts
+  API_TIMEOUT_MS: 5000,
+  LONG_OPERATION_TIMEOUT_MS: 10000,
+} as const
+
+// Responsive breakpoints (in pixels)
+export const BREAKPOINTS = {
+  MOBILE: 640,
+  TABLET: 768,
+  DESKTOP: 1024,
+  LARGE: 1200,
+} as const

@@ -1,0 +1,169 @@
+/**
+ * Workspace Common Styles
+ * Shared CSS for all workspace components to eliminate duplication
+ */
+
+/* Test area layout */
+.test-area-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.test-area-label {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Variant testing grid */
+.variant-deck {
+  display: grid;
+  gap: 16px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.variant-cell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--card-color);
+}
+
+.variant-cell__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--table-header-color);
+}
+
+.variant-cell__label {
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.variant-cell__stale {
+  font-size: 11px;
+  color: var(--warning-color);
+  margin-left: 8px;
+}
+
+.variant-cell__model {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-color-3);
+}
+
+/* Variant results */
+.variant-results-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.variant-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.variant-result-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+/* Split pane styles */
+.workspace-split {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.workspace-split__left,
+.workspace-split__right {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.workspace-split__divider {
+  width: 4px;
+  background: var(--divider-color);
+  cursor: col-resize;
+  transition: background-color 0.2s ease;
+}
+
+.workspace-split__divider:hover {
+  background: var(--primary-color);
+}
+
+/* Workspace mode selector pills */
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 120ms ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mode-pill:hover {
+  background-color: var(--hover-color);
+}
+
+.mode-pill.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Empty state improvements */
+.workspace-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 24px;
+  text-align: center;
+}
+
+.workspace-empty-state__icon {
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.workspace-empty-state__title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-color-2);
+}
+
+.workspace-empty-state__description {
+  font-size: 14px;
+  color: var(--text-color-3);
+  max-width: 300px;
+}

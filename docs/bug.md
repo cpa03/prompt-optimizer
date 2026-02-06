@@ -50,6 +50,15 @@
 - [x] BUG-001: Node.js fs functions in browser bundle
   - Fixed by creating separate electron.ts entry point
   - Bundle size reduced by ~14KB
+- [x] BUG-005: MCP server test failure - package resolution error
+  - Fixed by ensuring @prompt-optimizer/core is built before running tests
+  - Root cause: Missing dist files when mcp-server tests run
+
+## Environment-Related (Not Code Bugs)
+
+- E2E tests fail (112 failed) - require running dev server, environment limitation
+  - Tests pass when run locally with `pnpm dev` running
+  - These are integration tests requiring full application stack
 
 ## Notes
 
