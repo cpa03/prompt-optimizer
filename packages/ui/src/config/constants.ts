@@ -83,6 +83,7 @@ export const Z_INDEX = {
 // UI Dimensions (widths, heights, in pixels or CSS values)
 export const UI_DIMENSIONS = {
   // Modal widths
+  MODAL_WIDTH_COMPACT: '500px',
   MODAL_WIDTH_SMALL: '600px',
   MODAL_WIDTH_MEDIUM: '800px',
   MODAL_WIDTH_LARGE: '1200px',

@@ -272,7 +272,7 @@
             :title="t('variables.management.exportTitle')"
             size="large"
             :segmented="{ content: true }"
-            :style="{ width: '600px', maxWidth: '90vw' }"
+            :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_SMALL, maxWidth: '90vw' }"
             :mask-closable="!loading"
         >
             <NSpace vertical>
@@ -365,6 +365,7 @@ import {
 } from "naive-ui";
 import { useResponsive } from "../../composables/ui/useResponsive";
 import { useClipboard } from "../../composables/ui/useClipboard";
+import { UI_DIMENSIONS } from "../../config/constants";
 import type {
     VariableManagerModalProps,
 } from "../../types/components";

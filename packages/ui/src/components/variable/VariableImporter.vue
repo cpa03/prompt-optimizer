@@ -164,6 +164,7 @@ import {
   NRadioGroup, NRadio, NCard, NList, NListItem, NScrollbar, NIcon,
   type UploadFileInfo 
 } from 'naive-ui'
+import { UI_DIMENSIONS } from '../../config/constants'
 
 const { t } = useI18n()
 
@@ -181,7 +182,7 @@ const localVisible = computed({
   set: (val: boolean) => emit('update:show', val)
 })
 
-const modalStyle = { width: '600px', maxWidth: '90vw' }
+const modalStyle = { width: UI_DIMENSIONS.MODAL_WIDTH_SMALL, maxWidth: '90vw' }
 
 // 状态管理
 const loading = ref(false)
