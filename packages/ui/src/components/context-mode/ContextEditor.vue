@@ -352,7 +352,7 @@
                 ? t('contextEditor.editVariable')
                 : t('contextEditor.addVariable')
         "
-        style="width: 500px"
+        :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_COMPACT }"
         :mask-closable="false"
     >
         <NSpace vertical>
@@ -518,6 +518,7 @@ import {
     PREDEFINED_VARIABLES,
     type PredefinedVariable,
 } from "../../types/variable";
+import { UI_DIMENSIONS } from '../../config/constants';
 
 const { t } = useI18n();
 const toast = useToast();

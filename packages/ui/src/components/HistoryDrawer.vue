@@ -200,7 +200,15 @@
       
       <NEmpty v-else :description="$t('history.noHistory')">
         <template #icon>
-          <span style="font-size: 48px;">📜</span>
+          <div class="history-empty-icon">
+            <span class="history-empty-icon-main">📜</span>
+            <span class="history-empty-icon-sparkle">✨</span>
+          </div>
+        </template>
+        <template #extra>
+          <NText depth="3" style="font-size: 13px; text-align: center; display: block; max-width: 300px; margin-top: 8px;">
+            {{ $t('history.emptyHint', 'Your optimized prompts will appear here') }}
+          </NText>
         </template>
       </NEmpty>
     </NScrollbar>
@@ -359,4 +367,46 @@ const deleteChain = (chainId: string) => {
 </script>
 
 <style scoped>
+/* Empty state icon animation */
+.history-empty-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-empty-icon-main {
+  font-size: 48px;
+  display: inline-block;
+  animation: history-icon-float 3s ease-in-out infinite;
+}
+
+.history-empty-icon-sparkle {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 20px;
+  animation: history-sparkle-twinkle 2s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes history-icon-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes history-sparkle-twinkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
 </style> 

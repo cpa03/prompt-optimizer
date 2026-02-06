@@ -41,15 +41,35 @@
 - Consistent with Basic mode components pattern
 - Build warnings eliminated
 
-### [ ] BUG-004: Large bundle chunks exceeding 500KB
+### [/] BUG-004: Large bundle chunks exceeding 500KB
 **Location**: Web build output
 **Severity**: Medium
-**Description**: Main bundle is 4.7MB (1.35MB gzipped), exceeding recommended 500KB limit
+**Description**: Main bundle is 4.66MB (1.34MB gzipped), exceeding recommended 500KB limit
 **Impact**: Slow initial page load, poor user experience
+**Status**: IN PROGRESS - Analyzing bundle composition
 **Recommendation**:
 - Use dynamic import() to code-split
 - Configure manualChunks in rollupOptions
 - Lazy load heavy components
+
+### [-] BUG-006: Dynamic + static import conflict for @prompt-optimizer/core
+**Location**: UI package build output
+**Severity**: Medium
+**Description**: packages/core/dist/index.js is dynamically imported but also statically imported by multiple workspace components, preventing proper code-splitting
+**Impact**: Bundle cannot be properly split, contributing to large bundle size
+**Files affected**:
+- packages/ui/dist/index-ufTSP1pP.js (dynamic import)
+- packages/ui/dist/BasicSystemWorkspace-BwhNDA5g.js (static import)
+- packages/ui/dist/BasicUserWorkspace-C1DZ_3vi.js (static import)
+- packages/ui/dist/ContextSystemWorkspace-D8izwdFl.js (static import)
+- packages/ui/dist/ContextUserWorkspace-DWmgzeT6.js (static import)
+- packages/ui/dist/ImageImage2ImageWorkspace-BejFU3SC.js (static import)
+- packages/ui/dist/ImageText2ImageWorkspace-BiUERwr8.js (static import)
+**Status**: ACCEPTED - Requires architectural change to fix properly
+**Analysis**: The dynamic imports are needed for Electron-specific features (ElectronImageModelManagerProxy, etc.). Moving them to electron.ts entry point would require exporting all Electron proxies there, which needs careful planning.
+**Recommendation**:
+- Add Electron proxies to electron.ts entry point in future refactoring
+- For now, warning is non-breaking and bundle still functions correctly
 
 ## Fixed Bugs
 

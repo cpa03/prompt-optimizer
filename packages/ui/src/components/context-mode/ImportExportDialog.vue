@@ -6,7 +6,7 @@
         preset="dialog"
         :title="t('contextEditor.importTitle')"
         :show-icon="false"
-        style="width: 600px"
+        :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_SMALL }"
         :mask-closable="false"
         @update:show="handleVisibilityChange"
     >
@@ -117,7 +117,7 @@
         preset="dialog"
         :title="t('contextEditor.exportTitle')"
         :show-icon="false"
-        style="width: 600px"
+        :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_SMALL }"
         :mask-closable="false"
         @update:show="handleVisibilityChange"
     >
@@ -242,6 +242,7 @@ import {
 import { useContextEditor } from '../../composables/context/useContextEditor';
 import type { ConversationMessage, ToolDefinition } from "@prompt-optimizer/core";
 import type { StandardPromptData } from "../../types";
+import { UI_DIMENSIONS } from '../../config/constants';
 
 // 类型定义
 interface Props {

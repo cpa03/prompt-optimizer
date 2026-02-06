@@ -22,15 +22,26 @@
 3. [x] Verified no runtime errors - Code uses fallback pattern, works correctly
 **Decision**: Keep as accepted. Downgrading vue-i18n could introduce other issues. Wait for upstream fix.
 
-### [ ] ERROR-003: Optimize bundle chunking
+### [/] ERROR-003: Optimize bundle chunking
 **Priority**: Medium
-**Description**: Reduce main bundle size below 500KB (currently 4.7MB / 1.35MB gzipped)
-**Status**: Not Started
+**Description**: Reduce main bundle size below 500KB (currently 4.66MB / 1.34MB gzipped)
+**Status**: IN PROGRESS
 **Steps**:
-1. [ ] Analyze bundle composition
-2. [ ] Implement dynamic imports for heavy components
+1. [/] Analyze bundle composition - Found dynamic+static import conflict
+2. [ ] Fix dynamic import conflicts in workspace components
 3. [ ] Configure manualChunks in vite.config.ts
 4. [ ] Test code-splitting works correctly
+
+### [-] ERROR-007: Fix core package import consistency
+**Priority**: Medium
+**Description**: @prompt-optimizer/core is both dynamically and statically imported, preventing proper code-splitting
+**Status**: ACCEPTED - Requires architectural refactoring
+**Steps**:
+1. [x] Identify all static imports of core in workspace components - Found 15+ imports
+2. [-] Convert to dynamic imports where appropriate - Not feasible without major refactor
+3. [-] Ensure consistent import pattern across all components - Requires adding Electron exports to electron.ts
+4. [-] Verify bundle size reduction - Deferred to future architectural work
+**Analysis**: Dynamic imports are required for Electron-specific proxies. Converting all to dynamic would significantly complicate the codebase. Best solution is to export all Electron-related classes from electron.ts entry point, but this requires careful planning to avoid breaking changes.
 
 ### [x] ERROR-004: Resolve dynamic import warnings
 **Priority**: Low
@@ -71,6 +82,11 @@
 - [x] UX-003: Added accessibility tooltip to favorite button (OutputDisplayCore.vue)
   - Added :title and :aria-label attributes for screen reader support
   - Consistent with other action buttons (copy, fullscreen)
+- [x] UX-004: Enhanced HistoryDrawer empty state (HistoryDrawer.vue)
+  - Added floating animation to scroll icon for visual delight
+  - Added twinkling sparkle emoji for extra charm
+  - Added helpful hint text explaining what appears in history
+  - Improved empty state accessibility with better context
   - Improves accessibility for keyboard navigation users
 - [x] FLEX-001: Modularized favorite storage keys
   - Moved STORAGE_KEYS from FavoriteManager to centralized storage-keys.ts
@@ -87,6 +103,16 @@
   - VariableExtractionResultDialog.vue: Updated to use UI_DIMENSIONS.MODAL_WIDTH_MEDIUM
   - Eliminates hardcoded '600px' and '800px' values in favor of centralized constants
   - Improves maintainability and consistency across the application
+- [x] FLEX-004: Extended UI_DIMENSIONS with MODAL_WIDTH_COMPACT constant
+  - Added MODAL_WIDTH_COMPACT: '500px' for smaller modals
+  - Updated ContextEditor.vue to use centralized constant
+- [x] FLEX-005: Replaced hardcoded modal widths in multiple components
+  - VariableManagerModal.vue: Export modal uses UI_DIMENSIONS.MODAL_WIDTH_SMALL
+  - VariableImporter.vue: Uses UI_DIMENSIONS.MODAL_WIDTH_SMALL
+  - ToolManagerModal.vue: Uses UI_DIMENSIONS.MODAL_WIDTH_SMALL and MODAL_WIDTH_MEDIUM
+  - ImportExportDialog.vue: Uses UI_DIMENSIONS.MODAL_WIDTH_SMALL
+  - ContextEditor.vue: Uses UI_DIMENSIONS.MODAL_WIDTH_COMPACT
+  - All components now import from centralized constants.ts
 - [x] STORX-001: Created workspace-common.css for shared styles
   - Extracted common CSS patterns from 6 workspace components
   - Consolidated test-area, variant-deck, split-pane, and mode-pill styles
@@ -105,5 +131,11 @@
 - All tests passing (791 tests core, 131 skipped due to missing API keys)
 - Linting passes with no errors
 - ERROR-004 and ERROR-005 completed - dynamic import conflicts resolved
-- Phase 4 (TestGuard): Test suite healthy - 791 passed, 15.96s duration, no flaky tests
-- Ready to proceed with Phase 5 (StorX)
+- Phase 4 (TestGuard): Test suite healthy - 791 passed, 15.76s duration, no flaky tests
+- Identified performance tests in tests/performance/favorites.perf.test.ts (9.5s total)
+- Slowest individual test: fileStorageProvider-real.test.ts at 674ms (acceptable for integration test)
+- No action needed - test suite is optimized and running efficiently
+- Phase 5 (StorX): Features are well consolidated, no major consolidation opportunities found
+- Phase 6 (CodeKeep): All quality checks pass - 0 lint errors, 0 type errors
+- Phase 7 (BroCula): Browser build shows only known warnings (BUG-002, BUG-004)
+- Ready to proceed with Phase 8 (Git)

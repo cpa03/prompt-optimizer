@@ -184,7 +184,7 @@
                 ? t('contextEditor.editTool')
                 : t('contextEditor.addTool')
         "
-        style="width: 600px"
+        :style="{ width: UI_DIMENSIONS.MODAL_WIDTH_SMALL }"
     >
         <NSpace vertical>
             <!-- 示例提示 -->
@@ -277,6 +277,7 @@ import type { ToolDefinition } from '@prompt-optimizer/core'
 import type {
     ToolManagerModalProps,
 } from '../../types/components'
+import { UI_DIMENSIONS } from '../../config/constants'
 
 const { t } = useI18n()
 
@@ -285,7 +286,7 @@ const props = withDefaults(defineProps<ToolManagerModalProps>(), {
     readonly: false,
     loading: false,
     size: 'medium',
-    width: '800px',
+    width: UI_DIMENSIONS.MODAL_WIDTH_MEDIUM,
 })
 
 const emit = defineEmits<{
