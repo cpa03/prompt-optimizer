@@ -57,10 +57,27 @@ const buttonSize = computed(() => props.size)
 <style scoped>
 .action-button {
   /* 保持与原有主题系统的兼容性 */
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .action-button:hover {
   transform: translateY(-1px);
+}
+
+.action-button:active {
+  transform: scale(0.98) translateY(0);
+}
+
+/* 按钮图标动画 */
+.action-button :deep(.n-button__icon) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-button:hover :deep(.n-button__icon) {
+  transform: scale(1.1);
+}
+
+.action-button:active :deep(.n-button__icon) {
+  transform: scale(0.95);
 }
 </style>

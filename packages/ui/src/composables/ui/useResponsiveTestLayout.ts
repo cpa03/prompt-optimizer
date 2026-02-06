@@ -7,6 +7,7 @@ import type {
   ComponentSize,
   ButtonSize
 } from '../../components/types/test-area'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 // 屏幕断点定义
 const BREAKPOINTS = {
@@ -213,7 +214,7 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
   let resizeTimer: ReturnType<typeof setTimeout> | null = null
   const debouncedHandleResize = () => {
     if (resizeTimer) clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(handleResize, 150)
+    resizeTimer = setTimeout(handleResize, TIME_CONSTANTS.DEFAULT_DEBOUNCE_MS)
   }
 
   // 生命周期管理

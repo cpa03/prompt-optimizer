@@ -43,6 +43,15 @@ export {
   initializeNaiveTheme,
 } from "./config/naive-theme";
 
+// 导出应用常量配置
+export {
+  TIME_CONSTANTS,
+  VARIABLE_CONSTRAINTS,
+  UI_CONSTANTS,
+  TEMPLATE_CONSTANTS,
+  Z_INDEX,
+} from "./config/constants";
+
 // 导出主题相关 Composables
 export { useNaiveTheme } from "./composables/ui/useNaiveTheme";
 
