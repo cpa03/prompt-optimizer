@@ -173,7 +173,7 @@
                         <NText
                             strong
                             depth="1"
-                            style="display: block; margin-bottom: 12px"
+                            :style="{ display: 'block', marginBottom: SPACING.MD + 'px' }"
                         >
                             {{ t("variables.addNew") }}
                         </NText>
@@ -278,7 +278,7 @@
             <NSpace vertical>
                 <!-- 导出格式选择 -->
                 <div>
-                    <NText strong style="display: block; margin-bottom: 12px">
+                    <NText strong :style="{ display: 'block', marginBottom: SPACING.MD + 'px' }">
                         {{ t("variables.management.exportFormat") }}
                     </NText>
                     <NRadioGroup v-model:value="exportFormat">
@@ -304,7 +304,7 @@
 
                 <!-- 预览区域 -->
                 <div>
-                    <NText strong style="display: block; margin-bottom: 12px">
+                    <NText strong :style="{ display: 'block', marginBottom: SPACING.MD + 'px' }">
                         {{ t("variables.management.exportPreview") }}
                     </NText>
                     <NInput
@@ -313,7 +313,7 @@
                         type="textarea"
                         :autosize="{ minRows: 8, maxRows: 12 }"
                         :input-props="{
-                            style: 'font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,\'Liberation Mono\',\'Courier New\',monospace; font-size: 12px;',
+                            style: `font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace; font-size: ${FONT_SIZES.XS}px;`,
                         }"
                     />
                 </div>
@@ -365,7 +365,7 @@ import {
 } from "naive-ui";
 import { useResponsive } from "../../composables/ui/useResponsive";
 import { useClipboard } from "../../composables/ui/useClipboard";
-import { UI_DIMENSIONS } from "../../config/constants";
+import { UI_DIMENSIONS, SPACING, FONT_SIZES } from "../../config/constants";
 import { truncateText } from "../../utils/text";
 import type {
     VariableManagerModalProps,
