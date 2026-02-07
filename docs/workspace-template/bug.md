@@ -2,7 +2,38 @@
 
 ## Active Bugs
 
-No active bugs at this time.
+### [x] BUG-015: MCP server tests fail without core build
+**Location**: packages/mcp-server tests
+**Severity**: High
+**Description**: Tests fail with "Failed to resolve entry for package @prompt-optimizer/core" when core dist files are missing
+**Impact**: CI/CD pipeline failures, blocking test execution
+**Status**: FIXED - Core package rebuilt
+**Solution**: Built core package with `pnpm -F @prompt-optimizer/core build`
+**Files affected**: All MCP server tests
+**Date**: 2026-02-07
+
+### [x] BUG-017: Console statements in production code
+**Location**: packages/ui/src/composables, packages/core/src
+**Severity**: Low
+**Description**: Multiple console.log/warn/error statements found in production code (30+)
+**Impact**: Potential information leakage, cluttered console in production
+**Status**: ACCEPTED - Some may be intentional for debugging
+**Recommendation**: Review each statement and replace with proper logging system or remove
+**Files affected**: 
+- packages/ui/src/composables/model/useTextModelManager.ts
+- packages/core/src/utils/environment.ts
+- packages/core/src/services/model/electron-config.ts
+**Date**: 2026-02-07
+
+### [-] BUG-016: Playwright browsers not installed in CI environment
+**Location**: E2E tests
+**Severity**: Medium
+**Description**: E2E tests fail with "Executable doesn't exist" because Playwright browsers not installed
+**Impact**: E2E tests cannot run in current environment
+**Status**: ACCEPTED - Environment limitation, not code bug
+**Solution**: Run `pnpm exec playwright install` in CI pipeline
+**Files affected**: All E2E tests
+**Date**: 2026-02-07
 
 ### [x] BUG-014: MCP server tests fail without core build
 **Location**: packages/mcp-server tests

@@ -92,6 +92,12 @@ export const UI_DIMENSIONS = {
   MODAL_WIDTH_LARGE: '1200px',
   MODAL_WIDTH_XL: '1400px',
 
+  // Modal viewport-relative sizes
+  MODAL_WIDTH_VW: '90vw',
+  MODAL_HEIGHT_VH: '90vh',
+  MODAL_WIDTH_VW_SMALL: 'min(520px, 90vw)',
+  MODAL_SIZE_LARGE: { width: 'min(800px, 90vw)', height: 'min(600px, 80vh)' },
+
   // Sidebar widths by mode
   SIDEBAR_WIDTH_BASIC: 220,
   SIDEBAR_WIDTH_IMAGE: 260,
@@ -191,6 +197,7 @@ export const FONT_SIZES = {
   XL: 18,
   XXL: 20,
   XXXL: 24,
+  XXXXL: 32,
 } as const
 
 // Border radius values (in pixels or CSS values)

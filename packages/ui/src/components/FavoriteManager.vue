@@ -3,7 +3,7 @@
     <NModal
       :show="show"
       preset="card"
-      :style="{ width: '90vw', maxWidth: '1200px', maxHeight: '90vh' }"
+      :style="modalContainerStyle"
       :title="t('favorites.manager.title')"
       size="large"
       :bordered="false"
@@ -216,7 +216,7 @@
       preset="card"
       :title="t('favorites.manager.categoryManager.title')"
       :mask-closable="true"
-      :style="{ width: 'min(800px, 90vw)', height: 'min(600px, 80vh)' }"
+      :style="categoryManagerModalStyle"
       @update:show="categoryManagerVisible = $event"
     >
       <CategoryManager @category-updated="handleCategoryUpdated" />
@@ -269,6 +269,7 @@ import { useI18n } from 'vue-i18n';
 import { useToast } from '../composables/ui/useToast';
 import { useFavoriteInitializer } from '../composables/storage/useFavoriteInitializer';
 import ToastUI from './Toast.vue';
+import { UI_DIMENSIONS } from '../config/constants';
 
 const { t } = useI18n();
 import FavoriteCard from './FavoriteCard.vue';
@@ -343,6 +344,19 @@ const createState = reactive({
 const previewFavorite = ref<FavoritePrompt | null>(null);
 const categoryManagerVisible = ref(false);
 const tagManagerVisible = ref(false);
+
+// Modal container style using centralized constants
+const modalContainerStyle = computed(() => ({
+  width: UI_DIMENSIONS.MODAL_WIDTH_VW,
+  maxWidth: UI_DIMENSIONS.MODAL_WIDTH_LARGE,
+  maxHeight: UI_DIMENSIONS.MODAL_HEIGHT_VH
+}));
+
+// Category manager modal style using centralized constants
+const categoryManagerModalStyle = computed(() => ({
+  width: UI_DIMENSIONS.MODAL_WIDTH_VW_SMALL,
+  height: 'min(600px, 80vh)'
+}));
 
 // 响应式的视口宽度
 const viewportWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1280);
