@@ -1233,21 +1233,7 @@ defineExpose({
     min-height: 0;
 }
 
-.split-divider {
-    cursor: col-resize;
-    background: var(--n-divider-color, rgba(0, 0, 0, 0.08));
-    border-radius: 999px;
-    margin: 6px 0;
-    transition: background 120ms ease;
-}
-
-.split-divider:hover,
-.split-divider:focus-visible {
-    background: var(--n-primary-color, rgba(59, 130, 246, 0.5));
-    outline: none;
-}
-
-/* Note: .test-area-top, .test-area-label, .variant-deck, .variant-cell, 
+/* Note: .test-area-top, .test-area-label, .variant-deck, .split-divider, .variant-cell, 
    .variant-cell__controls, .variant-cell__label, .variant-cell__stale, 
    .variant-cell__model, .variant-results-wrap, .variant-results 
    are defined in workspace-common.css */

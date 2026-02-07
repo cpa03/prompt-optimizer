@@ -1727,20 +1727,6 @@ defineExpose({
     min-height: 0;
 }
 
-.split-divider {
-    cursor: col-resize;
-    background: var(--n-divider-color, rgba(0, 0, 0, 0.08));
-    border-radius: 999px;
-    margin: 6px 0;
-    transition: background 120ms ease;
-}
-
-.split-divider:hover,
-.split-divider:focus-visible {
-    background: var(--n-primary-color, rgba(59, 130, 246, 0.5));
-    outline: none;
-}
-
 .test-area-top {
     display: flex;
     align-items: center;

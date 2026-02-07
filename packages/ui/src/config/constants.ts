@@ -325,4 +325,10 @@ export const COMPONENT_CONSTANTS = {
     FONT_SIZE_LABEL: 12,
     BUTTON_WIDTH: 92,
   },
+  
+  // CategoryManager
+  CATEGORY_MANAGER: {
+    MODAL_WIDTH: 'min(520px, 90vw)',
+    SEARCH_INPUT_WIDTH: 200,
+  },
 } as const
