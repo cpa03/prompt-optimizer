@@ -3,7 +3,7 @@
     <NModal
       :show="show"
       preset="card"
-      :style="{ width: '90vw', maxWidth: '1200px', maxHeight: '90vh' }"
+      :style="{ width: '90vw', maxWidth: UI_DIMENSIONS.MODAL_WIDTH_LARGE, maxHeight: '90vh' }"
       :title="t('modelManager.title')"
       size="large"
       :bordered="false"
@@ -102,6 +102,7 @@ import TextModelManager from './TextModelManager.vue'
 import FunctionModelManager from './FunctionModelManager.vue'
 import ToastUI from './Toast.vue'
 import type { AppServices } from '../types/services'
+import { UI_DIMENSIONS } from '../config/constants'
 
 defineProps({
   show: {
