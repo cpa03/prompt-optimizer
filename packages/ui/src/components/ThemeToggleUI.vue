@@ -8,10 +8,12 @@
     <NButton 
       quaternary 
       size="small"
-      class="flex items-center justify-center gap-1"
+      class="flex items-center justify-center gap-1 theme-toggle-btn"
     >
       <template #icon>
-        <component :is="currentThemeIcon" />
+        <div class="theme-icon-wrapper" :class="{ 'is-animating': isAnimating }">
+          <component :is="currentThemeIcon" />
+        </div>
       </template>
       <span class="text-sm max-md:hidden truncate">{{ currentThemeLabel }}</span>
     </NButton>
@@ -19,13 +21,17 @@
 </template>
   
 <script setup lang="ts">
-import { computed, h } from 'vue'
+import { computed, h, ref, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NButton, NDropdown, type DropdownOption } from 'naive-ui'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
 
 const { t } = useI18n()
+
+// Animation state
+const isAnimating = ref(false)
+const lastThemeId = ref('')
 
 // 使用新的主题系统
 const { 
@@ -135,8 +141,64 @@ const dropdownOptions = computed<DropdownOption[]>(() => {
   }))
 })
 
-// 处理主题选择
+// Handle theme selection with animation
 const handleThemeSelect = (key: string) => {
-  changeTheme(key)
+  if (key !== themeId.value) {
+    lastThemeId.value = themeId.value
+    isAnimating.value = true
+    changeTheme(key)
+    // Reset animation state after animation completes
+    setTimeout(() => {
+      isAnimating.value = false
+    }, 400)
+  }
 }
+
+// Also animate when theme changes from other sources
+watch(themeId, (newId, oldId) => {
+  if (oldId && newId !== oldId && !isAnimating.value) {
+    lastThemeId.value = oldId
+    isAnimating.value = true
+    setTimeout(() => {
+      isAnimating.value = false
+    }, 400)
+  }
+})
 </script>
+
+<style scoped>
+.theme-toggle-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.98);
+}
+
+.theme-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-icon-wrapper.is-animating {
+  animation: theme-spin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes theme-spin {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+</style>
