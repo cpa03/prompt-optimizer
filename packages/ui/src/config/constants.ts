@@ -275,3 +275,13 @@ export const SEMANTIC_COLORS = {
   THEME_PURPLE: '#9333ea',
   THEME_CLASSIC: '#b08968',
 } as const
+
+// Icon sizes (in pixels) - for consistent icon sizing
+export const ICON_SIZES = {
+  XS: 12,
+  SM: 16,
+  MD: 20,
+  LG: 24,
+  XL: 32,
+  XXL: 48,
+} as const

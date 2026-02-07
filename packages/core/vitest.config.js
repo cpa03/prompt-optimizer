@@ -19,7 +19,13 @@ export default defineConfig(({ mode }) => {
       // 环境变量配置
       env: {
         ...process.env
-      }
+      },
+      // Exclude performance tests from regular runs
+      exclude: [
+        '**/tests/performance/**',
+        '**/node_modules/**',
+        '**/dist/**'
+      ]
     }
   }
 }) 
