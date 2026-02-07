@@ -13,7 +13,7 @@
         text
         block
         @click="handleOpenManager"
-        style="justify-content: flex-start; padding: 8px 12px;"
+        :style="{ justifyContent: 'flex-start', padding: `${SPACING.SM}px ${SPACING.MD}px` }"
       >
         <template #icon>
           <NIcon><Folder /></NIcon>
@@ -30,7 +30,7 @@
     preset="card"
     :title="t('favorites.manager.categoryManager.title')"
     :mask-closable="true"
-    :style="{ width: 'min(800px, 90vw)', height: 'min(600px, 80vh)' }"
+    :style="UI_DIMENSIONS.MODAL_SIZE_LARGE"
   >
     <CategoryManager @category-updated="handleCategoryUpdated" />
   </NModal>
@@ -45,6 +45,7 @@ import { useI18n } from 'vue-i18n';
 import CategoryManager from './CategoryManager.vue';
 import type { FavoriteCategory } from '@prompt-optimizer/core';
 import type { AppServices } from '../types/services';
+import { SPACING, UI_DIMENSIONS } from '../config/constants';
 
 const { t } = useI18n();
 
