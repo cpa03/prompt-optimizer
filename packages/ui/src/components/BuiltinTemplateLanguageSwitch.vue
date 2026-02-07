@@ -6,10 +6,12 @@
     size="small"
     secondary
     :loading="isChanging"
+    class="language-switch-btn"
   >
     <template #icon>
       <svg
-        class="w-3 h-3"
+        class="w-3 h-3 language-icon"
+        :class="{ 'language-icon-rotating': isChanging }"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -208,5 +210,26 @@ defineExpose({
 </script>
 
 <style scoped>
-/* Pure Naive UI implementation - no custom theme CSS needed */
+/* Language icon rotation animation during language change */
+.language-icon {
+  transition: transform 0.3s ease;
+}
+
+.language-icon-rotating {
+  animation: language-icon-spin 0.8s ease-in-out;
+}
+
+@keyframes language-icon-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Button hover effect */
+.language-switch-btn:hover .language-icon {
+  transform: scale(1.1);
+}
 </style>

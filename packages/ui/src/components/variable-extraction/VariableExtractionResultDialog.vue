@@ -15,7 +15,7 @@
       v-if="result"
       :type="result.variables.length > 0 ? 'success' : 'warning'"
       :title="result.summary"
-      style="margin-bottom: 16px"
+      :style="{ marginBottom: SPACING.LG + 'px' }"
     />
 
     <!-- 变量表格 (支持多选) -->
@@ -58,7 +58,7 @@ import {
   NText,
   type DataTableColumns,
 } from 'naive-ui'
-import { UI_DIMENSIONS } from "../../config/constants";
+import { UI_DIMENSIONS, SPACING } from "../../config/constants";
 import { useI18n } from 'vue-i18n'
 import type { ExtractedVariable, VariableExtractionResponse } from '@prompt-optimizer/core'
 
