@@ -10,9 +10,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    :class="[size, { 'animate-spin': spinning }]"
+    :class="[size, { 'animate-spin': spinning, 'bounce': isBouncing }]"
     :aria-label="ariaLabel || t('icon.refresh')"
     role="img"
+    @click="handleClick"
+    style="cursor: pointer;"
   >
     <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
     <path d="M21 3v5h-5"/>
@@ -30,9 +32,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    :class="size"
+    :class="[size, { 'bounce': isBouncing }]"
     :aria-label="ariaLabel || t('icon.check')"
     role="img"
+    @click="handleClick"
+    style="cursor: pointer;"
   >
     <path d="M20 6L9 17l-5-5"/>
   </svg>
@@ -47,9 +51,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    :class="size"
+    :class="[size, { 'bounce': isBouncing }]"
     :aria-label="ariaLabel || t('icon.copy')"
     role="img"
+    @click="handleClick"
+    style="cursor: pointer;"
   >
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -65,9 +71,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    :class="size"
+    :class="[size, { 'bounce': isBouncing }]"
     :aria-label="ariaLabel || t('icon.edit')"
     role="img"
+    @click="handleClick"
+    style="cursor: pointer;"
   >
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -83,9 +91,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    :class="size"
+    :class="[size, { 'bounce': isBouncing }]"
     :aria-label="ariaLabel || t('icon.delete')"
     role="img"
+    @click="handleClick"
+    style="cursor: pointer;"
   >
     <polyline points="3 6 5 6 21 6"/>
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -113,6 +123,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -122,13 +133,26 @@ interface Props {
   size?: string
   spinning?: boolean
   ariaLabel?: string
+  bounceOnClick?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   size: 'w-4 h-4',
   spinning: false,
-  ariaLabel: ''
+  ariaLabel: '',
+  bounceOnClick: true
 })
+
+const isBouncing = ref(false)
+
+const handleClick = () => {
+  if (props.bounceOnClick && !isBouncing.value) {
+    isBouncing.value = true
+    setTimeout(() => {
+      isBouncing.value = false
+    }, 300)
+  }
+}
 </script>
 
 <style scoped>
@@ -184,5 +208,25 @@ svg:hover {
 /* Active state for click feedback */
 svg:active {
   transform: scale(0.95);
+}
+
+/* Bounce animation for interactive feedback */
+.bounce {
+  animation: icon-bounce 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes icon-bounce {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+  60% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>

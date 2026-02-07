@@ -82,6 +82,9 @@ export const Z_INDEX = {
 
 // UI Dimensions (widths, heights, in pixels or CSS values)
 export const UI_DIMENSIONS = {
+  // Drawer widths
+  DRAWER_WIDTH: 420,
+
   // Modal widths
   MODAL_WIDTH_COMPACT: '500px',
   MODAL_WIDTH_SMALL: '600px',

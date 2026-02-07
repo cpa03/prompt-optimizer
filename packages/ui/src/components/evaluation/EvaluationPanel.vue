@@ -1,7 +1,7 @@
 <template>
   <NDrawer
     :show="show"
-    :width="420"
+    :width="UI_DIMENSIONS.DRAWER_WIDTH"
     placement="right"
     :on-update:show="handleUpdateShow"
   >
@@ -14,7 +14,7 @@
           <!-- 流式内容预览 -->
           <div v-if="streamContent" class="stream-preview">
             <NText depth="3" class="stream-label">{{ t('evaluation.analyzing') }}</NText>
-            <NScrollbar ref="streamScrollbarRef" style="max-height: 200px;">
+            <NScrollbar ref="streamScrollbarRef" :style="{ maxHeight: UI_DIMENSIONS.SCROLLBAR_MAX_HEIGHT_MEDIUM + 'px' }">
               <NText class="stream-content">{{ streamContent }}</NText>
             </NScrollbar>
           </div>
@@ -119,7 +119,7 @@
       <template v-else>
         <NEmpty :description="t('evaluation.noResult')">
           <template #icon>
-            <span style="font-size: 48px;">📊</span>
+            <span :style="{ fontSize: ICON_SIZES.XXL + 'px' }">📊</span>
           </template>
         </NEmpty>
       </template>
@@ -171,7 +171,7 @@ import {
 } from 'naive-ui'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import InlineDiff from './InlineDiff.vue'
-import { EVALUATION_COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../config/constants'
+import { EVALUATION_COLORS, FONT_SIZES, SPACING, BORDER_RADIUS, UI_DIMENSIONS, ICON_SIZES } from '../../config/constants'
 
 // Props
 const props = defineProps<{
