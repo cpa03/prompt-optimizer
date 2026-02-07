@@ -178,5 +178,11 @@ svg {
 /* Hover effect for interactive icons */
 svg:hover {
   opacity: 0.8;
+  transform: scale(1.1);
+}
+
+/* Active state for click feedback */
+svg:active {
+  transform: scale(0.95);
 }
 </style>
