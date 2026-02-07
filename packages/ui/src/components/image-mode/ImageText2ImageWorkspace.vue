@@ -2071,7 +2071,7 @@ onMounted(async () => {
 
 // 清理
 onUnmounted(() => {
-    console.log("[ImageText2ImageWorkspace] Cleaning up...");
+    // Workspace cleanup complete
     if (typeof window !== "undefined") {
         window.removeEventListener(
             "image-workspace-refresh-iterate-select",
