@@ -62,6 +62,25 @@
 3. [x] Verify tests pass (8/8 passed)
 4. [x] 2026-02-06: Rebuilt core package and verified all tests pass
 
+### [x] ERROR-009: Fix build dependency order
+**Priority**: High
+**Description**: MCP server tests and web build fail due to missing built dependencies
+**Status**: COMPLETED
+**Steps**:
+1. [x] Build @prompt-optimizer/core package
+2. [x] Build @prompt-optimizer/ui package
+3. [x] Verify MCP server tests pass (8/8)
+4. [x] Verify web build succeeds
+
+### [x] ERROR-010: Fix UI package dist missing
+**Priority**: High
+**Description**: Web build fails because UI package dist files are missing
+**Status**: COMPLETED
+**Steps**:
+1. [x] Build UI package to generate dist files
+2. [x] Verify style.css is created
+3. [x] Verify web build succeeds with all assets
+
 ### [x] ERROR-005: Fix ContextWorkspace dynamic imports
 **Priority**: Medium
 **Description**: ContextSystemWorkspace.vue and ContextUserWorkspace.vue are both dynamically imported by router and statically imported by index.ts

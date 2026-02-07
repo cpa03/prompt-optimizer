@@ -106,9 +106,26 @@
   - Tests pass when run locally with `pnpm dev` running
   - These are integration tests requiring full application stack
 
+### [x] BUG-009: MCP server tests fail - core package not built
+**Location**: packages/mcp-server tests
+**Severity**: High
+**Description**: Tests fail with "Failed to resolve entry for package @prompt-optimizer/core" because core dist files are missing
+**Impact**: CI/CD pipeline failures, blocking test execution
+**Status**: FIXED - Built core package before running tests
+**Solution**: Run `pnpm -F @prompt-optimizer/core build` before tests
+**Result**: All 8 tests passing
+
+### [x] BUG-010: Web build fails - UI package dist missing
+**Location**: packages/web build
+**Severity**: High
+**Description**: Web build fails because packages/ui/dist/style.css doesn't exist - UI package needs to be built first
+**Impact**: Cannot build web application
+**Status**: FIXED - Built UI package
+**Solution**: Run build in dependency order: core → UI → web
+
 ## Notes
 
 - Build completes successfully but with warnings
-- Tests pass (all green - 262 tests)
+- Tests pass (all green - 262 tests) - when dependencies are built
 - Linting passes with no errors
 - Only remaining warnings: Vue currentInstance (harmless) and bundle size (optimization)
