@@ -40,7 +40,7 @@
           </NTag>
         </NFlex>
         <template #footer>
-          <NText depth="3" :style="{ fontSize: '13px' }">
+          <NText depth="3" :style="{ fontSize: FONT_SIZES.SM + 'px' }">
             {{ $t('contextMode.preview.missingVarsHint') }}
           </NText>
         </template>
@@ -57,7 +57,7 @@
 
       <!-- 模式说明 -->
       <NCard size="small" :title="$t('contextMode.preview.modeExplanation')">
-        <NText depth="2" :style="{ fontSize: '14px' }">
+        <NText depth="2" :style="{ fontSize: FONT_SIZES.BASE + 'px' }">
           <template v-if="contextMode === 'user' && renderPhase === 'optimize'">
             {{ $t('contextMode.preview.userOptimizeHint') }}
           </template>
@@ -93,6 +93,7 @@ import {
   NButton,
   NScrollbar
 } from 'naive-ui'
+import { FONT_SIZES } from '../config/constants'
 import type { ContextMode } from '@prompt-optimizer/core'
 
 const props = defineProps<{
