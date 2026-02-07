@@ -811,3 +811,55 @@
 - TEST-005: Test suite verified (1,026 tests passing)
 - BRO-004: Browser console review complete
 **Date**: 2026-02-07
+
+### [x] BUG-014: Fixed unused error variable in CategoryManager
+**Priority**: Medium
+**Description**: ESLint error - 'error' is defined but never used in CategoryManager.vue catch block
+**Status**: COMPLETED
+**Steps**:
+1. [x] Identified linting error at line 377
+2. [x] Changed `catch (error)` to `catch (_error)` to follow project naming convention
+3. [x] Verified linting passes: 0 errors, 0 warnings
+**Files modified**: packages/ui/src/components/CategoryManager.vue
+**Date**: 2026-02-07
+
+### [-] BUG-015: XSS vulnerability in CategoryManager delete warning
+**Priority**: Medium
+**Description**: v-html used with unsanitized user input (category name) in delete confirmation dialog
+**Status**: ACCEPTED - Low risk for local application
+**Analysis**:
+- CategoryManager.vue uses `v-html="t('favorites.categoryManager.deleteWarning', { name: deletingCategory?.name })"`
+- Category name comes from user input without HTML sanitization
+- Translation string includes `<strong>{name}</strong>` HTML tags
+- Risk is low since this is a local tool where user attacks themselves
+**Impact**: Potential XSS if malicious HTML/JS entered as category name
+**Recommendation**: Sanitize category name before saving or escape HTML in display
+**Files affected**: packages/ui/src/components/CategoryManager.vue (line 116)
+**Date**: 2026-02-07
+
+### [x] UX-016: Enhanced ToolManagerModal action buttons with micro-interactions
+**Priority**: Medium
+**Description**: Added satisfying hover and click animations to tool edit/delete action buttons
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added CSS classes (`tool-action-btn`, `tool-action-btn--edit`, `tool-action-btn--delete`) to action buttons
+2. [x] Implemented hover lift effect (translateY -2px) with cubic-bezier timing
+3. [x] Added scale down (0.95x) on click for press feedback
+4. [x] Added color-coded hover backgrounds (blue for edit, red for delete)
+5. [x] Added icon scale animation for extra visual feedback
+**Impact**: Makes tool management actions feel more responsive and delightful to use
+**Files modified**: packages/ui/src/components/tool/ToolManagerModal.vue
+**Date**: 2026-02-07
+
+### [x] FLEX-019: Modularized FunctionModelManager hardcoded values
+**Priority**: Medium
+**Description**: Replaced hardcoded font-size and spacing values with centralized constants
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added imports for FONT_SIZES and SPACING from constants.ts
+2. [x] Replaced hardcoded `font-size: 12px` with FONT_SIZES.XS
+3. [x] Replaced hardcoded spacing values (4px, 8px, 12px) with SPACING constants
+4. [x] Used v-bind() to bind constants in scoped CSS
+**Impact**: Consistent styling using centralized constants, easier maintenance
+**Files modified**: packages/ui/src/components/FunctionModelManager.vue
+**Date**: 2026-02-07
