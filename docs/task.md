@@ -372,3 +372,21 @@
 - Glow animation draws attention to focused input fields
 **Files modified**:
 - packages/ui/src/styles/index.css (added focus glow animations)
+
+### [x] FLEX-014: Modularized VariableImporter component with centralized constants
+**Priority**: Medium
+**Description**: Eliminated hardcoded values in VariableImporter.vue by adding COMPONENT_CONSTANTS to constants.ts
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added COMPONENT_CONSTANTS export to constants.ts with VARIABLE_IMPORTER section
+2. [x] Added constants for upload area padding, icon sizes, font sizes, and preview max height
+3. [x] Updated VariableImporter.vue to import and use COMPONENT_CONSTANTS
+4. [x] Replaced hardcoded inline styles with bound style objects using constants
+5. [x] Built UI package successfully - no errors
+**Impact**:
+- Eliminated 5 hardcoded values (24px, 48px, 12px, 13px, 240px)
+- Centralized component-specific constants for maintainability
+- Demonstrates pattern for converting inline styles to use constants
+**Files modified**:
+- packages/ui/src/config/constants.ts (added COMPONENT_CONSTANTS)
+- packages/ui/src/components/variable/VariableImporter.vue (replaced hardcoded values)
