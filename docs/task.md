@@ -356,3 +356,19 @@
 - All existing bugs are either fixed or accepted
 - Build is stable and production-ready
 **Date**: 2026-02-07
+
+### [x] UX-012: Added focus glow animation for input fields
+**Priority**: Medium
+**Description**: Added subtle glow animation to input fields when focused to improve accessibility and visual feedback
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added CSS keyframes for focus glow animation in light mode
+2. [x] Added CSS keyframes for focus glow animation in dark mode
+3. [x] Applied animation to `.n-input.n-input--focus` selector
+4. [x] Built UI package successfully
+**Impact**: 
+- Improved accessibility by providing clear visual focus indicators
+- Enhanced user experience with satisfying micro-interaction
+- Glow animation draws attention to focused input fields
+**Files modified**:
+- packages/ui/src/styles/index.css (added focus glow animations)

@@ -35,4 +35,38 @@
 
 .custom-select::-ms-expand {
   display: none;
+}
+
+/* UX Enhancement: Focus glow animation for inputs */
+.n-input.n-input--focus {
+  animation: input-focus-glow 0.3s ease-out;
+}
+
+@keyframes input-focus-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(32, 128, 240, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 4px rgba(32, 128, 240, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(32, 128, 240, 0);
+  }
+}
+
+/* Dark mode adjustment */
+.dark .n-input.n-input--focus {
+  animation: input-focus-glow-dark 0.3s ease-out;
+}
+
+@keyframes input-focus-glow-dark {
+  0% {
+    box-shadow: 0 0 0 0 rgba(100, 180, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 4px rgba(100, 180, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(100, 180, 255, 0);
+  }
 } 
