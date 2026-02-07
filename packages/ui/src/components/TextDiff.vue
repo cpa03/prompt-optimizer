@@ -31,6 +31,7 @@ import { computed } from 'vue'
 import { NTag, NCard, NFlex, NScrollbar } from 'naive-ui'
 import type { CompareResult, ChangeType } from '@prompt-optimizer/core'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
+import { FONT_SIZES, SPACING, BORDER_RADIUS } from '../config/constants'
   
   interface Props {
     /** 原始文本 */
@@ -67,10 +68,10 @@ const getFragmentClass = (type: ChangeType): string => {
 
 .diff-text,
 .normal-text {
-  padding: 0.75rem 1rem;
+  padding: v-bind('`${SPACING.MD}px`') v-bind('`${SPACING.LG}px`');
   line-height: 1.6;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
+  font-size: v-bind('`${FONT_SIZES.BASE}px`');
   white-space: pre-wrap;
   word-break: break-word;
   width: 100%;
@@ -80,8 +81,20 @@ const getFragmentClass = (type: ChangeType): string => {
 
 .text-fragment {
   position: relative;
-  border-radius: 2px;
+  border-radius: v-bind('BORDER_RADIUS.SM');
   padding: 1px 2px;
+  animation: fragment-fade-in 0.3s ease-out;
+}
+
+@keyframes fragment-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .diff-added {
@@ -103,7 +116,7 @@ const getFragmentClass = (type: ChangeType): string => {
 @media (max-width: 768px) {
   .diff-text,
   .normal-text {
-    font-size: 12px;
+    font-size: v-bind('`${FONT_SIZES.XS}px`');
   }
 }
 </style>
