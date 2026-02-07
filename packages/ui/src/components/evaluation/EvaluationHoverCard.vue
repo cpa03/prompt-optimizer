@@ -3,7 +3,7 @@
     <!-- 加载状态 -->
     <div v-if="loading" class="hover-card-loading">
       <NSpin size="small" />
-      <NText depth="3" style="font-size: 12px;">{{ t('evaluation.loading') }}</NText>
+      <NText depth="3" :style="{ fontSize: FONT_SIZES.SM + 'px' }">{{ t('evaluation.loading') }}</NText>
     </div>
 
     <!-- 有评估结果 -->
@@ -23,7 +23,7 @@
       <!-- 维度分数 -->
       <div class="dimensions-list">
         <div v-for="dim in result.score.dimensions" :key="dim.key" class="dimension-row">
-          <NText depth="2" style="font-size: 11px; min-width: 56px;">{{ dim.label }}</NText>
+          <NText depth="2" :style="{ fontSize: FONT_SIZES.XS + 'px', minWidth: '56px' }">{{ dim.label }}</NText>
           <NProgress
             :percentage="dim.score"
             :status="getDimensionStatus(dim.score)"
@@ -31,7 +31,7 @@
             :height="5"
             style="flex: 1;"
           />
-          <NText style="font-size: 11px; min-width: 24px; text-align: right;">{{ dim.score }}</NText>
+          <NText :style="{ fontSize: FONT_SIZES.XS + 'px', minWidth: '24px', textAlign: 'right' }">{{ dim.score }}</NText>
         </div>
       </div>
 
@@ -39,7 +39,7 @@
       <div v-if="result.patchPlan && result.patchPlan.length > 0" class="section patches-section">
         <div class="section-header">
           <span class="section-icon">🛠️</span>
-          <NText depth="2" style="font-size: 11px; font-weight: 600;">{{ t('evaluation.diagnose.title') }}</NText>
+          <NText depth="2" :style="{ fontSize: FONT_SIZES.XS + 'px', fontWeight: 600 }">{{ t('evaluation.diagnose.title') }}</NText>
         </div>
         <div class="patch-list">
           <div v-for="(op, idx) in result.patchPlan" :key="idx" class="patch-item">
@@ -58,7 +58,7 @@
       <div v-if="result.improvements && result.improvements.length > 0" class="section improvements-section">
         <div class="section-header">
           <span class="section-icon">💡</span>
-          <NText depth="2" style="font-size: 11px; font-weight: 600;">{{ t('evaluation.improvements') }}</NText>
+          <NText depth="2" :style="{ fontSize: FONT_SIZES.XS + 'px', fontWeight: 600 }">{{ t('evaluation.improvements') }}</NText>
         </div>
         <ul class="section-list">
           <li v-for="(item, idx) in result.improvements" :key="idx" class="improvement-item">
@@ -72,7 +72,7 @@
 
       <!-- 一句话总结 -->
       <div v-if="result.summary" class="summary-box">
-        <NText style="font-size: 12px;">{{ result.summary }}</NText>
+        <NText :style="{ fontSize: FONT_SIZES.SM + 'px' }">{{ result.summary }}</NText>
       </div>
 
       <!-- 查看详情按钮 -->
@@ -90,7 +90,7 @@
 
     <!-- 无结果 -->
     <div v-else class="hover-card-empty">
-      <NText depth="3" style="font-size: 12px; margin-bottom: 12px; display: block;">
+      <NText depth="3" :style="{ fontSize: FONT_SIZES.SM + 'px', marginBottom: SPACING.MD + 'px', display: 'block' }">
         {{ t('evaluation.noResult') }}
       </NText>
           <NButton type="primary" size="small" @click="handleEvaluate">
@@ -105,6 +105,7 @@ import { useI18n } from 'vue-i18n'
 import { NText, NTag, NProgress, NButton, NSpin, NSpace } from 'naive-ui'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import InlineDiff from './InlineDiff.vue'
+import { FONT_SIZES, SPACING } from '../../config/constants'
 
 const props = defineProps<{
   result: EvaluationResponse | null

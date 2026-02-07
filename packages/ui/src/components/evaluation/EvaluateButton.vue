@@ -1,27 +1,35 @@
 <template>
-  <NDropdown
-    trigger="click"
-    :options="evaluationOptions"
-    @select="handleSelect"
-  >
-    <NButton
-      :disabled="!hasAnyResult || isEvaluating"
-      :loading="isEvaluating"
-      quaternary
-      size="small"
-    >
-      <template #icon>
-        <NIcon><ChartIcon /></NIcon>
-      </template>
-      {{ t('evaluation.button') }}
-    </NButton>
-  </NDropdown>
+  <NTooltip :disabled="hasAnyResult" :delay="500">
+    <template #trigger>
+      <NDropdown
+        trigger="click"
+        :options="evaluationOptions"
+        @select="handleSelect"
+      >
+        <NButton
+          :disabled="!hasAnyResult || isEvaluating"
+          :loading="isEvaluating"
+          quaternary
+          size="small"
+          class="evaluate-button"
+        >
+          <template #icon>
+            <NIcon :class="{ 'evaluating-icon': isEvaluating }">
+              <ChartIcon />
+            </NIcon>
+          </template>
+          {{ t('evaluation.button') }}
+        </NButton>
+      </NDropdown>
+    </template>
+    {{ t('evaluation.tooltip.needResults') }}
+  </NTooltip>
 </template>
 
 <script setup lang="ts">
 import { computed, h } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NDropdown, NButton, NIcon, type DropdownOption } from 'naive-ui'
+import { NDropdown, NButton, NIcon, NTooltip, type DropdownOption } from 'naive-ui'
 import type { EvaluationType } from '@prompt-optimizer/core'
 
 // 使用一个简单的 SVG 图标作为图表图标
@@ -110,4 +118,46 @@ const handleSelect = (key: string) => {
 </script>
 
 <style scoped>
+.evaluate-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.evaluate-button:not(:disabled):hover {
+  transform: translateY(-1px);
+  background-color: rgba(var(--n-text-color), 0.05);
+}
+
+.evaluate-button:not(:disabled):active {
+  transform: scale(0.98) translateY(0);
+}
+
+.evaluate-button :deep(.n-button__icon) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.evaluate-button:not(:disabled):hover :deep(.n-button__icon) {
+  transform: scale(1.1);
+}
+
+/* Evaluating state animation */
+.evaluating-icon {
+  animation: pulse-icon 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Disabled state with tooltip indication */
+.evaluate-button:disabled:not(.n-button--loading) {
+  cursor: help;
+  opacity: 0.6;
+}
 </style>
