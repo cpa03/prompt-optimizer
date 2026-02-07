@@ -5,11 +5,12 @@
     <NButton
       size="small"
       type="default"
+      class="tools-action-btn"
       @click="$emit('open-tool-manager')"
       :title="$t('contextMode.actions.tools')"
     >
       <template #icon>
-        <span>🔧</span>
+        <span class="tools-icon">🔧</span>
       </template>
       {{ $t('contextMode.actions.tools') }}
     </NButton>
@@ -26,5 +27,32 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
-/* 确保按钮组在小屏幕上也能正常显示 */
+/* 工具按钮微交互 */
+.tools-action-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tools-action-btn:hover {
+  transform: translateY(-1px);
+  background-color: var(--n-color-hover);
+}
+
+.tools-action-btn:active {
+  transform: scale(0.98);
+}
+
+.tools-action-btn:focus-visible {
+  outline: 2px solid var(--n-color-focus);
+  outline-offset: 2px;
+}
+
+/* 工具图标动画 */
+.tools-icon {
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tools-action-btn:hover .tools-icon {
+  transform: scale(1.15) rotate(15deg);
+}
 </style>
