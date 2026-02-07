@@ -1,5 +1,5 @@
 <template>
-    <NFlex vertical :style="{ height: '100%', gap: '12px' }">
+    <NFlex vertical :style="{ height: '100%', gap: `${SPACING.MD}px` }">
         <!-- 测试输入区域 (仅在系统提示词优化模式下显示) -->
         <NCard v-if="showTestInput" :style="{ flexShrink: 0 }" size="small">
             <TestInputSection
@@ -152,6 +152,7 @@ import type { ScoreLevel } from './evaluation/types';
 import { useResponsive } from '../composables/ui/useResponsive';
 import { usePerformanceMonitor } from "../composables/performance/usePerformanceMonitor";
 import { useDebounceThrottle } from "../composables/performance/useDebounceThrottle";
+import { SPACING } from "../config/constants";
 import TestInputSection from "./TestInputSection.vue";
 import TestControlBar from "./TestControlBar.vue";
 import TestResultSection from "./TestResultSection.vue";

@@ -2,7 +2,17 @@
 
 ## Current Tasks
 
-- [x] **ERROR-008**: Fix TypeScript errors - window.electronAPI type declarations
+### Phase 1 (Current Loop) - BugLover
+- [x] **BUG-013**: MCP server tests fail without core package build
+  - Priority: High
+  - Fix: Built core package with `pnpm -F @prompt-optimizer/core build`
+  - Result: All 8 MCP server tests passing
+  
+- [x] Verified: No new TypeScript errors
+- [x] Verified: No new lint errors
+- [x] Verified: 791 tests passing across all packages
+
+### Completed from Previous Loop
   - Priority: High
   - Files affected: 4 components (DataManager, UpdaterModal, PromptOptimizerApp)
   - Fix: Added electronAPI to Window interface in window.d.ts and updated env.d.ts
