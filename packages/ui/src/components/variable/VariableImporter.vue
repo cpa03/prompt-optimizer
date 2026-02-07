@@ -26,8 +26,8 @@
             drag
           >
             <NUploadDragger>
-              <div style="text-align:center; padding: 24px;">
-                <NIcon size="48" style="display:block; margin: 0 auto 12px;">
+              <div :style="{ textAlign: 'center', padding: VARIABLE_IMPORTER.UPLOAD_AREA_PADDING + 'px' }">
+                <NIcon :size="ICON_SIZES.XXL" :style="{ display: 'block', margin: '0 auto ' + VARIABLE_IMPORTER.UPLOAD_ICON_MARGIN_BOTTOM + 'px' }">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                   </svg>
@@ -79,10 +79,10 @@
               type="textarea"
               :placeholder="getTextInputPlaceholder()"
               :autosize="{ minRows: 10, maxRows: 15 }"
-              :input-props="{ style: 'font-family: Monaco, Consolas, monospace; font-size: 13px;' }"
+              :input-props="{ style: 'font-family: Monaco, Consolas, monospace; font-size: ' + VARIABLE_IMPORTER.MONOSPACE_FONT_SIZE + 'px;' }"
             />
             <template #feedback>
-              <NText depth="3" style="font-size: 12px;">
+              <NText depth="3" :style="{ fontSize: VARIABLE_IMPORTER.HELP_TEXT_FONT_SIZE + 'px' }">
                 {{ getTextInputHelp() }}
               </NText>
             </template>
@@ -111,7 +111,7 @@
             {{ t('variables.importer.previewTitle', { count: Object.keys(previewVariables).length }) }}
           </NText>
         </template>
-        <NScrollbar style="max-height: 240px;">
+        <NScrollbar :style="{ maxHeight: VARIABLE_IMPORTER.PREVIEW_MAX_HEIGHT + 'px' }">
           <NList hoverable>
             <NListItem v-for="[name, value] in Object.entries(previewVariables)" :key="name">
               <NSpace size="small">
@@ -164,8 +164,11 @@ import {
   NRadioGroup, NRadio, NCard, NList, NListItem, NScrollbar, NIcon,
   type UploadFileInfo 
 } from 'naive-ui'
-import { UI_DIMENSIONS } from '../../config/constants'
+import { UI_DIMENSIONS, COMPONENT_CONSTANTS, ICON_SIZES } from '../../config/constants'
 import { truncateText } from '../../utils/text'
+
+// Destructure constants for cleaner usage
+const { VARIABLE_IMPORTER } = COMPONENT_CONSTANTS
 
 const { t } = useI18n()
 
@@ -183,7 +186,10 @@ const localVisible = computed({
   set: (val: boolean) => emit('update:show', val)
 })
 
-const modalStyle = { width: UI_DIMENSIONS.MODAL_WIDTH_SMALL, maxWidth: '90vw' }
+const modalStyle = { 
+  width: UI_DIMENSIONS.MODAL_WIDTH_SMALL, 
+  maxWidth: VARIABLE_IMPORTER.MODAL_MAX_WIDTH 
+}
 
 // 状态管理
 const loading = ref(false)

@@ -1703,6 +1703,8 @@ defineExpose({
 </script>
 
 <style scoped>
+@import "../../styles/workspace-common.css";
+
 .context-user-workspace {
     width: 100%;
     height: 100%;

@@ -1665,6 +1665,8 @@ defineExpose({
 </script>
 
 <style scoped>
+@import "../../styles/workspace-common.css";
+
 .context-system-workspace {
     width: 100%;
     height: 100%;

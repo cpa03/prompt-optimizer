@@ -285,3 +285,44 @@ export const ICON_SIZES = {
   XL: 32,
   XXL: 48,
 } as const
+
+// Component-specific constants
+export const COMPONENT_CONSTANTS = {
+  // VariableImporter
+  VARIABLE_IMPORTER: {
+    UPLOAD_AREA_PADDING: 24,
+    UPLOAD_ICON_SIZE: 48,
+    UPLOAD_ICON_MARGIN_BOTTOM: 12,
+    MONOSPACE_FONT_SIZE: 13,
+    HELP_TEXT_FONT_SIZE: 12,
+    PREVIEW_MAX_HEIGHT: 240,
+    MODAL_MAX_WIDTH: '90vw',
+  },
+  
+  // TextModelEditModal
+  TEXT_MODEL_EDIT_MODAL: {
+    WIDTH: '90vw',
+    MAX_WIDTH: 1000,
+    DIVIDER_MARGIN: '12px 0',
+    SECTION_TITLE_FONT_SIZE: 14,
+    INPUT_PADDING: '0 4px',
+  },
+  
+  // General modal content
+  MODAL_CONTENT: {
+    PADDING_SMALL: 12,
+    PADDING_MEDIUM: 16,
+    PADDING_LARGE: 24,
+    GAP_SMALL: 8,
+    GAP_MEDIUM: 12,
+    GAP_LARGE: 16,
+  },
+  
+  // Workspace panels
+  WORKSPACE: {
+    PANEL_MIN_HEIGHT: 200,
+    FONT_SIZE_HEADER: 18,
+    FONT_SIZE_LABEL: 12,
+    BUTTON_WIDTH: 92,
+  },
+} as const
