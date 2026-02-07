@@ -374,7 +374,7 @@ const handleDeleteCategory = async (category: FavoriteCategory) => {
   if (servicesValue?.favoriteManager) {
     try {
       deletingCategoryUsageCount.value = await servicesValue.favoriteManager.getCategoryUsage(category.id);
-    } catch (error) {
+    } catch (_error) {
       deletingCategoryUsageCount.value = 0;
     }
   }

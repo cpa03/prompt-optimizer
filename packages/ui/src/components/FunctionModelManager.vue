@@ -51,6 +51,7 @@ import { useFunctionModelManager } from '../composables/model/useFunctionModelMa
 import { DataTransformer, OptionAccessors } from '../utils/data-transformer'
 import type { AppServices } from '../types/services'
 import type { ModelSelectOption } from '../types/select-options'
+import { FONT_SIZES, SPACING } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -164,22 +165,22 @@ defineExpose({ refresh })
 
 <style scoped>
 .function-model-manager {
-  padding: 12px 0;
+  padding: v-bind('`${SPACING.MD}px`') 0;
 }
 
 .config-section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: v-bind('`${SPACING.SM}px`');
 }
 
 .section-header {
-  margin-bottom: 4px;
+  margin-bottom: v-bind('`${SPACING.XS}px`');
 }
 
 .section-hint {
-  font-size: 12px;
-  margin-bottom: 8px;
+  font-size: v-bind('`${FONT_SIZES.XS}px`');
+  margin-bottom: v-bind('`${SPACING.SM}px`');
 }
 
 .model-select-row {

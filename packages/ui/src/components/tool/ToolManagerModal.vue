@@ -60,9 +60,11 @@
                                         circle
                                         :title="t('common.edit')"
                                         :disabled="disabled"
+                                        class="tool-action-btn tool-action-btn--edit"
                                     >
                                         <template #icon>
                                             <svg
+                                                class="tool-action-icon"
                                                 width="14"
                                                 height="14"
                                                 viewBox="0 0 24 24"
@@ -86,6 +88,7 @@
                                         type="error"
                                         :title="t('common.delete')"
                                         :disabled="disabled"
+                                        class="tool-action-btn tool-action-btn--delete"
                                     >
                                         <template #icon>
                                             <svg
@@ -531,5 +534,38 @@ const syncParametersJsonFromTool = (tool: ToolDefinition | null) => {
 .tools-panel {
     max-height: 60vh;
     overflow-y: auto;
+}
+
+/* Tool action button micro-interactions */
+.tool-action-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.tool-action-btn:active {
+    transform: scale(0.95);
+}
+
+.tool-action-btn--edit:hover {
+    background-color: rgba(64, 158, 255, 0.1) !important;
+}
+
+.tool-action-btn--delete:hover {
+    background-color: rgba(247, 101, 96, 0.1) !important;
+}
+
+.tool-action-icon {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tool-action-btn:hover .tool-action-icon {
+    transform: scale(1.15);
+}
+
+.tool-action-btn:active .tool-action-icon {
+    transform: scale(0.9);
 }
 </style>
