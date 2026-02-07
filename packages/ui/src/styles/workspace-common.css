@@ -167,3 +167,17 @@
   color: var(--text-color-3);
   max-width: 300px;
 }
+
+/* Split divider - shared across all workspace components */
+.split-divider {
+  width: 4px;
+  background: var(--divider-color);
+  cursor: col-resize;
+  transition: background 120ms ease;
+  flex-shrink: 0;
+}
+
+.split-divider:hover,
+.split-divider:focus-visible {
+  background: var(--primary-color);
+}

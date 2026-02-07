@@ -15,7 +15,7 @@
       v-if="result"
       :type="result.values.length > 0 ? 'success' : 'warning'"
       :title="result.summary"
-      style="margin-bottom: 16px"
+      :style="{ marginBottom: SPACING.LG + 'px' }"
     />
 
     <!-- 变量值表格 (支持编辑) -->
@@ -62,7 +62,7 @@ import {
 } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import type { VariableValueGenerationResponse, GeneratedVariableValue } from '@prompt-optimizer/core'
-import { UI_DIMENSIONS } from '../../config/constants'
+import { UI_DIMENSIONS, SPACING } from '../../config/constants'
 
 type RowKey = string | number
 

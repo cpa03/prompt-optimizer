@@ -45,7 +45,7 @@
       preset="card"
       :title="editingCategory ? t('favorites.categoryManager.editCategory') : t('favorites.categoryManager.addCategory')"
       :mask-closable="false"
-      :style="{ width: 'min(520px, 90vw)' }"
+      :style="{ width: COMPONENT_CONSTANTS.CATEGORY_MANAGER.MODAL_WIDTH }"
     >
       <n-form
         ref="formRef"
@@ -153,6 +153,7 @@ import {
   Folder
 } from '@vicons/tabler';
 import { useToast } from '../composables/ui/useToast';
+import { COMPONENT_CONSTANTS } from '../config/constants';
 import { useI18n } from 'vue-i18n';
 import type { FavoriteCategory } from '@prompt-optimizer/core';
 import type { AppServices } from '../types/services';
@@ -374,7 +375,6 @@ const handleDeleteCategory = async (category: FavoriteCategory) => {
     try {
       deletingCategoryUsageCount.value = await servicesValue.favoriteManager.getCategoryUsage(category.id);
     } catch (error) {
-      console.error('获取分类使用统计失败:', error);
       deletingCategoryUsageCount.value = 0;
     }
   }
@@ -407,7 +407,6 @@ const handleConfirmDelete = async () => {
     await loadCategories();
     emit('category-updated');
   } catch (error) {
-    console.error('删除分类失败:', error);
     const errorMessage = error instanceof Error ? error.message : '未知错误';
     message.error(`${t('favorites.categoryManager.deleteFailed')}: ${errorMessage}`);
   } finally {
@@ -457,7 +456,6 @@ const handleSaveCategory = async () => {
     await loadCategories();
     emit('category-updated');
   } catch (error) {
-    console.error('保存分类失败:', error);
     const errorMessage = error instanceof Error ? error.message : '未知错误';
     message.error(`${t('favorites.categoryManager.saveFailed')}: ${errorMessage}`);
   } finally {
@@ -494,14 +492,12 @@ const handleUpdateExpandedKeys = (keys: string[]) => {
 const loadCategories = async () => {
   const servicesValue = services?.value;
   if (!servicesValue?.favoriteManager) {
-    console.warn('收藏管理器未初始化');
     return;
   }
 
   try {
     categories.value = await servicesValue.favoriteManager.getCategories();
   } catch (error) {
-    console.error('加载分类失败:', error);
     const errorMessage = error instanceof Error ? error.message : '未知错误';
     message.error(`${t('favorites.categoryManager.loadFailed')}: ${errorMessage}`);
   }
@@ -526,6 +522,27 @@ watch(() => services?.value?.favoriteManager, (favoriteManager) => {
 
 .toolbar {
   @apply p-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+/* Micro-interactions for toolbar buttons */
+.toolbar :deep(.n-button) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbar :deep(.n-button:hover) {
+  transform: scale(1.05);
+}
+
+.toolbar :deep(.n-button:active) {
+  transform: scale(0.98);
+}
+
+.toolbar :deep(.n-button .n-icon) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toolbar :deep(.n-button:hover .n-icon) {
+  transform: scale(1.1);
 }
 
 .tree-container {

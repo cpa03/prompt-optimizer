@@ -214,13 +214,14 @@ const columns = computed<DataTableColumns<TagStatistics>>(() => [
     width: 250,
     align: 'center' as const,
     render: (row) => {
-      return h(NSpace, { size: 4, justify: 'center' }, {
+      return h(NSpace, { size: 4, justify: 'center', class: 'tag-action-buttons' }, {
         default: () => [
           h(
             NButton,
             {
               size: 'small',
               quaternary: true,
+              class: 'tag-action-btn tag-action-btn--edit',
               onClick: () => handleRename(row)
             },
             {
@@ -237,6 +238,7 @@ const columns = computed<DataTableColumns<TagStatistics>>(() => [
                 {
                   size: 'small',
                   quaternary: true,
+                  class: 'tag-action-btn tag-action-btn--merge',
                   onClick: () => handleMerge(row)
                 },
                 {
@@ -260,7 +262,8 @@ const columns = computed<DataTableColumns<TagStatistics>>(() => [
                 {
                   size: 'small',
                   quaternary: true,
-                  type: 'error'
+                  type: 'error',
+                  class: 'tag-action-btn tag-action-btn--delete'
                 },
                 {
                   icon: () => h(NIcon, null, { default: () => h(Trash) }),
@@ -423,3 +426,41 @@ watch(() => props.show, (newShow) => {
   }
 }, { immediate: true });
 </script>
+
+<style scoped>
+/* Tag action buttons micro-interactions */
+:deep(.tag-action-btn) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.tag-action-btn:hover) {
+  transform: translateY(-1px) scale(1.05);
+}
+
+:deep(.tag-action-btn:active) {
+  transform: scale(0.95);
+}
+
+:deep(.tag-action-btn--edit:hover) {
+  color: #2080f0;
+  background-color: rgba(32, 128, 240, 0.1);
+}
+
+:deep(.tag-action-btn--merge:hover) {
+  color: #f0a020;
+  background-color: rgba(240, 160, 32, 0.1);
+}
+
+:deep(.tag-action-btn--delete:hover) {
+  color: #d03050;
+  background-color: rgba(208, 48, 80, 0.1);
+}
+
+:deep(.tag-action-btn .n-icon) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.tag-action-btn:hover .n-icon) {
+  transform: scale(1.15);
+}
+</style>
