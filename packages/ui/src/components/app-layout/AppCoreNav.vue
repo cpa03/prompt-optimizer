@@ -10,7 +10,7 @@
         - 从路由参数计算当前模式
         - 导航操作直接调用 router.push
     -->
-    <NSpace :size="12" align="center" data-testid="core-nav">
+    <NSpace :size="SPACING.MD" align="center" data-testid="core-nav">
         <!-- 功能模式选择器 -->
         <FunctionModeSelector
             :modelValue="functionMode"
@@ -61,6 +61,7 @@
 import { computed } from 'vue'
 import { router as routerInstance } from '../../router'
 import { NSpace } from 'naive-ui'
+import { SPACING } from '../../config/constants'
 import FunctionModeSelector from '../FunctionModeSelector.vue'
 import OptimizationModeSelectorUI from '../OptimizationModeSelector.vue'
 import ImageModeSelector from '../image-mode/ImageModeSelector.vue'

@@ -3,7 +3,7 @@
   content-style="max-height: 100%">
     <NSpace 
       vertical 
-      :size="16"
+      :size="SPACING.LG"
       style="height: 100%; max-height: 100%"
     >
       <slot></slot>
@@ -13,4 +13,5 @@
 
 <script setup lang="ts">
 import { NCard, NSpace } from 'naive-ui'
+import { SPACING } from '../config/constants'
 </script>
