@@ -409,3 +409,24 @@
 - Test duration: 12.16s (within acceptable limits)
 - No action needed - test suite quality is high
 **Date**: 2026-02-07
+
+### [x] STORX-006: Extended workspace-common.css to all workspace components
+**Priority**: Medium
+**Description**: Added workspace-common.css import to 4 workspace components that were missing it
+**Status**: COMPLETED
+**Steps**:
+1. [x] Identified 4 workspace components using workspace CSS patterns but missing the import
+2. [x] Added @import for workspace-common.css to ContextSystemWorkspace.vue
+3. [x] Added @import for workspace-common.css to ContextUserWorkspace.vue
+4. [x] Added @import for workspace-common.css to ImageImage2ImageWorkspace.vue
+5. [x] Added @import for workspace-common.css to ImageText2ImageWorkspace.vue
+6. [x] Verified build succeeds with shared styles properly loaded
+**Impact**:
+- All 6 workspace components now consistently use shared CSS from workspace-common.css
+- Eliminates CSS duplication across workspace components
+- Makes future style updates easier (single source of truth)
+**Files modified**:
+- packages/ui/src/components/context-mode/ContextSystemWorkspace.vue (added import)
+- packages/ui/src/components/context-mode/ContextUserWorkspace.vue (added import)
+- packages/ui/src/components/image-mode/ImageImage2ImageWorkspace.vue (added import)
+- packages/ui/src/components/image-mode/ImageText2ImageWorkspace.vue (added import)

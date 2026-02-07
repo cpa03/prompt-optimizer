@@ -2353,6 +2353,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import "../../styles/workspace-common.css";
+
 /* 缩略图容器样式 */
 .thumbnail-container {
     display: flex;

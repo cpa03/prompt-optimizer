@@ -2102,6 +2102,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import "../../styles/workspace-common.css";
+
 .image-text2image-workspace {
     width: 100%;
     height: 100%;
