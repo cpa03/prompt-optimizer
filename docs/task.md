@@ -212,12 +212,22 @@
   - Combined scale and rotation for satisfying visual feedback
   - Animation duration: 400ms with ease-out timing
   - Improves perceived responsiveness and makes the action more engaging
+- [x] UX-009: Added language switch icon rotation animation to BuiltinTemplateLanguageSwitch
+  - Added 360-degree rotation animation during language change
+  - Provides visual feedback when switching between Chinese and English templates
+  - Added hover scale effect for better interactivity
+  - Animation duration: 800ms with ease-in-out timing
 - [x] FLEX-010: Added centralized color constants to constants.ts
   - Added EVALUATION_COLORS for consistent score visualization (excellent, good, average, poor, critical)
   - Added THEME_COLORS for primary, success, warning, error, info, and neutral color palettes
   - Added SEMANTIC_COLORS for required fields, favorites, and theme-specific colors
   - Provides single source of truth for colors across the application
   - Eliminates hardcoded color values in favor of semantic color constants
+- [x] FLEX-011: Modularized VariableExtraction components with centralized constants
+  - Updated VariableExtractionResultDialog.vue to use SPACING constant for margin-bottom
+  - Updated VariableExtractionDialog.vue to use SPACING and FONT_SIZES constants
+  - Eliminated hardcoded '16px', '12px', '8px', and '4px' values in favor of centralized constants
+  - Demonstrates pattern for converting inline styles to use constants from constants.ts
 
 ## Notes
 

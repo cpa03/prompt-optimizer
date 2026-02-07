@@ -9,7 +9,7 @@
     :on-negative-click="handleCancel"
     :mask-closable="false"
   >
-    <NSpace vertical :size="16" style="margin-top: 16px;">
+    <NSpace vertical :size="SPACING.LG" :style="{ marginTop: SPACING.LG + 'px' }">
       <!-- 变量名输入 -->
       <NFormItem
         :label="t('variableExtraction.variableName')"
@@ -39,13 +39,13 @@
           <NSpace vertical>
             <NRadio value="temporary">
               <span>{{ t('variableExtraction.temporaryVariable') }}</span>
-              <NText depth="3" :style="{ marginLeft: '8px', fontSize: '12px' }">
+              <NText depth="3" :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }">
                 {{ t('variableExtraction.temporaryVariableDesc') }}
               </NText>
             </NRadio>
             <NRadio value="global">
               <span>{{ t('variableExtraction.globalVariable') }}</span>
-              <NText depth="3" :style="{ marginLeft: '8px', fontSize: '12px' }">
+              <NText depth="3" :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }">
                 {{ t('variableExtraction.globalVariableDesc') }}
               </NText>
             </NRadio>
@@ -57,7 +57,7 @@
       <NFormItem v-if="occurrenceCount > 1">
         <NCheckbox v-model:checked="replaceAll">
           {{ t('variableExtraction.replaceAll', { count: occurrenceCount }) }}
-          <NText depth="3" :style="{ marginLeft: '4px' }">
+          <NText depth="3" :style="{ marginLeft: SPACING.XS + 'px' }">
             {{ t('variableExtraction.replaceAllRecommended') }}
           </NText>
         </NCheckbox>
@@ -82,6 +82,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { useToast } from '../../composables/ui/useToast'
 import { VARIABLE_VALIDATION, getVariableNameValidationError } from '../../types/variable'
+import { SPACING, FONT_SIZES } from '../../config/constants'
 
 /**
  * 变量提取对话框组件
