@@ -341,4 +341,20 @@ export const COMPONENT_CONSTANTS = {
     MODAL_WIDTH: 'min(520px, 90vw)',
     SEARCH_INPUT_WIDTH: 200,
   },
+
+  // EvaluationScoreBadge
+  EVALUATION_SCORE_BADGE: {
+    SMALL: {
+      MIN_WIDTH: 32,
+      HEIGHT: 22,
+      PADDING_HORIZONTAL: 6,
+      FONT_SIZE: 12,
+    },
+    MEDIUM: {
+      MIN_WIDTH: 40,
+      HEIGHT: 28,
+      PADDING_HORIZONTAL: 8,
+      FONT_SIZE: 14,
+    },
+  },
 } as const

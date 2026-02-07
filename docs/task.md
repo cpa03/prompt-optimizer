@@ -776,6 +776,48 @@
 - All checks pass (Vercel rate-limited, not code issue)
 **Date**: 2026-02-07
 
+### [x] STORX-011: Created utils/index.ts for centralized utility exports
+**Priority**: Low
+**Description**: Added proper index.ts export file to consolidate utility function exports
+**Status**: COMPLETED
+**Steps**:
+1. [x] Created packages/ui/src/utils/index.ts with proper exports
+2. [x] Exported all functions from date.ts, text.ts, error.ts, platform.ts, data-transformer.ts, prompt-variables.ts
+3. [x] Used proper TypeScript export syntax with type keyword for type exports
+4. [x] Verified build succeeds
+**Impact**: Provides single import point for all utilities, improves code discoverability
+**Files modified**:
+- packages/ui/src/utils/index.ts (created)
+**Date**: 2026-02-07
+
+### [x] FLEX-023: Modularized EvaluationScoreBadge with centralized constants
+**Priority**: Medium
+**Description**: Replaced hardcoded badge dimension values with centralized COMPONENT_CONSTANTS
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added EVALUATION_SCORE_BADGE constants to COMPONENT_CONSTANTS in constants.ts
+2. [x] Updated EvaluationScoreBadge.vue to import COMPONENT_CONSTANTS
+3. [x] Replaced 8 hardcoded values (32px, 22px, 6px, 12px, 40px, 28px, 8px, 14px) with v-bind() references
+4. [x] Verified build succeeds with new constant bindings
+**Impact**: Single source of truth for evaluation badge dimensions, easier maintenance
+**Files modified**:
+- packages/ui/src/config/constants.ts (added EVALUATION_SCORE_BADGE constants)
+- packages/ui/src/components/evaluation/EvaluationScoreBadge.vue (replaced hardcoded values)
+**Date**: 2026-02-07
+
+### [x] UX-020: Enhanced TestControlBar primary button with micro-interactions
+**Priority**: Medium
+**Description**: Added delightful hover, click, and loading animations to the primary action button in TestControlBar
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added hover lift effect (translateY -2px) with enhanced shadow
+2. [x] Added click press feedback (scale 0.98x) for tactile response
+3. [x] Added loading shimmer animation with gradient sweep
+4. [x] Used cubic-bezier(0.4, 0, 0.2, 1) for smooth, natural motion
+**Impact**: Makes the primary action button feel more responsive and provides visual feedback during loading states
+**Files modified**: packages/ui/src/components/TestControlBar.vue
+**Date**: 2026-02-07
+
 ### [x] ULW LOOP COMPLETE - Summary
 **Priority**: High
 **Description**: Full autonomous workflow cycle completed successfully

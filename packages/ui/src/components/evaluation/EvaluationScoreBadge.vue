@@ -46,6 +46,7 @@
 import { computed, ref } from 'vue'
 import { NSpin, NPopover } from 'naive-ui'
 import EvaluationHoverCard from './EvaluationHoverCard.vue'
+import { COMPONENT_CONSTANTS } from '../../config/constants'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import type { ScoreLevel } from './types'
 
@@ -187,19 +188,19 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
   user-select: none;
 }
 
-/* 尺寸 */
+/* 尺寸 - using centralized constants */
 .size-small {
-  min-width: 32px;
-  height: 22px;
-  padding: 0 6px;
-  font-size: 12px;
+  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.MIN_WIDTH')px;
+  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.HEIGHT')px;
+  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.PADDING_HORIZONTAL')px;
+  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.FONT_SIZE')px;
 }
 
 .size-medium {
-  min-width: 40px;
-  height: 28px;
-  padding: 0 8px;
-  font-size: 14px;
+  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.MIN_WIDTH')px;
+  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.HEIGHT')px;
+  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.PADDING_HORIZONTAL')px;
+  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.FONT_SIZE')px;
 }
 
 /* 可点击状态 */
