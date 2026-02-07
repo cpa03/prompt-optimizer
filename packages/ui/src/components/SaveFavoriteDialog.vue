@@ -346,11 +346,10 @@ const handleSave = async () => {
       try {
         await servicesValue.favoriteManager.addTag(tag);
         existingTags.add(tag);
-      } catch (error) {
+      } catch (_error) {
         // 只忽略"标签已存在"错误，其他错误需要抛出
-        if (error && typeof error === 'object' && 'code' in error && error.code !== 'TAG_ALREADY_EXISTS') {
-          console.error('添加标签到独立库失败:', error);
-          throw error;
+        if (_error && typeof _error === 'object' && 'code' in _error && _error.code !== 'TAG_ALREADY_EXISTS') {
+          throw _error;
         }
         // 标签已存在，这是正常情况，继续处理
       }

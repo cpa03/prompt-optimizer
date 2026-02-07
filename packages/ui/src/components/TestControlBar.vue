@@ -134,6 +134,11 @@ const handlePrimaryAction = () => {
 .tcb-tags {
   flex-shrink: 1;
   min-width: 0;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tcb-tags:hover {
+  transform: scale(1.02);
 }
 
 .tcb-right {
@@ -142,6 +147,19 @@ const handlePrimaryAction = () => {
 
 .tcb-compare-label {
   white-space: nowrap;
+}
+
+/* Enhanced switch interaction */
+:deep(.tcb-right .n-switch) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.tcb-right .n-switch:hover:not(.n-switch--disabled)) {
+  transform: scale(1.05);
+}
+
+:deep(.tcb-right .n-switch:active:not(.n-switch--disabled)) {
+  transform: scale(0.95);
 }
 
 /* 断点隐藏：空间不足时优先隐藏 tags，保证右侧控件可用 */
