@@ -8,10 +8,12 @@
         quaternary
         circle
         size="small"
+        :class="{ 'has-update': state.hasUpdate }"
       >
         <template #icon>
           <svg
-            class="w-5 h-5"
+            class="w-5 h-5 update-icon"
+            :class="{ 'pulse-animation': state.hasUpdate }"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -59,5 +61,33 @@ const toggleModal = () => {
 </script>
 
 <style scoped>
-/* Pure Naive UI implementation - no custom theme CSS needed */
+/* Pulse animation for update available state */
+.update-icon {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.update-icon.pulse-animation {
+  animation: icon-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Hover effect for the button when update is available */
+.has-update:hover .update-icon {
+  animation: none;
+  transform: scale(1.15);
+}
+
+.has-update:active .update-icon {
+  transform: scale(0.95);
+}
 </style>

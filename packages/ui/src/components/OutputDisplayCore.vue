@@ -187,7 +187,7 @@
             style="height: 100%;"
           >
             <template #icon>
-              <NIcon :size="48" class="text-gray-300 dark:text-gray-600">
+              <NIcon :size="ICON_SIZES.XXL" class="text-gray-300 dark:text-gray-600">
                 <FileText />
               </NIcon>
             </template>
@@ -220,7 +220,7 @@ import { useVariableAwareInputBridge } from '../composables/variable/useVariable
 import { useVariableManager } from '../composables/prompt/useVariableManager'
 import type { AppServices } from '../types/services'
 import { router as routerInstance } from '../router'
-import { ANIMATION_CONSTANTS } from '../config/constants'
+import { ANIMATION_CONSTANTS, ICON_SIZES } from '../config/constants'
 
 type ActionName = 'fullscreen' | 'diff' | 'copy' | 'edit' | 'reasoning' | 'favorite'
 

@@ -2,7 +2,11 @@
 
 ## Active Bugs
 
-### [ ] BUG-013: MCP server tests fail without core build
+No active bugs at this time.
+
+## Fixed Bugs
+
+### [x] BUG-013: MCP server tests fail without core build
 **Location**: packages/mcp-server tests
 **Severity**: High
 **Description**: Tests fail with "Failed to resolve entry for package @prompt-optimizer/core" when core dist files are missing
@@ -10,8 +14,7 @@
 **Status**: FIXED - Built core package with `pnpm -F @prompt-optimizer/core build`
 **Solution**: Ensure core package is built before running tests
 **Files affected**: All MCP server tests
-
-## Fixed Bugs
+**Fixed Date**: 2026-02-07
 
 - [x] **Bug 1**: Test failure - `ReferenceError: navigator is not defined` in `languageService.test.ts`
   - Location: `packages/core/tests/unit/template/languageService.test.ts`
