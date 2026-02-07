@@ -2208,6 +2208,9 @@ export default {
       failed: "Evaluation failed: {error}",
       noOptimizedPrompt: "No prompt to optimize",
     },
+    tooltip: {
+      needResults: "Run a test first to enable evaluation",
+    },
 
     // Variable extraction related translations
     variableExtraction: {

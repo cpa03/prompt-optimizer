@@ -2111,6 +2111,9 @@ export default {
       failed: "評估失敗：{error}",
       noOptimizedPrompt: "沒有可優化的提示詞",
     },
+    tooltip: {
+      needResults: "請先執行測試以啟用評估",
+    },
 
     // 變數提取相關翻譯
     variableExtraction: {

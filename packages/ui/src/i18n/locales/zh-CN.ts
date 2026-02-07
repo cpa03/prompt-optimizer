@@ -2131,6 +2131,9 @@ export default {
       failed: "评估失败：{error}",
       noOptimizedPrompt: "没有可优化的提示词",
     },
+    tooltip: {
+      needResults: "请先运行测试以启用评估",
+    },
 
     // 变量提取相关翻译
     variableExtraction: {

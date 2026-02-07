@@ -1210,6 +1210,7 @@ defineExpose({
 </script>
 
 <style scoped>
+@import '../../styles/workspace-common.css';
 .basic-system-workspace {
     width: 100%;
     height: 100%;
@@ -1246,70 +1247,15 @@ defineExpose({
     outline: none;
 }
 
-.test-area-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-}
-
-.test-area-label {
-    white-space: nowrap;
-}
-
-.variant-deck {
-    display: grid;
-    gap: 12px;
-    width: 100%;
-}
-
-.variant-cell {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.variant-cell__controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-}
-
-.variant-cell__label {
-    flex-shrink: 0;
-}
-
-.variant-cell__stale {
-    flex-shrink: 0;
-}
-
-.variant-cell__model {
-    /* 让模型选择不要无限拉伸：保持紧凑，避免把右侧按钮/布局挤散 */
-    flex: 0 1 220px;
-    max-width: 220px;
-    min-width: 0;
-}
+/* Note: .test-area-top, .test-area-label, .variant-deck, .variant-cell, 
+   .variant-cell__controls, .variant-cell__label, .variant-cell__stale, 
+   .variant-cell__model, .variant-results-wrap, .variant-results 
+   are defined in workspace-common.css */
 
 .output-evaluation-entry {
     display: flex;
     align-items: center;
     white-space: nowrap;
-}
-
-.variant-results-wrap {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-}
-
-.variant-results {
-    display: grid;
-    gap: 12px;
-    height: 100%;
-    min-height: 0;
 }
 
 .variant-result-card {
