@@ -123,6 +123,22 @@
 **Status**: FIXED - Built UI package
 **Solution**: Run build in dependency order: core → UI → web
 
+### [x] BUG-011: Console.log in ImageText2ImageWorkspace cleanup
+**Location**: `packages/ui/src/components/image-mode/ImageText2ImageWorkspace.vue`
+**Severity**: Low
+**Description**: Debug console.log statement in onUnmounted hook should be removed for production
+**Status**: FIXED - Removed console.log statement
+**Solution**: Changed to comment instead of console.log
+
+### [ ] BUG-012: Potential memory leak in workspace event listeners
+**Location**: Multiple workspace components
+**Severity**: Low
+**Description**: Document-level event listeners (pointermove, pointerup, pointercancel) added during drag operations may not be removed if component unmounts during drag
+**Impact**: Memory leak if user navigates away during drag operation
+**Recommendation**: 
+- Add cleanup for drag-related event listeners in onUnmounted
+- Use a flag to track if listeners are active before removing
+
 ## Notes
 
 - Build completes successfully but with warnings

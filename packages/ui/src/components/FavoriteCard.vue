@@ -628,6 +628,19 @@ const formatDate = (timestamp: number) => {
   opacity: 1;
 }
 
+/* 操作按钮微交互动画 */
+.card-actions :deep(.n-button) {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.card-actions :deep(.n-button:hover) {
+  transform: scale(1.15);
+}
+
+.card-actions :deep(.n-button:active) {
+  transform: scale(0.95);
+}
+
 /* 移动端始终显示按钮 */
 @media (max-width: 768px) {
   .card-actions {

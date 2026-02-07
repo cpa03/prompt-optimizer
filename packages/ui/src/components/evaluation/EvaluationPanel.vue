@@ -171,6 +171,7 @@ import {
 } from 'naive-ui'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import InlineDiff from './InlineDiff.vue'
+import { EVALUATION_COLORS } from '../../config/constants'
 
 // Props
 const props = defineProps<{
@@ -394,25 +395,25 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   font-size: 14px;
 }
 
-/* 评分等级颜色 */
+/* 评分等级颜色 - 使用CSS变量从centralized constants */
 .score-excellent {
-  color: #18a058;
+  color: v-bind('EVALUATION_COLORS.EXCELLENT');
 }
 
 .score-good {
-  color: #2080f0;
+  color: v-bind('EVALUATION_COLORS.GOOD');
 }
 
 .score-acceptable {
-  color: #f0a020;
+  color: v-bind('EVALUATION_COLORS.AVERAGE');
 }
 
 .score-poor {
-  color: #d03050;
+  color: v-bind('EVALUATION_COLORS.POOR');
 }
 
 .score-very-poor {
-  color: #d03050;
+  color: v-bind('EVALUATION_COLORS.CRITICAL');
 }
 
 .dimension-item {
