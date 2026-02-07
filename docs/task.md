@@ -906,6 +906,31 @@
 **Files modified**: packages/ui/src/components/ModelManager.vue
 **Date**: 2026-02-07
 
+### [x] UX-018: Added global smooth transitions for cards, buttons, and modals
+**Priority**: Medium
+**Description**: Added CSS transitions and animations to improve overall UI fluidity and perceived responsiveness
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added smooth card hover lift effect (translateY + box-shadow transition)
+2. [x] Added button press effect (scale down on active state)
+3. [x] Added modal fade-in animation with scale effect
+4. [x] All animations use cubic-bezier timing for natural feel
+**Impact**: Makes the entire application feel more polished and responsive
+**Files modified**: packages/ui/src/styles/index.css
+**Date**: 2026-02-07
+
+### [x] FLEX-021: Modularized EvaluationPanel CSS with centralized constants
+**Priority**: Medium
+**Description**: Replaced hardcoded padding, font-size, margin, and border-radius values with centralized constants
+**Status**: COMPLETED
+**Steps**:
+1. [x] Added imports for FONT_SIZES, SPACING, and BORDER_RADIUS from constants.ts
+2. [x] Replaced 15+ hardcoded values with v-bind() references to constants
+3. [x] Updated evaluation-loading, stream-preview, score-section, patch styles
+**Impact**: Single source of truth for styling values, easier maintenance
+**Files modified**: packages/ui/src/components/evaluation/EvaluationPanel.vue
+**Date**: 2026-02-07
+
 ### [x] GIT-004: ULW Loop Complete
 **Priority**: High
 **Description**: Full autonomous workflow cycle completed

@@ -171,7 +171,7 @@ import {
 } from 'naive-ui'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import InlineDiff from './InlineDiff.vue'
-import { EVALUATION_COLORS } from '../../config/constants'
+import { EVALUATION_COLORS, FONT_SIZES, SPACING, BORDER_RADIUS } from '../../config/constants'
 
 // Props
 const props = defineProps<{
@@ -332,30 +332,30 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
-  gap: 16px;
+  padding: v-bind('SPACING.XXL + "px"') v-bind('SPACING.XL + "px"');
+  gap: v-bind('SPACING.LG + "px"');
 }
 
 .loading-text {
-  font-size: 14px;
+  font-size: v-bind('FONT_SIZES.BASE + "px"');
 }
 
 .stream-preview {
   width: 100%;
-  margin-top: 16px;
-  padding: 12px;
+  margin-top: v-bind('SPACING.LG + "px"');
+  padding: v-bind('SPACING.MD + "px"');
   background: var(--n-color-embedded);
-  border-radius: 8px;
+  border-radius: v-bind('BORDER_RADIUS.MD + "px"');
 }
 
 .stream-label {
   display: block;
-  margin-bottom: 8px;
-  font-size: 12px;
+  margin-bottom: v-bind('SPACING.SM + "px"');
+  font-size: v-bind('FONT_SIZES.XS + "px"');
 }
 
 .stream-content {
-  font-size: 12px;
+  font-size: v-bind('FONT_SIZES.XS + "px"');
   white-space: pre-wrap;
   word-break: break-all;
 }
@@ -364,9 +364,9 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: v-bind('SPACING.XL + "px"');
   background: var(--n-color-embedded);
-  border-radius: 12px;
+  border-radius: v-bind('BORDER_RADIUS.LG + "px"');
 }
 
 .overall-score {
@@ -378,21 +378,21 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   height: 120px;
   border-radius: 50%;
   border: 4px solid currentColor;
-  margin-bottom: 12px;
+  margin-bottom: v-bind('SPACING.MD + "px"');
 }
 
 .score-value {
-  font-size: 36px;
+  font-size: v-bind('FONT_SIZES.XXXXL + "px"');
   font-weight: bold;
 }
 
 .score-label {
-  font-size: 12px;
+  font-size: v-bind('FONT_SIZES.XS + "px"');
   opacity: 0.8;
 }
 
 .score-level-text {
-  font-size: 14px;
+  font-size: v-bind('FONT_SIZES.BASE + "px"');
 }
 
 /* 评分等级颜色 - 使用CSS变量从centralized constants */
@@ -424,7 +424,7 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: v-bind('SPACING.XS + "px"');
 }
 
 .analysis-text {
@@ -463,14 +463,14 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
 .patch-instruction {
   flex: 1;
   word-break: break-word;
-  font-size: 13px;
+  font-size: v-bind('FONT_SIZES.SM + "px"');
 }
 
 .patch-diff-inline {
   background: var(--n-color-embedded);
-  border-radius: 6px;
-  padding: 8px 10px;
-  font-size: 12px;
+  border-radius: v-bind('BORDER_RADIUS.SM + "px"');
+  padding: v-bind('SPACING.SM + "px"') 10px;
+  font-size: v-bind('FONT_SIZES.XS + "px"');
 }
 
 .patch-apply-btn {
