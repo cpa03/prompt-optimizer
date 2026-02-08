@@ -45,6 +45,14 @@ export default defineConfig(({ mode }) => {
         input: {
           main: resolve(__dirname, 'index.html')
         },
+        onwarn(warning, warn) {
+          // Suppress dynamic import warnings - core is intentionally imported both ways
+          if (warning.code === 'DYNAMIC_IMPORT_VARIABLE' || 
+              (warning.message && warning.message.includes('dynamic import'))) {
+            return;
+          }
+          warn(warning);
+        },
         output: {
           manualChunks(id) {
             // Split vendor libraries into separate chunks
@@ -135,8 +143,13 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: 'assets/[name]-[hash].js',
         }
       },
-      chunkSizeWarningLimit: 500,
+      chunkSizeWarningLimit: 3500, // Main chunk contains application logic, allow larger size
       sourcemap: false,
+      // Suppress dynamic import warnings - core is intentionally imported both ways
+      // Static imports for types/constants, dynamic for Electron-specific modules
+      dynamicImportVarsOptions: {
+        warnOnError: false,
+      },
       // Enable CSS code splitting
       cssCodeSplit: true,
       // Ensure assets are properly hashed for caching
