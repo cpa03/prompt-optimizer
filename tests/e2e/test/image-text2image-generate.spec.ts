@@ -3,6 +3,7 @@ import { navigateToMode } from '../helpers/common'
 import { fillOriginalPrompt, clickOptimizeButton, expectOptimizedResultNotEmpty } from '../helpers/optimize'
 import * as fs from 'fs/promises'
 import * as path from 'path'
+import { IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT, IMAGE_GENERATION_TEST_TIMEOUT, WORKSPACE_VISIBLE } from '../constants/timeouts'
 
 const MODE = 'image-text2image' as const
 
@@ -22,7 +23,7 @@ async function openSelectAndWaitForVisibleOptions(page: any, select: any) {
 
   const ensureOpen = async () => {
     await select.click()
-    await expect.poll(async () => await visibleOptions.count(), { timeout: 20000 }).toBeGreaterThan(0)
+    await expect.poll(async () => await visibleOptions.count(), { timeout: WORKSPACE_VISIBLE }).toBeGreaterThan(0)
   }
 
   try {
@@ -57,7 +58,7 @@ async function selectOption(page: any, select: any, matcher?: RegExp) {
 test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
   test('切换到 SiliconFlow 图像模型并生成图片（对比模式）', async ({ page }) => {
     // Record mode may be slow (two image generations); keep replay fast.
-    test.setTimeout(900000)
+    test.setTimeout(IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT)
 
     await navigateToMode(page, 'image', 'text2image')
 
@@ -75,8 +76,8 @@ test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
     // 3) 选择图像模型（A/B 两列都设置为 SiliconFlow，保证请求与 fixture 匹配）
     const originalModelSelect = page.getByTestId('image-text2image-test-original-model-select')
     const optimizedModelSelect = page.getByTestId('image-text2image-test-optimized-model-select')
-    await expect(originalModelSelect).toBeVisible({ timeout: 20000 })
-    await expect(optimizedModelSelect).toBeVisible({ timeout: 20000 })
+    await expect(originalModelSelect).toBeVisible({ timeout: WORKSPACE_VISIBLE })
+    await expect(optimizedModelSelect).toBeVisible({ timeout: WORKSPACE_VISIBLE })
     await selectOption(page, originalModelSelect, /siliconflow/i)
     await selectOption(page, optimizedModelSelect, /siliconflow/i)
 
@@ -92,7 +93,7 @@ test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
       .poll(async () => {
         originalSrc = (await originalImg.getAttribute('src')) || ''
         return originalSrc
-      }, { timeout: 240000 })
+      }, { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     let optimizedSrc = ''
@@ -100,7 +101,7 @@ test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
       .poll(async () => {
         optimizedSrc = (await optimizedImg.getAttribute('src')) || ''
         return optimizedSrc
-      }, { timeout: 240000 })
+      }, { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     // 在 record 模式下保存一张样例图供 image2image 上传复用。

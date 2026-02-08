@@ -2,6 +2,7 @@ import { test, expect } from '../fixtures'
 import { navigateToMode } from '../helpers/common'
 import { fillOriginalPrompt, clickOptimizeButton, expectOptimizedResultNotEmpty } from '../helpers/optimize'
 import * as path from 'path'
+import { IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT, IMAGE_GENERATION_TEST_TIMEOUT, WORKSPACE_VISIBLE } from '../constants/timeouts'
 
 const MODE = 'image-image2image' as const
 
@@ -11,7 +12,7 @@ async function openSelectAndWaitForVisibleOptions(page: any, select: any) {
   const ensureOpen = async () => {
     await select.click()
     await expect
-      .poll(async () => await visibleOptions.count(), { timeout: 20000 })
+      .poll(async () => await visibleOptions.count(), { timeout: WORKSPACE_VISIBLE })
       .toBeGreaterThan(0)
   }
 
@@ -33,7 +34,7 @@ async function selectOption(page: any, select: any, matcher?: RegExp) {
     const options = await openSelectAndWaitForVisibleOptions(page, select)
 
     if (!matcher) {
-      await options.first().click({ timeout: 20000, force: attempt > 0 })
+      await options.first().click({ timeout: WORKSPACE_VISIBLE, force: attempt > 0 })
       return
     }
 
@@ -45,7 +46,7 @@ async function selectOption(page: any, select: any, matcher?: RegExp) {
     }
 
     try {
-      await target.click({ timeout: 20000, force: attempt > 0 })
+      await target.click({ timeout: WORKSPACE_VISIBLE, force: attempt > 0 })
       return
     } catch {
       await page.keyboard.press('Escape').catch(() => {})
@@ -56,7 +57,7 @@ async function selectOption(page: any, select: any, matcher?: RegExp) {
 
 test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
   test('上传输入图并在对比模式下生成 original+optimized 两张图', async ({ page }) => {
-    test.setTimeout(900000)
+    test.setTimeout(IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT)
 
     await navigateToMode(page, 'image', 'image2image')
 
@@ -70,17 +71,17 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     await fileInput.setInputFiles(seedPath)
 
     // 等待缩略图出现，说明 session 已注入 inputImage
-    await expect(page.getByTestId('image-image2image-input-preview')).toBeVisible({ timeout: 30000 })
+    await expect(page.getByTestId('image-image2image-input-preview')).toBeVisible({ timeout: WORKSPACE_VISIBLE })
 
     // 关闭 modal：不强依赖具体 DOM 结构，尽量退回到主界面继续
     await page.keyboard.press('Escape').catch(() => {})
 
     // 等待上传弹窗彻底关闭，避免残留遮罩层/动画拦截后续点击
-    await expect(page.getByTestId('image-image2image-upload-modal')).toBeHidden({ timeout: 20000 })
+    await expect(page.getByTestId('image-image2image-upload-modal')).toBeHidden({ timeout: WORKSPACE_VISIBLE })
 
     // 2) 选择文本模型（用于优化）
     const textModelSelect = page.getByTestId('image-image2image-text-model-select')
-    await expect(textModelSelect).toBeVisible({ timeout: 20000 })
+    await expect(textModelSelect).toBeVisible({ timeout: WORKSPACE_VISIBLE })
     await selectOption(page, textModelSelect)
 
     // 3) 选择优化模板（跳过）
@@ -102,8 +103,8 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     // 7) 选择图像模型：A/B 两列都设置为 SiliconFlow，保证请求与 fixture 匹配
     const originalModelSelect = page.getByTestId('image-image2image-test-original-model-select')
     const optimizedModelSelect = page.getByTestId('image-image2image-test-optimized-model-select')
-    await expect(originalModelSelect).toBeVisible({ timeout: 20000 })
-    await expect(optimizedModelSelect).toBeVisible({ timeout: 20000 })
+    await expect(originalModelSelect).toBeVisible({ timeout: WORKSPACE_VISIBLE })
+    await expect(optimizedModelSelect).toBeVisible({ timeout: WORKSPACE_VISIBLE })
     await selectOption(page, originalModelSelect, /siliconflow/i)
     await selectOption(page, optimizedModelSelect, /siliconflow/i)
 
@@ -115,11 +116,11 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     const optimizedImg = page.getByTestId('image-image2image-optimized-image').locator('img')
 
     await expect
-      .poll(async () => (await originalImg.getAttribute('src')) || '', { timeout: 240000 })
+      .poll(async () => (await originalImg.getAttribute('src')) || '', { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     await expect
-      .poll(async () => (await optimizedImg.getAttribute('src')) || '', { timeout: 240000 })
+      .poll(async () => (await optimizedImg.getAttribute('src')) || '', { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
   })
 })
