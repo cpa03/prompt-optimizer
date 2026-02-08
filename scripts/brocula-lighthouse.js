@@ -9,7 +9,7 @@ import * as chromeLauncher from 'chrome-launcher';
 import * as fs from 'fs';
 import * as path from 'path';
 
-const E2E_PORT = process.env.E2E_PORT || 15555;
+const E2E_PORT = process.env.E2E_PORT || 18181;
 const BASE_URL = `http://localhost:${E2E_PORT}`;
 
 class LighthouseOptimizer {
