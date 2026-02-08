@@ -26,7 +26,7 @@ describe('SeedreamImageAdapter', () => {
       expect(provider.id).toBe('seedream')
       expect(provider.name).toContain('Seedream')
       expect(provider.requiresApiKey).toBe(true)
-      expect(provider.defaultBaseURL).toBe('https://ark.cn-beijing.volces.com/api/v3')
+      expect(provider.defaultBaseURL).toBe('https://api.seaart.ai/v1')
       expect(provider.supportsDynamicModels).toBe(false)
       expect(provider.connectionSchema?.required).toContain('apiKey')
       expect(provider.connectionSchema?.optional).toEqual(expect.arrayContaining(['baseURL']))
@@ -243,7 +243,7 @@ describe('SeedreamImageAdapter', () => {
     test('should support optional baseURL configuration', () => {
       const provider = adapter.getProvider()
       expect(provider.connectionSchema?.optional).toContain('baseURL')
-      expect(provider.defaultBaseURL).toBe('https://ark.cn-beijing.volces.com/api/v3')
+      expect(provider.defaultBaseURL).toBe('https://api.seaart.ai/v1')
     })
   })
 
