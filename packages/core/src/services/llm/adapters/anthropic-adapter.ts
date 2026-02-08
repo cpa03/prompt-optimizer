@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { ANTHROPIC_MODELS, MODEL_CONTEXT_LENGTHS } from '../../../constants/models'
 import type {
   TextProvider,
   TextModel,
@@ -66,30 +67,30 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
     return [
       // Claude 4.0 系列
       {
-        id: 'claude-opus-4-20250514',
+        id: ANTHROPIC_MODELS.CLAUDE_OPUS_4,
         name: 'Claude 4.0 Opus',
         description: 'Most powerful Claude model for complex tasks',
         providerId,
         capabilities: {
                     supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: MODEL_CONTEXT_LENGTHS.CLAUDE_DEFAULT
         },
-        parameterDefinitions: this.getParameterDefinitions('claude-opus-4-20250514'),
-        defaultParameterValues: this.getDefaultParameterValues('claude-opus-4-20250514')
+        parameterDefinitions: this.getParameterDefinitions(ANTHROPIC_MODELS.CLAUDE_OPUS_4),
+        defaultParameterValues: this.getDefaultParameterValues(ANTHROPIC_MODELS.CLAUDE_OPUS_4)
       },
       {
-        id: 'claude-sonnet-4-20250514',
+        id: ANTHROPIC_MODELS.CLAUDE_SONNET_4,
         name: 'Claude 4.0 Sonnet',
         description: 'Balanced Claude model for most tasks',
         providerId,
         capabilities: {
                     supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: MODEL_CONTEXT_LENGTHS.CLAUDE_DEFAULT
         },
-        parameterDefinitions: this.getParameterDefinitions('claude-sonnet-4-20250514'),
-        defaultParameterValues: this.getDefaultParameterValues('claude-sonnet-4-20250514')
+        parameterDefinitions: this.getParameterDefinitions(ANTHROPIC_MODELS.CLAUDE_SONNET_4),
+        defaultParameterValues: this.getDefaultParameterValues(ANTHROPIC_MODELS.CLAUDE_SONNET_4)
       }
     ]
   }

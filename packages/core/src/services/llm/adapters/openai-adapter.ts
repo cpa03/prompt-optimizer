@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
+import { OPENAI_MODELS, MODEL_CONTEXT_LENGTHS } from '../../../constants/models'
 import type {
   TextProvider,
   TextModel,
@@ -24,26 +25,27 @@ interface ModelOverride {
 
 /**
  * OpenAI 静态模型定义
+ * Flexy loves modularity! Uses centralized model constants.
  */
 const OPENAI_STATIC_MODELS: ModelOverride[] = [
   {
-    id: 'gpt-5-mini',
+    id: OPENAI_MODELS.GPT_5_MINI,
     name: 'GPT-5 Mini',
     description: 'Fast, capable, and efficient small model with significant improvements in instruction-following and coding',
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: MODEL_CONTEXT_LENGTHS.GPT_5
     }
   },
   {
-    id: 'gpt-5.1',
+    id: OPENAI_MODELS.GPT_5_1,
     name: 'GPT-5.1',
     description: 'Latest GPT-5.1 flagship model with enhanced capabilities',
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: MODEL_CONTEXT_LENGTHS.GPT_5
     }
   }
 ]

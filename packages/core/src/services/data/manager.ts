@@ -9,7 +9,7 @@ import {
   DataInvalidFormatError,
   DataInvalidJsonError,
 } from './errors';
-import { toErrorWithCode } from '../../utils/error';
+import { toErrorWithCode, extractErrorMessage } from '../../utils/error';
 
 /**
  * 数据导入导出管理器
@@ -75,7 +75,7 @@ export class DataManager implements IDataManager {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      throw new DataExportFailedError(error instanceof Error ? error.message : String(error))
+      throw new DataExportFailedError(extractErrorMessage(error))
     }
 
     const exportFormat = {
@@ -92,7 +92,7 @@ export class DataManager implements IDataManager {
     try {
       exportData = JSON.parse(dataString);
     } catch (error) {
-      throw new DataInvalidJsonError(error instanceof Error ? error.message : String(error))
+      throw new DataInvalidJsonError(extractErrorMessage(error))
     }
 
     if (!exportData || typeof exportData !== 'object' || Array.isArray(exportData)) {
@@ -134,7 +134,7 @@ export class DataManager implements IDataManager {
           await service.importData(dataToImport[dataKey]);
           console.log(`Successfully imported ${dataKey}`);
         } catch (error) {
-          const errorMessage = `Failed to import ${dataKey}: ${error instanceof Error ? error.message : String(error)}`;
+          const errorMessage = `Failed to import ${dataKey}: ${extractErrorMessage(error)}`;
           errors.push(errorMessage);
           console.error(errorMessage, error);
         }

@@ -4,7 +4,7 @@ import { ImportExportError } from "../../interfaces/import-export";
 import { IMPORT_EXPORT_ERROR_CODES } from "../../constants/error-codes";
 import { VALIDATION_CONSTRAINTS } from "../../constants/constraints";
 import { StorageError } from "../storage/errors";
-import { toErrorWithCode } from "../../utils/error";
+import { toErrorWithCode, extractErrorMessage } from "../../utils/error";
 
 // 需要导出的UI配置键 - 白名单验证
 const UI_SETTINGS_KEYS = [
@@ -103,7 +103,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === "string") {
         throw toErrorWithCode(error);
       }
-      const details = error instanceof Error ? error.message : String(error);
+      const details = extractErrorMessage(error);
       throw new StorageError(`Failed to get preference: ${details}`, "read");
     }
   }
@@ -129,7 +129,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === "string") {
         throw toErrorWithCode(error);
       }
-      const details = error instanceof Error ? error.message : String(error);
+      const details = extractErrorMessage(error);
       throw new StorageError(`Failed to set preference: ${details}`, "write");
     }
   }
@@ -152,7 +152,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === "string") {
         throw toErrorWithCode(error);
       }
-      const details = error instanceof Error ? error.message : String(error);
+      const details = extractErrorMessage(error);
       throw new StorageError(`Failed to delete preference: ${details}`, "delete");
     }
   }
@@ -182,7 +182,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === "string") {
         throw toErrorWithCode(error);
       }
-      const details = error instanceof Error ? error.message : String(error);
+      const details = extractErrorMessage(error);
       throw new StorageError(`Failed to clear preferences: ${details}`, "clear");
     }
   }
@@ -220,7 +220,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === "string") {
         throw toErrorWithCode(error);
       }
-      const details = error instanceof Error ? error.message : String(error);
+      const details = extractErrorMessage(error);
       throw new StorageError(`Failed to get all preferences: ${details}`, "read");
     }
   }

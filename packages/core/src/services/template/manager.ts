@@ -7,6 +7,8 @@ import { BuiltinTemplateLanguage, ITemplateLanguageService } from './languageSer
 import { CORE_SERVICE_KEYS } from '../../constants/storage-keys';
 import { ImportExportError } from '../../interfaces/import-export';
 import { IMPORT_EXPORT_ERROR_CODES, TEMPLATE_ERROR_CODES } from '../../constants/error-codes';
+import { TEMPLATE_VERSIONS } from '../../constants/versions';
+import { extractErrorMessage } from '../../utils/error';
 
 
 
@@ -198,7 +200,7 @@ export class TemplateManager implements ITemplateManager {
         throw error;
       }
       throw new TemplateStorageError(
-        `Failed to import template: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to import template: ${extractErrorMessage(error)}`,
       );
     }
   }
@@ -239,7 +241,7 @@ export class TemplateManager implements ITemplateManager {
       }));
     } catch (error) {
       throw new TemplateStorageError(
-        `Failed to load user templates: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to load user templates: ${extractErrorMessage(error)}`,
       );
     }
   }
@@ -255,7 +257,7 @@ export class TemplateManager implements ITemplateManager {
       );
     } catch (error) {
       throw new TemplateStorageError(
-        `Failed to save user templates: ${error instanceof Error ? error.message : String(error)}`,
+        `Failed to save user templates: ${extractErrorMessage(error)}`,
       );
     }
   }
@@ -396,7 +398,7 @@ export class TemplateManager implements ITemplateManager {
           name: finalTemplateName,
           isBuiltin: false,
           metadata: {
-            version: template.metadata?.version || '1.0.0',
+            version: template.metadata?.version || TEMPLATE_VERSIONS.DEFAULT,
             lastModified: Date.now(), // 更新为当前时间
             templateType: template.metadata?.templateType || 'optimize', // 为旧版本数据提供默认类型
             author: template.metadata?.author || 'User', // 导入的模板标记为用户创建

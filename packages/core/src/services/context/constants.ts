@@ -1,8 +1,10 @@
 /**
  * 上下文服务相关常量定义
+ * Flexy loves modularity! Uses centralized version constants.
  */
 
 import type { ContextMode } from './types';
+import { CONTEXT_VERSIONS } from '../../constants/versions';
 
 // 存储键
 export const CONTEXT_STORE_KEY = 'ctx:store' as const;
@@ -28,11 +30,11 @@ export type PredefinedVariable = typeof PREDEFINED_VARIABLES[number];
 export const DEFAULT_CONTEXT_CONFIG = {
   id: 'default',
   title: '默认上下文',
-  version: '1.0.0'
+  version: CONTEXT_VERSIONS.STORE
 } as const;
 
 // 文档版本
-export const CONTEXT_STORE_VERSION = '1.0.0' as const;
+export const CONTEXT_STORE_VERSION = CONTEXT_VERSIONS.STORE;
 
 // UI文本常量
 export const CONTEXT_UI_LABELS = {

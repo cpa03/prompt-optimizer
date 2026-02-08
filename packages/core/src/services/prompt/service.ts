@@ -19,6 +19,7 @@ import {
 } from "./errors";
 import { TemplateProcessor, TemplateContext } from "../template/processor";
 import { PROMPT_CONSTRAINTS } from "../../constants/constraints";
+import { extractErrorMessage } from "../../utils/error";
 
 /**
  * Default template IDs used by the system
@@ -196,7 +197,7 @@ export class PromptService implements IPromptService {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new OptimizationError(
         request.targetPrompt,
         `Optimization failed: ${errorMessage}`,
@@ -293,7 +294,7 @@ export class PromptService implements IPromptService {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new OptimizationError(
         "",
         `Message optimization failed: ${errorMessage}`,
@@ -337,7 +338,7 @@ export class PromptService implements IPromptService {
         );
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : String(error);
+          extractErrorMessage(error);
         throw new IterationError(
           originalPrompt,
           iterateInput,
@@ -401,7 +402,7 @@ export class PromptService implements IPromptService {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new IterationError(
         originalPrompt,
         iterateInput,
@@ -449,7 +450,7 @@ export class PromptService implements IPromptService {
       return result;
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new TestError(
         systemPrompt,
         userPrompt,
@@ -513,7 +514,7 @@ export class PromptService implements IPromptService {
       });
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new TestError(
         systemPrompt,
         userPrompt,
@@ -618,7 +619,7 @@ export class PromptService implements IPromptService {
       });
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new OptimizationError(
         request.targetPrompt,
         `Optimization failed: ${errorMessage}`,
@@ -732,7 +733,7 @@ export class PromptService implements IPromptService {
       });
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new OptimizationError(
         "",
         `Message optimization failed: ${errorMessage}`,
@@ -775,7 +776,7 @@ export class PromptService implements IPromptService {
         template = await this.templateManager.getTemplate(templateId);
       } catch (error) {
         const errorMessage =
-          error instanceof Error ? error.message : String(error);
+          extractErrorMessage(error);
         throw new IterationError(
           originalPrompt,
           iterateInput,
@@ -855,7 +856,7 @@ export class PromptService implements IPromptService {
       });
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       throw new IterationError(
         originalPrompt,
         iterateInput,
@@ -1071,7 +1072,7 @@ export class PromptService implements IPromptService {
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        extractErrorMessage(error);
       console.error(
         "[PromptService] Custom conversation test error:",
         errorMessage,
