@@ -6,3 +6,4 @@
 export * from './error-codes'
 export * from './storage-keys'
 export * from './constraints'
+export * from './templates'
