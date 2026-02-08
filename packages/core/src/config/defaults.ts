@@ -4,113 +4,126 @@
  * Flexy loves modularity! All defaults centralized and typed.
  */
 
-// Image size presets for different providers
+import { getEnvString, getEnvInt, getEnvFloat } from './env';
+
+// LLM Parameters type definition
+interface LLMParameters {
+  temperature: number;
+  maxTokens: number;
+  topP: number;
+  frequencyPenalty: number;
+  presencePenalty: number;
+}
+
+// Image size presets - now configurable via environment
 export const IMAGE_SIZE_PRESETS = {
-  // Standard sizes used by most providers
   standard: {
-    default: '1024x1024',
-    available: ['1024x1024', '1536x1024', '1024x1536', 'auto'] as const,
+    default: getEnvString('VITE_IMAGE_SIZE_DEFAULT', '1024x1024'),
+    available: (getEnvString('VITE_IMAGE_SIZE_OPTIONS', '1024x1024,1536x1024,1024x1536,auto').split(',')) as string[],
   },
-  
-  // OpenAI specific
   openai: {
-    default: '1024x1024',
-    available: ['1024x1024', '1536x1024', '1024x1536', 'auto'] as const,
+    default: getEnvString('VITE_OPENAI_IMAGE_SIZE_DEFAULT', '1024x1024'),
+    available: (getEnvString('VITE_OPENAI_IMAGE_SIZE_OPTIONS', '1024x1024,1536x1024,1024x1536,auto').split(',')) as string[],
   },
-  
-  // SiliconFlow specific
   siliconflow: {
-    default: '1024x1024',
-    available: ['1024x1024', '960x1280', '768x1024', '1280x960', '1024x768', '1280x1280'] as const,
+    default: getEnvString('VITE_SILICONFLOW_IMAGE_SIZE_DEFAULT', '1024x1024'),
+    available: (getEnvString('VITE_SILICONFLOW_IMAGE_SIZE_OPTIONS', '1024x1024,960x1280,768x1024,1280x960,1024x768,1280x1280').split(',')) as string[],
   },
-  
-  // Seedream specific (uses different format)
   seedream: {
-    default: '2K',
-    available: ['1K', '2K', '4K', '1024x1024', '512x512', '768x768'] as const,
+    default: getEnvString('VITE_SEEDREAM_SIZE_DEFAULT', '2K'),
+    available: (getEnvString('VITE_SEEDREAM_SIZE_OPTIONS', '1K,2K,4K,1024x1024,512x512,768x768').split(',')) as string[],
   },
-  
-  // ModelScope specific
   modelscope: {
-    default: '1024x1024',
-    available: ['1024x1024', '1536x1024', '1024x1536'] as const,
+    default: getEnvString('VITE_MODELSCOPE_IMAGE_SIZE_DEFAULT', '1024x1024'),
+    available: (getEnvString('VITE_MODELSCOPE_IMAGE_SIZE_OPTIONS', '1024x1024,1536x1024,1024x1536').split(',')) as string[],
   },
 } as const;
 
-// LLM default parameters
-export const LLM_DEFAULTS = {
-  temperature: 0.7,
-  maxTokens: 4096,
-  topP: 1.0,
-  frequencyPenalty: 0,
-  presencePenalty: 0,
-} as const;
+// LLM default parameters - fully configurable via environment
+export const LLM_DEFAULTS: LLMParameters = {
+  temperature: getEnvFloat('VITE_LLM_TEMPERATURE', 0.7),
+  maxTokens: getEnvInt('VITE_LLM_MAX_TOKENS', 4096),
+  topP: getEnvFloat('VITE_LLM_TOP_P', 1.0),
+  frequencyPenalty: getEnvFloat('VITE_LLM_FREQ_PENALTY', 0),
+  presencePenalty: getEnvFloat('VITE_LLM_PRESENCE_PENALTY', 0),
+};
 
-// Image generation defaults
+// Image generation defaults - configurable per provider
 export const IMAGE_DEFAULTS = {
   seedream: {
-    aspectRatio: '2K',
-    seed: '-1',
-    sampleMethod: 'default',
-    cfg: 7.5,
-    steps: 20,
+    aspectRatio: getEnvString('VITE_SEEDREAM_ASPECT_RATIO', '2K'),
+    seed: getEnvString('VITE_SEEDREAM_SEED', '-1'),
+    sampleMethod: getEnvString('VITE_SEEDREAM_SAMPLE_METHOD', 'default'),
+    cfg: getEnvFloat('VITE_SEEDREAM_CFG', 7.5),
+    steps: getEnvInt('VITE_SEEDREAM_STEPS', 20),
   },
-  
   siliconflow: {
-    steps: 20,
-    guidanceScale: 7.5,
-    numInferenceSteps: 50,
-    strength: 4.0,
+    steps: getEnvInt('VITE_SILICONFLOW_STEPS', 20),
+    guidanceScale: getEnvFloat('VITE_SILICONFLOW_GUIDANCE_SCALE', 7.5),
+    numInferenceSteps: getEnvInt('VITE_SILICONFLOW_INFERENCE_STEPS', 50),
+    strength: getEnvFloat('VITE_SILICONFLOW_STRENGTH', 4.0),
   },
-  
   openai: {
-    quality: 'standard',
-    responseFormat: 'url',
-    style: 'vivid',
+    quality: getEnvString('VITE_OPENAI_IMAGE_QUALITY', 'standard'),
+    responseFormat: getEnvString('VITE_OPENAI_IMAGE_FORMAT', 'url'),
+    style: getEnvString('VITE_OPENAI_IMAGE_STYLE', 'vivid'),
   },
 } as const;
 
-// Constraint values
+// Constraint values - all configurable via environment
 export const CONSTRAINTS = {
   image: {
-    maxSizeBytes: 10 * 1024 * 1024, // 10MB
-    maxCacheSizeBytes: 50 * 1024 * 1024, // 50MB
-    maxDimension: 4096,
+    maxSizeBytes: getEnvInt('VITE_MAX_IMAGE_SIZE_BYTES', 10 * 1024 * 1024), // 10MB default
+    maxCacheSizeBytes: getEnvInt('VITE_MAX_IMAGE_CACHE_BYTES', 50 * 1024 * 1024), // 50MB default
+    maxDimension: getEnvInt('VITE_MAX_IMAGE_DIMENSION', 4096),
   },
-  
   mcp: {
-    maxPromptLength: 50000,
-    maxRequirementsLength: 10000,
+    maxPromptLength: getEnvInt('VITE_MCP_MAX_PROMPT_LENGTH', 50000),
+    maxRequirementsLength: getEnvInt('VITE_MCP_MAX_REQUIREMENTS_LENGTH', 10000),
   },
-  
   text: {
-    maxRetries: 5,
+    maxRetries: getEnvInt('VITE_MAX_RETRIES', 5),
   },
 } as const;
 
 // Model defaults
 export const MODEL_DEFAULTS = {
-  customModelId: 'custom-model',
-  fallbackApiKey: 'ollama',
+  customModelId: getEnvString('VITE_CUSTOM_MODEL_ID', 'custom-model'),
+  fallbackApiKey: getEnvString('VITE_FALLBACK_API_KEY', 'ollama'),
 } as const;
 
-// Storage keys
+// Storage keys - centralized
 export const STORAGE_KEYS = {
-  variables: 'variable-manager-data',
-  globalSettings: 'global-settings/v1',
-  chunkLoadRefreshPrompted: 'prompt-optimizer:chunk-load-refresh-prompted',
+  variables: getEnvString('VITE_STORAGE_KEY_VARIABLES', 'variable-manager-data'),
+  globalSettings: getEnvString('VITE_STORAGE_KEY_SETTINGS', 'global-settings/v1'),
+  chunkLoadRefreshPrompted: getEnvString('VITE_STORAGE_KEY_CHUNK_PROMPT', 'prompt-optimizer:chunk-load-refresh-prompted'),
+  imageText2ImageSession: getEnvString('VITE_STORAGE_KEY_IMG_T2I', 'image:text2image:session'),
+  imageImage2ImageSession: getEnvString('VITE_STORAGE_KEY_IMG_I2I', 'image:image2image:session'),
 } as const;
 
-// External URLs
+// Version constants - read from package.json if available
+function getPackageVersion(): string {
+  try {
+    // Try to get version from env first
+    const envVersion = getEnvString('VITE_APP_VERSION', '');
+    if (envVersion) return envVersion;
+    
+    return '2.5.3'; // Fallback version
+  } catch {
+    return '2.5.3';
+  }
+}
+
+// External URLs - configurable via environment
 export const EXTERNAL_URLS = {
-  githubRepo: 'https://github.com/linshenkx/prompt-optimizer',
+  githubRepo: getEnvString('VITE_GITHUB_REPO_URL', 'https://github.com/linshenkx/prompt-optimizer'),
 } as const;
 
 // Version constants
 export const VERSIONS = {
-  contextStore: '1.0.0',
-  globalSettings: 'v1',
+  contextStore: getPackageVersion(),
+  globalSettings: getEnvString('VITE_SETTINGS_VERSION', 'v1'),
 } as const;
 
-// SVG namespace
+// SVG namespace - W3C standard, should not change
 export const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';

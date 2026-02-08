@@ -10,11 +10,14 @@ export default defineConfig(({ mode }) => {
   const monorepoRoot = resolve(__dirname, '../..')
   const env = loadEnv(mode, monorepoRoot)
   
+  // Flexy loves modularity! Port is configurable via environment
+  const port = parseInt(env.VITE_WEB_PORT || process.env.VITE_WEB_PORT || '18181', 10);
+  
   return {
     envDir: monorepoRoot,
     plugins: [vue()],
     server: {
-      port: 18181,
+      port: port,
       host: true,
       fs: {
         // 允许为工作区依赖提供服务
@@ -89,7 +92,7 @@ export default defineConfig(({ mode }) => {
         ...Object.keys(env).reduce((acc, key) => {
           acc[key] = env[key];
           return acc;
-        }, {})
+        }, {} as Record<string, string>)
       }
     }
   }
