@@ -192,7 +192,23 @@
               </NIcon>
             </template>
           </NEmpty>
-          <NText  v-else class="ml-2">{{ placeholder || t('common.loading') }}</NText>
+          <!-- 🎨 Palette: Enhanced skeleton loader with shimmer effect -->
+          <div v-else class="skeleton-loader">
+            <div class="skeleton-header">
+              <div class="skeleton-line skeleton-line--title"></div>
+            </div>
+            <div class="skeleton-content">
+              <div class="skeleton-line skeleton-line--long"></div>
+              <div class="skeleton-line skeleton-line--medium"></div>
+              <div class="skeleton-line skeleton-line--short"></div>
+              <div class="skeleton-line skeleton-line--long"></div>
+              <div class="skeleton-line skeleton-line--medium"></div>
+            </div>
+            <div class="skeleton-footer">
+              <NText class="skeleton-text">{{ placeholder || t('common.loading') }}</NText>
+              <div class="skeleton-pulse-indicator"></div>
+            </div>
+          </div>
         </NFlex>
       </NFlex>
   
@@ -605,6 +621,133 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
   100% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* 🎨 Palette: Skeleton loader with shimmer effect */
+.skeleton-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.skeleton-header {
+  margin-bottom: 0.5rem;
+}
+
+.skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  background: linear-gradient(
+    90deg,
+    var(--n-skeleton-color, rgba(128, 128, 128, 0.12)) 0%,
+    var(--n-skeleton-color-highlight, rgba(128, 128, 128, 0.2)) 50%,
+    var(--n-skeleton-color, rgba(128, 128, 128, 0.12)) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 0.25rem;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-line--title {
+  height: 1.5rem;
+  width: 40%;
+  animation-delay: 0s;
+}
+
+.skeleton-line--long {
+  width: 100%;
+  animation-delay: 0.1s;
+}
+
+.skeleton-line--medium {
+  width: 75%;
+  animation-delay: 0.2s;
+}
+
+.skeleton-line--short {
+  width: 50%;
+  animation-delay: 0.3s;
+}
+
+.skeleton-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.skeleton-text {
+  font-size: 0.875rem;
+  color: var(--n-text-color-3, #999);
+  font-style: italic;
+}
+
+.skeleton-pulse-indicator {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--n-primary-color, #18a058);
+  border-radius: 50%;
+  animation: skeleton-pulse 1s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* Dark mode adjustments */
+.dark .skeleton-line {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  background-size: 200% 100%;
+}
+
+.dark .skeleton-text {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-line {
+    animation: none;
+    background: var(--n-skeleton-color, rgba(128, 128, 128, 0.12));
+  }
+
+  .skeleton-pulse-indicator {
+    animation: none;
   }
 }
 </style>
