@@ -1,5 +1,6 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 interface ModelOverride {
   id: string
@@ -39,7 +40,7 @@ export class ZhipuAdapter extends OpenAIAdapter {
       name: 'Zhipu AI',
       description: 'Zhipu GLM OpenAI-compatible models',
       requiresApiKey: true,
-      defaultBaseURL: 'https://open.bigmodel.cn/api/paas/v4',
+      defaultBaseURL: PROVIDER_URLS.zhipu,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
       connectionSchema: {
