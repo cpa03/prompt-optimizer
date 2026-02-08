@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, inject, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject, watch, h, type Ref } from 'vue'
 
 import {
   NButton,
@@ -281,6 +281,11 @@ const handleSaveFavorite = async () => {
     return;
   }
 
+  // 如果有待删除的收藏，先清理
+  if (pendingDeletion.value) {
+    clearPendingDeletion();
+  }
+
   try {
     await formRef.value?.validate();
     loading.value = true;
@@ -316,7 +321,44 @@ const handleSaveFavorite = async () => {
   }
 };
 
-// 移除收藏
+  // 待删除的收藏信息（用于undo功能）
+const pendingDeletion = ref<{
+  favoriteId: string;
+  timeoutId: number | null;
+  toastInstance: ReturnType<typeof message.info> | null;
+} | null>(null);
+
+// 清理待删除状态
+const clearPendingDeletion = () => {
+  if (pendingDeletion.value?.timeoutId) {
+    window.clearTimeout(pendingDeletion.value.timeoutId);
+  }
+  if (pendingDeletion.value?.toastInstance) {
+    pendingDeletion.value.toastInstance.destroy();
+  }
+  pendingDeletion.value = null;
+};
+
+// 执行实际的删除操作
+const executeDeleteFavorite = async (id: string) => {
+  const servicesValue = services?.value;
+  if (!servicesValue || !servicesValue.favoriteManager) return;
+
+  try {
+    await servicesValue.favoriteManager.deleteFavorite(id);
+    message.success('取消收藏成功');
+    emit('unfavorited');
+  } catch (error) {
+    console.error('取消收藏失败:', error);
+    const errorMessage = error instanceof Error ? error.message : '未知错误';
+    message.error(`取消收藏失败: ${errorMessage}`);
+    // 恢复收藏状态
+    isFavorited.value = true;
+    favoriteId.value = id;
+  }
+};
+
+// 移除收藏（带undo功能）
 const handleRemoveFavorite = async () => {
   const servicesValue = services?.value;
   if (!servicesValue || !favoriteId.value) return;
@@ -326,19 +368,54 @@ const handleRemoveFavorite = async () => {
     return;
   }
 
-  try {
-    await servicesValue.favoriteManager.deleteFavorite(favoriteId.value);
+  const idToDelete = favoriteId.value;
 
-    isFavorited.value = false;
-    favoriteId.value = null;
-
-    message.success('取消收藏成功');
-    emit('unfavorited');
-  } catch (error) {
-    console.error('取消收藏失败:', error);
-    const errorMessage = error instanceof Error ? error.message : '未知错误';
-    message.error(`取消收藏失败: ${errorMessage}`);
+  // 如果已有待删除项，先执行它
+  if (pendingDeletion.value) {
+    clearPendingDeletion();
   }
+
+  // 立即更新UI状态
+  isFavorited.value = false;
+  favoriteId.value = null;
+
+  // 创建toast dengan action button
+  const toastInstance = message.info(
+    '已取消收藏',
+    {
+      duration: 5000,
+      closable: true,
+      keepAliveOnHover: true,
+      action: () => h('button', {
+        class: 'undo-btn',
+        onClick: () => {
+          // 撤销删除
+          if (pendingDeletion.value) {
+            window.clearTimeout(pendingDeletion.value.timeoutId!);
+            pendingDeletion.value = null;
+            // 恢复UI状态
+            isFavorited.value = true;
+            favoriteId.value = idToDelete;
+            message.success('已恢复收藏');
+          }
+        }
+      }, '撤销')
+    }
+  );
+
+  // 设置延迟删除
+  const timeoutId = window.setTimeout(() => {
+    if (pendingDeletion.value?.favoriteId === idToDelete) {
+      executeDeleteFavorite(idToDelete);
+      pendingDeletion.value = null;
+    }
+  }, 5000);
+
+  pendingDeletion.value = {
+    favoriteId: idToDelete,
+    timeoutId,
+    toastInstance
+  };
 };
 
 // 监听服务初始化完成后再执行相关操作
@@ -354,6 +431,15 @@ watch(() => services?.value?.favoriteManager, (favoriteManager) => {
 onMounted(() => {
   loadCategories();
   checkFavoriteStatus();
+});
+
+// 组件卸载时清理待删除状态
+onUnmounted(() => {
+  if (pendingDeletion.value) {
+    // 执行实际的删除操作
+    executeDeleteFavorite(pendingDeletion.value.favoriteId);
+    clearPendingDeletion();
+  }
 });
 
 // 监听内容变化，重新检查收藏状态
@@ -403,5 +489,28 @@ watch(() => props.content, () => {
   100% {
     transform: rotate(360deg) scale(1);
   }
+}
+
+/* Undo按钮样式 */
+:global(.undo-btn) {
+  background: var(--n-primary-color);
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 12px;
+  transition: all 0.2s ease;
+}
+
+:global(.undo-btn:hover) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+:global(.undo-btn:active) {
+  transform: scale(0.95);
 }
 </style>
