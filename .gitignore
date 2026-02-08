@@ -10,6 +10,7 @@ dist-ssr
 packages/extension/*.zip
 packages/desktop/web-dist
 packages/desktop/dist
+packages/desktop/*.bat
 packages/desktop-standalone/dist
 packages/desktop-standalone/prompt-optimizer-*
 *.tar.gz
@@ -89,6 +90,8 @@ test-results/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.cursor/
+.cursorrules
 .idea
 *.code-workspace
 .project
