@@ -459,6 +459,9 @@ importers:
       vite:
         specifier: ^7.2.7
         version: 7.2.7(@types/node@25.0.0)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2)
+      vite-plugin-compression2:
+        specifier: ^2.4.0
+        version: 2.4.0(rollup@4.53.3)
       vitest:
         specifier: ^4.0.15
         version: 4.0.15(@types/node@25.0.0)(jiti@1.21.7)(jsdom@26.1.0)(msw@2.10.5(@types/node@25.0.0)(typescript@5.9.3))(terser@5.46.0)(yaml@2.8.2)
@@ -4998,6 +5001,9 @@ packages:
   tar-fs@3.1.1:
     resolution: {integrity: sha512-LZA0oaPOc2fVo82Txf3gw+AkEd38szODlptMYejQUhndHMLQ9M059uXR+AfS7DNo0NpINvSqDsvyaCrBVkptWg==}
 
+  tar-mini@0.2.0:
+    resolution: {integrity: sha512-+qfUHz700DWnRutdUsxRRVZ38G1Qr27OetwaMYTdg8hcPxf46U0S1Zf76dQMWRBmusOt2ZCK5kbIaiLkoGO7WQ==}
+
   tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
 
@@ -5302,6 +5308,9 @@ packages:
   verror@1.10.1:
     resolution: {integrity: sha512-veufcmxri4e3XSrT0xwfUR7kguIkaxBeosDg00yDWhk49wdwkSUrvvsm7nc75e1PUyvIeZj6nS8VQRYz2/S4Xg==}
     engines: {node: '>=0.6.0'}
+
+  vite-plugin-compression2@2.4.0:
+    resolution: {integrity: sha512-8J4CBF1+dM1I06azba/eXJuJHinLF0Am7lUvRH8AZpu0otJoBaDEnxrIEr5iPZJSwH0AEglJGYCveh7pN52jCg==}
 
   vite-plugin-dts@4.5.4:
     resolution: {integrity: sha512-d4sOM8M/8z7vRXHHq/ebbblfaxENjogAAekcfcDCCwAyvGqnPrc7f4NZbvItS+g4WTgerW0xDwSz5qz11JT3vg==}
@@ -11059,6 +11068,8 @@ snapshots:
       - bare-buffer
       - react-native-b4a
 
+  tar-mini@0.2.0: {}
+
   tar-stream@3.1.7:
     dependencies:
       b4a: 1.7.3
@@ -11374,6 +11385,13 @@ snapshots:
       core-util-is: 1.0.2
       extsprintf: 1.4.1
     optional: true
+
+  vite-plugin-compression2@2.4.0(rollup@4.53.3):
+    dependencies:
+      '@rollup/pluginutils': 5.3.0(rollup@4.53.3)
+      tar-mini: 0.2.0
+    transitivePeerDependencies:
+      - rollup
 
   vite-plugin-dts@4.5.4(@types/node@22.16.0)(rollup@4.53.3)(typescript@5.8.3)(vite@7.2.7(@types/node@22.16.0)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2)):
     dependencies:
