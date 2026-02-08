@@ -162,6 +162,18 @@ export {
   ALL_STORAGE_KEYS,
   ALL_STORAGE_KEYS_ARRAY
 } from './constants/storage-keys'
+
+// 导出约束常量
+export {
+  VALIDATION_CONSTRAINTS,
+  STORAGE_CONSTRAINTS,
+  PROMPT_CONSTRAINTS,
+  LLM_CONSTRAINTS,
+  IMAGE_CONSTRAINTS,
+  SESSION_CONSTRAINTS,
+  API_CONSTRAINTS,
+  CORE_CONSTRAINTS
+} from './constants/constraints'
 export type {
   CoreServiceKey,
   UISettingsKey,
