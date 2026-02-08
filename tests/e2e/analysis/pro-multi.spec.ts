@@ -1,5 +1,6 @@
 import { test } from '../fixtures'
 import { navigateToMode } from '../helpers/common'
+import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 
 /**
  * Pro Multi-Message 模式 - 提示词分析测试
@@ -21,7 +22,7 @@ import { navigateToMode } from '../helpers/common'
 
 test.describe.skip('Pro Multi-Message - 提示词分析', () => {
   test('分析对话优化结果并显示评估分数', async ({ page }) => {
-    test.setTimeout(180000)
+    test.setTimeout(EXTENDED_ANALYSIS_TEST_TIMEOUT)
 
     await navigateToMode(page, 'pro', 'multi')
 

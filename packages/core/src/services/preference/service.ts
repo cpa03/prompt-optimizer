@@ -2,6 +2,7 @@ import type { IPreferenceService } from "./types";
 import type { IStorageProvider } from "../storage/types";
 import { ImportExportError } from "../../interfaces/import-export";
 import { IMPORT_EXPORT_ERROR_CODES } from "../../constants/error-codes";
+import { VALIDATION_CONSTRAINTS } from "../../constants/constraints";
 import { StorageError } from "../storage/errors";
 import { toErrorWithCode } from "../../utils/error";
 
@@ -48,8 +49,8 @@ const isValidSettingKey = (key: string): boolean => {
   const normalizedKey = normalizeSettingKey(key);
   return (
     UI_SETTINGS_KEYS.includes(normalizedKey as any) &&
-    normalizedKey.length <= 50 &&
-    normalizedKey.length > 0 &&
+    normalizedKey.length <= VALIDATION_CONSTRAINTS.KEY_MAX_LENGTH &&
+    normalizedKey.length >= VALIDATION_CONSTRAINTS.KEY_MIN_LENGTH &&
     !/[<>"\\'&\x00-\x1f\x7f-\x9f]/.test(normalizedKey)
   ); // 排除危险字符和控制字符
 };
@@ -60,7 +61,7 @@ const isValidSettingKey = (key: string): boolean => {
 const isValidSettingValue = (value: any): value is string => {
   return (
     typeof value === "string" &&
-    value.length <= 1000 && // 限制值的长度
+    value.length <= VALIDATION_CONSTRAINTS.VALUE_MAX_LENGTH && // 限制值的长度
     !/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f]/.test(value)
   ); // 排除控制字符
 };

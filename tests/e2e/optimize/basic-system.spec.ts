@@ -6,12 +6,13 @@ import {
   expectOptimizedResultNotEmpty,
   verifyOptimizeButtonDisabledWhenEmpty
 } from '../helpers/optimize'
+import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 
 const MODE = 'basic-system' as const
 
 test.describe('Basic System - 提示词优化', () => {
   test('优化提示词并生成优化结果', async ({ page }) => {
-    test.setTimeout(180000)
+    test.setTimeout(EXTENDED_ANALYSIS_TEST_TIMEOUT)
 
     await navigateToMode(page, 'basic', 'system')
 

@@ -18,6 +18,7 @@ import {
   ServiceDependencyError,
 } from "./errors";
 import { TemplateProcessor, TemplateContext } from "../template/processor";
+import { PROMPT_CONSTRAINTS } from "../../constants/constraints";
 
 /**
  * Default template IDs used by the system
@@ -248,14 +249,15 @@ export class PromptService implements IPromptService {
       }));
 
       // 准备选中消息的数据（包含长度判断）
-      const maxLength = 200;
+      const maxLength = PROMPT_CONSTRAINTS.MAX_DISPLAY_LENGTH;
+      const previewLength = Math.floor(maxLength * 0.75); // 75% of max length for preview
       const selectedMessageData = {
         index: selectedIndex + 1,
         roleLabel: selectedMessage.role.toUpperCase(),
         content: selectedMessage.content,
         contentTooLong: selectedMessage.content.length > maxLength,
         contentPreview: selectedMessage.content.length > maxLength
-          ? selectedMessage.content.substring(0, 150)
+          ? selectedMessage.content.substring(0, previewLength)
           : undefined,
       };
 
@@ -672,14 +674,15 @@ export class PromptService implements IPromptService {
       }));
 
       // 准备选中消息的数据（包含长度判断）
-      const maxLength = 200;
+      const maxLength = PROMPT_CONSTRAINTS.MAX_DISPLAY_LENGTH;
+      const previewLength = Math.floor(maxLength * 0.75); // 75% of max length for preview
       const selectedMessageData = {
         index: selectedIndex + 1,
         roleLabel: selectedMessage.role.toUpperCase(),
         content: selectedMessage.content,
         contentTooLong: selectedMessage.content.length > maxLength,
         contentPreview: selectedMessage.content.length > maxLength
-          ? selectedMessage.content.substring(0, 150)
+          ? selectedMessage.content.substring(0, previewLength)
           : undefined,
       };
 

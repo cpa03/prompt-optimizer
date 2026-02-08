@@ -6,12 +6,13 @@ import {
   expectOptimizedResultNotEmpty,
   expectOutputByTestIdNotEmpty,
 } from '../helpers/optimize'
+import { IMAGE_GENERATION_TEST_TIMEOUT } from '../constants/timeouts'
 
 const MODE = 'basic-system' as const
 
 test.describe('Basic System - 测试（对比模式）', () => {
   test('先优化，再在对比模式下测试，原始/优化结果都非空', async ({ page }) => {
-    test.setTimeout(240000)
+    test.setTimeout(IMAGE_GENERATION_TEST_TIMEOUT)
 
     await navigateToMode(page, 'basic', 'system')
 

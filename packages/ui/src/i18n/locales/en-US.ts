@@ -63,6 +63,8 @@ export default {
     context: "Context",
     copySuccess: "Copied to clipboard",
     copyFailed: "Copy Failed",
+    addToFavorites: "Add to Favorites",
+    fullscreen: "Fullscreen",
     appName: "Prompt Optimizer",
     selectFile: "Select File",
     exporting: "Exporting...",

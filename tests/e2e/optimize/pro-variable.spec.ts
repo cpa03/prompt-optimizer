@@ -6,12 +6,13 @@ import {
   expectOptimizedResultNotEmpty,
   verifyOptimizeButtonDisabledWhenEmpty
 } from '../helpers/optimize'
+import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 
 const MODE = 'pro-variable' as const
 
 test.describe('Pro Variable - 提示词优化', () => {
   test('优化带变量的提示词并生成优化结果', async ({ page }) => {
-    test.setTimeout(180000)
+    test.setTimeout(EXTENDED_ANALYSIS_TEST_TIMEOUT)
 
     await navigateToMode(page, 'pro', 'variable')
 
