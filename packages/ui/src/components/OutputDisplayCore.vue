@@ -15,6 +15,7 @@
             :disabled="internalViewMode === 'render'"
             size="small"
             :type="internalViewMode === 'render' ? 'primary' : 'default'"
+            :title="t('common.render') + ' (Ctrl+1)'"
           >
             {{ t('common.render') }}
           </NButton>
@@ -23,6 +24,7 @@
             :disabled="internalViewMode === 'source'"
             size="small"
             :type="internalViewMode === 'source' ? 'primary' : 'default'"
+            :title="t('common.source') + ' (Ctrl+2)'"
           >
             {{ t('common.source') }}
           </NButton>
@@ -32,6 +34,7 @@
             :disabled="internalViewMode === 'diff' || !originalContent"
             size="small"
             :type="internalViewMode === 'diff' ? 'primary' : 'default'"
+            :title="t('common.compare') + ' (Ctrl+3)'"
           >
             {{ t('common.compare') }}
           </NButton>
@@ -47,7 +50,7 @@
             size="small"
             quaternary
             circle
-            :title="t('common.addToFavorites')"
+            :title="t('common.addToFavorites') + ' (Ctrl+S)'"
             :aria-label="t('common.addToFavorites')"
           >
             <template #icon>
@@ -62,7 +65,7 @@
             size="small"
             quaternary
             circle
-            :title="copySuccess ? t('common.copied') : t('common.copy')"
+            :title="(copySuccess ? t('common.copied') : t('common.copy')) + ' (Ctrl+C)'"
             :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
             :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
           >
@@ -88,7 +91,7 @@
             size="small"
             quaternary
             circle
-            :title="t('common.fullscreen')"
+            :title="t('common.fullscreen') + ' (Ctrl+Enter)'"
             :aria-label="t('common.fullscreen')"
           >
             <template #icon>
