@@ -3,6 +3,8 @@
  * 简化的参数验证，移除过度抽象
  */
 
+import { CONSTRAINTS } from '@prompt-optimizer/core';
+
 export class ParameterValidator {
 
   /**
@@ -12,8 +14,8 @@ export class ParameterValidator {
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
       throw new Error('提示词必须是非空字符串');
     }
-    if (prompt.length > 50000) {
-      throw new Error('提示词过长（最大 50,000 字符）');
+    if (prompt.length > CONSTRAINTS.mcp.maxPromptLength) {
+      throw new Error(`提示词过长（最大 ${CONSTRAINTS.mcp.maxPromptLength.toLocaleString()} 字符）`);
     }
   }
 
@@ -33,8 +35,8 @@ export class ParameterValidator {
     if (!requirements || typeof requirements !== 'string' || requirements.trim().length === 0) {
       throw new Error('需求描述必须是非空字符串');
     }
-    if (requirements.length > 10000) {
-      throw new Error('需求描述过长（最大 10,000 字符）');
+    if (requirements.length > CONSTRAINTS.mcp.maxRequirementsLength) {
+      throw new Error(`需求描述过长（最大 ${CONSTRAINTS.mcp.maxRequirementsLength.toLocaleString()} 字符）`);
     }
   }
 }

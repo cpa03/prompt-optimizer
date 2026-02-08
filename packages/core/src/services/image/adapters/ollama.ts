@@ -9,8 +9,7 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-
-const OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434/v1'
+import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, MIME_TYPES } from '../../../config'
 
 export class OllamaImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -26,7 +25,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       // Ollama can be configured with CORS/reverse-proxy; don't hard-mark it as browser-blocked.
       corsRestricted: false,
       requiresApiKey: false,
-      defaultBaseURL: OLLAMA_DEFAULT_BASE_URL,
+      defaultBaseURL: OLLAMA_CONFIG.defaultBaseURL,
       supportsDynamicModels: true,
       connectionSchema: {
         required: [],
@@ -74,7 +73,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
 
     const rawApiKey = typeof connectionConfig.apiKey === 'string' ? connectionConfig.apiKey : ''
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
+      ...HTTP_HEADERS.json
     }
     if (rawApiKey.trim()) {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
@@ -119,14 +118,14 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'image.params.size.label',
         descriptionKey: 'image.params.size.description',
         type: 'string',
-        defaultValue: '1024x1024',
-        allowedValues: ['1024x1024', '1536x1024', '1024x1536', 'auto']
+        defaultValue: IMAGE_SIZE_PRESETS.standard.default,
+        allowedValues: [...IMAGE_SIZE_PRESETS.standard.available]
       }
     ]
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
-    return { size: '1024x1024' }
+    return { size: IMAGE_SIZE_PRESETS.standard.default }
   }
 
   protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
@@ -140,7 +139,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       ...request.paramOverrides
     }
 
-    const size = typeof merged.size === 'string' && merged.size.trim() ? merged.size : '1024x1024'
+    const size = typeof merged.size === 'string' && merged.size.trim() ? merged.size : IMAGE_SIZE_PRESETS.standard.default
 
     const payload = {
       model: config.modelId,
@@ -153,7 +152,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     const rawApiKey = typeof config.connectionConfig?.apiKey === 'string' ? config.connectionConfig.apiKey : ''
 
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json'
+      ...HTTP_HEADERS.json
     }
     if (rawApiKey.trim()) {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
@@ -191,10 +190,10 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       if (!item?.b64_json || typeof item.b64_json !== 'string') {
         throw new ImageError(IMAGE_ERROR_CODES.INVALID_RESPONSE_FORMAT)
       }
-      const dataUrl = `data:image/png;base64,${item.b64_json}`
+      const dataUrl = `data:${MIME_TYPES.image.png};base64,${item.b64_json}`
       return {
         b64: item.b64_json,
-        mimeType: 'image/png',
+        mimeType: MIME_TYPES.image.png,
         url: dataUrl
       }
     })

@@ -3,6 +3,7 @@ import type { ITextAdapterRegistry } from '../llm/types';
 import { splitOverridesBySchema } from './parameter-utils';
 import { ModelError } from './errors';
 import { MODEL_ERROR_CODES } from '../../constants/error-codes';
+import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config';
 
 /**
  * 将传统 ModelConfig 转换为 TextModelConfig（使用 Registry 获取元数据）
@@ -186,7 +187,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'Google Gemini',
       description: 'Google Generative AI models',
       requiresApiKey: true,
-      defaultBaseURL: 'https://generativelanguage.googleapis.com',
+      defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: false,
       connectionSchema: {
         required: ['apiKey'],
@@ -204,7 +205,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'DeepSeek',
       description: 'DeepSeek OpenAI-compatible models',
       requiresApiKey: true,
-      defaultBaseURL: legacy.baseURL || 'https://api.deepseek.com/v1',
+      defaultBaseURL: legacy.baseURL || PROVIDER_URLS.deepseek,
       supportsDynamicModels: true,
       connectionSchema: {
         required: ['apiKey'],
@@ -222,7 +223,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'SiliconFlow',
       description: 'SiliconFlow OpenAI-compatible models',
       requiresApiKey: true,
-      defaultBaseURL: legacy.baseURL || 'https://api.siliconflow.cn/v1',
+      defaultBaseURL: legacy.baseURL || PROVIDER_URLS.siliconflow,
       supportsDynamicModels: true,
       connectionSchema: {
         required: ['apiKey'],
@@ -277,7 +278,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'OpenAI',
       description: 'OpenAI GPT models and OpenAI-compatible APIs',
       requiresApiKey: true,
-      defaultBaseURL: legacy.baseURL || 'https://api.openai.com/v1',
+      defaultBaseURL: legacy.baseURL || PROVIDER_URLS.openai,
       supportsDynamicModels: true,
       connectionSchema: {
         required: ['apiKey'],

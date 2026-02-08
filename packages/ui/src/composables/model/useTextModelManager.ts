@@ -7,7 +7,8 @@ import {
   type TextModel,
   type TextModelConfig,
   type TextProvider,
-  getBuiltinModelIds
+  getBuiltinModelIds,
+  CONSTRAINTS
 } from '@prompt-optimizer/core'
 import { getI18nErrorMessage } from '../../utils/error'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
@@ -607,7 +608,7 @@ export function useTextModelManager() {
     const providerId = form.value.providerId || 'custom'
     // Extremely unlikely, but avoid collisions with built-in keys or existing custom configs.
     let modelKey = ''
-    for (let attempt = 0; attempt < 5; attempt++) {
+    for (let attempt = 0; attempt < CONSTRAINTS.text.maxRetries; attempt++) {
       const candidate = generateTextModelId(providerId, attempt)
       const existingModel = await modelManager.getModel(candidate)
       if (!existingModel && !isDefaultModel(candidate)) {
