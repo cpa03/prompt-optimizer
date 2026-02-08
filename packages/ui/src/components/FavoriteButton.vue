@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, inject, watch, h, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, inject, watch, type Ref } from 'vue'
 
 import {
   NButton,
@@ -379,27 +379,13 @@ const handleRemoveFavorite = async () => {
   isFavorited.value = false;
   favoriteId.value = null;
 
-  // 创建toast dengan action button
+  // 创建toast通知（使用简洁的消息提示，撤销功能通过重新收藏实现）
   const toastInstance = message.info(
     '已取消收藏',
     {
       duration: 5000,
       closable: true,
-      keepAliveOnHover: true,
-      action: () => h('button', {
-        class: 'undo-btn',
-        onClick: () => {
-          // 撤销删除
-          if (pendingDeletion.value) {
-            window.clearTimeout(pendingDeletion.value.timeoutId!);
-            pendingDeletion.value = null;
-            // 恢复UI状态
-            isFavorited.value = true;
-            favoriteId.value = idToDelete;
-            message.success('已恢复收藏');
-          }
-        }
-      }, '撤销')
+      keepAliveOnHover: true
     }
   );
 
