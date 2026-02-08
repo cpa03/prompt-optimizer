@@ -4,10 +4,9 @@
  * Flexy loves modularity!
  */
 
-// Re-export core constants for E2E tests
+// Re-export core test constants for E2E tests from built package
 export {
   TIME,
-  TIMEOUTS,
   RETRY,
   TEST_DATA,
   SCORES,
@@ -15,22 +14,18 @@ export {
   WORKSPACE_MODES,
   TEST_IDS,
   TEST_COLORS,
-} from '../../../packages/core/src/constants/test-constants'
-
-export {
-  HTTP_STATUS,
-  HTTP_SUCCESS,
-  HTTP_CLIENT_ERROR,
-  HTTP_SERVER_ERROR,
-  HTTP_METHODS,
-  CONTENT_TYPES,
-  HTTP_HEADERS,
-  CORS_HEADERS,
-  CACHE_CONTROL,
-  CONNECTION,
-} from '../../../packages/core/src/constants/http-codes'
-
-export {
+  // HTTP constants with TEST_ prefix to avoid conflicts
+  TEST_HTTP_STATUS as HTTP_STATUS,
+  TEST_HTTP_SUCCESS as HTTP_SUCCESS,
+  TEST_HTTP_CLIENT_ERROR as HTTP_CLIENT_ERROR,
+  TEST_HTTP_SERVER_ERROR as HTTP_SERVER_ERROR,
+  TEST_HTTP_METHODS as HTTP_METHODS,
+  TEST_CONTENT_TYPES as CONTENT_TYPES,
+  TEST_HTTP_HEADERS as HTTP_HEADERS,
+  TEST_CORS_HEADERS as CORS_HEADERS,
+  TEST_CACHE_CONTROL as CACHE_CONTROL,
+  TEST_CONNECTION as CONNECTION,
+  // API endpoint constants
   OPENROUTER,
   API_PATHS,
   URL_PATTERNS,
@@ -39,4 +34,4 @@ export {
   IMAGE_ENDPOINTS,
   DATA_URL_PATTERNS,
   MIME_PATTERNS,
-} from '../../../packages/core/src/constants/api-endpoints'
+} from '@prompt-optimizer/core'
