@@ -10,6 +10,7 @@ import type {
   ConversationMessage,
   ToolDefinition,
   ContextEditorState as CoreContextEditorState,
+  ContextMode,
 } from "@prompt-optimizer/core";
 import type { AppServices } from "../../types/services";
 import type { VariableManagerHooks } from "../prompt/useVariableManager";
@@ -39,8 +40,7 @@ export function useContextManagement(options: ContextManagementOptions) {
   // ==================== 状态定义 ====================
 
   // 上下文模式
-  const contextMode =
-    ref<import("@prompt-optimizer/core").ContextMode>("system");
+  const contextMode = ref<ContextMode>("system");
 
   // 优化阶段上下文状态
   const optimizationContext = ref<ConversationMessage[]>([]);
@@ -259,9 +259,7 @@ export function useContextManagement(options: ContextManagementOptions) {
 
   // ==================== 上下文模式切换 ====================
 
-  const handleContextModeChange = async (
-    mode: import("@prompt-optimizer/core").ContextMode,
-  ) => {
+  const handleContextModeChange = async (mode: ContextMode) => {
     if (!services.value) {
       console.warn("[useContextManagement] Services not ready");
       return;
