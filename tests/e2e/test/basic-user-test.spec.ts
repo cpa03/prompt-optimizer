@@ -6,12 +6,13 @@ import {
   expectOptimizedResultNotEmpty,
   expectOutputByTestIdNotEmpty,
 } from '../helpers/optimize'
+import { IMAGE_GENERATION_TEST_TIMEOUT } from '../constants/timeouts'
 
 const MODE = 'basic-user' as const
 
 test.describe('Basic User - 测试（无需填写测试内容）', () => {
   test('优化后直接测试，原始/优化结果都非空', async ({ page }) => {
-    test.setTimeout(240000)
+    test.setTimeout(IMAGE_GENERATION_TEST_TIMEOUT)
 
     await navigateToMode(page, 'basic', 'user')
 
