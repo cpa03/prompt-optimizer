@@ -30,6 +30,17 @@ export default defineConfig(({ mode }) => {
       }
     },
     build: {
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+        },
+        mangle: {
+          safari10: true,
+        },
+      },
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'index.html')
@@ -38,38 +49,98 @@ export default defineConfig(({ mode }) => {
           manualChunks(id) {
             // Split vendor libraries into separate chunks
             if (id.includes('node_modules')) {
-              // Vue ecosystem
-              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+              // Vue ecosystem - core framework
+              if (id.includes('vue/dist') || id.includes('vue-router') || id.includes('pinia')) {
                 return 'vendor-vue';
               }
-              // UI Frameworks - naive-ui is large
-              if (id.includes('naive-ui') || id.includes('element-plus') || id.includes('@element-plus')) {
-                return 'vendor-ui';
+              // UI Frameworks - naive-ui is large, split by component type
+              if (id.includes('naive-ui')) {
+                return 'vendor-ui-naive';
               }
-              // Icons
+              // Element Plus
+              if (id.includes('element-plus') || id.includes('@element-plus')) {
+                return 'vendor-ui-element';
+              }
+              // Icons - split from main UI bundle
               if (id.includes('@element-plus/icons') || id.includes('@vicons')) {
                 return 'vendor-icons';
               }
-              // Utilities
+              // CodeMirror - large editor library
+              if (id.includes('@codemirror') || id.includes('codemirror')) {
+                return 'vendor-codemirror';
+              }
+              // Markdown processing - large libraries
+              if (id.includes('markdown-it') || id.includes('marked')) {
+                return 'vendor-markdown';
+              }
+              // Syntax highlighting - very large
+              if (id.includes('highlight.js') || id.includes('highlightjs') || id.includes('prismjs')) {
+                return 'vendor-highlight';
+              }
+              // Utilities - small packages
               if (id.includes('lodash') || id.includes('dayjs') || id.includes('date-fns')) {
                 return 'vendor-utils';
               }
-              // Markdown and syntax highlighting
-              if (id.includes('markdown') || id.includes('highlight') || id.includes('prism')) {
-                return 'vendor-markdown';
+              // DOM utilities
+              if (id.includes('dompurify')) {
+                return 'vendor-dom';
               }
-              // Core package
+              // Core package - our own code
               if (id.includes('@prompt-optimizer/core')) {
                 return 'core';
               }
               // Other node_modules go to vendor chunk
               return 'vendor';
             }
-          }
+            
+            // Split UI package into smaller chunks for better caching
+            if (id.includes('@prompt-optimizer/ui')) {
+              // Workspace components - lazy loaded routes
+              if (id.includes('Workspace')) {
+                return 'ui-workspace';
+              }
+              // App layout components
+              if (id.includes('app-layout') || id.includes('MainLayout')) {
+                return 'ui-layout';
+              }
+              // Evaluation components
+              if (id.includes('evaluation')) {
+                return 'ui-evaluation';
+              }
+              // Context mode components
+              if (id.includes('context-mode')) {
+                return 'ui-context';
+              }
+              // Image mode components
+              if (id.includes('image-mode')) {
+                return 'ui-image';
+              }
+              // Tool and variable components
+              if (id.includes('variable') || id.includes('tool')) {
+                return 'ui-tools';
+              }
+              // Router - keep separate as it's used early
+              if (id.includes('router')) {
+                return 'ui-router';
+              }
+              // Plugins (i18n, pinia)
+              if (id.includes('plugins')) {
+                return 'ui-plugins';
+              }
+              // Other UI components
+              return 'ui-components';
+            }
+          },
+          // Ensure proper chunk loading with content hash for caching
+          chunkFileNames: 'assets/[name]-[hash].js',
         }
       },
-      chunkSizeWarningLimit: 1000,
-      sourcemap: false
+      chunkSizeWarningLimit: 500,
+      sourcemap: false,
+      // Enable CSS code splitting
+      cssCodeSplit: true,
+      // Ensure assets are properly hashed for caching
+      assetsInlineLimit: 4096,
     },
     publicDir: 'public',
     resolve: {

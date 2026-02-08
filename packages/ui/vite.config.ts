@@ -26,6 +26,14 @@ export default defineConfig({
       buildDelay: 100
     } : null,
     sourcemap: true,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+      },
+    },
     rollupOptions: {
       external: ['vue', 'vue-router', '@prompt-optimizer/core', 'element-plus', 'element-plus/dist/index.css', 'uuid', 'naive-ui', /naive-ui\/.*/],
       output: {
@@ -36,7 +44,10 @@ export default defineConfig({
           'element-plus': 'ElementPlus',
           'uuid': 'uuid'
         },
-        assetFileNames: 'style.css'
+        assetFileNames: 'style.css',
+        // Preserve modules for better tree-shaking
+        preserveModules: false,
+        inlineDynamicImports: false,
       }
     },
     cssCodeSplit: false,
