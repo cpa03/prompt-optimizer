@@ -10,12 +10,14 @@ import type {
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { URL_PATTERNS } from '../../../constants/api-endpoints'
+import { CONTENT_TYPES, HTTP_HEADERS } from '../../../constants/http-codes'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
-    const trimmed = base.replace(/\/$/, '')
-    if (/\/api\/v1$/.test(trimmed)) return trimmed
-    if (/\/api$/.test(trimmed)) return `${trimmed}/v1`
+    const trimmed = base.replace(URL_PATTERNS.TRAILING_SLASH, '')
+    if (URL_PATTERNS.API_VERSION_SUFFIX.test(trimmed)) return trimmed
+    if (URL_PATTERNS.API_SUFFIX.test(trimmed)) return `${trimmed}/v1`
     return `${trimmed}/api/v1`
   }
   getProvider(): ImageProvider {
@@ -80,8 +82,8 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       const response = await fetch(`${PROVIDER_URLS.openrouter}/models`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
-          ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+          [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
+          ...(apiKey ? { [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${apiKey}` } : {})
         }
       })
 
@@ -184,11 +186,11 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       // 不合并用户参数覆盖，因为OpenRouter图像生成不需要额外配置
     }
 
-    const response = await this.apiCall(config, '/chat/completions', {
+    const response = await this.apiCall(config, OPENROUTER.ENDPOINTS.CHAT_COMPLETIONS, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${config.connectionConfig?.apiKey}`,
+        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON
       },
       body: JSON.stringify(payload)
     })
@@ -234,9 +236,9 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     }
   }
 
-  private async apiCall(config: ImageModelConfig, endpoint: string, options: any) {
+  private async apiCall(config: ImageModelConfig, endpoint: string, options: Record<string, unknown>) {
     const url = this.resolveEndpointUrl(config, endpoint)
-    const response = await fetch(url, options)
+    const response = await fetch(url, options as RequestInit)
 
     if (!response.ok) {
       // 直接穿透错误，不做特殊处理

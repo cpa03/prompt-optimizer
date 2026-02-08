@@ -1,9 +1,20 @@
 /**
- * Core constants index
- * Centralizes all constant exports for easy importing
+ * Constants Index Module
+ * Centralized export for all constants modules
+ * Flexy loves modularity! Everything organized and exported from one place.
  */
 
-export * from './error-codes'
-export * from './storage-keys'
-export * from './constraints'
-export * from './templates'
+// Template constants
+export * from './templates';
+
+// Error codes
+export * from './error-codes';
+
+// Test constants - eliminates hardcoded timeouts and magic numbers
+export * from './test-constants';
+
+// HTTP status codes - eliminates hardcoded status codes
+export * from './http-codes';
+
+// API endpoints - eliminates hardcoded URLs
+export * from './api-endpoints';
