@@ -86,7 +86,7 @@
             <!-- 标签(跨越两列) -->
             <n-form-item :label="t('favorites.dialog.tagsLabel')">
               <div style="width: 100%;">
-                <!-- 已选标签显示 -->
+                <!-- 已选标签显示 - 带删除动画 -->
                 <n-space v-if="formData.tags.length > 0" :size="[8, 8]" style="margin-bottom: 8px;">
                   <n-tag
                     v-for="(tag, index) in formData.tags"
@@ -94,6 +94,8 @@
                     closable
                     @close="handleRemoveTag(index)"
                     type="info"
+                    class="favorite-tag"
+                    :class="{ 'tag-removing': removingTagIndex === index }"
                   >
                     {{ tag }}
                   </n-tag>
@@ -210,6 +212,9 @@ const message = useToast();
 
 const saving = ref(false);
 
+// 🎨 Palette: Tag removal animation state
+const removingTagIndex = ref<number | null>(null);
+
 // 标签输入和建议
 const tagInputValue = ref('');
 const tagSuggestions = computed(() => {
@@ -286,9 +291,16 @@ const handleFunctionModeChange = (mode: 'basic' | 'context' | 'image') => {
   }
 };
 
-// 标签管理函数
+// 标签管理函数 - 带删除动画
 const handleRemoveTag = (index: number) => {
-  formData.tags.splice(index, 1);
+  // 🎨 Palette: Add visual feedback before removing tag
+  removingTagIndex.value = index;
+  
+  // Wait for animation to complete before actually removing
+  setTimeout(() => {
+    formData.tags.splice(index, 1);
+    removingTagIndex.value = null;
+  }, 200);
 };
 
 const handleSelectTag = (value: string) => {
@@ -473,3 +485,60 @@ watch(() => props.show, async (newShow) => {
   }
 }, { immediate: true });
 </script>
+
+<style scoped>
+/* 🎨 Palette: Tag removal micro-UX animation */
+.favorite-tag {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tag hover effect - subtle lift */
+.favorite-tag:hover {
+  transform: translateY(-1px);
+}
+
+/* Tag removing animation - fade out and shrink */
+.favorite-tag.tag-removing {
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+}
+
+/* Close button hover enhancement */
+.favorite-tag :deep(.n-tag__close) {
+  transition: all 0.15s ease;
+}
+
+.favorite-tag:hover :deep(.n-tag__close) {
+  transform: scale(1.15);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.favorite-tag :deep(.n-tag__close):active {
+  transform: scale(0.9);
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .favorite-tag {
+    transition: opacity 0.1s ease;
+  }
+  
+  .favorite-tag:hover {
+    transform: none;
+  }
+  
+  .favorite-tag.tag-removing {
+    transform: none;
+  }
+  
+  .favorite-tag :deep(.n-tag__close) {
+    transition: none;
+  }
+  
+  .favorite-tag:hover :deep(.n-tag__close) {
+    transform: none;
+  }
+}
+</style>
