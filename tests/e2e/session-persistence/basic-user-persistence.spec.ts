@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures'
+import { TIMEOUTS } from '../constants/timeouts'
 
 /**
  * Basic User 模式 - Session 持久化测试
@@ -16,11 +17,11 @@ test.describe('Basic User - Session Persistence', () => {
     await page.waitForLoadState('networkidle')
     await page.goto('/#/basic/user')
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000) // 等待数据加载
+    await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT) // 等待数据加载
 
     // 2. 找到优化模型下拉框并记录初始值
     const modelLabel = page.getByText(/优化模型|Optimization Model/i).first()
-    await expect(modelLabel).toBeVisible({ timeout: 15000 })
+    await expect(modelLabel).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
     const container = modelLabel.locator('xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]')
     const select = container.locator('.n-base-selection').first()
@@ -35,7 +36,7 @@ test.describe('Basic User - Session Persistence', () => {
 
     // 3. 点击下拉框并切换
     await select.click()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK)
 
     // 获取所有选项
     const options = await page.locator('.n-base-select-option').allTextContents()
@@ -56,7 +57,7 @@ test.describe('Basic User - Session Persistence', () => {
     console.log(`切换到模型: ${targetModel}`)
 
     // 4. 验证切换后的值已更新
-    await page.waitForTimeout(500) // 等待 UI 更新
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK) // 等待 UI 更新
     const afterSwitch = await getSelectedModel()
     console.log(`切换后: ${afterSwitch}`)
 
@@ -104,7 +105,7 @@ test.describe('Basic User - Session Persistence', () => {
 
     // 3. 点击下拉框并切换
     await select.click()
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK)
 
     // 获取所有选项
     const options = await page.locator('.n-base-select-option').allTextContents()
@@ -125,7 +126,7 @@ test.describe('Basic User - Session Persistence', () => {
     console.log(`切换到模板: ${targetTemplate}`)
 
     // 4. 验证切换后的值已更新
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK)
     const afterSwitch = await getSelectedTemplate()
     console.log(`切换后: ${afterSwitch}`)
 

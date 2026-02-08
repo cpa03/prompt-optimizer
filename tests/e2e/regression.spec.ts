@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * UI 交互回归测试
@@ -27,7 +28,7 @@ test.describe('UI 交互回归测试', () => {
     }
 
     await favoriteButton.first().click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 2. 验证对话框打开
     const dialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|Favorites/i }).first();
@@ -37,7 +38,7 @@ test.describe('UI 交互回归测试', () => {
     const closeButton = dialog.locator('[aria-label="close"], .n-base-close, .n-dialog__close').first();
     if (await closeButton.count() > 0) {
       await closeButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 4. 验证对话框关闭
       await expect(dialog).not.toBeVisible();
@@ -58,7 +59,7 @@ test.describe('UI 交互回归测试', () => {
     await expect(managerDialog).toBeVisible();
 
     // 2. 等待列表加载
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 3. 验证列表容器存在
     // 即使没有数据，也应该有空状态或列表容器
@@ -89,7 +90,7 @@ test.describe('UI 交互回归测试', () => {
 
     if (await moreButton.count() > 0) {
       await moreButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       // 3. 查找导出选项
       const exportOption = page.locator('text=/导出|Export/i');
@@ -128,7 +129,7 @@ test.describe('UI 交互回归测试', () => {
 
     if (await importButton.count() > 0) {
       await importButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 3. 验证导入对话框或文件选择器出现
       // 可能是新对话框或文件上传组件
@@ -161,7 +162,7 @@ test.describe('UI 交互回归测试', () => {
     if (await searchInput.count() > 0) {
       // 3. 输入搜索文本
       await searchInput.fill('回归测试');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 4. 验证输入值正确
       const inputValue = await searchInput.inputValue();
@@ -169,7 +170,7 @@ test.describe('UI 交互回归测试', () => {
 
       // 5. 清空搜索
       await searchInput.clear();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const clearedValue = await searchInput.inputValue();
       expect(clearedValue).toBe('');
@@ -195,7 +196,7 @@ test.describe('UI 交互回归测试', () => {
     if (await categorySelect.count() > 0) {
       // 3. 点击打开下拉菜单
       await categorySelect.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       // 4. 验证下拉菜单出现
       const dropdown = page.locator('.n-base-select-menu, .n-select-menu');
@@ -204,7 +205,7 @@ test.describe('UI 交互回归测试', () => {
 
         // 5. 关闭下拉菜单（点击其他地方）
         await page.keyboard.press('Escape');
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
       }
     }
   });
@@ -225,7 +226,7 @@ test.describe('UI 交互回归测试', () => {
     // 2. 点击创建按钮
     const createButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await createButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 3. 定位到创建对话框
     const createDialog = page.locator('[role="dialog"]').last();
@@ -236,7 +237,7 @@ test.describe('UI 交互回归测试', () => {
     if (await saveButton.count() > 0) {
       // 点击保存
       await saveButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 验证对话框仍然打开（因为验证失败）
       // 或者有错误提示显示
@@ -296,12 +297,12 @@ test.describe('UI 交互回归测试', () => {
 
     const managerDialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|Favorites/i }).first();
     await expect(managerDialog).toBeVisible();
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 2. 先创建一个收藏以确保有数据
     const createButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await createButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const createDialog = page.locator('[role="dialog"]').last();
 
@@ -319,7 +320,7 @@ test.describe('UI 交互回归测试', () => {
       const saveButton = createDialog.getByRole('button', { name: /保存|save|确定|ok/i });
       if (await saveButton.count() > 0) {
         await saveButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 3. 验证收藏卡片显示
         const favoriteCard = managerDialog.locator('text=回归测试收藏');
@@ -369,7 +370,7 @@ test.describe('关键功能持续性测试', () => {
 
   test('页面布局结构保持完整', async ({ page }) => {
     // 验证基本布局元素存在
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 应该有某种导航或工具栏
     const hasNavigation = await page.locator('nav, header, .toolbar, [class*="toolbar"]').count();
