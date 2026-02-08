@@ -202,7 +202,7 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle @click.stop="$emit('copy', favorite)">
+              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.copyContent')" @click.stop="$emit('copy', favorite)">
                 <template #icon><NIcon><Copy /></NIcon></template>
               </NButton>
             </template>
@@ -219,7 +219,7 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle @click.stop="$emit('use', favorite)">
+              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.useNow')" @click.stop="$emit('use', favorite)">
                 <template #icon><NIcon><PlayerPlay /></NIcon></template>
               </NButton>
             </template>
@@ -236,7 +236,7 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle @click.stop="$emit('edit', favorite)">
+              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.edit')" @click.stop="$emit('edit', favorite)">
                 <template #icon><NIcon><Edit /></NIcon></template>
               </NButton>
             </template>
@@ -249,7 +249,7 @@
             :negative-text="t('favorites.manager.card.cancel')"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle type="error" @click.stop>
+              <NButton size="small" quaternary circle type="error" :aria-label="t('favorites.manager.card.delete')" @click.stop>
                 <template #icon><NIcon><Trash /></NIcon></template>
               </NButton>
             </template>
