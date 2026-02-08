@@ -6,9 +6,11 @@
   <!-- 正常 diff 模式 -->
   <div v-else class="inline-diff">
     <span
-      v-for="fragment in fragments"
+      v-for="(fragment, index) in fragments"
       :key="fragment.index"
       :class="getFragmentClass(fragment.type)"
+      :style="{ animationDelay: `${index * 20}ms` }"
+      class="diff-fragment"
     >{{ fragment.text }}</span>
   </div>
 </template>
@@ -127,5 +129,28 @@ const getFragmentClass = (type: ChangeType): string => {
 
 .diff-unchanged {
   color: v-bind(textColor3);
+}
+
+/* Micro-UX: Staggered fade-in animation for diff fragments */
+.diff-fragment {
+  animation: diff-fragment-appear 0.3s ease-out backwards;
+}
+
+@keyframes diff-fragment-appear {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced hover interaction for diff fragments */
+.diff-added:hover,
+.diff-removed:hover {
+  transition: all 0.15s ease;
+  box-shadow: 0 0 0 2px currentColor;
 }
 </style>

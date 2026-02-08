@@ -1,6 +1,6 @@
 # BroCula Analysis Report
 
-**Last Updated**: 2026-02-07 - ULW-Loop Phase 7 (Current Loop)
+**Last Updated**: 2026-02-08 - ULW-Loop Phase 7 (Current Loop)
 
 ## Browser Console Status
 
@@ -20,6 +20,25 @@
    - Recommendation: Dynamic imports, manualChunks
 
 ## Changes This Loop
+
+### 1. InlineDiff Animation Enhancement (PHASE 2 - UX-021)
+- Added staggered fade-in animation for diff fragments
+- Added hover box-shadow highlight for added/removed fragments
+- Improved visual feedback when comparing text changes
+- Status: ✅ Applied
+
+### 2. CodeMirror Tooltip Constant (PHASE 3 - FLEX-024)
+- Added COMPONENT_CONSTANTS.CODEMIRROR.TOOLTIP_MAX_WIDTH (420px)
+- Replaced hardcoded '420px' in codemirror-extensions.ts
+- Added LAYOUT constants for panel min heights and button widths
+- Status: ✅ Applied
+
+### 3. Config Module Export Consolidation (PHASE 5 - STORX-012)
+- Added ICON_SIZES and COMPONENT_CONSTANTS exports to config/index.ts
+- Ensured all new constants accessible via centralized config module
+- Status: ✅ Applied
+
+### Previous Loop Changes
 
 ### 1. TestControlBar Enhancement (PHASE 2 - UX-020)
 - Added hover lift effect (translateY -2px) with enhanced shadow
@@ -123,10 +142,10 @@ From project-status.md:
 ## Summary
 
 **PHASE 7 Complete** ✓ Browser console is clean. All changes verified:
-- TestControlBar micro-interactions added (hover lift, click press, loading shimmer)
-- EvaluationScoreBadge constants centralized
-- Utils index.ts created for consolidated exports
+- InlineDiff staggered animation added for better diff visualization
+- CodeMirror tooltip width centralized with constants
+- Config module exports consolidated
 - Build successful with no new warnings
-- All 1,026 tests passing
+- All 1,034 tests passing
 
 Ready to proceed to Phase 8 (Git).

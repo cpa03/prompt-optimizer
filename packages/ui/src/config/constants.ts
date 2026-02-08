@@ -357,4 +357,15 @@ export const COMPONENT_CONSTANTS = {
       FONT_SIZE: 14,
     },
   },
+
+  // CodeMirror extensions
+  CODEMIRROR: {
+    TOOLTIP_MAX_WIDTH: 420,
+  },
+
+  // Layout minimum heights
+  LAYOUT: {
+    PANEL_MIN_HEIGHT_PX: 200,
+    BUTTON_MIN_WIDTH_PX: 48,
+  },
 } as const

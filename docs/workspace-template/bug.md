@@ -2,6 +2,17 @@
 
 ## Active Bugs
 
+### [x] BUG-018: MCP server tests fail without core build (Recurring)
+**Location**: packages/mcp-server tests
+**Severity**: High
+**Description**: Tests fail with "Failed to resolve entry for package @prompt-optimizer/core" when core dist files are missing
+**Impact**: CI/CD pipeline failures, blocking test execution
+**Status**: FIXED - Core package rebuilt
+**Solution**: Built core package with `pnpm -F @prompt-optimizer/core build`
+**Files affected**: All MCP server tests
+**Date**: 2026-02-08
+**Note**: This is a recurring issue - core package needs to be built before running MCP server tests
+
 ### [x] BUG-015: MCP server tests fail without core build
 **Location**: packages/mcp-server tests
 **Severity**: High
