@@ -1,11 +1,12 @@
 import OpenAI from 'openai'
 import type { TextModel, TextModelConfig, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
+import { OLLAMA_CONFIG } from '../../../config'
 
-const OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434/v1'
+const OLLAMA_DEFAULT_BASE_URL = OLLAMA_CONFIG.defaultBaseURL
 
 // Ollama does not require auth, but the OpenAI SDK expects an apiKey string.
-const OLLAMA_FALLBACK_API_KEY = 'ollama'
+const OLLAMA_FALLBACK_API_KEY = OLLAMA_CONFIG.fallbackApiKey
 
 export class OllamaAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {

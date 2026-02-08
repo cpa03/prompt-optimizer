@@ -9,6 +9,7 @@ import type {
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS, IMAGE_SIZE_PRESETS, MIME_TYPES } from '../../../config'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -21,7 +22,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       name: 'OpenAI',
       description: 'OpenAI GPT Image 图像生成服务',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.openai.com/v1',
+      defaultBaseURL: PROVIDER_URLS.openai,
       supportsDynamicModels: false,
       apiKeyUrl: 'https://platform.openai.com/api-keys',
       connectionSchema: {
@@ -53,8 +54,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'image.params.size.label',
             descriptionKey: 'image.params.size.description',
             type: 'string',
-            defaultValue: '1024x1024',
-            allowedValues: ['1024x1024', '1536x1024', '1024x1536', 'auto']
+            defaultValue: IMAGE_SIZE_PRESETS.openai.default,
+            allowedValues: [...IMAGE_SIZE_PRESETS.openai.available]
           },
           {
             name: 'quality',
@@ -74,7 +75,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
           }
         ],
         defaultParameterValues: {
-          size: '1024x1024',
+          size: IMAGE_SIZE_PRESETS.openai.default,
           quality: 'auto',
           background: 'auto'
         }
@@ -95,7 +96,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         prompt: 'make this image more colorful',
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.image.png
         },
         count: 1
       }
@@ -112,8 +113,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'image.params.size.label',
         descriptionKey: 'image.params.size.description',
         type: 'string',
-        defaultValue: '1024x1024',
-        allowedValues: ['1024x1024', '1536x1024', '1024x1536', 'auto']
+        defaultValue: IMAGE_SIZE_PRESETS.openai.default,
+        allowedValues: [...IMAGE_SIZE_PRESETS.openai.available]
       },
       {
         name: 'quality',
@@ -136,7 +137,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
     return {
-      size: '1024x1024',
+      size: IMAGE_SIZE_PRESETS.openai.default,
       quality: 'auto',
       background: 'auto'
     }

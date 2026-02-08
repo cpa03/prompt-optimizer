@@ -168,12 +168,15 @@ function getContextMenuLabels(locale) {
   const normalized = normalizeUiLocale(locale) || 'en-US';
   return CONTEXT_MENU_LABELS[normalized] || CONTEXT_MENU_LABELS['en-US'];
 }
+const {
+  MAX_SAVE_TIME,
+  EMERGENCY_EXIT_TIME
+} = require('./config/constants');
+
 let isQuitting = false; // 防止重复保存数据的标志
 let isUpdaterQuitting = false; // 标识是否为更新安装退出，跳过数据保存
 let forceQuitTimer = null; // 强制退出定时器
-const MAX_SAVE_TIME = 5000; // 最大保存时间：5秒
 let emergencyExitTimer = null; // 应急退出定时器
-const EMERGENCY_EXIT_TIME = 10000; // 应急退出时间：10秒
 
 // 应急退出机制：无论如何都要在10秒内退出
 function setupEmergencyExit() {

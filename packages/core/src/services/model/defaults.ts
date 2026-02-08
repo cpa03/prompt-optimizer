@@ -3,28 +3,20 @@ import type { ITextAdapterRegistry } from '../llm/types';
 import { TextAdapterRegistry } from '../llm/adapters/registry';
 import { getEnvVar } from '../../utils/environment';
 import { generateDynamicModels } from './model-utils';
+import { PROVIDER_ENV_KEYS, OLLAMA_CONFIG, MODEL_DEFAULTS } from '../../config';
 
 /**
  * Provider ID -> 环境变量 key 映射
  * 新增 Provider 只需在此添加一行
  */
-const PROVIDER_ENV_KEYS = {
-  openai: 'VITE_OPENAI_API_KEY',
-  gemini: 'VITE_GEMINI_API_KEY',
-  deepseek: 'VITE_DEEPSEEK_API_KEY',
-  siliconflow: 'VITE_SILICONFLOW_API_KEY',
-  zhipu: 'VITE_ZHIPU_API_KEY',
-  dashscope: 'VITE_DASHSCOPE_API_KEY',
-  openrouter: 'VITE_OPENROUTER_API_KEY',
-  modelscope: 'VITE_MODELSCOPE_API_KEY'
-} as const;
+const LOCAL_PROVIDER_ENV_KEYS = PROVIDER_ENV_KEYS;
 
 /**
  * 获取所有内置模型的 ID 列表
  * 包括 PROVIDER_ENV_KEYS 中的所有 Provider 和 'custom'
  */
 export function getBuiltinModelIds(): string[] {
-  return [...Object.keys(PROVIDER_ENV_KEYS), 'custom'];
+  return [...Object.keys(LOCAL_PROVIDER_ENV_KEYS), 'custom'];
 }
 
 /**
@@ -41,7 +33,7 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
   const result: Record<string, TextModelConfig> = {};
 
   // 批量生成标准 Provider 配置
-  for (const [providerId, envKey] of Object.entries(PROVIDER_ENV_KEYS)) {
+  for (const [providerId, envKey] of Object.entries(LOCAL_PROVIDER_ENV_KEYS)) {
     const adapter = adapterRegistry.getAdapter(providerId);
     const provider = adapter.getProvider();
     const models = adapter.getModels();
@@ -70,7 +62,7 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
   const openaiAdapter = adapterRegistry.getAdapter('openai');
   const customApiKey = getEnvVar('VITE_CUSTOM_API_KEY').trim();
   const customBaseURL = getEnvVar('VITE_CUSTOM_API_BASE_URL');
-  const customModelId = getEnvVar('VITE_CUSTOM_API_MODEL') || 'custom-model';
+  const customModelId = getEnvVar('VITE_CUSTOM_API_MODEL') || MODEL_DEFAULTS.customModelId;
   const customModelMeta = {
     ...openaiAdapter.buildDefaultModel(customModelId),
     name: customModelId,
@@ -85,7 +77,7 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
     modelMeta: customModelMeta,
     connectionConfig: {
       apiKey: customApiKey,
-      baseURL: customBaseURL || 'http://localhost:11434/v1'
+      baseURL: customBaseURL || OLLAMA_CONFIG.defaultBaseURL
     },
     paramOverrides: { ...(customModelMeta.defaultParameterValues || {}) },
     customParamOverrides: {}

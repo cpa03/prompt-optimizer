@@ -5,6 +5,7 @@ import type {
   IImageStorageService,
   ImageStorageConfig
 } from './types'
+import { CONSTRAINTS } from '../../config'
 
 /**
  * 图像存储数据库（IndexedDB）
@@ -109,7 +110,7 @@ interface DataRecord {
  * 默认配置
  */
 const DEFAULT_CONFIG: ImageStorageConfig = {
-  maxCacheSize: 50 * 1024 * 1024,      // 50 MB
+  maxCacheSize: CONSTRAINTS.image.maxCacheSizeBytes,
   maxAge: 7 * 24 * 60 * 60 * 1000,     // 7 天
   maxCount: 100,                       // 最多 100 张
   autoCleanupThreshold: 0.8            // 达到 80% 时触发清理

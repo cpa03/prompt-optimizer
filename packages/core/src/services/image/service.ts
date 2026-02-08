@@ -15,6 +15,7 @@ import { IMAGE_ERROR_CODES } from '../../constants/error-codes'
 import { mergeOverrides } from '../model/parameter-utils'
 import { ImageError } from './errors'
 import { toErrorWithCode } from '../../utils/error'
+import { CONSTRAINTS } from '../../config'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
@@ -161,9 +162,9 @@ export class ImageService implements IImageService {
     const len = inputImage.b64.length
     const padding = (inputImage.b64.endsWith('==') ? 2 : inputImage.b64.endsWith('=') ? 1 : 0)
     const bytes = Math.floor((len * 3) / 4) - padding
-    const maxSize = 10 * 1024 * 1024 // 10MB
+    const maxSize = CONSTRAINTS.image.maxSizeBytes
     if (bytes > maxSize) {
-      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_TOO_LARGE, undefined, { maxSizeMB: 10 })
+      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_TOO_LARGE, undefined, { maxSizeMB: CONSTRAINTS.image.maxSizeBytes / (1024 * 1024) })
     }
   }
 
