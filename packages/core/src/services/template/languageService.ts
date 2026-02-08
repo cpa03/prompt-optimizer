@@ -2,6 +2,7 @@
 import { IPreferenceService } from '../preference/types';
 import { UI_SETTINGS_KEYS } from '../../constants/storage-keys';
 import { TemplateValidationError } from './errors';
+import { TEMPLATE_CONFIG } from '../../config/core-config';
 
 /**
  * Supported built-in template languages
@@ -26,8 +27,8 @@ export interface ITemplateLanguageService {
  * Simplified built-in template language service
  */
 export class TemplateLanguageService implements ITemplateLanguageService {
-  private readonly SUPPORTED_LANGUAGES: BuiltinTemplateLanguage[] = ['zh-CN', 'en-US'];
-  private readonly DEFAULT_LANGUAGE: BuiltinTemplateLanguage = 'en-US';
+  private readonly SUPPORTED_LANGUAGES: BuiltinTemplateLanguage[] = [...TEMPLATE_CONFIG.supportedLanguages];
+  private readonly DEFAULT_LANGUAGE: BuiltinTemplateLanguage = TEMPLATE_CONFIG.defaultLanguage;
 
   private currentLanguage: BuiltinTemplateLanguage = this.DEFAULT_LANGUAGE;
   private preferenceService: IPreferenceService;
@@ -110,7 +111,7 @@ export class TemplateLanguageService implements ITemplateLanguageService {
    * Get supported languages list
    */
   async getSupportedLanguages(): Promise<BuiltinTemplateLanguage[]> {
-    return ['zh-CN', 'en-US'];
+    return [...TEMPLATE_CONFIG.supportedLanguages];
   }
 
   /**

@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
+import { LLM_CONFIG } from '../../../config/core-config'
 import type {
   TextProvider,
   TextModel,
@@ -527,7 +528,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       }
 
       // 跳过 [DONE] 标记（兼容 data: [DONE] 和 data:[DONE]）
-      if (trimmed === 'data: [DONE]' || trimmed === 'data:[DONE]') {
+      if (LLM_CONFIG.streaming.doneMarkers.includes(trimmed)) {
         continue
       }
 

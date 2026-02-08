@@ -12,6 +12,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { IMAGE_CONSTRAINTS } from '../../../constants/constraints'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
+import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -158,7 +159,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
       headers: {
         'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
         'Content-Type': 'application/json',
-        'X-ModelScope-Async-Mode': 'true' // 异步模式
+        'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode // 异步模式
       },
       body: JSON.stringify(payload)
     })
@@ -247,11 +248,11 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
             taskId
           }
         }
-      } else if (status === 'FAILED' || status === 'ERROR' || status === 'CANCELLED' || status === 'CANCELED') {
+      } else if (IMAGE_ADAPTER_CONFIG.modelscope.status.terminal.includes(status)) {
         // 任务失败或被取消，提取错误信息
         const errorMessage = data.error?.message || data.error || data.message || 'Unknown error'
         throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Task ${status.toLowerCase()}: ${errorMessage}`)
-      } else if (status !== 'PENDING' && status !== 'RUNNING' && status !== 'PROCESSING') {
+      } else if (!IMAGE_ADAPTER_CONFIG.modelscope.status.pending.includes(status)) {
         // 未知的终态，视为失败
         throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Unknown task status: ${status}`)
       }

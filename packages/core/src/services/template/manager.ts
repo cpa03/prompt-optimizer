@@ -7,6 +7,7 @@ import { BuiltinTemplateLanguage, ITemplateLanguageService } from './languageSer
 import { CORE_SERVICE_KEYS } from '../../constants/storage-keys';
 import { ImportExportError } from '../../interfaces/import-export';
 import { IMPORT_EXPORT_ERROR_CODES, TEMPLATE_ERROR_CODES } from '../../constants/error-codes';
+import { TEMPLATE_CONFIG } from '../../config/core-config';
 
 
 
@@ -43,8 +44,7 @@ export class TemplateManager implements ITemplateManager {
     }
     
     // Minimum 3 characters, only letters, numbers, and hyphens
-    const idRegex = /^[a-z0-9-]{3,}$/;
-    if (!idRegex.test(id)) {
+    if (!TEMPLATE_CONFIG.idRegex.test(id)) {
       throw new TemplateValidationError('Invalid template ID format: must be at least 3 characters, using only lowercase letters, numbers, and hyphens');
     }
   }
@@ -383,7 +383,7 @@ export class TemplateManager implements ITemplateManager {
         if (builtinTemplate) {
           // 为冲突的模板生成新的ID和名称
           const timestamp = Date.now();
-          const random = Math.random().toString(36).substr(2, 6);
+          const random = Math.random().toString(36).substr(2, TEMPLATE_CONFIG.randomSuffixLength);
           finalTemplateId = `user-${template.id}-${timestamp}-${random}`;
           finalTemplateName = `${template.name} (导入副本)`;
           console.warn(`Detected conflict with built-in template ID: ${template.id}, renamed to: ${finalTemplateId}`);

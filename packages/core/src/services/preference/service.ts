@@ -5,6 +5,7 @@ import { IMPORT_EXPORT_ERROR_CODES } from "../../constants/error-codes";
 import { VALIDATION_CONSTRAINTS } from "../../constants/constraints";
 import { StorageError } from "../storage/errors";
 import { toErrorWithCode } from "../../utils/error";
+import { PREFERENCE_CONFIG } from "../../config/core-config";
 
 // 需要导出的UI配置键 - 白名单验证
 const UI_SETTINGS_KEYS = [
@@ -18,9 +19,9 @@ const UI_SETTINGS_KEYS = [
   "app:selected-optimize-model",
   "app:selected-test-model",
 
-  "app:selected-optimize-template", // 系统优化模板
-  "app:selected-user-optimize-template", // 用户优化模板
-  "app:selected-iterate-template", // 迭代模板
+  PREFERENCE_CONFIG.keys.selectedOptimizeTemplate, // 系统优化模板
+  PREFERENCE_CONFIG.keys.selectedUserOptimizeTemplate, // 用户优化模板
+  PREFERENCE_CONFIG.keys.selectedIterateTemplate, // 迭代模板
 ] as const;
 
 // 旧版本键名映射表 - 用于兼容性处理
@@ -70,7 +71,7 @@ const isValidSettingValue = (value: any): value is string => {
  * 基于IStorageProvider的偏好设置服务实现
  */
 export class PreferenceService implements IPreferenceService {
-  private readonly PREFIX = "pref:";
+  private readonly PREFIX = PREFERENCE_CONFIG.prefix;
   private keyCache: Set<string> = new Set();
   private storageProvider: IStorageProvider;
 

@@ -10,6 +10,7 @@ import type {
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
+import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 
 export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -180,7 +181,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
     const payload: any = {
       model: config.modelId,
       prompt: request.prompt,
-      sequential_image_generation: 'disabled', // 固定禁用组图
+      sequential_image_generation: IMAGE_ADAPTER_CONFIG.seedream.sequentialGeneration, // 固定禁用组图
       ...overrides,
       n: 1
     }
