@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
+import { PROVIDER_URLS } from '../../../config/providers'
 import type {
   TextProvider,
   TextModel,
@@ -89,7 +90,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       name: 'Google Gemini',
       description: 'Google Generative AI models',
       requiresApiKey: true,
-      defaultBaseURL: 'https://generativelanguage.googleapis.com',
+      defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: true, // 新版 SDK 支持动态模型获取
       apiKeyUrl: 'https://aistudio.google.com/apikey',
       connectionSchema: {

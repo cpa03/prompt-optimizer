@@ -1,6 +1,7 @@
 import OpenAI from 'openai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
+import { PROVIDER_URLS } from '../../../config/providers'
 import type {
   TextProvider,
   TextModel,
@@ -69,7 +70,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       name: 'OpenAI',
       description: 'OpenAI GPT models and OpenAI-compatible APIs',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.openai.com/v1',
+      defaultBaseURL: PROVIDER_URLS.openai,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://platform.openai.com/api-keys',
       connectionSchema: {

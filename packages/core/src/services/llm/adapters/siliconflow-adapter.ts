@@ -1,5 +1,6 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 interface ModelOverride {
   id: string
@@ -29,7 +30,7 @@ export class SiliconflowAdapter extends OpenAIAdapter {
       name: 'SiliconFlow',
       description: 'SiliconFlow OpenAI-compatible models',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.siliconflow.cn/v1',
+      defaultBaseURL: PROVIDER_URLS.siliconflow,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://cloud.siliconflow.cn/account/ak',
       connectionSchema: {

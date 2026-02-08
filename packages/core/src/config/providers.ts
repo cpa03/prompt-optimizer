@@ -15,11 +15,13 @@ export const PROVIDER_URLS = {
   siliconflow: 'https://api.siliconflow.cn/v1',
   openai: 'https://api.openai.com/v1',
   openrouter: 'https://openrouter.ai/api/v1',
-  gemini: 'https://generativelanguage.googleapis.com/v1beta',
+  gemini: 'https://generativelanguage.googleapis.com',
   dashscope: 'https://dashscope.aliyuncs.com/api/v1',
   modelscope: 'https://api-inference.modelscope.cn/v1',
   seedream: 'https://api.seaart.ai/v1',
   zhipu: 'https://open.bigmodel.cn/api/paas/v4',
+  anthropic: 'https://api.anthropic.com',
+  ollama: 'http://localhost:11434/v1',
 } as const;
 
 export const PROVIDER_ID_MAP: Record<string, string> = {
