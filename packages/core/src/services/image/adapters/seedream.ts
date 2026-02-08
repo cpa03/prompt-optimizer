@@ -8,6 +8,8 @@ import type {
   ImageModelConfig
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS } from '../../../config/providers'
+import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
 
 export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -23,7 +25,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
       description: '火山方舟 Seedream 图像生成模型',
       corsRestricted: true,
       requiresApiKey: true,
-      defaultBaseURL: 'https://ark.cn-beijing.volces.com/api/v3',
+      defaultBaseURL: PROVIDER_URLS.seedream,
       supportsDynamicModels: false,  // 不支持动态获取
       connectionSchema: {
         required: ['apiKey'],
@@ -37,6 +39,9 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
+    const sizes = IMAGE_SIZE_PRESETS.seedream
+    const defaults = IMAGE_DEFAULTS.seedream
+    
     // 返回静态的模型列表（只保留4.0版本）
     return [
       {
@@ -55,8 +60,8 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.size.label',
             descriptionKey: 'params.size.description',
             type: 'string',
-            defaultValue: '2K',
-            allowedValues: ['1K', '2K', '4K', '1024x1024', '512x512', '768x768', '1024x768', '768x1024']
+            defaultValue: sizes.default,
+            allowedValues: sizes.available
           },
           {
             name: 'sequential_image_generation',
@@ -71,7 +76,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.responseFormat.label',
             descriptionKey: 'params.responseFormat.description',
             type: 'string',
-            defaultValue: 'b64_json',
+            defaultValue: defaults.sampleMethod,
             allowedValues: ['b64_json', 'url']
           },
           {
@@ -83,9 +88,9 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
           }
         ],
         defaultParameterValues: {
-          size: '2K',
+          size: sizes.default,
           sequential_image_generation: 'disabled',
-          response_format: 'b64_json',
+          response_format: defaults.sampleMethod,
           watermark: false
         }
       }
@@ -93,6 +98,9 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   }
 
   protected getParameterDefinitions(_modelId: string): readonly any[] {
+    const sizes = IMAGE_SIZE_PRESETS.seedream
+    const defaults = IMAGE_DEFAULTS.seedream
+    
     // 所有模型使用统一的参数定义（只保留4.0版本）
     return [
       {
@@ -100,8 +108,8 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.size.label',
         descriptionKey: 'params.size.description',
         type: 'string',
-        defaultValue: '2K',
-        allowedValues: ['1K', '2K', '4K', '1024x1024', '512x512', '768x768', '1024x768', '768x1024']
+        defaultValue: sizes.default,
+        allowedValues: sizes.available
       },
       {
         name: 'sequential_image_generation',
@@ -116,7 +124,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.responseFormat.label',
         descriptionKey: 'params.responseFormat.description',
         type: 'string',
-        defaultValue: 'b64_json',
+        defaultValue: defaults.sampleMethod,
         allowedValues: ['b64_json', 'url']
       },
       {
@@ -130,23 +138,17 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
+    const sizes = IMAGE_SIZE_PRESETS.seedream
+    const defaults = IMAGE_DEFAULTS.seedream
+    
     // 所有模型使用统一的默认值
     return {
-      size: '2K',
+      size: sizes.default,
       sequential_image_generation: 'disabled',
-      response_format: 'b64_json',
+      response_format: defaults.sampleMethod,
       watermark: false
     }
   }
-
-  // public async validateConnection(connectionConfig: Record<string, any>): Promise<boolean> {
-  //   try {
-  //     this.validateConnectionConfig(connectionConfig)
-  //     return true
-  //   } catch {
-  //     return false
-  //   }
-  // }
 
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
@@ -188,8 +190,6 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
       const mime = request.inputImage.mimeType || 'image/png'
       payload.image = `data:${mime};base64,${request.inputImage.b64}`
     }
-
-    // 生成数量固定为1（当前不支持多图）
 
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',

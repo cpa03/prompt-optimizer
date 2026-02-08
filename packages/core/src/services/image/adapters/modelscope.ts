@@ -9,6 +9,9 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { IMAGE_CONSTRAINTS } from '../../../constants/constraints'
+import { PROVIDER_URLS } from '../../../config/providers'
+import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -40,7 +43,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
       description: 'ModelScope 魔搭社区图像生成服务，每天免费 2000 次调用',
       corsRestricted: true,
       requiresApiKey: true,
-      defaultBaseURL: 'https://api-inference.modelscope.cn/v1',
+      defaultBaseURL: PROVIDER_URLS.modelscope,
       supportsDynamicModels: false,
       connectionSchema: {
         required: ['apiKey'],
@@ -54,6 +57,8 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
+    const sizes = IMAGE_SIZE_PRESETS.modelscope
+    
     return [
       {
         id: 'Tongyi-MAI/Z-Image-Turbo',
@@ -67,7 +72,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         },
         parameterDefinitions: this.getDefaultParameterDefinitions(),
         defaultParameterValues: {
-          size: '1024x1024',
+          size: sizes.default,
           n: 1
         }
       }
@@ -75,14 +80,16 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
   }
 
   private getDefaultParameterDefinitions(): ImageParameterDefinition[] {
+    const sizes = IMAGE_SIZE_PRESETS.modelscope
+    
     return [
       {
         name: 'size',
         labelKey: 'image.params.size.label',
         descriptionKey: 'image.params.size.description',
         type: 'string',
-        defaultValue: '1024x1024',
-        allowedValues: ['1024x1024', '1536x1024', '1024x1536']
+        defaultValue: sizes.default,
+        allowedValues: sizes.available
       },
       {
         name: 'n',
@@ -112,8 +119,10 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
+    const sizes = IMAGE_SIZE_PRESETS.modelscope
+    
     return {
-      size: '1024x1024',
+      size: sizes.default,
       n: 1
     }
   }
@@ -129,6 +138,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
 
   private async generateImage(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
     const url = this.resolveEndpointUrl(config, '/images/generations')
+    const sizes = IMAGE_SIZE_PRESETS.modelscope
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
@@ -138,7 +148,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     const payload = {
       model: config.modelId,
       prompt: request.prompt,
-      size: merged.size || '1024x1024',
+      size: merged.size || sizes.default,
       n: merged.n || request.count || 1
     }
 
@@ -174,7 +184,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     }
 
     // 轮询任务状态
-    return await this.pollTaskResult(taskId, config, 120, 3000)
+    return await this.pollTaskResult(taskId, config, 120, IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS)
   }
 
   /**
@@ -184,7 +194,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     taskId: string,
     config: ImageModelConfig,
     maxAttempts: number = 60,
-    intervalMs: number = 2000
+    intervalMs: number = IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS
   ): Promise<ImageResult> {
     const taskUrl = this.resolveEndpointUrl(config, `/tasks/${taskId}`)
 

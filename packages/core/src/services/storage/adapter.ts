@@ -1,5 +1,6 @@
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+import { TIMEOUTS } from '../../config/timeouts';
 
 /**
  * 存储适配器 - 为不支持高级方法的存储提供者提供兼容性
@@ -131,7 +132,7 @@ export class StorageAdapter implements IStorageProvider {
           this.locks.delete(key);
           reject(new StorageError(`Lock timeout for key: ${key}`, 'write'));
         }
-      }, 30000); // 30秒超时
+      }, TIMEOUTS.long); // 使用配置的超时时间
     });
     
     this.locks.set(key, lockPromise);

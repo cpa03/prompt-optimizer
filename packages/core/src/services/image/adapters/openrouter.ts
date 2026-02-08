@@ -9,6 +9,7 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -23,7 +24,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       name: 'OpenRouter',
       description: 'OpenRouter 图像生成服务，动态获取支持图像输出的模型',
       requiresApiKey: true,
-      defaultBaseURL: 'https://openrouter.ai/api/v1',
+      defaultBaseURL: PROVIDER_URLS.openrouter,
       supportsDynamicModels: true,
       connectionSchema: {
         required: ['apiKey'],
@@ -76,7 +77,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     const apiKey = connectionConfig?.apiKey
 
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/models', {
+      const response = await fetch(`${PROVIDER_URLS.openrouter}/models`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

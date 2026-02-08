@@ -1,6 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+import { TIMEOUTS } from '../../config/timeouts';
 
 /**
  * 数据表接口定义
@@ -213,7 +214,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
         // 如果是事务错误且还有重试机会，等待一段时间后重试
         if (this.isError(error) && error.name === 'PrematureCommitError' && attempt < maxRetries) {
-          const delay = Math.min(100 * Math.pow(2, attempt - 1), 1000); // 指数退避，最大1秒
+          const delay = Math.min(100 * Math.pow(2, attempt - 1), TIMEOUTS.retry.maxDelay);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
