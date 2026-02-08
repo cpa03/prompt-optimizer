@@ -9,6 +9,8 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS } from '../../../config/providers'
+import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -21,7 +23,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       name: 'SiliconFlow',
       description: 'SiliconFlow 多模型图像生成平台',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.siliconflow.cn/v1',
+      defaultBaseURL: PROVIDER_URLS.siliconflow,
       supportsDynamicModels: false,
       connectionSchema: {
         required: ['apiKey'],
@@ -35,6 +37,9 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
+    const sizes = IMAGE_SIZE_PRESETS.siliconflow
+    const defaults = IMAGE_DEFAULTS.siliconflow
+    
     // 返回静态的基础模型列表（离线可用）
     return [
       {
@@ -53,15 +58,15 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.imageSize.label',
             descriptionKey: 'params.imageSize.description',
             type: 'string',
-            defaultValue: '1024x1024',
-            allowedValues: ['1024x1024', '960x1280', '768x1024', '720x1440', '720x1280']
+            defaultValue: sizes.default,
+            allowedValues: sizes.available
           },
           {
             name: 'num_inference_steps',
             labelKey: 'params.steps.label',
             descriptionKey: 'params.steps.description',
             type: 'integer',
-            defaultValue: 20,
+            defaultValue: defaults.steps,
             minValue: 1,
             maxValue: 100
           },
@@ -70,7 +75,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.guidance.label',
             descriptionKey: 'params.guidance.description',
             type: 'number',
-            defaultValue: 7.5,
+            defaultValue: defaults.guidanceScale,
             minValue: 1.0,
             maxValue: 20.0,
             step: 0.5
@@ -91,9 +96,9 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
           }
         ],
         defaultParameterValues: {
-          image_size: '1024x1024',
-          num_inference_steps: 20,
-          guidance_scale: 7.5
+          image_size: sizes.default,
+          num_inference_steps: defaults.steps,
+          guidance_scale: defaults.guidanceScale
         }
       },
       {
@@ -120,7 +125,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.steps.label',
             descriptionKey: 'params.steps.description',
             type: 'integer',
-            defaultValue: 50,
+            defaultValue: defaults.numInferenceSteps,
             minValue: 1,
             maxValue: 100
           },
@@ -129,7 +134,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
             labelKey: 'params.cfg.label',
             descriptionKey: 'params.cfg.description',
             type: 'number',
-            defaultValue: 4.0,
+            defaultValue: defaults.strength,
             minValue: 0.1,
             maxValue: 20.0,
             step: 0.1
@@ -137,8 +142,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         ],
         defaultParameterValues: {
           image_size: '1328x1328',
-          num_inference_steps: 50,
-          cfg: 4.0
+          num_inference_steps: defaults.numInferenceSteps,
+          cfg: defaults.strength
         }
       }
     ]
@@ -343,6 +348,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
   protected getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[] {
     const modelName = modelId.toLowerCase()
+    const sizes = IMAGE_SIZE_PRESETS.siliconflow
+    const defaults = IMAGE_DEFAULTS.siliconflow
 
     // 基础参数
     const baseParams: ImageParameterDefinition[] = [
@@ -351,15 +358,15 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.imageSize.label',
         descriptionKey: 'params.imageSize.description',
         type: 'string',
-        defaultValue: '1024x1024',
-        allowedValues: ['1024x1024', '768x1024', '1024x768']
+        defaultValue: sizes.default,
+        allowedValues: sizes.available.slice(0, 3) // Use first 3 sizes as base
       },
       {
         name: 'num_inference_steps',
         labelKey: 'params.steps.label',
         descriptionKey: 'params.steps.description',
         type: 'integer',
-        defaultValue: 20,
+        defaultValue: defaults.steps,
         minValue: 1,
         maxValue: 100
       }
@@ -380,7 +387,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.steps.label',
         descriptionKey: 'params.steps.description',
         type: 'integer',
-        defaultValue: 50,
+        defaultValue: defaults.numInferenceSteps,
         minValue: 1,
         maxValue: 100
       }
@@ -389,7 +396,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.cfg.label',
         descriptionKey: 'params.cfg.description',
         type: 'number',
-        defaultValue: 4.0,
+        defaultValue: defaults.strength,
         minValue: 0.1,
         maxValue: 20.0,
         step: 0.1
@@ -403,8 +410,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         labelKey: 'params.imageSize.label',
         descriptionKey: 'params.imageSize.description',
         type: 'string',
-        defaultValue: '1024x1024',
-        allowedValues: ['1024x1024', '960x1280', '768x1024', '720x1440', '720x1280']
+        defaultValue: sizes.default,
+        allowedValues: sizes.available
       }
       baseParams.push(
         {
@@ -412,7 +419,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
           labelKey: 'params.guidance.label',
           descriptionKey: 'params.guidance.description',
           type: 'number',
-          defaultValue: 7.5,
+          defaultValue: defaults.guidanceScale,
           minValue: 1.0,
           maxValue: 20.0,
           step: 0.5
@@ -431,18 +438,20 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
   protected getDefaultParameterValues(modelId: string): Record<string, unknown> {
     const modelName = modelId.toLowerCase()
+    const sizes = IMAGE_SIZE_PRESETS.siliconflow
+    const defaults = IMAGE_DEFAULTS.siliconflow
 
     const baseDefaults = {
-      image_size: '1024x1024',
-      num_inference_steps: 20
+      image_size: sizes.default,
+      num_inference_steps: defaults.steps
     }
 
     // Qwen-Image 模型默认值
     if (modelName.includes('qwen')) {
       return {
         image_size: '1328x1328',
-        num_inference_steps: 50,
-        cfg: 4.0
+        num_inference_steps: defaults.numInferenceSteps,
+        cfg: defaults.strength
       }
     }
 
@@ -450,7 +459,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     if (modelName.includes('kolors')) {
       return {
         ...baseDefaults,
-        guidance_scale: 7.5
+        guidance_scale: defaults.guidanceScale
       }
     }
 

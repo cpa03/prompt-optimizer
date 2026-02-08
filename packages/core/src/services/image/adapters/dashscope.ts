@@ -9,6 +9,7 @@ import type {
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 /**
  * 阿里百炼图像适配器
@@ -38,7 +39,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
       description: '阿里云百炼图像生成服务，支持通义千问图像模型（文生图/图生图）',
       corsRestricted: true,
       requiresApiKey: true,
-      defaultBaseURL: 'https://dashscope.aliyuncs.com',
+      defaultBaseURL: PROVIDER_URLS.dashscope,
       supportsDynamicModels: false,
       apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key',
       connectionSchema: {

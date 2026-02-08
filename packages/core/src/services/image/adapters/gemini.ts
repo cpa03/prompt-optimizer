@@ -9,6 +9,7 @@ import type {
   ImageModelConfig
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   getProvider(): ImageProvider {
@@ -17,7 +18,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       name: 'Google Gemini',
       description: 'Google Gemini 图像生成服务',
       requiresApiKey: true,
-      defaultBaseURL: 'https://generativelanguage.googleapis.com',
+      defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: false,
       apiKeyUrl: 'https://aistudio.google.com/apikey',
       connectionSchema: {
