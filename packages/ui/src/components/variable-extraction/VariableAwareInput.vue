@@ -96,6 +96,7 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "../../composables/ui/useToast";
 import { useVariableDetection } from "./useVariableDetection";
 import VariableExtractionDialog from "./VariableExtractionDialog.vue";
+import { THEME_COLORS } from "../../config/constants";
 import {
     variableHighlighter,
     variableAutocompletion,
@@ -185,15 +186,15 @@ const message = useToast();
 const themeVars = useThemeVars();
 const completionColorVars = computed(() => ({
     "--variable-completion-temporary-color":
-        themeVars.value.successColor || "#18a058",
+        themeVars.value.successColor || THEME_COLORS.SUCCESS,
     "--variable-completion-global-color":
-        themeVars.value.infoColor || "#2080f0",
+        themeVars.value.infoColor || THEME_COLORS.INFO,
     "--variable-completion-predefined-color":
         themeVars.value.warningColor || "#8a63d2",
     "--variable-completion-selected-bg":
-        themeVars.value.primaryColorSuppl || "rgba(32, 128, 240, 0.12)",
+        themeVars.value.primaryColorSuppl || `${THEME_COLORS.PRIMARY_LIGHT}1F`, // 0.12 alpha
     "--variable-completion-selected-color":
-        themeVars.value.primaryColor || "#2080f0",
+        themeVars.value.primaryColor || THEME_COLORS.PRIMARY,
 }));
 
 const showClearButton = computed(
