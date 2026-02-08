@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
+import { PROVIDER_URLS } from '../../../config/providers'
 import type {
   TextProvider,
   TextModel,
@@ -41,7 +42,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       name: 'Anthropic',
       description: 'Anthropic Claude models (Official SDK)',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.anthropic.com',
+      defaultBaseURL: PROVIDER_URLS.anthropic,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://console.anthropic.com/settings/keys',
       connectionSchema: {

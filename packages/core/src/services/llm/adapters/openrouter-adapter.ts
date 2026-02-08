@@ -1,5 +1,6 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 interface ModelOverride {
   id: string
@@ -29,7 +30,7 @@ export class OpenRouterAdapter extends OpenAIAdapter {
       name: 'OpenRouter',
       description: 'OpenRouter 聚合多种 AI 模型的 OpenAI 兼容 API',
       requiresApiKey: true,
-      defaultBaseURL: 'https://openrouter.ai/api/v1',
+      defaultBaseURL: PROVIDER_URLS.openrouter,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://openrouter.ai/settings/keys',
       connectionSchema: {

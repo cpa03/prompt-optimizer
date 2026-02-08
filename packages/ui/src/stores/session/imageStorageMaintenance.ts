@@ -1,4 +1,4 @@
-import type { IImageStorageService, IPreferenceService } from '@prompt-optimizer/core'
+import { DJB2_HASH_SEED, type IImageStorageService, type IPreferenceService } from '@prompt-optimizer/core'
 
 // Session snapshot keys (single source of truth)
 export const IMAGE_TEXT2IMAGE_SESSION_KEY = 'session/v1/image-text2image'
@@ -28,7 +28,7 @@ const toHex = (buf: ArrayBuffer) =>
 // Small deterministic fallback hash (NOT cryptographically secure).
 // Only used if WebCrypto isn't available.
 const djb2Hex = (input: string) => {
-  let hash = 5381
+  let hash = DJB2_HASH_SEED
   for (let i = 0; i < input.length; i++) {
     hash = ((hash << 5) + hash) ^ input.charCodeAt(i)
   }

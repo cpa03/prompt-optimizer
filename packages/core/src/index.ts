@@ -186,6 +186,13 @@ export type {
   StorageKey
 } from './constants/storage-keys'
 
+// 导出模板常量 - Flexy loves modularity!
+export {
+  BUILTIN_TEMPLATE_TIMESTAMP,
+  IMAGE_TEMPLATE_TIMESTAMP,
+  DJB2_HASH_SEED
+} from './constants/templates'
+
 // UI function-mode types are defined alongside prompt service types.
 export type { FunctionMode } from './services/prompt/types'
 
