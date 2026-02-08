@@ -327,6 +327,9 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
 </script>
 
 <style scoped>
+/* ===== Micro-UX Animations & Interactions ===== */
+
+/* Loading state with subtle pulse */
 .evaluation-loading {
   display: flex;
   flex-direction: column;
@@ -338,6 +341,16 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
 
 .loading-text {
   font-size: v-bind('FONT_SIZES.BASE + "px"');
+  animation: loading-pulse 2s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .stream-preview {
@@ -346,6 +359,11 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   padding: v-bind('SPACING.MD + "px"');
   background: var(--n-color-embedded);
   border-radius: v-bind('BORDER_RADIUS.MD + "px"');
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stream-preview:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .stream-label {
@@ -360,6 +378,7 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   word-break: break-all;
 }
 
+/* Score section with enhanced animations */
 .score-section {
   display: flex;
   flex-direction: column;
@@ -367,6 +386,12 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   padding: v-bind('SPACING.XL + "px"');
   background: var(--n-color-embedded);
   border-radius: v-bind('BORDER_RADIUS.LG + "px"');
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.score-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .overall-score {
@@ -379,11 +404,34 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   border-radius: 50%;
   border: 4px solid currentColor;
   margin-bottom: v-bind('SPACING.MD + "px"');
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: score-appear 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes score-appear {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.overall-score:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .score-value {
   font-size: v-bind('FONT_SIZES.XXXXL + "px"');
   font-weight: bold;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.overall-score:hover .score-value {
+  transform: scale(1.1);
 }
 
 .score-label {
@@ -393,6 +441,18 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
 
 .score-level-text {
   font-size: v-bind('FONT_SIZES.BASE + "px"');
+  animation: fade-in-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 评分等级颜色 - 使用CSS变量从centralized constants */
@@ -416,8 +476,17 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   color: v-bind('EVALUATION_COLORS.CRITICAL');
 }
 
+/* Dimension items with hover effects */
 .dimension-item {
   width: 100%;
+  padding: v-bind('SPACING.SM + "px"');
+  border-radius: v-bind('BORDER_RADIUS.SM + "px"');
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dimension-item:hover {
+  background: var(--n-color-embedded);
+  transform: translateX(4px);
 }
 
 .dimension-header {
@@ -432,13 +501,21 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   line-height: 1.6;
 }
 
-/* 改进建议项 */
+/* 改进建议项 with enhanced interactions */
 .improvement-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
   width: 100%;
+  padding: v-bind('SPACING.SM + "px"');
+  border-radius: v-bind('BORDER_RADIUS.SM + "px"');
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.improvement-item:hover {
+  background: var(--n-color-embedded);
+  transform: translateX(4px);
 }
 
 .improvement-text {
@@ -446,12 +523,21 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   word-break: break-word;
 }
 
-/* patchPlan 相关样式 */
+/* patchPlan 相关样式 with micro-interactions */
 .patch-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  padding: v-bind('SPACING.SM + "px"');
+  border-radius: v-bind('BORDER_RADIUS.MD + "px"');
+  background: var(--n-color-embedded);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.patch-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .patch-header {
@@ -471,9 +557,101 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
   border-radius: v-bind('BORDER_RADIUS.SM + "px"');
   padding: v-bind('SPACING.SM + "px"') 10px;
   font-size: v-bind('FONT_SIZES.XS + "px"');
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.patch-item:hover .patch-diff-inline {
+  border-color: var(--n-border-color);
 }
 
 .patch-apply-btn {
   align-self: flex-end;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.patch-apply-btn:hover {
+  transform: scale(1.05);
+}
+
+.patch-apply-btn:active {
+  transform: scale(0.98);
+}
+
+/* Card hover effects */
+:deep(.n-card) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-card:hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Button micro-interactions */
+:deep(.n-button) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-button:not(:disabled):hover) {
+  transform: translateY(-1px);
+}
+
+:deep(.n-button:not(:disabled):active) {
+  transform: scale(0.98) translateY(0);
+}
+
+:deep(.n-button--primary-type:not(:disabled):hover) {
+  box-shadow: 0 4px 12px rgba(24, 160, 88, 0.3);
+}
+
+/* Focus visible rings for accessibility */
+:deep(.n-button:focus-visible) {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* List item hover effects */
+:deep(.n-list-item) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-list-item:hover) {
+  background: var(--n-color-embedded);
+}
+
+/* Empty state animation */
+:deep(.n-empty) {
+  animation: fade-in-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Respect user motion preferences - Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .loading-text,
+  .overall-score,
+  .score-value,
+  .score-level-text,
+  .dimension-item,
+  .improvement-item,
+  .patch-item,
+  :deep(.n-card),
+  :deep(.n-button),
+  :deep(.n-list-item),
+  :deep(.n-empty) {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+  
+  .score-section:hover,
+  .overall-score:hover,
+  .dimension-item:hover,
+  .improvement-item:hover,
+  .patch-item:hover,
+  :deep(.n-card:hover),
+  :deep(.n-button:not(:disabled):hover) {
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
 </style>
