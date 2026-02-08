@@ -13,6 +13,7 @@ import type {
   OptimizationRequest,
   ConversationMessage,
   ToolDefinition,
+  ContextMode,
 } from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 import { useFunctionMode, type FunctionMode } from '../mode'
@@ -43,7 +44,7 @@ export function usePromptOptimizer(
   optimizationMode: OptimizationModeSource,    // 必需参数，接受 computed
   selectedOptimizeModel?: Ref<string>,                 // 优化模型选择
   selectedTestModel?: Ref<string>,                     // 测试模型选择
-  contextMode?: Ref<import('@prompt-optimizer/core').ContextMode>,  // 上下文模式
+  contextMode?: Ref<ContextMode>,  // 上下文模式
   bindings?: {
     prompt?: Ref<string>
     optimizedPrompt?: Ref<string>

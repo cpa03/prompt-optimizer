@@ -307,7 +307,7 @@ import TemplateSelect from "./TemplateSelect.vue";
 import Modal from "./Modal.vue";
 import OutputDisplay from "./OutputDisplay.vue";
 import { EvaluationScoreBadge } from "./evaluation";
-import type { Template, PromptRecord, EvaluationType, PatchOperation } from "@prompt-optimizer/core";
+import type { Template, PromptRecord, EvaluationType, PatchOperation, OptimizationMode } from "@prompt-optimizer/core";
 
 const { t } = useI18n();
 const toast = useToast();
@@ -357,7 +357,7 @@ const props = defineProps({
         default: "",
     },
     optimizationMode: {
-        type: String as () => import("@prompt-optimizer/core").OptimizationMode,
+        type: String as () => OptimizationMode,
         required: true,
     },
     advancedModeEnabled: {
