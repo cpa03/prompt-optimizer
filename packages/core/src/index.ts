@@ -17,6 +17,9 @@
 
 // Core package entry point
 
+// 🆕 导出配置模块 - Flexy loves modularity!
+export * from './config'
+
 // 导出模板相关
 export { TemplateManager, createTemplateManager } from './services/template/manager'
 export { TemplateProcessor } from './services/template/processor'
