@@ -26,8 +26,12 @@ import { computed, h, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NDropdown, type DropdownOption } from 'naive-ui'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
+import { SEMANTIC_COLORS, TIME_CONSTANTS, ANIMATION_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
+
+// Theme animation duration in ms
+const THEME_ANIMATION_DURATION = 400
 
 // Animation state
 const isAnimating = ref(false)
@@ -48,7 +52,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'light':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #eab308;' : undefined, // yellow-500
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_LIGHT};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -60,7 +64,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'dark':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #60a5fa;' : undefined, // blue-400
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_DARK};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -74,7 +78,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'blue':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #2563eb;' : undefined, // blue-600
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_BLUE};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -86,7 +90,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'classic':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #b08968;' : undefined,
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_CLASSIC};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -98,7 +102,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'green':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #16a34a;' : undefined, // green-600
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_GREEN};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -110,7 +114,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'purple':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #9333ea;' : undefined, // purple-600
+        style: isColored ? `color: ${SEMANTIC_COLORS.THEME_PURPLE};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -150,7 +154,7 @@ const handleThemeSelect = (key: string) => {
     // Reset animation state after animation completes
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, THEME_ANIMATION_DURATION)
   }
 }
 
@@ -161,7 +165,7 @@ watch(themeId, (newId, oldId) => {
     isAnimating.value = true
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, THEME_ANIMATION_DURATION)
   }
 })
 </script>
