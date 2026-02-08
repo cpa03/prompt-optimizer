@@ -119,7 +119,7 @@
       <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden;">
         <n-divider style="margin: 0 0 12px 0; flex: 0 0 auto;">
           <span style="font-weight: 600;">{{ t('favorites.dialog.contentTitle') }}</span>
-          <span style="color: #ff4d4f; margin-left: 4px;">*</span>
+          <span :style="{ color: semanticColors.REQUIRED, marginLeft: '4px' }">*</span>
         </n-divider>
         <div style="flex: 1; min-height: 0; overflow: hidden;">
           <OutputDisplayCore
@@ -170,8 +170,12 @@ import OutputDisplayCore from './OutputDisplayCore.vue';
 import CategoryTreeSelect from './CategoryTreeSelect.vue';
 import type { AppServices } from '../types/services';
 import type { FavoritePrompt } from '@prompt-optimizer/core';
+import { SEMANTIC_COLORS } from '../config/constants';
 
 const { t } = useI18n();
+
+// Make constants available to template
+const semanticColors = SEMANTIC_COLORS;
 const { filterTags, loadTags } = useTagSuggestions();
 
 interface Props {
