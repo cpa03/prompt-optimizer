@@ -29,8 +29,21 @@
           @update:value="handleCompareToggle"
           :size="buttonSize === 'large' ? 'medium' : 'small'"
           :data-testid="compareToggleTestId"
+          :aria-label="t('test.compareMode')"
+          :title="isCompareMode ? t('test.disableCompareMode') : t('test.enableCompareMode')"
         />
-        <NText :depth="3" tag="span" class="tcb-compare-label">
+        <NText
+          :depth="3"
+          tag="span"
+          class="tcb-compare-label"
+          role="button"
+          tabindex="0"
+          :aria-pressed="isCompareMode"
+          @click="handleCompareToggle"
+          @keydown.enter="handleCompareToggle"
+          @keydown.space="handleCompareToggle"
+          :title="t('test.clickToToggle')"
+        >
           {{ t('test.compareMode') }}
         </NText>
       </NSpace>

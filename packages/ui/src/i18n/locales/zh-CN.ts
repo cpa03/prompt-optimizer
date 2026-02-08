@@ -1034,6 +1034,9 @@ export default {
       disable: "关闭对比",
     },
     compareMode: "对比模式",
+    enableCompareMode: "启用对比模式",
+    disableCompareMode: "禁用对比模式",
+    clickToToggle: "点击切换对比模式",
     layout: {
       columns: "列数",
       original: "原始",

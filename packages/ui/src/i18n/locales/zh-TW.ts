@@ -1028,6 +1028,9 @@ export default {
       disable: "關閉對比",
     },
     compareMode: "對比模式",
+    enableCompareMode: "啟用對比模式",
+    disableCompareMode: "禁用對比模式",
+    clickToToggle: "點擊切換對比模式",
     layout: {
       columns: "列數",
       original: "原始",
