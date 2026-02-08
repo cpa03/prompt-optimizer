@@ -129,28 +129,50 @@
                 </template>
 
                 <!-- 自定义变量表格或空状态 -->
-                <div v-if="customVariables.length === 0">
+                <div v-if="customVariables.length === 0" class="variable-empty-state">
                     <NEmpty :description="t('variables.addFirstVariable')">
                         <template #icon>
-                            <NIcon size="48">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="1"
-                                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                                    />
-                                </svg>
-                            </NIcon>
+                            <div class="variable-empty-icon">
+                                <NIcon size="48" class="variable-tag-icon">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="1"
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                                        />
+                                    </svg>
+                                </NIcon>
+                                <span class="variable-sparkle variable-sparkle-1">✨</span>
+                                <span class="variable-sparkle variable-sparkle-2">✨</span>
+                            </div>
                         </template>
                         <template #default>
-                            <NText>{{
-                                t("variables.noCustomVariables")
-                            }}</NText>
+                            <div class="variable-empty-content">
+                                <NText depth="3" class="variable-empty-hint">
+                                    {{ t("variables.noCustomVariables") }}
+                                </NText>
+                                <NButton
+                                    @click="showAddVariable"
+                                    type="primary"
+                                    size="small"
+                                    class="variable-empty-action"
+                                    :disabled="props.disabled || loading"
+                                >
+                                    <template #icon>
+                                        <NIcon>
+                                            <svg viewBox="0 0 16 16" fill="currentColor">
+                                                <path d="M8 2a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 2z"/>
+                                            </svg>
+                                        </NIcon>
+                                    </template>
+                                    {{ t("variables.management.addVariable") }}
+                                </NButton>
+                            </div>
                         </template>
                     </NEmpty>
                 </div>
@@ -1123,4 +1145,106 @@ const executeExport = () => {
 
 <style scoped>
 /* Pure Naive UI implementation - no custom theme CSS needed */
+
+/* 🎨 Palette: Enhanced empty state with micro-animations */
+.variable-empty-state {
+  padding: 24px 0;
+}
+
+.variable-empty-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.variable-tag-icon {
+  animation: variable-tag-float 3s ease-in-out infinite;
+}
+
+.variable-sparkle {
+  position: absolute;
+  font-size: 14px;
+  opacity: 0;
+  animation: variable-sparkle-twinkle 2s ease-in-out infinite;
+}
+
+.variable-sparkle-1 {
+  top: -4px;
+  right: -4px;
+  animation-delay: 0s;
+}
+
+.variable-sparkle-2 {
+  bottom: 0;
+  left: -4px;
+  animation-delay: 0.6s;
+}
+
+.variable-empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.variable-empty-hint {
+  font-size: 13px;
+  text-align: center;
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+.variable-empty-action {
+  animation: variable-action-pulse 2s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+@keyframes variable-tag-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(2deg);
+  }
+}
+
+@keyframes variable-sparkle-twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes variable-action-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.2);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(24, 160, 88, 0);
+  }
+}
+
+/* Hover state for the empty action button */
+.variable-empty-action:hover {
+  animation: none;
+  transform: translateY(-1px);
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .variable-tag-icon,
+  .variable-sparkle,
+  .variable-empty-action {
+    animation: none;
+  }
+}
 </style>
