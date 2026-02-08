@@ -64,15 +64,22 @@
             circle
             :title="copySuccess ? t('common.copied') : t('common.copy')"
             :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
-            :class="{ 'copy-success': copySuccess }"
+            :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
           >
             <template #icon>
-              <NIcon :class="{ 'copy-icon-animate': copySuccess }">
-                <Check v-if="copySuccess" />
-                <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
-                </svg>
-              </NIcon>
+              <div class="copy-icon-container">
+                <Transition name="icon-morph" mode="out-in">
+                  <NIcon v-if="copySuccess" key="check" class="check-icon">
+                    <Check />
+                  </NIcon>
+                  <NIcon v-else key="copy" class="copy-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
+                    </svg>
+                  </NIcon>
+                </Transition>
+                <span v-if="copySuccess" class="success-ring" aria-hidden="true"></span>
+              </div>
             </template>
           </NButton>
           <NButton
@@ -601,26 +608,147 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 </script>
 
 <style scoped>
-/* Copy button success animation */
+/* Copy button success animation - Enhanced micro-UX */
 .copy-success {
   color: var(--success-color, #18a058);
 }
 
-.copy-icon-animate {
-  animation: copySuccessPop 0.3s ease;
+/* Icon container for positioning */
+.copy-icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
 }
 
-@keyframes copySuccessPop {
+/* Icon morph transition */
+.icon-morph-enter-active,
+.icon-morph-leave-active {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-morph-enter-from {
+  opacity: 0;
+  transform: scale(0.5) rotate(-45deg);
+}
+
+.icon-morph-leave-to {
+  opacity: 0;
+  transform: scale(0.5) rotate(45deg);
+}
+
+.icon-morph-enter-to,
+.icon-morph-leave-from {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Checkmark icon with draw animation */
+.check-icon {
+  animation: checkmarkDraw 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes checkmarkDraw {
   0% {
-    transform: scale(0.5);
     opacity: 0;
+    transform: scale(0.3);
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Success ring animation */
+.success-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--success-color, #18a058);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  animation: successRingExpand 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes successRingExpand {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Button pulse effect - simulates haptic feedback visually */
+.copy-button-pulse {
+  animation: buttonPulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.95);
+  }
+  50% {
+    transform: scale(1.05);
   }
   100% {
     transform: scale(1);
-    opacity: 1;
+  }
+}
+
+/* Copy icon subtle hover state */
+.copy-icon {
+  transition: transform 0.2s ease;
+}
+
+.copy-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .icon-morph-enter-active,
+  .icon-morph-leave-active {
+    transition: opacity 0.1s ease;
+  }
+  
+  .icon-morph-enter-from,
+  .icon-morph-leave-to {
+    transform: none;
+  }
+  
+  .check-icon {
+    animation: none;
+  }
+  
+  .success-ring {
+    animation: none;
+    display: none;
+  }
+  
+  .copy-button-pulse {
+    animation: none;
+  }
+  
+  .copy-icon {
+    transition: none;
   }
 }
 

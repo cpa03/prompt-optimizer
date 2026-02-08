@@ -1,6 +1,7 @@
 // Utilities for working with {{var}} placeholders.
 // Intentionally skips Mustache control tags (e.g. {{#if}}, {{/if}}, {{> partial}}, {{& raw}}).
 
+import { DJB2_HASH_SEED } from '@prompt-optimizer/core'
 import { VARIABLE_VALIDATION, isValidVariableName } from '../types/variable'
 
 // Variable name cannot contain whitespace, but we allow whitespace around it:
@@ -76,7 +77,7 @@ export const replaceVariablesInContent = (
 };
 
 export const hashString = (input: string): string => {
-  let hash = 5381;
+  let hash = DJB2_HASH_SEED;
   for (let i = 0; i < input.length; i++) {
     hash = ((hash << 5) + hash) ^ input.charCodeAt(i);
   }

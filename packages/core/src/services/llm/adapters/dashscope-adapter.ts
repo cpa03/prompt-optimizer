@@ -1,5 +1,6 @@
 import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
+import { PROVIDER_URLS } from '../../../config/providers'
 
 interface ModelOverride {
   id: string
@@ -69,7 +70,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
       name: '阿里百炼',
       description: '阿里云百炼大模型服务平台，提供通义千问系列模型',
       requiresApiKey: true,
-      defaultBaseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+      defaultBaseURL: PROVIDER_URLS.dashscope,
       supportsDynamicModels: true,
       apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key',
       connectionSchema: {
