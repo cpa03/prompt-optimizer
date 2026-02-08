@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test'
+import { TIMEOUTS } from '../constants/timeouts'
 
 export type OptimizeWorkspaceMode =
   | 'basic-system'
@@ -16,7 +17,7 @@ export async function fillOriginalPrompt(page: Page, mode: OptimizeWorkspaceMode
   const workspace = getWorkspace(page, mode)
 
   const input = workspace.locator(`[data-testid="${mode}-input"]`)
-  await expect(input).toBeVisible({ timeout: 15000 })
+  await expect(input).toBeVisible({ timeout: TIMEOUTS.OPERATION.INPUT_VISIBLE })
 
   const cmContent = input.locator('.cm-content')
   if ((await cmContent.count()) > 0) {
@@ -29,15 +30,15 @@ export async function fillOriginalPrompt(page: Page, mode: OptimizeWorkspaceMode
   }
 
   const optimizeButton = workspace.locator(`[data-testid="${mode}-optimize-button"]`)
-  await expect(optimizeButton).toBeEnabled({ timeout: 15000 })
+  await expect(optimizeButton).toBeEnabled({ timeout: TIMEOUTS.OPERATION.BUTTON_ENABLED })
 }
 
 export async function clickOptimizeButton(page: Page, mode: OptimizeWorkspaceMode) {
   const workspace = getWorkspace(page, mode)
 
   const button = workspace.locator(`[data-testid="${mode}-optimize-button"]`)
-  await expect(button).toBeVisible({ timeout: 15000 })
-  await expect(button).toBeEnabled({ timeout: 15000 })
+  await expect(button).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_ENABLED })
+  await expect(button).toBeEnabled({ timeout: TIMEOUTS.OPERATION.BUTTON_ENABLED })
 
   await button.click()
 }
@@ -51,7 +52,7 @@ async function ensureOutputSourceView(output: import('@playwright/test').Locator
     const source = leftGroupButtons.nth(1)
     // 如果已经处于 Source（disabled），直接返回
     if (!(await source.isDisabled().catch(() => false))) {
-      await source.click({ timeout: 20000 })
+      await source.click({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
     }
   }
 }
@@ -100,7 +101,7 @@ async function readOutputSourceText(output: import('@playwright/test').Locator) 
 
 export async function expectOutputByTestIdNotEmpty(page: Page, testId: string, opts?: { timeoutMs?: number }) {
   const output = page.locator(`[data-testid="${testId}"]:visible`)
-  const timeoutMs = opts?.timeoutMs ?? 120000
+  const timeoutMs = opts?.timeoutMs ?? TIMEOUTS.API.LONG_OPERATION
 
   await ensureOutputSourceView(output)
 
@@ -124,7 +125,7 @@ export async function expectOptimizedResultNotEmpty(page: Page, mode: OptimizeWo
       .poll(async () => {
         const { text } = await readOutputSourceText(output).catch(() => ({ text: '' }))
         return text
-      }, { timeout: 120000 })
+      }, { timeout: TIMEOUTS.API.LONG_OPERATION })
       .toMatch(/\S/)
   } catch (e) {
     const buttonInfo = await (async () => {
@@ -171,20 +172,20 @@ export async function verifyOptimizeButtonDisabledWhenEmpty(page: Page, mode: Op
   const workspace = getWorkspace(page, mode)
   const button = workspace.locator(`[data-testid="${mode}-optimize-button"]`)
 
-  await expect(button).toBeVisible({ timeout: 15000 })
+  await expect(button).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_ENABLED })
   await expect(button).toBeDisabled()
 }
 
 export async function addProMultiUserMessage(page: Page, content: string) {
   const addButton = page.getByTestId('pro-multi-add-message').first()
-  await expect(addButton).toBeVisible({ timeout: 20000 })
+  await expect(addButton).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
   await addButton.click()
 
   // 新增消息后，列表最后一项应该出现
   // 我们给 message card 加了 data-testid=pro-multi-message-card-{index}
   // 这里用“最后一个 message card”的内容输入框填写。
   const messageCards = page.locator('[data-testid^="pro-multi-message-card-"]')
-  await expect(messageCards.first()).toBeVisible({ timeout: 20000 })
+  await expect(messageCards.first()).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
 
   const lastCard = messageCards.last()
   // VariableAwareInput 内部是 textarea 或 CodeMirror
@@ -204,14 +205,14 @@ export async function selectProMultiMessageForOptimization(page: Page, index: nu
   // 若选择按钮存在则点击，不存在则视为已自动选中。
   const selectButton = page.getByTestId(`pro-multi-select-message-${index}`)
   if ((await selectButton.count()) > 0) {
-    await expect(selectButton).toBeVisible({ timeout: 20000 })
+    await expect(selectButton).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
     await selectButton.click()
   }
 }
 
 export async function clickProMultiOptimizeButton(page: Page) {
   const button = page.getByTestId('pro-multi-optimize-button')
-  await expect(button).toBeVisible({ timeout: 20000 })
-  await expect(button).toBeEnabled({ timeout: 20000 })
+  await expect(button).toBeVisible({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
+  await expect(button).toBeEnabled({ timeout: TIMEOUTS.OPERATION.BUTTON_CLICK })
   await button.click()
 }

@@ -1,5 +1,6 @@
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+import { STORAGE_CONSTRAINTS } from '../../constants/constraints';
 
 // Dynamic imports for Node.js modules (only loaded in Electron environment)
 let fs: typeof import('fs/promises') | null = null;
@@ -42,10 +43,10 @@ export class FileStorageProvider implements IStorageProvider {
   private initializationPromise: Promise<void> | null = null;
 
   // 配置常量
-  private readonly WRITE_DELAY = 500; // 500ms延迟写入
+  private readonly WRITE_DELAY = STORAGE_CONSTRAINTS.WRITE_DELAY_MS; // 延迟写入
   private readonly TEMP_FILE_SUFFIX = '.tmp';
   private readonly BACKUP_FILE_SUFFIX = '.backup';
-  private readonly MAX_FLUSH_TIME = 3000; // 最大flush时间：3秒
+  private readonly MAX_FLUSH_TIME = STORAGE_CONSTRAINTS.MAX_FLUSH_TIME_MS; // 最大flush时间
   private flushAttempts = 0; // flush尝试次数
   private readonly MAX_FLUSH_ATTEMPTS = 3; // 最大flush尝试次数
   

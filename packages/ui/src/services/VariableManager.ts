@@ -3,7 +3,7 @@
  * 负责自定义变量的管理、存储和解析
  */
 
-import type { IPreferenceService } from '@prompt-optimizer/core';
+import type { IPreferenceService, VALIDATION_CONSTRAINTS } from '@prompt-optimizer/core';
 import { 
   PREDEFINED_VARIABLES, 
   VARIABLE_VALIDATION,
@@ -71,7 +71,7 @@ export class VariableManager implements IVariableManager {
   // 变量扫描缓存
   private scanCache: Map<string, ScanCacheEntry> = new Map();
   private readonly CACHE_EXPIRY_MS = TIME_CONSTANTS.CACHE_EXPIRY_MS; // 5分钟缓存
-  private readonly MAX_CACHE_SIZE = 100; // 最大缓存条目数
+  private readonly MAX_CACHE_SIZE = VALIDATION_CONSTRAINTS.MAX_CACHE_SIZE; // 最大缓存条目数
 
   constructor(private preferenceService: IPreferenceService) {
     // 保存 Promise，让外部可以等待初始化完成
