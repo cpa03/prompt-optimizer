@@ -82,12 +82,21 @@ export const Z_INDEX = {
 
 // UI Dimensions (widths, heights, in pixels or CSS values)
 export const UI_DIMENSIONS = {
+  // Drawer widths
+  DRAWER_WIDTH: 420,
+
   // Modal widths
   MODAL_WIDTH_COMPACT: '500px',
   MODAL_WIDTH_SMALL: '600px',
   MODAL_WIDTH_MEDIUM: '800px',
   MODAL_WIDTH_LARGE: '1200px',
   MODAL_WIDTH_XL: '1400px',
+
+  // Modal viewport-relative sizes
+  MODAL_WIDTH_VW: '90vw',
+  MODAL_HEIGHT_VH: '90vh',
+  MODAL_WIDTH_VW_SMALL: 'min(520px, 90vw)',
+  MODAL_SIZE_LARGE: { width: 'min(800px, 90vw)', height: 'min(600px, 80vh)' },
 
   // Sidebar widths by mode
   SIDEBAR_WIDTH_BASIC: 220,
@@ -188,6 +197,7 @@ export const FONT_SIZES = {
   XL: 18,
   XXL: 20,
   XXXL: 24,
+  XXXXL: 32,
 } as const
 
 // Border radius values (in pixels or CSS values)
@@ -330,5 +340,32 @@ export const COMPONENT_CONSTANTS = {
   CATEGORY_MANAGER: {
     MODAL_WIDTH: 'min(520px, 90vw)',
     SEARCH_INPUT_WIDTH: 200,
+  },
+
+  // EvaluationScoreBadge
+  EVALUATION_SCORE_BADGE: {
+    SMALL: {
+      MIN_WIDTH: 32,
+      HEIGHT: 22,
+      PADDING_HORIZONTAL: 6,
+      FONT_SIZE: 12,
+    },
+    MEDIUM: {
+      MIN_WIDTH: 40,
+      HEIGHT: 28,
+      PADDING_HORIZONTAL: 8,
+      FONT_SIZE: 14,
+    },
+  },
+
+  // CodeMirror extensions
+  CODEMIRROR: {
+    TOOLTIP_MAX_WIDTH: 420,
+  },
+
+  // Layout minimum heights
+  LAYOUT: {
+    PANEL_MIN_HEIGHT_PX: 200,
+    BUTTON_MIN_WIDTH_PX: 48,
   },
 } as const

@@ -1070,6 +1070,9 @@ export default {
       disable: "Disable Compare",
     },
     compareMode: "Compare Mode",
+    enableCompareMode: "Enable compare mode",
+    disableCompareMode: "Disable compare mode",
+    clickToToggle: "Click to toggle compare mode",
     layout: {
       columns: "Columns",
       original: "Original",

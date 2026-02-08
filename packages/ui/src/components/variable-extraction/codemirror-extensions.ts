@@ -15,6 +15,7 @@ import {
   type CompletionResult
 } from '@codemirror/autocomplete'
 import type { DetectedVariable } from './useVariableDetection'
+import { COMPONENT_CONSTANTS } from '../../config/constants'
 
 export interface VariableDetectionLabels {
   sourceGlobal: string
@@ -425,7 +426,7 @@ export function existingVariableTooltip(
         dom.style.boxShadow = shadow
         dom.style.fontSize = '13px'
         dom.style.color = textColor
-        dom.style.maxWidth = '420px'
+        dom.style.maxWidth = `${COMPONENT_CONSTANTS.CODEMIRROR.TOOLTIP_MAX_WIDTH}px`
         dom.style.lineHeight = '1.6'
         const sourceLabelText =
           varSource === 'global'

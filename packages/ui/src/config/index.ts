@@ -19,6 +19,8 @@ export {
   EVALUATION_COLORS,
   THEME_COLORS,
   SEMANTIC_COLORS,
+  ICON_SIZES,
+  COMPONENT_CONSTANTS,
 } from './constants'
 
 // Re-export for convenience
@@ -37,3 +39,5 @@ export { BORDER_RADIUS as BorderRadius } from './constants'
 export { EVALUATION_COLORS as EvalColors } from './constants'
 export { THEME_COLORS as ThemeColors } from './constants'
 export { SEMANTIC_COLORS as SemanticColors } from './constants'
+export { ICON_SIZES as IconSizes } from './constants'
+export { COMPONENT_CONSTANTS as ComponentConstants } from './constants'

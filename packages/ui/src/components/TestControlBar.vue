@@ -29,8 +29,21 @@
           @update:value="handleCompareToggle"
           :size="buttonSize === 'large' ? 'medium' : 'small'"
           :data-testid="compareToggleTestId"
+          :aria-label="t('test.compareMode')"
+          :title="isCompareMode ? t('test.disableCompareMode') : t('test.enableCompareMode')"
         />
-        <NText :depth="3" tag="span" class="tcb-compare-label">
+        <NText
+          :depth="3"
+          tag="span"
+          class="tcb-compare-label"
+          role="button"
+          tabindex="0"
+          :aria-pressed="isCompareMode"
+          @click="handleCompareToggle"
+          @keydown.enter="handleCompareToggle"
+          @keydown.space="handleCompareToggle"
+          :title="t('test.clickToToggle')"
+        >
           {{ t('test.compareMode') }}
         </NText>
       </NSpace>
@@ -160,6 +173,49 @@ const handlePrimaryAction = () => {
 
 :deep(.tcb-right .n-switch:active:not(.n-switch--disabled)) {
   transform: scale(0.95);
+}
+
+/* Enhanced primary action button micro-interactions */
+:deep(.tcb-right .n-button--primary-type) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+:deep(.tcb-right .n-button--primary-type:hover:not(:disabled):not(.n-button--loading)) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(24, 160, 88, 0.35);
+}
+
+:deep(.tcb-right .n-button--primary-type:active:not(:disabled):not(.n-button--loading)) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 6px rgba(24, 160, 88, 0.3);
+}
+
+/* Loading shimmer animation */
+:deep(.tcb-right .n-button--loading.n-button--primary-type::after) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
 /* 断点隐藏：空间不足时优先隐藏 tags，保证右侧控件可用 */

@@ -40,6 +40,7 @@
                                 size="small"
                                 @click="switchVersion(version)"
                                 :bordered="currentVersionId !== version.id || isV0Selected"
+                                class="version-tag-clickable"
                             >
                                 V{{ version.version }}
                             </NTag>
@@ -51,6 +52,7 @@
                                         size="small"
                                         @click="switchToV0"
                                         :bordered="!isV0Selected"
+                                        class="version-tag-clickable"
                                     >
                                         {{ t("prompt.originalVersion") }}
                                     </NTag>
@@ -730,19 +732,38 @@ defineExpose({
     gap: 4px;
 }
 
-/* 版本标签可点击样式 */
+/* 版本标签可点击样式 - 增强微交互 */
 .version-tag-clickable {
     cursor: pointer;
     user-select: none;
-    transition: transform 0.15s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .version-tag-clickable:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .version-tag-clickable:active {
-    transform: translateY(0);
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 版本标签选中状态动画 */
+.version-tag-clickable.n-tag--success-type {
+    animation: version-tag-pop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes version-tag-pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @media (max-width: 640px) {
