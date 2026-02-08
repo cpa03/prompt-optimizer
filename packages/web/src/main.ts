@@ -55,12 +55,41 @@ if (import.meta.env.VITE_VERCEL_DEPLOYMENT === 'true') {
     script.src = '/_vercel/insights/script.js'
     script.defer = true
     script.onload = () => console.log('Vercel Analytics 已加载')
-    script.onerror = () => console.log('Vercel Analytics 加载失败')
+    script.onerror = () => console.warn('Vercel Analytics 加载失败')
     document.head.appendChild(script)
   }
   
   // 延迟执行以确保DOM已完全加载
   window.addEventListener('DOMContentLoaded', loadAnalytics)
-}else{
-    console.log('Vercel Analytics 未加载')
+} else if (import.meta.env.DEV) {
+  // 只在开发环境显示日志
+  console.log('Vercel Analytics 未加载')
+}
+
+// 全局错误处理 - 捕获未处理的Promise拒绝和错误
+if (typeof window !== 'undefined') {
+  // 捕获未处理的Promise拒绝
+  window.addEventListener('unhandledrejection', (event) => {
+    // 阻止错误冒泡到控制台
+    event.preventDefault()
+    // 只记录关键错误，避免控制台噪音
+    if (import.meta.env.DEV) {
+      console.warn('Unhandled promise rejection:', event.reason?.message || event.reason)
+    }
+  })
+
+  // 捕获全局错误
+  window.addEventListener('error', (event) => {
+    // 忽略已知的第三方库警告
+    if (event.message?.includes('currentInstance') || 
+        event.message?.includes('ResizeObserver') ||
+        event.filename?.includes('chrome-extension')) {
+      event.preventDefault()
+      return
+    }
+    // 其他错误正常记录
+    if (import.meta.env.DEV) {
+      console.error('Global error:', event.message)
+    }
+  })
 }
