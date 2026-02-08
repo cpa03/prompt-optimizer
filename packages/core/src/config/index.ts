@@ -10,3 +10,5 @@ export * from './timeouts';
 export * from './http';
 export * from './defaults';
 export * from './ports';
+export * from './ports.config';
+export * from './router.config';

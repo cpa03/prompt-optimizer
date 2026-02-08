@@ -2,6 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import path from 'path'
+import { DEV_PORTS } from '../core/src/config/ports.config'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -10,14 +11,11 @@ export default defineConfig(({ mode }) => {
   const monorepoRoot = resolve(__dirname, '../..')
   const env = loadEnv(mode, monorepoRoot)
   
-  // Flexy loves modularity! Port is configurable via environment
-  const port = parseInt(env.VITE_WEB_PORT || process.env.VITE_WEB_PORT || '18181', 10);
-  
   return {
     envDir: monorepoRoot,
     plugins: [vue()],
     server: {
-      port: port,
+      port: DEV_PORTS.WEB,
       host: true,
       fs: {
         // 允许为工作区依赖提供服务

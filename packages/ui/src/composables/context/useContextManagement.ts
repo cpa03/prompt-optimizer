@@ -6,11 +6,12 @@
 import { ref, computed, watch, type Ref } from 'vue'
 
 import { useToast } from "../ui/useToast";
-import type {
-  ConversationMessage,
-  ToolDefinition,
-  ContextEditorState as CoreContextEditorState,
-  ContextMode,
+import {
+  CONTEXT_EDITOR_DEFAULTS,
+  type ConversationMessage,
+  type ToolDefinition,
+  type ContextEditorState as CoreContextEditorState,
+  type ContextMode,
 } from "@prompt-optimizer/core";
 import type { AppServices } from "../../types/services";
 import type { VariableManagerHooks } from "../prompt/useVariableManager";
@@ -174,7 +175,7 @@ export function useContextManagement(options: ContextManagementOptions) {
   ) => {
     // 参数类型判断
     let messages: ConversationMessage[] | undefined;
-    let defaultTab: "messages" | "variables" | "tools" = "messages";
+    let defaultTab: "messages" | "variables" | "tools" = CONTEXT_EDITOR_DEFAULTS.TAB;
 
     if (typeof messagesOrTab === "string") {
       defaultTab = messagesOrTab;

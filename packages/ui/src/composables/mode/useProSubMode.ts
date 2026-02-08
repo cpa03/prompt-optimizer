@@ -2,7 +2,7 @@ import { ref, readonly, type Ref } from 'vue'
 
 import type { AppServices } from '../../types/services'
 import { usePreferences } from '../storage/usePreferenceManager'
-import { UI_SETTINGS_KEYS, type ProSubMode } from '@prompt-optimizer/core'
+import { UI_SETTINGS_KEYS, type ProSubMode, DEFAULT_SUB_MODES } from '@prompt-optimizer/core'
 
 interface UseProSubModeApi {
   proSubMode: Ref<ProSubMode>
@@ -12,7 +12,7 @@ interface UseProSubModeApi {
   ensureInitialized: () => Promise<void>
 }
 
-const DEFAULT_PRO_SUB_MODE: ProSubMode = 'variable'
+const DEFAULT_PRO_SUB_MODE: ProSubMode = DEFAULT_SUB_MODES.PRO as ProSubMode
 
 const normalizeLegacyProSubMode = (value: unknown): ProSubMode => {
   if (value === 'multi' || value === 'variable') return value

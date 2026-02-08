@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 import basicSsl from '@vitejs/plugin-basic-ssl'
+import { DEV_PORTS } from '../core/src/config/ports.config'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,7 +34,7 @@ export default defineConfig({
     copyPublicDir: true
   },
   server: {
-    port: 5174,
+    port: DEV_PORTS.EXTENSION,
     https: {}
   }
 }) 

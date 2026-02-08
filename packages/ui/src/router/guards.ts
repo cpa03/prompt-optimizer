@@ -1,5 +1,6 @@
 import type { NavigationGuard } from 'vue-router'
 import type { SubModeKey } from '../stores/session/useSessionManager'
+import { DEFAULT_SUB_MODES } from '@prompt-optimizer/core'
 
 /**
  * 从路由路径解析子模式 key
@@ -59,11 +60,11 @@ export const beforeRouteSwitch: NavigationGuard = (to, _from, next) => {
 
       let defaultSubMode: string
       if (mode === 'image') {
-        defaultSubMode = 'text2image'
+        defaultSubMode = DEFAULT_SUB_MODES.IMAGE
       } else if (mode === 'pro') {
-        defaultSubMode = 'variable'
+        defaultSubMode = DEFAULT_SUB_MODES.PRO
       } else {
-        defaultSubMode = 'system'
+        defaultSubMode = DEFAULT_SUB_MODES.BASIC
       }
 
       console.warn(`[Router] 非法 subMode: ${to.path}, 重定向到 /${mode}/${defaultSubMode}`)

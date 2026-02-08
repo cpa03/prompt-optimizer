@@ -1,6 +1,7 @@
 import { defineComponent, h, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGlobalSettings, type GlobalSettingsApi } from '../stores/settings/useGlobalSettings'
+import { DEFAULT_SUB_MODES, ROUTE_GUARD_CONFIG } from '@prompt-optimizer/core'
 
 export const getInitialRouteFromGlobalSettings = (globalSettings: GlobalSettingsApi) => {
   const { functionMode, basicSubMode, proSubMode, imageSubMode } = globalSettings.state
@@ -13,7 +14,7 @@ export const getInitialRouteFromGlobalSettings = (globalSettings: GlobalSettings
     case 'image':
       return `/image/${imageSubMode}`
     default:
-      return '/basic/system'
+      return `/basic/${DEFAULT_SUB_MODES.BASIC}`
   }
 }
 
@@ -67,8 +68,8 @@ export const RootBootstrapRoute = defineComponent({
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '40vh',
-            color: 'rgba(0,0,0,0.65)',
-            fontSize: '14px'
+            color: ROUTE_GUARD_CONFIG.TOAST.text.color,
+            fontSize: ROUTE_GUARD_CONFIG.TOAST.text.fontSize
           }
         },
         'Loading…'
