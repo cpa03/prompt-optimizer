@@ -27,7 +27,7 @@ export default defineConfig({
     } : null,
     sourcemap: true,
     rollupOptions: {
-      external: ['vue', 'vue-router', '@prompt-optimizer/core', 'element-plus', 'element-plus/dist/index.css', 'uuid'],
+      external: ['vue', 'vue-router', '@prompt-optimizer/core', 'element-plus', 'element-plus/dist/index.css', 'uuid', 'naive-ui', /naive-ui\/.*/],
       output: {
         globals: {
           vue: 'Vue',

@@ -30,8 +30,43 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'index.html')
+        },
+        output: {
+          manualChunks(id) {
+            // Split vendor libraries into separate chunks
+            if (id.includes('node_modules')) {
+              // Vue ecosystem
+              if (id.includes('vue') || id.includes('vue-router') || id.includes('pinia')) {
+                return 'vendor-vue';
+              }
+              // UI Frameworks - naive-ui is large
+              if (id.includes('naive-ui') || id.includes('element-plus') || id.includes('@element-plus')) {
+                return 'vendor-ui';
+              }
+              // Icons
+              if (id.includes('@element-plus/icons') || id.includes('@vicons')) {
+                return 'vendor-icons';
+              }
+              // Utilities
+              if (id.includes('lodash') || id.includes('dayjs') || id.includes('date-fns')) {
+                return 'vendor-utils';
+              }
+              // Markdown and syntax highlighting
+              if (id.includes('markdown') || id.includes('highlight') || id.includes('prism')) {
+                return 'vendor-markdown';
+              }
+              // Core package
+              if (id.includes('@prompt-optimizer/core')) {
+                return 'core';
+              }
+              // Other node_modules go to vendor chunk
+              return 'vendor';
+            }
+          }
         }
-      }
+      },
+      chunkSizeWarningLimit: 1000,
+      sourcemap: false
     },
     publicDir: 'public',
     resolve: {
