@@ -164,4 +164,37 @@ const handleAfterLeave = () => {
     opacity: 0.8;
   }
 }
+
+/* 键盘导航的焦点环 - 仅在键盘聚焦时显示 */
+:deep(.n-button):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* 尊重用户减少动画的偏好设置 - 无障碍访问 */
+@media (prefers-reduced-motion: reduce) {
+  /* 禁用关闭动画 */
+  .modal-closing :deep(.n-card) {
+    animation: none;
+  }
+
+  /* 禁用所有过渡效果 */
+  .modern-modal,
+  .modern-modal :deep(*),
+  :deep(.n-button),
+  :deep(.n-card) {
+    transition: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  /* 保持模态框即时显示，无动画 */
+  :deep(.n-modal-mask) {
+    transition: opacity 0s !important;
+  }
+
+  :deep(.n-card) {
+    transition: transform 0s, opacity 0s !important;
+  }
+}
 </style> 
