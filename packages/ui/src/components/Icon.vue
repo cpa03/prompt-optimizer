@@ -229,4 +229,28 @@ svg:active {
     transform: scale(1);
   }
 }
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+  }
+
+  .bounce {
+    animation: none;
+    transform: scale(1.1);
+  }
+
+  svg {
+    transition: none;
+  }
+
+  svg:hover {
+    transform: scale(1.05);
+  }
+
+  svg:active {
+    transform: scale(0.98);
+  }
+}
 </style>
