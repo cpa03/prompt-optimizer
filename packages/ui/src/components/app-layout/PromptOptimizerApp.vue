@@ -313,7 +313,7 @@ import { DataTransformer } from '../../utils/data-transformer'
 
 // Types
 import type { ModelSelectOption, TestAreaPanelInstance } from '../../types'
-import { type IPromptService, type PromptRecordChain, type PatchOperation, type Template, type TemplateType, type FunctionMode, type BasicSubMode, type ProSubMode, type ImageSubMode, type OptimizationMode, type ConversationMessage, type ToolDefinition, type ContextEditorState, type ContextMode } from "@prompt-optimizer/core";
+import { type IPromptService, type PromptRecordChain, type PatchOperation, type Template, type TemplateType, type FunctionMode, type BasicSubMode, type ProSubMode, type ImageSubMode, type OptimizationMode, type ConversationMessage, type ToolDefinition, type ContextEditorState, type ContextMode, EXTERNAL_URLS } from "@prompt-optimizer/core";
 
 // 1. 基础 composables
 const hljsInstance = hljs;
@@ -1849,7 +1849,7 @@ watch(
 
 // 打开GitHub仓库
 const openGithubRepo = async () => {
-    const url = "https://github.com/linshenkx/prompt-optimizer";
+    const url = EXTERNAL_URLS.githubRepo;
 
     if (typeof window !== "undefined" && window.electronAPI?.shell) {
         try {
