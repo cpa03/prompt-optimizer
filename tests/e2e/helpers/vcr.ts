@@ -15,6 +15,15 @@ import { type Page, type Route } from '@playwright/test'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as crypto from 'crypto'
+import {
+  HTTP_STATUS,
+  HTTP_CLIENT_ERROR,
+  CONTENT_TYPES,
+  HTTP_HEADERS,
+  CORS_HEADERS,
+  CACHE_CONTROL,
+  CONNECTION,
+} from '../constants'
 
 /**
  * LLM API 提供商
@@ -243,7 +252,7 @@ class E2EVCR {
       for (const it of interactions) {
         if (typeof it.rawBody === 'undefined' && typeof it.rawSSE !== 'undefined') {
           it.rawBody = it.rawSSE
-          it.responseHeaders = it.responseHeaders || { 'content-type': 'text/event-stream' }
+          it.responseHeaders = it.responseHeaders || { [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.STREAM }
           delete it.rawSSE
         }
       }
@@ -271,10 +280,10 @@ class E2EVCR {
             requestBody: legacyRequestBody,
             requestHash: legacyRequestHash,
             rawBody,
-            responseHeaders: { 'content-type': 'text/event-stream' },
+            responseHeaders: { [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.STREAM },
             responseBody: (fixture as any).responseBody,
             duration: Number((fixture as any).duration ?? 0),
-            status: 200,
+            status: HTTP_STATUS.OK,
           },
         ],
       }
@@ -443,19 +452,19 @@ class E2EVCR {
             const responseBody = await response.text()
 
             // 录制时如果返回 4xx/5xx，直接跳过保存 fixture，避免把错误响应录进去
-            if (response.status() >= 400) {
+            if (response.status() >= HTTP_CLIENT_ERROR.BAD_REQUEST) {
               const headers = { ...response.headers() }
               // route.fetch() 已经解码了 body；若保留 content-encoding/content-length 等头会导致浏览器二次解码/长度不匹配
-              delete (headers as any)['content-encoding']
-              delete (headers as any)['content-length']
-              delete (headers as any)['transfer-encoding']
+              delete (headers as any)[HTTP_HEADERS.CONTENT_ENCODING]
+              delete (headers as any)[HTTP_HEADERS.CONTENT_LENGTH]
+              delete (headers as any)[HTTP_HEADERS.TRANSFER_ENCODING]
 
               await route.fulfill({
                 status: response.status(),
                 headers: {
                   ...headers,
-                  'access-control-allow-origin': '*',
-                  'access-control-allow-headers': '*',
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
                 body: responseBody
               })
@@ -475,22 +484,22 @@ class E2EVCR {
                 null,
                 endTime - startTime,
                 responseBody,
-                { 'content-type': contentType || 'application/octet-stream' },
+                { [HTTP_HEADERS.CONTENT_TYPE]: contentType || CONTENT_TYPES.OCTET_STREAM },
                 method,
                 response.status()
               )
 
               const headers = { ...response.headers() }
-              delete (headers as any)['content-encoding']
-              delete (headers as any)['content-length']
-              delete (headers as any)['transfer-encoding']
+              delete (headers as any)[HTTP_HEADERS.CONTENT_ENCODING]
+              delete (headers as any)[HTTP_HEADERS.CONTENT_LENGTH]
+              delete (headers as any)[HTTP_HEADERS.TRANSFER_ENCODING]
 
               await route.fulfill({
                 status: response.status(),
                 headers: {
                   ...headers,
-                  'access-control-allow-origin': '*',
-                  'access-control-allow-headers': '*',
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
                 body: responseBody
               })
@@ -613,7 +622,7 @@ class E2EVCR {
               endTime - startTime,
               rawSSE,
               {
-                'content-type': hasSSE ? 'text/event-stream' : (response.headers()['content-type'] || 'application/json'),
+                [HTTP_HEADERS.CONTENT_TYPE]: hasSSE ? CONTENT_TYPES.STREAM : (response.headers()[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON),
               },
               method,
               response.status()
@@ -628,15 +637,15 @@ class E2EVCR {
 
             // 对于 stream=true 的请求，确保 content-type 为 SSE
             if (hasSSE) {
-              headers['content-type'] = 'text/event-stream'
+              headers[HTTP_HEADERS.CONTENT_TYPE] = CONTENT_TYPES.STREAM
             }
 
             await route.fulfill({
               status: response.status(),
               headers: {
                 ...headers,
-                'access-control-allow-origin': '*',
-                'access-control-allow-headers': '*',
+                [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
+                [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
               },
               body: responseBody
             })
@@ -649,22 +658,22 @@ class E2EVCR {
 
             if (interaction) {
               // 直接返回原始 SSE 文本（格式完全一致）
-              const contentType = interaction.responseHeaders?.['content-type'] || 'application/json'
-              const isSSE = /text\/event-stream/i.test(contentType)
+              const contentType = interaction.responseHeaders?.[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON
+              const isSSE = new RegExp(CONTENT_TYPES.STREAM, 'i').test(contentType)
 
               await route.fulfill({
-                status: interaction.status || 200,
+                status: interaction.status || HTTP_STATUS.OK,
                 headers: {
-                  'content-type': contentType,
+                  [HTTP_HEADERS.CONTENT_TYPE]: contentType,
                   ...(isSSE
                     ? {
-                        'cache-control': 'no-cache',
-                        'connection': 'keep-alive',
+                        [HTTP_HEADERS.CACHE_CONTROL]: CACHE_CONTROL.NO_CACHE,
+                        [HTTP_HEADERS.CONNECTION]: CONNECTION.KEEP_ALIVE,
                       }
                     : {}),
                   // 关键：避免浏览器端 fetch 因 CORS 直接失败
-                  'access-control-allow-origin': '*',
-                  'access-control-allow-headers': '*',
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
+                  [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
                 body: interaction.rawBody || ''
               })
