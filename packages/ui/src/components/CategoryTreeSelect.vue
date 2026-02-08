@@ -6,17 +6,19 @@
     :clearable="clearable"
     :consistent-menu-width="consistentMenuWidth"
     :style="computedStyle"
+    :loading="isLoading"
     @update:value="handleValueChange"
   >
     <template v-if="showManageButton" #action>
       <NButton
         text
         block
+        class="category-manage-btn"
         @click="handleOpenManager"
         :style="{ justifyContent: 'flex-start', padding: `${SPACING.SM}px ${SPACING.MD}px` }"
       >
         <template #icon>
-          <NIcon><Folder /></NIcon>
+          <NIcon class="folder-icon"><Folder /></NIcon>
         </template>
         {{ t('favorites.manager.categoryManager.title') }}
       </NButton>
@@ -88,6 +90,7 @@ const services = inject<Ref<AppServices | null> | null>('services', null);
 const internalValue = ref(props.modelValue);
 const categories = ref<FavoriteCategory[]>([]);
 const managerVisible = ref(false);
+const isLoading = ref(false);
 
 // 计算树状分类选项
 const treeOptions = computed<TreeSelectOption[]>(() => {
@@ -125,10 +128,13 @@ const loadCategories = async () => {
     return;
   }
 
+  isLoading.value = true;
   try {
     categories.value = await servicesValue.favoriteManager.getCategories();
   } catch (error) {
     console.error('加载分类失败:', error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -169,3 +175,18 @@ defineExpose({
   reloadCategories: loadCategories
 });
 </script>
+
+<style scoped>
+.category-manage-btn {
+  transition: all 0.2s ease;
+}
+
+.category-manage-btn:hover {
+  background-color: rgba(64, 128, 128, 0.08);
+  transform: translateX(2px);
+}
+
+.category-manage-btn:hover .folder-icon {
+  color: #408080;
+}
+</style>

@@ -48,6 +48,7 @@ import { computed, ref, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton } from 'naive-ui'
+import { UI_DIMENSIONS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -67,8 +68,8 @@ const props = withDefaults(defineProps<Props>(), {
   closable: true,
   autoFocus: true,
   trapFocus: true,
-  width: '90vw',
-  maxWidth: '600px'
+  width: UI_DIMENSIONS.MODAL_WIDTH_VW,
+  maxWidth: UI_DIMENSIONS.MODAL_WIDTH_SMALL
 })
 
 const emit = defineEmits<{

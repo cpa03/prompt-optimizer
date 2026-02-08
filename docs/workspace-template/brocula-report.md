@@ -21,7 +21,18 @@
 
 ## Changes This Loop
 
-### 1. InlineDiff Animation Enhancement (PHASE 2 - UX-021)
+### 1. CategoryTreeSelect Loading State (PHASE 2 - UX-022)
+- Added loading state with `isLoading` ref for async category loading
+- Added CSS hover effects on category management button
+- Improved visual feedback with smooth transitions
+- Status: ✅ Applied
+
+### 2. Modal Constant Centralization (PHASE 3 - FLEX-025)
+- Replaced hardcoded width/maxWidth with UI_DIMENSIONS constants
+- Updated default values to use centralized modal sizing
+- Status: ✅ Applied
+
+### 3. InlineDiff Animation Enhancement (PHASE 2 - UX-021) - Previous
 - Added staggered fade-in animation for diff fragments
 - Added hover box-shadow highlight for added/removed fragments
 - Improved visual feedback when comparing text changes
