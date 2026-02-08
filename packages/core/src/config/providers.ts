@@ -19,12 +19,12 @@ export const PROVIDER_URLS = {
   dashscope: 'https://dashscope.aliyuncs.com/api/v1',
   modelscope: 'https://api-inference.modelscope.cn/v1',
   seedream: 'https://api.seaart.ai/v1',
+  zhipu: 'https://open.bigmodel.cn/api/paas/v4',
 } as const;
 
 export const PROVIDER_ID_MAP: Record<string, string> = {
   'openai': 'openai',
   'anthropic': 'anthropic',
-  'google': 'google',
   'ollama': 'ollama',
   'deepseek': 'deepseek',
   'siliconflow': 'siliconflow',
@@ -32,13 +32,12 @@ export const PROVIDER_ID_MAP: Record<string, string> = {
   'gemini': 'gemini',
   'dashscope': 'dashscope',
   'modelscope': 'modelscope',
-  'seedream': 'seedream',
+  'zhipu': 'zhipu',
 } as const;
 
 export const PROVIDER_ENV_KEYS: Record<string, string> = {
   openai: 'VITE_OPENAI_API_KEY',
   anthropic: 'VITE_ANTHROPIC_API_KEY',
-  google: 'VITE_GOOGLE_API_KEY',
   ollama: 'VITE_OLLAMA_API_KEY',
   deepseek: 'VITE_DEEPSEEK_API_KEY',
   siliconflow: 'VITE_SILICONFLOW_API_KEY',
@@ -46,7 +45,7 @@ export const PROVIDER_ENV_KEYS: Record<string, string> = {
   gemini: 'VITE_GEMINI_API_KEY',
   dashscope: 'VITE_DASHSCOPE_API_KEY',
   modelscope: 'VITE_MODELSCOPE_API_KEY',
-  seedream: 'VITE_SEADREAM_API_KEY',
+  zhipu: 'VITE_ZHIPU_API_KEY',
 } as const;
 
 export type ProviderId = keyof typeof PROVIDER_ID_MAP;
