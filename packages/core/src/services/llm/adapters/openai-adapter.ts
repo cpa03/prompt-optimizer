@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
+import { LLM_CONSTRAINTS } from '../../../constants/constraints'
 import type {
   TextProvider,
   TextModel,
@@ -33,7 +34,7 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GPT5
     }
   },
   {
@@ -43,7 +44,7 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GPT5
     }
   }
 ]
@@ -209,9 +210,9 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         description: 'Maximum tokens in completion (recommended over max_tokens)',
         type: 'integer',
         minValue: 1,
-        maxValue: 1000000,
+        maxValue: LLM_CONSTRAINTS.MAX_COMPLETION_TOKENS_LIMIT,
         min: 1,
-        max: 1000000,
+        max: LLM_CONSTRAINTS.MAX_COMPLETION_TOKENS_LIMIT,
         step: 1,
         unitKey: 'params.tokens.unit'
       },
@@ -222,9 +223,9 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         description: 'Deprecated: Use max_completion_tokens instead',
         type: 'integer',
         minValue: 1,
-        maxValue: 1000000,
+        maxValue: LLM_CONSTRAINTS.MAX_COMPLETION_TOKENS_LIMIT,
         min: 1,
-        max: 1000000,
+        max: LLM_CONSTRAINTS.MAX_COMPLETION_TOKENS_LIMIT,
         step: 1,
         unitKey: 'params.tokens.unit'
       },
@@ -309,12 +310,12 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.timeout.description_openai',
         description: 'Client timeout in milliseconds (OpenAI SDK setting)',
         type: 'integer',
-        defaultValue: 60000,
-        default: 60000,
-        minValue: 1000,
-        maxValue: 600000,
-        min: 1000,
-        max: 600000,
+        defaultValue: LLM_CONSTRAINTS.DEFAULT_LLM_TIMEOUT_MS,
+        default: LLM_CONSTRAINTS.DEFAULT_LLM_TIMEOUT_MS,
+        minValue: LLM_CONSTRAINTS.MIN_LLM_TIMEOUT_MS,
+        maxValue: LLM_CONSTRAINTS.MAX_LLM_TIMEOUT_MS,
+        min: LLM_CONSTRAINTS.MIN_LLM_TIMEOUT_MS,
+        max: LLM_CONSTRAINTS.MAX_LLM_TIMEOUT_MS,
         step: 1000,
         unit: 'ms'
       }

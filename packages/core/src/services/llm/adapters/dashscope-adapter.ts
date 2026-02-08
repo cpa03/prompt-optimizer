@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { LLM_CONSTRAINTS } from '../../../constants/constraints'
 
 interface ModelOverride {
   id: string
@@ -21,7 +22,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 131072
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_DEFAULT
     }
   },
   {
@@ -31,7 +32,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_DEFAULT
     }
   },
   {
@@ -41,7 +42,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GEMINI
     }
   },
   {
@@ -51,7 +52,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_DEFAULT
     }
   }
 ]

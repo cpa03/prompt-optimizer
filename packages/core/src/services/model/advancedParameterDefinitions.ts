@@ -1,5 +1,7 @@
 // packages/core/src/services/model/advancedParameterDefinitions.ts
 
+import { LLM_CONSTRAINTS } from '../../constants/constraints'
+
 /**
  * 旧版参数定义系统（向后兼容）
  *
@@ -108,8 +110,8 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     labelKey: "params.timeout.label",
     descriptionKey: "params.timeout.description_openai", // Specific description
     type: "integer",
-    defaultValue: 60000,
-    minValue: 1000,
+    defaultValue: LLM_CONSTRAINTS.DEFAULT_LLM_TIMEOUT_MS,
+    minValue: LLM_CONSTRAINTS.MIN_LLM_TIMEOUT_MS,
     step: 1000,
     unit: "ms",
     appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"] 

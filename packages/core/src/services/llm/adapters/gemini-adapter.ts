@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { LLM_CONSTRAINTS } from '../../../constants/constraints'
 import type {
   TextProvider,
   TextModel,
@@ -39,7 +40,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GEMINI
     }
   },
   {
@@ -49,7 +50,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GEMINI
     }
   },
   {
@@ -59,7 +60,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GEMINI
     }
   }
 ]
@@ -168,7 +169,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
           capabilities: {
             supportsTools: true,
             supportsReasoning: false,
-            maxContextLength: model.inputTokenLimit || 1000000
+            maxContextLength: model.inputTokenLimit || LLM_CONSTRAINTS.MAX_CONTEXT_LENGTH_GEMINI
           },
           parameterDefinitions: this.getParameterDefinitions(model.name || ''),
           defaultParameterValues: this.getDefaultParameterValues(model.name || '')
