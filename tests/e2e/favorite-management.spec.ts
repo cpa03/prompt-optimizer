@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * 收藏管理基础 E2E 测试
@@ -32,7 +33,7 @@ test.describe('收藏管理基础功能', () => {
 
       // 等待收藏管理器对话框出现
       const dialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|favorite/i });
-      await expect(dialog).toBeVisible({ timeout: 5000 });
+      await expect(dialog).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
 
       // 验证对话框标题
       const dialogTitle = dialog.locator('h1, h2, .n-card-header__main');
@@ -96,7 +97,7 @@ test.describe('收藏管理基础功能', () => {
     await addButton.first().click();
 
     // 等待创建对话框出现
-    await page.waitForTimeout(500); // 等待动画
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT); // 等待动画
 
     // 验证创建对话框出现(可能是第二个对话框)
     const dialogs = page.locator('[role="dialog"]');
@@ -129,12 +130,12 @@ test.describe('收藏完整 CRUD 流程', () => {
     await expect(managerDialog).toBeVisible();
 
     // 等待对话框完全加载
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 2. 点击添加收藏按钮
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 3. 填写收藏信息
     const createDialog = page.locator('[role="dialog"]').last();
@@ -163,7 +164,7 @@ test.describe('收藏完整 CRUD 流程', () => {
       const searchInput = managerDialog.getByPlaceholder(/搜索|search/i);
       if (await searchInput.count() > 0) {
         await searchInput.fill('E2E 测试收藏');
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
         // 验证收藏卡片出现
         const favoriteCard = managerDialog.locator('text=E2E 测试收藏');
@@ -182,12 +183,12 @@ test.describe('收藏完整 CRUD 流程', () => {
             const confirmButton = page.getByRole('button', { name: /确定|确认|yes|ok/i });
             if (await confirmButton.count() > 0) {
               await confirmButton.click();
-              await page.waitForTimeout(500);
+              await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
               // 7. 验证收藏已删除
               await searchInput.clear();
               await searchInput.fill('E2E 测试收藏');
-              await page.waitForTimeout(500);
+              await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
               const deletedCard = managerDialog.locator('text=E2E 测试收藏');
               expect(await deletedCard.count()).toBe(0);
@@ -232,7 +233,7 @@ test.describe('搜索和过滤功能', () => {
 
       // 清空搜索
       await searchInput.clear();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 验证搜索已清空
       const clearedValue = await searchInput.inputValue();
@@ -279,7 +280,7 @@ test.describe('标签管理功能', () => {
     await page.goto('/');
     // 避免 networkidle 被后台请求/轮询拖慢，这里只等页面主体渲染完成
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.locator('[data-testid="workspace"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="workspace"]')).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE });
   });
 
   test('能够打开标签管理器', async ({ page }) => {
@@ -296,18 +297,18 @@ test.describe('标签管理功能', () => {
     // 打开更多操作下拉菜单（NDropdown 的菜单渲染在 portal 中，不在 dialog DOM 内）
     // 用 data-testid 精确定位触发按钮，避免误点输入框的 clear icon 等。
     const moreButton = managerDialog.getByTestId('favorites-manager-actions');
-    await expect(moreButton).toBeVisible({ timeout: 5000 });
+      await expect(moreButton).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
     await moreButton.click();
 
     // 下拉项文案是“管理标签”(zh) / “Manage Tags”(en)
     const dropdownMenu = page.locator('.n-dropdown-menu').filter({ hasText: /管理标签|Manage Tags/i }).first();
-    await expect(dropdownMenu).toBeVisible({ timeout: 3000 });
+    await expect(dropdownMenu).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.DROPDOWN_VISIBLE });
 
     await dropdownMenu.getByText(/管理标签|Manage Tags/i).first().click();
 
     // 验证标签管理器对话框出现（标题是“标签管理”/“Tag Manager”）
     const tagDialog = page.locator('[role="dialog"]').filter({ hasText: /标签管理|Tag Manager/i }).last();
-    await expect(tagDialog).toBeVisible({ timeout: 5000 });
+    await expect(tagDialog).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
   });
 });
 
@@ -319,7 +320,7 @@ test.describe('分类管理功能', () => {
     await page.goto('/');
     // 避免 networkidle 被后台请求/轮询拖慢，这里只等页面主体渲染完成
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.locator('[data-testid="workspace"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-testid="workspace"]')).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE });
   });
 
   test('能够打开分类管理器', async ({ page }) => {
@@ -335,18 +336,18 @@ test.describe('分类管理功能', () => {
 
     // 打开更多操作下拉菜单（NDropdown 的菜单渲染在 portal 中，不在 dialog DOM 内）
     const moreButton = managerDialog.getByTestId('favorites-manager-actions');
-    await expect(moreButton).toBeVisible({ timeout: 5000 });
+      await expect(moreButton).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
     await moreButton.click();
 
     // 下拉项文案是“管理分类”(zh) / “Manage Categories”(en)
     const dropdownMenu = page.locator('.n-dropdown-menu').filter({ hasText: /管理分类|Manage Categories/i }).first();
-    await expect(dropdownMenu).toBeVisible({ timeout: 3000 });
+    await expect(dropdownMenu).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.DROPDOWN_VISIBLE });
 
     await dropdownMenu.getByText(/管理分类|Manage Categories/i).first().click();
 
     // 验证分类管理器对话框出现（标题是“分类管理”/“Category Manager”）
     const categoryDialog = page.locator('[role="dialog"]').filter({ hasText: /分类管理|Category Manager/i }).last();
-    await expect(categoryDialog).toBeVisible({ timeout: 5000 });
+    await expect(categoryDialog).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
   });
 });
 
@@ -383,7 +384,7 @@ test.describe('导入导出功能', () => {
       const exportOption = page.locator('text=/导出|Export/i');
       if (await exportOption.count() > 0) {
         // 设置下载监听
-        const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
+        const downloadPromise = page.waitForEvent('download', { timeout: TIMEOUTS.OPERATION.DOWNLOAD }).catch(() => null);
 
         await exportOption.click();
 

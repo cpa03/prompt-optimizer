@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * 标签管理完整 CRUD 流程 E2E 测试
@@ -22,13 +23,13 @@ test.describe('标签管理完整流程', () => {
     // 尝试多种方法关闭现有对话框：
     // 1. 尝试按Esc键关闭
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 2. 尝试点击遮罩层关闭（如果点击遮罩层可以关闭的话）
     const mask = page.locator('.n-modal-mask').first();
     if (await mask.count() > 0 && await mask.isVisible()) {
-      await mask.click({ timeout: 1000 }).catch(() => {});
-      await page.waitForTimeout(300);
+      await mask.click({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE }).catch(() => {});
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
     }
 
     // 3. 尝试点击所有关闭按钮
@@ -36,15 +37,15 @@ test.describe('标签管理完整流程', () => {
     const buttonCount = await closeButtons.count();
     for (let i = 0; i < Math.min(buttonCount, 3); i++) { // 最多尝试关闭3个对话框
       try {
-        await closeButtons.nth(i).click({ timeout: 1000 });
-        await page.waitForTimeout(300);
+        await closeButtons.nth(i).click({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
       } catch (e) {
         // 忽略点击失败
       }
     }
 
     // 4. 最后等待所有遮罩层消失
-    await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: TIMEOUTS.NAVIGATION.ELEMENT_HIDDEN }).catch(() => {});
   }
 
   /**
@@ -58,7 +59,7 @@ test.describe('标签管理完整流程', () => {
     const favoriteButton = page.getByRole('button', { name: /收藏|favorite/i }).first();
     await expect(favoriteButton).toBeVisible();
     await favoriteButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const managerDialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|Favorites/i }).first();
     await expect(managerDialog).toBeVisible();
@@ -67,13 +68,13 @@ test.describe('标签管理完整流程', () => {
     const moreButton = managerDialog.getByTestId('favorites-manager-actions');
     await expect(moreButton).toBeVisible();
     await moreButton.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 3. 点击标签管理选项
     const tagManagerOption = page.getByTestId('favorites-manager-action-manage-tags');
     await expect(tagManagerOption).toBeVisible();
     await tagManagerOption.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 4. 返回标签管理器对话框
     const tagDialog = page
@@ -98,7 +99,7 @@ test.describe('标签管理完整流程', () => {
     // 创建收藏并添加标签
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const createDialog = page.locator('[role="dialog"]').last();
     const titleInput = createDialog.getByPlaceholder(/标题|title/i);
@@ -115,7 +116,7 @@ test.describe('标签管理完整流程', () => {
       if (await tagInput.count() > 0) {
         await tagInput.fill('旧标签名');
         await tagInput.press('Enter');
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
       }
 
       // 保存收藏
@@ -144,7 +145,7 @@ test.describe('标签管理完整流程', () => {
     const renameButton = tagRow.locator('button').filter({ hasText: /重命名|编辑|rename|edit/i }).first();
     if (await renameButton.count() > 0) {
       await renameButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       // 在弹出的对话框中输入新标签名
       const renameDialog = page.locator('[role="dialog"]').last();
@@ -157,7 +158,7 @@ test.describe('标签管理完整流程', () => {
         const confirmButton = renameDialog.getByRole('button', { name: /确定|确认|ok|confirm/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
           // 验证新标签名出现
           const newTagRow = tagDialog.locator('tr').filter({ hasText: '新标签名' });
@@ -180,7 +181,7 @@ test.describe('标签管理完整流程', () => {
     const addTagButton = tagDialog.getByRole('button', { name: /添加|新建|add|create/i });
     if (await addTagButton.count() > 0) {
       await addTagButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const addDialog = page.locator('[role="dialog"]').last();
       const tagNameInput = addDialog.locator('input[type="text"]').first();
@@ -190,7 +191,7 @@ test.describe('标签管理完整流程', () => {
         const confirmButton = addDialog.getByRole('button', { name: /确定|ok/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
         }
       }
     }
@@ -202,13 +203,13 @@ test.describe('标签管理完整流程', () => {
       const deleteButton = tagRow.locator('button').filter({ hasText: /删除|delete/i }).first();
       if (await deleteButton.count() > 0) {
         await deleteButton.click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         // 确认删除
         const confirmButton = page.getByRole('button', { name: /确定|确认|ok|confirm/i }).last();
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
           // 验证标签已删除
           const deletedRow = tagDialog.locator('tr').filter({ hasText: '待删除标签' });
@@ -239,7 +240,7 @@ test.describe('标签管理完整流程', () => {
     if (await searchInput.count() > 0) {
       // 输入搜索关键词
       await searchInput.fill('测试');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 验证搜索框的值
       const inputValue = await searchInput.inputValue();
@@ -247,7 +248,7 @@ test.describe('标签管理完整流程', () => {
 
       // 清空搜索
       await searchInput.clear();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const clearedValue = await searchInput.inputValue();
       expect(clearedValue).toBe('');

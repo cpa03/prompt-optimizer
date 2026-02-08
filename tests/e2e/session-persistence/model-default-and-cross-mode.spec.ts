@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures'
+import { TIMEOUTS } from '../constants/timeouts'
 
 type ModeCase = {
   name: string
@@ -78,7 +79,7 @@ async function gotoMode(page: any, route: string) {
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // 等到 root bootstrap 落到某个 workspace
-  await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({ timeout: 20000 })
+    await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
   // 使用现有 core nav 控件切换
   await page.getByTestId('function-mode-selector').getByTestId(`function-mode-${mode}`).click()
@@ -96,18 +97,18 @@ async function gotoMode(page: any, route: string) {
 
 async function waitForWorkspace(page: any, mode: string) {
   const workspace = page.locator(`[data-testid="workspace"][data-mode="${mode}"]`).first()
-  await expect(workspace).toBeVisible({ timeout: 20000 })
+  await expect(workspace).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 }
 
 async function getSelectByLabel(page: any, label: RegExp) {
   const labelEl = page.getByText(label).first()
-  await expect(labelEl).toBeVisible({ timeout: 20000 })
+    await expect(labelEl).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
   const container = labelEl.locator(
     'xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]'
   )
   const select = container.locator('.n-base-selection').first()
-  await expect(select).toBeVisible({ timeout: 20000 })
+    await expect(select).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
   return select
 }
 
@@ -118,7 +119,7 @@ async function openSelectAndWaitForOptions(page: any, select: any) {
 
   const ensureOptionsVisible = async () => {
     await expect
-      .poll(async () => await optionLocator.count(), { timeout: 20000 })
+      .poll(async () => await optionLocator.count(), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
       .toBeGreaterThan(0)
   }
 
@@ -126,7 +127,7 @@ async function openSelectAndWaitForOptions(page: any, select: any) {
     await ensureOptionsVisible()
   } catch {
     await page.keyboard.press('Escape')
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK)
     await select.click()
     await ensureOptionsVisible()
   }
@@ -142,7 +143,7 @@ async function openSelectAndGetOptions(page: any, select: any): Promise<string[]
 }
 
 async function expectSelectionEquals(page: any, select: any, expected: string) {
-  await expect.poll(async () => normalizeText(await select.textContent()), { timeout: 20000 })
+  await expect.poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
     .toBe(normalizeText(expected))
 }
 
