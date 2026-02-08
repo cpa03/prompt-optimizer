@@ -3,7 +3,7 @@
  * 负责自定义变量的管理、存储和解析
  */
 
-import type { IPreferenceService, VALIDATION_CONSTRAINTS } from '@prompt-optimizer/core';
+import { VALIDATION_CONSTRAINTS, type IPreferenceService } from '@prompt-optimizer/core';
 import { 
   PREDEFINED_VARIABLES, 
   VARIABLE_VALIDATION,
