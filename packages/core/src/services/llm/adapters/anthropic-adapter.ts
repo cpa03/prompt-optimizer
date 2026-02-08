@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PARAMETER_CONSTRAINTS } from '../../../config/parameter-constraints'
 import type {
   TextProvider,
   TextModel,
@@ -16,7 +17,8 @@ import type {
 // Anthropic 建议对于非流式请求使用较小的 max_tokens 值
 // 过大的值可能触发 "Streaming is required for operations that may take longer than 10 minutes" 错误
 // 参考: https://github.com/anthropics/anthropic-sdk-typescript#long-requests
-const DEFAULT_MAX_TOKENS = 8192
+// Uses centralized parameter constraints - Flexy loves modularity!
+const DEFAULT_MAX_TOKENS = PARAMETER_CONSTRAINTS.max_tokens_anthropic.default
 
 /**
  * Anthropic 官方 SDK 适配器实现
@@ -149,6 +151,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
 
   /**
    * 获取参数定义
+   * Uses centralized PARAMETER_CONSTRAINTS for all min/max values - Flexy loves modularity!
    */
   protected getParameterDefinitions(_modelId: string): readonly ParameterDefinition[] {
     return [
@@ -158,13 +161,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.temperature.description',
         description: 'Sampling temperature (0-1)',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 1,
-        min: 0,
+        defaultValue: PARAMETER_CONSTRAINTS.temperature.default,
+        default: PARAMETER_CONSTRAINTS.temperature.default,
+        minValue: PARAMETER_CONSTRAINTS.temperature.min,
+        maxValue: 1, // Anthropic uses max 1 for temperature
+        min: PARAMETER_CONSTRAINTS.temperature.min,
         max: 1,
-        step: 0.1
+        step: PARAMETER_CONSTRAINTS.temperature.step
       },
       {
         name: 'top_p',
@@ -172,13 +175,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.top_p.description',
         description: 'Nucleus sampling parameter',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 1,
-        min: 0,
-        max: 1,
-        step: 0.01
+        defaultValue: PARAMETER_CONSTRAINTS.top_p.default,
+        default: PARAMETER_CONSTRAINTS.top_p.default,
+        minValue: PARAMETER_CONSTRAINTS.top_p.min,
+        maxValue: PARAMETER_CONSTRAINTS.top_p.max,
+        min: PARAMETER_CONSTRAINTS.top_p.min,
+        max: PARAMETER_CONSTRAINTS.top_p.max,
+        step: PARAMETER_CONSTRAINTS.top_p.step
       },
       {
         name: 'top_k',
@@ -186,9 +189,11 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.top_k.description',
         description: 'Top-k sampling parameter',
         type: 'integer',
-        minValue: 1,
-        min: 1,
-        step: 1
+        minValue: PARAMETER_CONSTRAINTS.top_k.min,
+        maxValue: PARAMETER_CONSTRAINTS.top_k.max,
+        min: PARAMETER_CONSTRAINTS.top_k.min,
+        max: PARAMETER_CONSTRAINTS.top_k.max,
+        step: PARAMETER_CONSTRAINTS.top_k.step
       },
       {
         name: 'max_tokens',
@@ -198,8 +203,8 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         type: 'integer',
         defaultValue: DEFAULT_MAX_TOKENS,
         default: DEFAULT_MAX_TOKENS,
-        minValue: 1,
-        min: 1,
+        minValue: PARAMETER_CONSTRAINTS.max_tokens_anthropic.min,
+        min: PARAMETER_CONSTRAINTS.max_tokens_anthropic.min,
         unitKey: 'params.tokens.unit',
         step: 1
       },

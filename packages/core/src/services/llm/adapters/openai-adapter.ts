@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
+import { PARAMETER_CONSTRAINTS } from '../../../config/parameter-constraints'
 import type {
   TextProvider,
   TextModel,
@@ -171,6 +172,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
   /**
    * 获取参数定义
    * 基于 OpenAI 官方文档: https://platform.openai.com/docs/api-reference/chat/create
+   * Uses centralized PARAMETER_CONSTRAINTS for all min/max values - Flexy loves modularity!
    */
   protected getParameterDefinitions(_modelId: string): readonly ParameterDefinition[] {
     return [
@@ -180,13 +182,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.temperature.description',
         description: 'Sampling temperature (0-2). Higher values make output more random.',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 2,
-        min: 0,
-        max: 2,
-        step: 0.1
+        defaultValue: PARAMETER_CONSTRAINTS.temperature.default,
+        default: PARAMETER_CONSTRAINTS.temperature.default,
+        minValue: PARAMETER_CONSTRAINTS.temperature.min,
+        maxValue: PARAMETER_CONSTRAINTS.temperature.max,
+        min: PARAMETER_CONSTRAINTS.temperature.min,
+        max: PARAMETER_CONSTRAINTS.temperature.max,
+        step: PARAMETER_CONSTRAINTS.temperature.step
       },
       {
         name: 'top_p',
@@ -194,13 +196,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.top_p.description',
         description: 'Nucleus sampling parameter (0-1). Alternative to temperature.',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 1,
-        min: 0,
-        max: 1,
-        step: 0.01
+        defaultValue: PARAMETER_CONSTRAINTS.top_p.default,
+        default: PARAMETER_CONSTRAINTS.top_p.default,
+        minValue: PARAMETER_CONSTRAINTS.top_p.min,
+        maxValue: PARAMETER_CONSTRAINTS.top_p.max,
+        min: PARAMETER_CONSTRAINTS.top_p.min,
+        max: PARAMETER_CONSTRAINTS.top_p.max,
+        step: PARAMETER_CONSTRAINTS.top_p.step
       },
       {
         name: 'max_completion_tokens',
@@ -208,11 +210,11 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.max_completion_tokens.description',
         description: 'Maximum tokens in completion (recommended over max_tokens)',
         type: 'integer',
-        minValue: 1,
-        maxValue: 1000000,
-        min: 1,
-        max: 1000000,
-        step: 1,
+        minValue: PARAMETER_CONSTRAINTS.max_completion_tokens.min,
+        maxValue: PARAMETER_CONSTRAINTS.max_completion_tokens.max,
+        min: PARAMETER_CONSTRAINTS.max_completion_tokens.min,
+        max: PARAMETER_CONSTRAINTS.max_completion_tokens.max,
+        step: PARAMETER_CONSTRAINTS.max_completion_tokens.step,
         unitKey: 'params.tokens.unit'
       },
       {
@@ -221,11 +223,11 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.max_tokens.description',
         description: 'Deprecated: Use max_completion_tokens instead',
         type: 'integer',
-        minValue: 1,
-        maxValue: 1000000,
-        min: 1,
-        max: 1000000,
-        step: 1,
+        minValue: PARAMETER_CONSTRAINTS.max_tokens.min,
+        maxValue: PARAMETER_CONSTRAINTS.max_tokens.max,
+        min: PARAMETER_CONSTRAINTS.max_tokens.min,
+        max: PARAMETER_CONSTRAINTS.max_tokens.max,
+        step: PARAMETER_CONSTRAINTS.max_tokens.step,
         unitKey: 'params.tokens.unit'
       },
       {
@@ -234,13 +236,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.presence_penalty.description',
         description: 'Presence penalty (-2.0 to 2.0). Penalizes tokens based on presence.',
         type: 'number',
-        defaultValue: 0,
-        default: 0,
-        minValue: -2,
-        maxValue: 2,
-        min: -2,
-        max: 2,
-        step: 0.1
+        defaultValue: PARAMETER_CONSTRAINTS.presence_penalty.default,
+        default: PARAMETER_CONSTRAINTS.presence_penalty.default,
+        minValue: PARAMETER_CONSTRAINTS.presence_penalty.min,
+        maxValue: PARAMETER_CONSTRAINTS.presence_penalty.max,
+        min: PARAMETER_CONSTRAINTS.presence_penalty.min,
+        max: PARAMETER_CONSTRAINTS.presence_penalty.max,
+        step: PARAMETER_CONSTRAINTS.presence_penalty.step
       },
       {
         name: 'frequency_penalty',
@@ -248,13 +250,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.frequency_penalty.description',
         description: 'Frequency penalty (-2.0 to 2.0). Penalizes tokens based on frequency.',
         type: 'number',
-        defaultValue: 0,
-        default: 0,
-        minValue: -2,
-        maxValue: 2,
-        min: -2,
-        max: 2,
-        step: 0.1
+        defaultValue: PARAMETER_CONSTRAINTS.frequency_penalty.default,
+        default: PARAMETER_CONSTRAINTS.frequency_penalty.default,
+        minValue: PARAMETER_CONSTRAINTS.frequency_penalty.min,
+        maxValue: PARAMETER_CONSTRAINTS.frequency_penalty.max,
+        min: PARAMETER_CONSTRAINTS.frequency_penalty.min,
+        max: PARAMETER_CONSTRAINTS.frequency_penalty.max,
+        step: PARAMETER_CONSTRAINTS.frequency_penalty.step
       },
       {
         name: 'logprobs',
@@ -271,11 +273,11 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.top_logprobs.description',
         description: 'Number of most likely tokens to return (0-20)',
         type: 'integer',
-        minValue: 0,
-        maxValue: 20,
-        min: 0,
-        max: 20,
-        step: 1
+        minValue: PARAMETER_CONSTRAINTS.top_logprobs.min,
+        maxValue: PARAMETER_CONSTRAINTS.top_logprobs.max,
+        min: PARAMETER_CONSTRAINTS.top_logprobs.min,
+        max: PARAMETER_CONSTRAINTS.top_logprobs.max,
+        step: PARAMETER_CONSTRAINTS.top_logprobs.step
       },
       {
         name: 'seed',
@@ -283,11 +285,11 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.seed.description',
         description: 'Seed for deterministic sampling (integer)',
         type: 'integer',
-        minValue: 0,
-        maxValue: 2147483647,
-        min: 0,
-        max: 2147483647,
-        step: 1
+        minValue: PARAMETER_CONSTRAINTS.seed.min,
+        maxValue: PARAMETER_CONSTRAINTS.seed.max,
+        min: PARAMETER_CONSTRAINTS.seed.min,
+        max: PARAMETER_CONSTRAINTS.seed.max,
+        step: PARAMETER_CONSTRAINTS.seed.step
       },
       {
         name: 'n',
@@ -295,13 +297,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.n.description',
         description: 'Number of completions to generate (default: 1)',
         type: 'integer',
-        defaultValue: 1,
-        default: 1,
-        minValue: 1,
-        maxValue: 10,
-        min: 1,
-        max: 10,
-        step: 1
+        defaultValue: PARAMETER_CONSTRAINTS.n.default,
+        default: PARAMETER_CONSTRAINTS.n.default,
+        minValue: PARAMETER_CONSTRAINTS.n.min,
+        maxValue: PARAMETER_CONSTRAINTS.n.max,
+        min: PARAMETER_CONSTRAINTS.n.min,
+        max: PARAMETER_CONSTRAINTS.n.max,
+        step: PARAMETER_CONSTRAINTS.n.step
       },
       {
         name: 'timeout',
@@ -309,13 +311,13 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.timeout.description_openai',
         description: 'Client timeout in milliseconds (OpenAI SDK setting)',
         type: 'integer',
-        defaultValue: 60000,
-        default: 60000,
-        minValue: 1000,
-        maxValue: 600000,
-        min: 1000,
-        max: 600000,
-        step: 1000,
+        defaultValue: PARAMETER_CONSTRAINTS.timeout.default,
+        default: PARAMETER_CONSTRAINTS.timeout.default,
+        minValue: PARAMETER_CONSTRAINTS.timeout.min,
+        maxValue: PARAMETER_CONSTRAINTS.timeout.max,
+        min: PARAMETER_CONSTRAINTS.timeout.min,
+        max: PARAMETER_CONSTRAINTS.timeout.max,
+        step: PARAMETER_CONSTRAINTS.timeout.step,
         unit: 'ms'
       }
     ]
