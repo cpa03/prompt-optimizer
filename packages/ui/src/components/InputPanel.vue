@@ -19,10 +19,10 @@
                             text
                             size="tiny"
                             :focusable="false"
-                            style="cursor: help; opacity: 0.6"
+                            class="help-icon-btn"
                         >
                             <template #icon>
-                                <NIcon :size="SPACING.LG">
+                                <NIcon :size="SPACING.LG" class="help-icon">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -392,3 +392,70 @@ const handleAddMissingVariable = (varName: string) => {
     emit("add-missing-variable", varName);
 };
 </script>
+
+<style scoped>
+/* 帮助图标按钮 - 微妙的微交互 */
+.help-icon-btn {
+  cursor: help;
+  opacity: 0.6;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 悬停时增强可见性和缩放 */
+.help-icon-btn:hover {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* 悬停时图标旋转动画 */
+.help-icon-btn:hover .help-icon {
+  animation: help-icon-wiggle 0.5s ease-in-out;
+}
+
+/* 点击时轻微缩小反馈 */
+.help-icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* 焦点状态 - 增强无障碍访问 */
+.help-icon-btn:focus-visible {
+  opacity: 1;
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4);
+}
+
+/* 图标晃动动画 - 吸引注意力 */
+@keyframes help-icon-wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-10deg);
+  }
+  40% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(5deg);
+  }
+}
+
+/* 尊重用户减少动画的偏好设置 */
+@media (prefers-reduced-motion: reduce) {
+  .help-icon-btn,
+  .help-icon-btn:hover,
+  .help-icon-btn:active {
+    transition: none;
+    transform: none;
+    animation: none;
+  }
+  
+  .help-icon-btn:hover .help-icon {
+    animation: none;
+  }
+}
+</style>
