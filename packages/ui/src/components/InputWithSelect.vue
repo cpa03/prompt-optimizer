@@ -49,15 +49,16 @@
       </div>
     </transition>
     
-    <!-- Dropdown Menu -->
-    <NCard
-      v-if="isOpen"
-      size="small"
-      class="absolute z-10 mt-1 w-full shadow-lg max-h-60 overflow-auto"
-      :bordered="true"
-      role="listbox"
-      :aria-label="placeholder || 'Options'"
-    >
+    <!-- Dropdown Menu with smooth animation -->
+    <transition name="dropdown">
+      <NCard
+        v-if="isOpen"
+        size="small"
+        class="dropdown-menu absolute z-10 mt-1 w-full shadow-lg max-h-60 overflow-auto"
+        :bordered="true"
+        role="listbox"
+        :aria-label="placeholder || 'Options'"
+      >
       <NEmpty v-if="isLoading" size="small" :description="loadingText" />
       <NEmpty v-else-if="filteredOptions.length === 0" size="small" :description="noOptionsText" />
       <NSpace v-else vertical size="small">
@@ -80,7 +81,8 @@
           {{ option.label }}
         </div>
       </NSpace>
-    </NCard>
+      </NCard>
+    </transition>
   </div>
 </template>
 
@@ -235,6 +237,13 @@ const handleKeydown = (event) => {
       isOpen.value = false;
       highlightedIndex.value = -1;
       break;
+    case 'Tab':
+      // Close dropdown when Tab is pressed to move to next field
+      if (isOpen.value) {
+        isOpen.value = false;
+        highlightedIndex.value = -1;
+      }
+      break;
   }
 };
 
@@ -278,5 +287,61 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* Pure Naive UI implementation - dropdown and hover styles handled by Naive UI */
+/* Dropdown menu smooth animation */
+.dropdown-menu {
+  transform-origin: top center;
+}
+
+.dropdown-enter-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-leave-active {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-enter-from {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-8px);
+}
+
+.dropdown-leave-to {
+  opacity: 0;
+  transform: scaleY(0.95) translateY(-4px);
+}
+
+/* Option selection animation */
+.dropdown-menu :deep(.n-space > div) {
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.dropdown-menu :deep(.n-space > div:active) {
+  transform: scale(0.98);
+}
+
+/* Chevron icon smooth animation */
+.rotate-180 {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Respect reduced motion preference for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-enter-active,
+  .dropdown-leave-active {
+    transition: none;
+  }
+  
+  .dropdown-menu :deep(.n-space > div) {
+    transition: none;
+  }
+  
+  .rotate-180 {
+    transition: none;
+  }
+  
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: none;
+  }
+}
 </style>
