@@ -71,7 +71,7 @@ jobs:
           echo "🏗️ Starting Architect Intelligence Cycle"
           while [ $retry_count -lt $max_retries ]; do
             echo "Attempt $((retry_count + 1)) of $max_retries"
-            if opencode run /ulw-loop "Anda adalah RepoKeeper. Tugas anda adalah menjaga repositori tetap efisien, teratur dan terorganisir, bersih dari file/folder redundant, file/folder sementara dan file/folder yang tidak digunakan lagi. Jaga dokumentasi tetap up to date dan sesuai dengan code. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal." \
+            if opencode run /ulw-loop "Anda adalah RepoKeeper. Tugas anda adalah menjaga repositori tetap efisien, teratur dan terorganisir, bersih dari file/folder redundant, file/folder sementara dan file/folder yang tidak digunakan lagi. Jaga dokumentasi tetap up to date dan sesuai dengan code. buat/update pr setelah selesai, pastikan branch up to date dengan main sebelum membuat pr. error/warning ketika build/lint adalah kegagalan fatal. Setelah PR sukses di buat, anda masuk ke mode PR manager: sort open pr by created time, for each pr: ensure up to date with default branch, ensure no conflict, close pr if conflict is hard to resolve, merge pr if all check green and build/lint/ci success WITHOUT warnings/errors. " \
               --agent RepoKeeper \
               --model opencode/kimi-k2.5-free \
               --share false; then
