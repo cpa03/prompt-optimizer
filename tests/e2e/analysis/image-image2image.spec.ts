@@ -6,6 +6,7 @@ import {
   getEvaluationScore,
   verifyAnalyzeButtonDisabledWhenEmpty
 } from '../helpers/analysis'
+import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 
 /**
  * Image Image2Image 模式 - 提示词分析测试
@@ -35,7 +36,7 @@ const MODE = 'image-image2image' as const
 
 test.describe('Image Image2Image - 提示词分析', () => {
   test('分析提示词并显示评估结果', async ({ page }) => {
-    test.setTimeout(180000) // 3分钟超时
+    test.setTimeout(EXTENDED_ANALYSIS_TEST_TIMEOUT)
 
     // 1. 导航到 image-image2image 工作区
     await navigateToMode(page, 'image', 'image2image')

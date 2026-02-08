@@ -75,21 +75,30 @@ export const WAIT_TIMEOUTS = {
 export const TEST_TIMEOUTS = {
   // Default test timeout
   DEFAULT: 30000,
-  
+
   // Integration tests
   INTEGRATION: 120000,
-  
+
   // Smoke tests
   SMOKE_TEST: 15000,
-  
+
   // Session persistence tests
   SESSION_PERSISTENCE: 20000,
-  
+
   // Image generation tests
   IMAGE_GENERATION: 240000,
-  
+
   // Analysis tests
-  ANALYSIS: 90000,
+  ANALYSIS: 180000,
+
+  // Extended analysis tests (pro-variable, etc.)
+  EXTENDED_ANALYSIS: 180000,
+
+  // Full analysis with comparison
+  FULL_ANALYSIS: 240000,
+
+  // Image generation with upload
+  IMAGE_GENERATION_WITH_UPLOAD: 900000,
 } as const
 
 // Export all timeout constants
@@ -123,4 +132,9 @@ export const {
 export const {
   DEFAULT: DEFAULT_TEST_TIMEOUT,
   INTEGRATION: INTEGRATION_TEST_TIMEOUT,
+  ANALYSIS: ANALYSIS_TEST_TIMEOUT,
+  EXTENDED_ANALYSIS: EXTENDED_ANALYSIS_TEST_TIMEOUT,
+  FULL_ANALYSIS: FULL_ANALYSIS_TEST_TIMEOUT,
+  IMAGE_GENERATION: IMAGE_GENERATION_TEST_TIMEOUT,
+  IMAGE_GENERATION_WITH_UPLOAD: IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT,
 } = TEST_TIMEOUTS
