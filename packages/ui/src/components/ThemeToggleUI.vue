@@ -26,7 +26,7 @@ import { computed, h, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NDropdown, type DropdownOption } from 'naive-ui'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
-import { SEMANTIC_COLORS, TIME_CONSTANTS, ANIMATION_CONSTANTS } from '../config/constants'
+import { SEMANTIC_COLORS } from '../config/constants'
 
 const { t } = useI18n()
 
