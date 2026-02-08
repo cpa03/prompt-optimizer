@@ -9,6 +9,7 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { IMAGE_CONSTRAINTS } from '../../../constants/constraints'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -184,7 +185,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     taskId: string,
     config: ImageModelConfig,
     maxAttempts: number = 60,
-    intervalMs: number = 2000
+    intervalMs: number = IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS
   ): Promise<ImageResult> {
     const taskUrl = this.resolveEndpointUrl(config, `/tasks/${taskId}`)
 

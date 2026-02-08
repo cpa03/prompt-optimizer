@@ -2,6 +2,8 @@
  * Utility functions for environment detection and configuration.
  */
 
+import { TIMEOUTS } from '../config/timeouts';
+
 // 常量定义
 export const CUSTOM_API_PATTERN = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/;
 export const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/;
@@ -190,10 +192,10 @@ export function isElectronApiReady(): boolean {
 
 /**
  * 等待Electron API完全就绪
- * @param timeout 超时时间（毫秒），默认5000ms
+ * @param timeout 超时时间（毫秒），默认使用 TIMEOUTS.service.electronInit
  * @returns Promise<boolean> 是否在超时前API就绪
  */
-export function waitForElectronApi(timeout: number = 5000): Promise<boolean> {
+export function waitForElectronApi(timeout: number = TIMEOUTS.service.electronInit): Promise<boolean> {
   return new Promise((resolve) => {
     // 如果已经就绪，立即返回
     if (isElectronApiReady()) {

@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { TIMEOUTS } from '../../../config/timeouts'
 import type {
   TextProvider,
   TextModel,
@@ -394,7 +395,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
     }
 
     // 创建OpenAI实例配置
-    const defaultTimeout = isStream ? 90000 : 60000
+    const defaultTimeout = isStream ? TIMEOUTS.service.llm * 1.5 : TIMEOUTS.service.llm
     const timeout =
       config.paramOverrides?.timeout !== undefined
         ? (config.paramOverrides.timeout as number)
@@ -404,7 +405,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       apiKey: apiKey,
       baseURL: processedBaseURL,
       timeout: timeout,
-      maxRetries: isStream ? 2 : 3
+      maxRetries: isStream ? TIMEOUTS.retry.maxAttempts - 3 : TIMEOUTS.retry.maxAttempts - 2
     }
 
     // 浏览器环境检测
