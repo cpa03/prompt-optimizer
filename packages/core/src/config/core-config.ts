@@ -162,8 +162,8 @@ export const COMPARE_CONFIG = {
 // ============================================================================
 
 export const SERVICE_KEYS = {
-  models: 'core:models',
-  imageModels: 'core:image-models',
+  models: 'models',
+  imageModels: 'image-models',
 } as const;
 
 // ============================================================================
