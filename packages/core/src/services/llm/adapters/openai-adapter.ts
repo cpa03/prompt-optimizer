@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
+import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
 import type {
   TextProvider,
@@ -406,7 +407,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       apiKey: apiKey,
       baseURL: processedBaseURL,
       timeout: timeout,
-      maxRetries: isStream ? TIMEOUTS.retry.maxAttempts - 3 : TIMEOUTS.retry.maxAttempts - 2
+      maxRetries: isStream ? TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STREAM_RETRY_REDUCTION : TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STANDARD_RETRY_REDUCTION
     }
 
     // 浏览器环境检测

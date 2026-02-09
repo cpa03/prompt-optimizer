@@ -4,6 +4,7 @@ import { splitOverridesBySchema } from './parameter-utils';
 import { ModelError } from './errors';
 import { MODEL_ERROR_CODES } from '../../constants/error-codes';
 import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config';
+import { MODEL_CONTEXT_LIMITS } from '../../constants/templates';
 
 /**
  * 将传统 ModelConfig 转换为 TextModelConfig（使用 Registry 获取元数据）
@@ -307,21 +308,21 @@ function createModelMeta(modelId: string, providerId: string, legacy: ModelConfi
 
   // 根据模型 ID 调整 capabilities
   if (modelId.includes('gpt-4o')) {
-    defaultCapabilities.maxContextLength = 128000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GPT4O;
   } else if (modelId.includes('gemini')) {
-    defaultCapabilities.maxContextLength = 1000000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GEMINI;
     defaultCapabilities.supportsTools = true;
   } else if (modelId.includes('claude')) {
-    defaultCapabilities.maxContextLength = 200000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.CLAUDE;
   } else if (modelId.includes('deepseek')) {
-    defaultCapabilities.maxContextLength = 64000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.DEEPSEEK;
   }
 
   if (providerId === 'siliconflow') {
     defaultCapabilities.supportsTools = false;
-    defaultCapabilities.maxContextLength = 8192;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.SMALL;
   } else if (providerId === 'zhipu') {
-    defaultCapabilities.maxContextLength = 128000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.ZHIPU;
   }
 
   if (modelId.includes('glm-4-air')) {

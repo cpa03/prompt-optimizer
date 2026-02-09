@@ -1,4 +1,5 @@
 import { Template } from '../../types';
+import { BUILTIN_TEMPLATE_TIMESTAMP, TEMPLATE_VERSIONS } from '../../../../constants/templates';
 
 export const template: Template = {
   id: 'general-optimize',
@@ -65,8 +66,8 @@ export const template: Template = {
 请基于以上模板，优化并扩展以下prompt，确保内容专业、完整且结构清晰，注意不要携带任何引导词或解释，不要使用代码块包围：
       `,
   metadata: {
-    version: '1.3.0',
-    lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (固定值，内置模板不可修改)
+    version: TEMPLATE_VERSIONS.V1_3_0,
+    lastModified: BUILTIN_TEMPLATE_TIMESTAMP,
     author: 'System',
     description: '适合大多数系统提示词优化，按标准结构重组角色定义、技能和规则，提升专业性',
     templateType: 'optimize',

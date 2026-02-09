@@ -3,6 +3,7 @@
  */
 
 import { FAVORITE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { ERROR_CONFIG } from '../../constants/templates'
 
 export class FavoriteError extends Error {
   public readonly code: string
@@ -27,7 +28,7 @@ export class FavoriteAlreadyExistsError extends FavoriteError {
   constructor(content?: string) {
     const raw = typeof content === 'string' ? content : ''
     const trimmed = raw.trim()
-    const maxLen = 200
+    const maxLen = ERROR_CONFIG.MAX_MESSAGE_LENGTH
     const preview =
       trimmed.length > maxLen ? `${trimmed.slice(0, maxLen)}…` : trimmed
 
