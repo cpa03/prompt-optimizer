@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useSlots, h } from 'vue'
+import { computed, ref, useSlots, h, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NCard, NSpace, NIcon, NText } from 'naive-ui'
 import { SPACING, ICON_SIZES } from '../config/constants'
@@ -91,7 +91,7 @@ interface Props {
   /** Enable hover effects and cursor pointer */
   interactive?: boolean
   /** Custom empty state icon component */
-  emptyIcon?: any
+  emptyIcon?: Component
   /** Empty state title text */
   emptyTitle?: string
   /** Empty state hint text */
