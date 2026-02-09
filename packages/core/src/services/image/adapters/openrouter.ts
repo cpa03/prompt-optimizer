@@ -141,7 +141,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         prompt: 'make this image more colorful',
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: MIME_TYPES.PNG
+          mimeType: MIME_TYPES.image.png
         },
         count: 1
       }
