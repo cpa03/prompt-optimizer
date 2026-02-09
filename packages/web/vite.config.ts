@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { compression } from 'vite-plugin-compression2'
 import { resolve } from 'path'
 import path from 'path'
 
@@ -15,7 +16,22 @@ export default defineConfig(({ mode }) => {
   
   return {
     envDir: monorepoRoot,
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      compression({
+        algorithm: 'gzip',
+        exclude: [/\.(br)$/, /\.(gz)$/],
+        threshold: 1024,
+        compressionOptions: {
+          level: 9
+        }
+      }),
+      compression({
+        algorithm: 'brotliCompress',
+        exclude: [/\.(br)$/, /\.(gz)$/],
+        threshold: 1024
+      })
+    ],
     server: {
       port: port,
       host: true,

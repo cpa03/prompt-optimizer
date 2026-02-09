@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures'
+import { TIMEOUTS } from '../constants/timeouts'
 
 /**
  * Pro Variable 模式 - Session 持久化测试
@@ -15,18 +16,18 @@ test.describe('Pro Variable - Session Persistence', () => {
     await page.waitForLoadState('networkidle')
     await page.goto(route)
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT)
   }
 
   const getSelectByLabel = async (page: any, label: RegExp) => {
     const labelEl = page.getByText(label).first()
-    await expect(labelEl).toBeVisible({ timeout: 20000 })
+    await expect(labelEl).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
     const container = labelEl.locator(
       'xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]'
     )
     const select = container.locator('.n-base-selection').first()
-    await expect(select).toBeVisible({ timeout: 20000 })
+    await expect(select).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
     return select
   }
 
@@ -37,7 +38,7 @@ test.describe('Pro Variable - Session Persistence', () => {
     await select.click()
 
     const optionLocator = page.locator('.n-base-select-option')
-    await expect(optionLocator.first()).toBeVisible({ timeout: 20000 })
+    await expect(optionLocator.first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
     const count = await optionLocator.count()
     expect(count).toBeGreaterThan(0)
@@ -47,12 +48,12 @@ test.describe('Pro Variable - Session Persistence', () => {
     await optionLocator.nth(1).click()
 
     await expect
-      .poll(async () => normalizeText(await select.textContent()), { timeout: 20000 })
+      .poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
       .toBe(target)
 
     await page.reload()
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT)
 
     const selectAfter = await getSelectByLabel(page, /优化模型|Optimization Model/i)
     await expect
@@ -67,7 +68,7 @@ test.describe('Pro Variable - Session Persistence', () => {
     await select.click()
 
     const optionLocator = page.locator('.n-base-select-option')
-    await expect(optionLocator.first()).toBeVisible({ timeout: 20000 })
+    await expect(optionLocator.first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
     const count = await optionLocator.count()
     expect(count).toBeGreaterThan(0)
@@ -77,12 +78,12 @@ test.describe('Pro Variable - Session Persistence', () => {
     await optionLocator.nth(1).click()
 
     await expect
-      .poll(async () => normalizeText(await select.textContent()), { timeout: 20000 })
+      .poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
       .toBe(target)
 
     await page.reload()
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(1500)
+    await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT)
 
     const selectAfter = await getSelectByLabel(page, /优化提示词模板|Optimization Template/i)
     await expect

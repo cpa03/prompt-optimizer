@@ -7,8 +7,7 @@ import { BuiltinTemplateLanguage, ITemplateLanguageService } from './languageSer
 import { CORE_SERVICE_KEYS } from '../../constants/storage-keys';
 import { ImportExportError } from '../../interfaces/import-export';
 import { IMPORT_EXPORT_ERROR_CODES, TEMPLATE_ERROR_CODES } from '../../constants/error-codes';
-import { TEMPLATE_VERSIONS } from '../../constants/versions';
-import { extractErrorMessage } from '../../utils/error';
+import { TEMPLATE_CONFIG } from '../../config/core-config';
 
 
 
@@ -45,8 +44,7 @@ export class TemplateManager implements ITemplateManager {
     }
     
     // Minimum 3 characters, only letters, numbers, and hyphens
-    const idRegex = /^[a-z0-9-]{3,}$/;
-    if (!idRegex.test(id)) {
+    if (!TEMPLATE_CONFIG.idRegex.test(id)) {
       throw new TemplateValidationError('Invalid template ID format: must be at least 3 characters, using only lowercase letters, numbers, and hyphens');
     }
   }
@@ -200,7 +198,7 @@ export class TemplateManager implements ITemplateManager {
         throw error;
       }
       throw new TemplateStorageError(
-        `Failed to import template: ${extractErrorMessage(error)}`,
+        `Failed to import template: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -241,7 +239,7 @@ export class TemplateManager implements ITemplateManager {
       }));
     } catch (error) {
       throw new TemplateStorageError(
-        `Failed to load user templates: ${extractErrorMessage(error)}`,
+        `Failed to load user templates: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -257,7 +255,7 @@ export class TemplateManager implements ITemplateManager {
       );
     } catch (error) {
       throw new TemplateStorageError(
-        `Failed to save user templates: ${extractErrorMessage(error)}`,
+        `Failed to save user templates: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -385,7 +383,7 @@ export class TemplateManager implements ITemplateManager {
         if (builtinTemplate) {
           // 为冲突的模板生成新的ID和名称
           const timestamp = Date.now();
-          const random = Math.random().toString(36).substr(2, 6);
+          const random = Math.random().toString(36).substr(2, TEMPLATE_CONFIG.randomSuffixLength);
           finalTemplateId = `user-${template.id}-${timestamp}-${random}`;
           finalTemplateName = `${template.name} (导入副本)`;
           console.warn(`Detected conflict with built-in template ID: ${template.id}, renamed to: ${finalTemplateId}`);
@@ -398,7 +396,7 @@ export class TemplateManager implements ITemplateManager {
           name: finalTemplateName,
           isBuiltin: false,
           metadata: {
-            version: template.metadata?.version || TEMPLATE_VERSIONS.DEFAULT,
+            version: template.metadata?.version || '1.0.0',
             lastModified: Date.now(), // 更新为当前时间
             templateType: template.metadata?.templateType || 'optimize', // 为旧版本数据提供默认类型
             author: template.metadata?.author || 'User', // 导入的模板标记为用户创建

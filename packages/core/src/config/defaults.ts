@@ -126,4 +126,5 @@ export const VERSIONS = {
 } as const;
 
 // SVG namespace - W3C standard, should not change
-export const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+import { SVG_CONFIG } from './core-config';
+export const SVG_NAMESPACE = SVG_CONFIG.namespace;

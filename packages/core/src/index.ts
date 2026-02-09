@@ -218,6 +218,44 @@ export {
 } from './constants/error-codes'
 export type { ErrorCode } from './constants/error-codes'
 
+// Export test constants for E2E tests (avoiding conflicts with config exports)
+export {
+  TIME,
+  RETRY,
+  TEST_DATA,
+  SCORES,
+  E2E_ROUTES,
+  WORKSPACE_MODES,
+  TEST_IDS,
+  TEST_COLORS,
+} from './constants/test-constants'
+
+// Export HTTP constants (using 'Test' prefix to avoid conflicts with config exports)
+export {
+  HTTP_SUCCESS as TEST_HTTP_SUCCESS,
+  HTTP_CLIENT_ERROR as TEST_HTTP_CLIENT_ERROR,
+  HTTP_SERVER_ERROR as TEST_HTTP_SERVER_ERROR,
+  HTTP_STATUS as TEST_HTTP_STATUS,
+  HTTP_METHODS as TEST_HTTP_METHODS,
+  CONTENT_TYPES as TEST_CONTENT_TYPES,
+  HTTP_HEADERS as TEST_HTTP_HEADERS,
+  CORS_HEADERS as TEST_CORS_HEADERS,
+  CACHE_CONTROL as TEST_CACHE_CONTROL,
+  CONNECTION as TEST_CONNECTION,
+} from './constants/http-codes'
+
+// Export API endpoint constants
+export {
+  OPENROUTER,
+  API_PATHS,
+  URL_PATTERNS,
+  EXTERNAL_SERVICES,
+  LLM_ENDPOINTS,
+  IMAGE_ENDPOINTS,
+  DATA_URL_PATTERNS,
+  MIME_PATTERNS,
+} from './constants/api-endpoints'
+
 // 导出上下文相关
 export * from './services/context/types'
 export { createContextRepo } from './services/context/repo'

@@ -3,11 +3,12 @@
  */
 
 import { TIMEOUTS } from '../config/timeouts';
+import { ENV_CONFIG } from '../config/core-config';
 
 // 常量定义
 export const CUSTOM_API_PATTERN = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/;
-export const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/;
-export const MAX_SUFFIX_LENGTH = 50;
+export const SUFFIX_PATTERN = ENV_CONFIG.patterns.suffix;
+export const MAX_SUFFIX_LENGTH = ENV_CONFIG.limits.maxSuffixLength;
 
 // 简单的缓存机制
 let cachedCustomModels: Record<string, ValidatedCustomModelEnvConfig> | null = null;

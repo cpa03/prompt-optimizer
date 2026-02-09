@@ -56,7 +56,12 @@
     "bmad:refresh": "bmad-method install -f -i codex",
     "bmad:list": "bmad-method list:agents",
     "bmad:validate": "bmad-method validate",
-    "kill:dev": "node scripts/kill-dev.js"
+    "kill:dev": "node scripts/kill-dev.js",
+    "brocula": "node scripts/brocula-master.js",
+    "brocula:once": "node scripts/brocula-master.js --once",
+    "brocula:console": "node scripts/brocula-console-monitor.js",
+    "brocula:lighthouse": "node scripts/brocula-lighthouse.js",
+    "brocula:health": "node scripts/brocula-health-check.js"
   },
   "devDependencies": {
     "@intlify/unplugin-vue-i18n": "^11.0.1",

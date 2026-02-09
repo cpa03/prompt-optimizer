@@ -5,11 +5,11 @@ import {
 } from '../image/types'
 import { IStorageProvider } from '../storage/types'
 import { StorageAdapter } from '../storage/adapter'
-import { CORE_SERVICE_KEYS } from '../../constants/storage-keys'
 import { ImportExportError } from '../../interfaces/import-export'
 import { IMAGE_ERROR_CODES, IMPORT_EXPORT_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 import { BaseError } from '../llm/errors'
 import { getDefaultImageModels, getBuiltinImageConfigIds } from './defaults'
+import { SERVICE_KEYS } from '../../config/core-config'
 
 class ImageModelManagerError extends BaseError {
   constructor(code: string, message?: string, params?: ErrorParams) {
@@ -22,7 +22,7 @@ class ImageModelManagerError extends BaseError {
  * 负责ImageModelConfig的CRUD操作和组合查询
  */
 export class ImageModelManager implements IImageModelManager {
-  private readonly storageKey = CORE_SERVICE_KEYS.IMAGE_MODELS
+  private readonly storageKey = SERVICE_KEYS.imageModels
   private readonly storage: IStorageProvider
   private readonly registry: IImageAdapterRegistry
   private initPromise: Promise<void> | null = null

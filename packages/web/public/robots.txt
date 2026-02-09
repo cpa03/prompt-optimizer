@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prompt-optimizer.vercel.app/sitemap.xml

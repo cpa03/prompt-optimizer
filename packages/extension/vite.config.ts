@@ -15,6 +15,19 @@ export default defineConfig({
   base: './',  // 使用相对路径
   build: {
     outDir: 'dist',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+      },
+      mangle: {
+        safari10: true,
+      },
+    },
+    cssCodeSplit: true,
+    sourcemap: false,
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'index.html')

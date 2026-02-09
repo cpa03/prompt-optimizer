@@ -1,7 +1,7 @@
 import Dexie, { type Table } from 'dexie';
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
-import { TIMEOUTS } from '../../config/timeouts';
+import { STORAGE_CONFIG } from '../../config/core-config';
 
 /**
  * 数据表接口定义
@@ -200,7 +200,7 @@ export class DexieStorageProvider implements IStorageProvider {
   private async _performAtomicUpdateWithRetry<T>(
     key: string,
     updateFn: (currentValue: T | null) => T,
-    maxRetries: number = 3
+    maxRetries: number = STORAGE_CONFIG.retry.maxAttempts
   ): Promise<void> {
     let lastError: Error | null = null;
 
@@ -214,7 +214,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
         // 如果是事务错误且还有重试机会，等待一段时间后重试
         if (this.isError(error) && error.name === 'PrematureCommitError' && attempt < maxRetries) {
-          const delay = Math.min(100 * Math.pow(2, attempt - 1), TIMEOUTS.retry.maxDelay);
+          const delay = Math.min(STORAGE_CONFIG.retry.baseDelayMs * Math.pow(2, attempt - 1), STORAGE_CONFIG.retry.maxDelayMs);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }

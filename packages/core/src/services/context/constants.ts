@@ -7,10 +7,10 @@ import type { ContextMode } from './types';
 import { CONTEXT_VERSIONS } from '../../constants/versions';
 
 // 存储键
-export const CONTEXT_STORE_KEY = 'ctx:store' as const;
+export const CONTEXT_STORE_KEY = CONTEXT_CONFIG.storeKey;
 
 // 默认上下文模式
-export const DEFAULT_CONTEXT_MODE: ContextMode = 'system' as const;
+export const DEFAULT_CONTEXT_MODE: ContextMode = CONTEXT_CONFIG.defaultMode;
 
 // 预定义变量列表（与UI包保持一致）
 // 这些变量名不允许在上下文变量覆盖中使用

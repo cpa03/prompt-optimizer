@@ -5,7 +5,6 @@ import { getAllModels, getBuiltinModelIds } from './defaults';
 import { ModelConfigError } from '../llm/errors';
 import { validateOverrides } from './parameter-utils';
 import { ElectronConfigManager, isElectronRenderer } from './electron-config';
-import { CORE_SERVICE_KEYS } from '../../constants/storage-keys';
 import { ImportExportError } from '../../interfaces/import-export';
 import { IMPORT_EXPORT_ERROR_CODES } from '../../constants/error-codes';
 import {
@@ -15,12 +14,13 @@ import {
   isTextModelConfig
 } from './converter';
 import type { ITextAdapterRegistry } from '../llm/types';
+import { SERVICE_KEYS } from '../../config/core-config';
 
 /**
  * 模型管理器实现
  */
 export class ModelManager implements IModelManager {
-  private readonly storageKey = CORE_SERVICE_KEYS.MODELS;
+  private readonly storageKey = SERVICE_KEYS.models;
   private readonly storage: IStorageProvider;
   private initPromise: Promise<void>;
   private registry?: ITextAdapterRegistry;
