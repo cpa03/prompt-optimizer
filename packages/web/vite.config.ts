@@ -208,7 +208,12 @@ export default defineConfig(({ mode }) => {
           acc[key] = env[key];
           return acc;
         }, {} as Record<string, string>)
-      }
+      },
+      // Fix vue-i18n devtools error in production
+      '__INTLIFY_PROD_DEVTOOLS__': JSON.stringify(false),
+      '__INTLIFY_DROP_MESSAGE_COMPILER__': JSON.stringify(false),
+      '__VUE_I18N_FULL_INSTALL__': JSON.stringify(true),
+      '__VUE_I18N_LEGACY_API__': JSON.stringify(false)
     }
   }
 })
