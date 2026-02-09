@@ -9,6 +9,8 @@
     :positive-button-props="{ disabled: selectedKeys.length === 0 }"
     @positive-click="handleConfirm"
     @negative-click="handleCancel"
+    @keydown="handleKeydown"
+    tabindex="-1"
   >
     <!-- 顶部总结 -->
     <NAlert
@@ -38,11 +40,18 @@
 
     <!-- 底部统计 -->
     <template v-if="result && result.values.length > 0" #footer>
-      <NSpace justify="space-between" style="width: 100%">
+      <NFlex justify="space-between" align="center" style="width: 100%">
         <NText depth="3">
           {{ t('test.variableValueGeneration.selected') }}: {{ selectedKeys.length }} / {{ editableValues.length }}
         </NText>
-      </NSpace>
+        <!-- 键盘快捷键提示 -->
+        <NFlex align="center" :size="8" class="keyboard-hints">
+          <NText depth="3" :style="{ fontSize: '12px' }">
+            <span class="kbd-shortcut">Enter</span> {{ t('common.apply') }}
+            <span class="kbd-shortcut" style="margin-left: 8px;">Esc</span> {{ t('common.cancel') }}
+          </NText>
+        </NFlex>
+      </NFlex>
     </template>
   </NModal>
 </template>
@@ -58,6 +67,7 @@ import {
   NText,
   NInput,
   NProgress,
+  NFlex,
   type DataTableColumns,
 } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
@@ -201,4 +211,67 @@ const handleConfirm = () => {
 const handleCancel = () => {
   visible.value = false
 }
+
+// 键盘事件处理
+const handleKeydown = (e: KeyboardEvent) => {
+  // Enter 键确认（当有选中项时）
+  if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+    if (selectedKeys.value.length > 0) {
+      e.preventDefault()
+      e.stopPropagation()
+      handleConfirm()
+    }
+  }
+
+  // Escape 键取消
+  if (e.key === 'Escape') {
+    e.preventDefault()
+    handleCancel()
+  }
+}
 </script>
+
+<style scoped>
+/* 键盘快捷键提示样式 */
+.keyboard-hints {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.keyboard-hints:hover {
+  opacity: 1;
+}
+
+.kbd-shortcut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--n-text-color-base);
+  background: var(--n-color-embedded);
+  border: 1px solid var(--n-border-color);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* 深色模式适配 */
+:deep(.n-modal.dark-theme) .kbd-shortcut {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 焦点状态增强 - 提升无障碍性 */
+:deep(.n-data-table .n-checkbox) {
+  outline: none;
+}
+
+:deep(.n-data-table .n-checkbox:focus-visible) {
+  outline: 2px solid var(--n-primary-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+</style>
