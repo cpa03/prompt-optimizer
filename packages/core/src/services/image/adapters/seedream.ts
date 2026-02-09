@@ -10,7 +10,8 @@ import type {
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
-import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
+import { IMAGE_ADAPTER_CONFIG, TEST_PROMPTS } from '../../../config/core-config'
+import { MIME_TYPES } from '../../../config/http'
 
 export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -154,18 +155,18 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: '一朵花',
+        prompt: TEST_PROMPTS.text2image.chinese,
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: '把它变成红色',
+        prompt: TEST_PROMPTS.image2image.chinese,
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.image.png
         }
       }
     }
@@ -188,7 +189,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
 
     // 图生图支持：添加图像输入
     if (request.inputImage?.b64) {
-      const mime = request.inputImage.mimeType || 'image/png'
+      const mime = request.inputImage.mimeType || MIME_TYPES.image.png
       payload.image = `data:${mime};base64,${request.inputImage.b64}`
     }
 
@@ -207,7 +208,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
     const images = data.data?.map((item: any) => ({
       url: item.url,
       b64: item.b64_json,
-      mimeType: 'image/png'
+      mimeType: MIME_TYPES.image.png
     })) || []
 
     if (images.length === 0) {

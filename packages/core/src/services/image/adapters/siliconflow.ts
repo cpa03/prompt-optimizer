@@ -11,6 +11,8 @@ import type {
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
+import { MIME_TYPES } from '../../../config/http'
+import { TEST_PROMPTS } from '../../../config/core-config'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -250,18 +252,18 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a flower',
+        prompt: TEST_PROMPTS.text2image.simple,
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make it red',
+        prompt: TEST_PROMPTS.image2image.simple,
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.image.png
         }
       }
     }
@@ -293,7 +295,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         batch_size: 1,
         // 处理输入图像（如果有）
         ...(request.inputImage?.b64 && {
-          image: `data:${request.inputImage.mimeType || 'image/png'};base64,${request.inputImage.b64}`
+          image: `data:${request.inputImage.mimeType || MIME_TYPES.image.png};base64,${request.inputImage.b64}`
         })
       })
     })
@@ -302,7 +304,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       images: response.images?.map((img: any) => ({
         url: img.url,
         b64: img.b64,
-        mimeType: img.mimeType || 'image/png'
+        mimeType: img.mimeType || MIME_TYPES.image.png
       })) || [],
       metadata: {
         providerId: 'siliconflow',

@@ -182,3 +182,28 @@ export const IMAGE_ADAPTER_CONFIG = {
     sequentialGeneration: 'disabled',
   },
 } as const;
+
+// ============================================================================
+// Test Prompts Configuration
+// ============================================================================
+
+export const TEST_PROMPTS = {
+  text2image: {
+    default: 'a simple red flower',
+    simple: 'a flower',
+    chinese: '一朵花',
+  },
+  image2image: {
+    default: 'make this image more colorful',
+    simple: 'make it red',
+    chinese: '把它变成红色',
+  },
+} as const;
+
+// ============================================================================
+// File Name Configuration
+// ============================================================================
+
+export const FILE_NAMES = {
+  inputImage: 'input.png',
+} as const;

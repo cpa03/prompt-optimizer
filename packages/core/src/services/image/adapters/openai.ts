@@ -10,6 +10,7 @@ import type {
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS, IMAGE_SIZE_PRESETS, MIME_TYPES } from '../../../config'
+import { TEST_PROMPTS } from '../../../config/core-config'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -86,14 +87,14 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a simple red flower',
+        prompt: TEST_PROMPTS.text2image.default,
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make this image more colorful',
+        prompt: TEST_PROMPTS.image2image.default,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
           mimeType: MIME_TYPES.image.png
@@ -211,7 +212,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     // 转换base64图像为Blob
     const imageBlob = this.base64ToBlob(
       request.inputImage.b64 || '',
-      request.inputImage.mimeType || 'image/png'
+      request.inputImage.mimeType || MIME_TYPES.image.png
     )
     formData.append('image', imageBlob, 'input.png')
 
@@ -238,11 +239,11 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       }
 
       // 构建 data URL
-      const dataUrl = `data:image/png;base64,${item.b64_json}`
+      const dataUrl = `data:${MIME_TYPES.image.png};base64,${item.b64_json}`
 
       return {
         b64: item.b64_json,
-        mimeType: 'image/png',
+        mimeType: MIME_TYPES.image.png,
         url: dataUrl
       }
     })
