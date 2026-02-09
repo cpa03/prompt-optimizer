@@ -1,11 +1,116 @@
 {
-  "timestamp": "2026-02-09T06:07:28.844Z",
+  "timestamp": "2026-02-09T08:49:20.843Z",
   "summary": {
     "totalErrors": 0,
-    "totalWarnings": 0,
-    "fixedIssues": 0
+    "totalWarnings": 0
   },
   "errors": [],
   "warnings": [],
-  "recommendations": []
+  "allLogs": [
+    {
+      "type": "log",
+      "text": "使用默认配置",
+      "timestamp": "2026-02-09T08:49:11.687Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "timestamp": "2026-02-09T08:49:11.783Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "timestamp": "2026-02-09T08:49:11.833Z"
+    },
+    {
+      "type": "log",
+      "text": "[scanCustomModelEnvVars] Environment sources loaded",
+      "timestamp": "2026-02-09T08:49:11.944Z"
+    },
+    {
+      "type": "log",
+      "text": "[scanCustomModelEnvVars] Found 0 valid custom models: []",
+      "timestamp": "2026-02-09T08:49:11.945Z"
+    },
+    {
+      "type": "log",
+      "text": "[generateDynamicModels] Successfully generated 0 dynamic custom models",
+      "timestamp": "2026-02-09T08:49:11.945Z"
+    },
+    {
+      "type": "log",
+      "text": "Vercel Analytics 未加载",
+      "timestamp": "2026-02-09T08:49:12.120Z"
+    },
+    {
+      "type": "log",
+      "text": "[isRunningInElectron] Verdict: false (no Electron features detected)",
+      "timestamp": "2026-02-09T08:49:12.144Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] Initializing...",
+      "timestamp": "2026-02-09T08:49:12.144Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] No existing models found, initializing with defaults",
+      "timestamp": "2026-02-09T08:49:12.162Z"
+    },
+    {
+      "type": "log",
+      "text": "[generateDynamicModels] Successfully generated 0 dynamic custom models",
+      "timestamp": "2026-02-09T08:49:12.162Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] Initialization completed",
+      "timestamp": "2026-02-09T08:49:12.167Z"
+    },
+    {
+      "type": "log",
+      "text": "[isRunningInElectron] Verdict: false (no Electron features detected)",
+      "timestamp": "2026-02-09T08:49:12.168Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] Lazy-loaded TextAdapterRegistry",
+      "timestamp": "2026-02-09T08:49:12.189Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] Lazy-loaded TextAdapterRegistry",
+      "timestamp": "2026-02-09T08:49:12.190Z"
+    },
+    {
+      "type": "log",
+      "text": "[ModelManager] Lazy-loaded TextAdapterRegistry",
+      "timestamp": "2026-02-09T08:49:12.190Z"
+    },
+    {
+      "type": "log",
+      "text": "[isRunningInElectron] Verdict: false (no Electron features detected)",
+      "timestamp": "2026-02-09T08:49:12.253Z"
+    },
+    {
+      "type": "log",
+      "text": "[isRunningInElectron] Verdict: false (no Electron features detected)",
+      "timestamp": "2026-02-09T08:49:12.254Z"
+    },
+    {
+      "type": "log",
+      "text": "[isRunningInElectron] Verdict: false (no Electron features detected)",
+      "timestamp": "2026-02-09T08:49:12.281Z"
+    },
+    {
+      "type": "log",
+      "text": "🔄 静态导入开始加载模板...",
+      "timestamp": "2026-02-09T08:49:12.286Z"
+    },
+    {
+      "type": "log",
+      "text": "✅ 成功加载 59 个模板 {总数: 59, 中文: 47, 英文: 47, optimize: 10, user-optimize: 6}",
+      "timestamp": "2026-02-09T08:49:12.286Z"
+    }
+  ]
 }
