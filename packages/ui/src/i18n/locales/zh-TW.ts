@@ -73,6 +73,8 @@ export default {
     content: "內容",
     focus: "聚焦",
     noContent: "暫無內容",
+    empty: "空",
+    emptyHint: "開始添加一些內容吧",
     getStartedHint: "輸入提示詞並點擊\"最佳化\"，見證魔法發生 ✨",
     clickToEdit: "點選編輯",
     generating: "生成中...",
@@ -102,6 +104,14 @@ export default {
     import: "匯入",
     export: "匯出",
     next: "下一步",
+  },
+  icon: {
+    refresh: "重新整理",
+    check: "檢查",
+    copy: "複製",
+    edit: "編輯",
+    delete: "刪除",
+    loading: "載入中",
   },
   actions: {
     copy: "複製",
