@@ -71,8 +71,8 @@ export default {
     optional: "可选",
     copy: "复制",
     content: "内容",
-    focus: "聚焦",
     noContent: "暂无内容",
+    getStartedHint: "输入提示词并点击\"优化\"，见证魔法发生 ✨",
     clickToEdit: "点击编辑",
     generating: "生成中...",
     generatingReasoning: "思考中...",
@@ -934,6 +934,13 @@ export default {
     applyMigration: "应用转换",
     migrationSuccess: "模板转换成功",
     migrationFailed: "模板转换失败",
+
+    // 空状态
+    emptyState: {
+      title: "暂无模板",
+      description: "开始创建你的第一个模板吧",
+      createButton: "创建第一个模板",
+    },
 
     // 语法指南
     syntaxGuide: "语法指南",

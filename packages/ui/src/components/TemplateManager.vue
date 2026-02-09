@@ -252,6 +252,41 @@
               :class="template.metadata.templateType === 'optimize' ? 'bg-blue-500' : 'bg-purple-500'"
             ></div>
           </NCard>
+          
+          <!-- 🎨 Palette: Empty state when no templates exist -->
+          <div
+            v-if="filteredTemplates.length === 0"
+            class="template-empty-state flex flex-col items-center justify-center py-16"
+          >
+            <div class="empty-state-illustration mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-300 dark:text-gray-600 empty-state-icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+              <div class="empty-state-decoration" aria-hidden="true"></div>
+            </div>
+            <NText class="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">
+              {{ t('templateManager.emptyState.title') }}
+            </NText>
+            <NText class="text-sm text-gray-400 dark:text-gray-500 text-center max-w-sm mb-6">
+              {{ t('templateManager.emptyState.description') }}
+            </NText>
+            <NButton
+              type="primary"
+              ghost
+              @click="showAddForm = true"
+              class="empty-state-cta"
+            >
+              <template #icon>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
+                  <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
+                  <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                  <path d="M3 15h6"/>
+                  <path d="M6 12v6"/>
+                </svg>
+              </template>
+              {{ t('templateManager.emptyState.createButton') }}
+            </NButton>
+          </div>
         </NSpace>
       </NScrollbar>
     </NSpace>
@@ -1412,5 +1447,98 @@ const close = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* 🎨 Palette: Empty state styles */
+.template-empty-state {
+  animation: emptyStateFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes emptyStateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-state-illustration {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-icon {
+  animation: emptyStateFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyStateFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.empty-state-decoration {
+  position: absolute;
+  bottom: -8px;
+  width: 48px;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, rgba(128, 128, 128, 0.15), transparent);
+  border-radius: 50%;
+  animation: emptyStateShadow 3s ease-in-out infinite;
+}
+
+@keyframes emptyStateShadow {
+  0%, 100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.85);
+    opacity: 0.6;
+  }
+}
+
+.empty-state-cta {
+  animation: emptyStateCtaPulse 2s ease-in-out infinite;
+}
+
+@keyframes emptyStateCtaPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(24, 160, 88, 0.1);
+  }
+}
+
+.dark .empty-state-decoration {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .template-empty-state {
+    animation: none;
+  }
+
+  .empty-state-icon {
+    animation: none;
+  }
+
+  .empty-state-decoration {
+    animation: none;
+  }
+
+  .empty-state-cta {
+    animation: none;
+  }
 }
 </style>
