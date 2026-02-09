@@ -123,7 +123,7 @@
 
                 <!-- 优化工作区 -->
                 <NCard
-                    :style="{ flex: 1, minHeight: '200px', overflow: 'hidden' }"
+                    :style="{ flex: 1, minHeight: `${UI_DIMENSIONS.WORKSPACE.PANEL_MIN_HEIGHT_PX}px`, overflow: 'hidden' }"
                     content-style="height: 100%; max-height: 100%; overflow: hidden;"
                 >
                     <PromptPanelUI
@@ -444,6 +444,7 @@ import type { AppServices } from '../../types/services'
 import type { IteratePayload } from '../../types/workspace'
 import { applyPatchOperationsToText, type PatchOperation, type Template } from '@prompt-optimizer/core'
 import { useElementSize } from '@vueuse/core'
+import { UI_DIMENSIONS } from '../../config/constants'
 
 const { t } = useI18n()
 const toast = useToast()

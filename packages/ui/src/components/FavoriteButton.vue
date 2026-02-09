@@ -110,6 +110,7 @@ import { useToast } from '../composables/ui/useToast';
 import { Star, Stars } from '@vicons/tabler';
 import type { FavoriteCategory } from '@prompt-optimizer/core';
 import type { AppServices } from '../types/services';
+import { TIME_CONSTANTS } from '../config/constants';
 
 interface Props {
   /** 提示词内容 */
@@ -383,7 +384,7 @@ const handleRemoveFavorite = async () => {
   const toastInstance = message.info(
     '已取消收藏',
     {
-      duration: 5000,
+      duration: TIME_CONSTANTS.TOAST_DURATION,
       closable: true,
       keepAliveOnHover: true
     }
@@ -395,7 +396,7 @@ const handleRemoveFavorite = async () => {
       executeDeleteFavorite(idToDelete);
       pendingDeletion.value = null;
     }
-  }, 5000);
+  }, TIME_CONSTANTS.TOAST_DURATION);
 
   pendingDeletion.value = {
     favoriteId: idToDelete,
