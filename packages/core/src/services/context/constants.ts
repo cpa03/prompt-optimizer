@@ -6,7 +6,6 @@
 import type { ContextMode } from './types';
 import { CONTEXT_CONFIG } from '../../config/core-config';
 import { CONTEXT_VERSIONS } from '../../constants/versions';
-import { CONTEXT_CONFIG } from '../../config/core-config';
 
 // 存储键
 export const CONTEXT_STORE_KEY = CONTEXT_CONFIG.storeKey;

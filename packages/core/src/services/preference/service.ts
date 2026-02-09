@@ -4,7 +4,6 @@ import { ImportExportError } from "../../interfaces/import-export";
 import { IMPORT_EXPORT_ERROR_CODES } from "../../constants/error-codes";
 import { VALIDATION_CONSTRAINTS } from "../../constants/constraints";
 import { StorageError } from "../storage/errors";
-<<<<<<< HEAD
 import { toErrorWithCode, extractErrorMessage } from "../../utils/error";
 import { PREFERENCE_CONFIG } from "../../config/core-config";
 
