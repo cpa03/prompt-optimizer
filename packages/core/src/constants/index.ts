@@ -16,5 +16,8 @@ export * from './test-constants';
 // HTTP status codes - eliminates hardcoded status codes
 export * from './http-codes';
 
-// API endpoints - eliminates hardcoded URLs
+// API endpoints - eliminates hardcoded URLs and MIME types
 export * from './api-endpoints';
+
+// Constraints - eliminates hardcoded limits and sizes
+export * from './constraints';

@@ -14,6 +14,7 @@ import {
   PROVIDER_API_KEY_URLS,
   IMAGE_SIZE_PRESETS,
   IMAGE_DEFAULTS,
+  MIME_TYPES,
   getTestPrompt,
   getSiliconFlowKolorsParameterDefinitions,
   getSiliconFlowQwenParameterDefinitions,
@@ -189,7 +190,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         }
       }
     }
@@ -221,7 +222,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         batch_size: 1,
         // 处理输入图像（如果有）
         ...(request.inputImage?.b64 && {
-          image: `data:${request.inputImage.mimeType || 'image/png'};base64,${request.inputImage.b64}`
+          image: `data:${request.inputImage.mimeType || MIME_TYPES.PNG};base64,${request.inputImage.b64}`
         })
       })
     })
@@ -230,7 +231,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       images: response.images?.map((img: any) => ({
         url: img.url,
         b64: img.b64,
-        mimeType: img.mimeType || 'image/png'
+        mimeType: img.mimeType || MIME_TYPES.PNG
       })) || [],
       metadata: {
         providerId: 'siliconflow',

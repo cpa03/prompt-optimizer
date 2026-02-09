@@ -14,6 +14,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 import { RETRY_CONFIG } from '../../../constants/templates'
+import { MIME_TYPES } from '../../../config'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -237,7 +238,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
 
         const images = outputImages.map((imageUrl: string) => ({
           url: imageUrl,
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         }))
 
         return {

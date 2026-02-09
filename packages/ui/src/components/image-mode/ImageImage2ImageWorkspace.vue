@@ -812,6 +812,7 @@ import {
     type Template,
 } from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
+import { FILE_SIZE_LIMITS } from '../../config/constants'
 
 // 国际化
 const { t } = useI18n();
@@ -1780,7 +1781,7 @@ const handleUploadChange = async (data: ImageUploadChangePayload) => {
     }
 
     // 验证文件大小
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > FILE_SIZE_LIMITS.MAX_IMAGE_FILE_SIZE_BYTES) {
         toast.error(t('imageWorkspace.upload.fileTooLarge'))
         uploadStatus.value = 'error'
         return
