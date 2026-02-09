@@ -6,6 +6,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { CoreServicesManager } from '../src/adapters/core-services.js';
 import { ParameterValidator } from '../src/adapters/parameter-adapter.js';
 import { MCPErrorHandler, MCP_ERROR_CODES } from '../src/adapters/error-handler.js';
+import { CONSTRAINTS } from '@prompt-optimizer/core';
 
 describe('MCP Server Tools', () => {
   let coreServices: CoreServicesManager;
@@ -27,14 +28,14 @@ describe('MCP Server Tools', () => {
       expect(() => ParameterValidator.validatePrompt('有效的提示词')).not.toThrow();
       expect(() => ParameterValidator.validatePrompt('')).toThrow('提示词必须是非空字符串');
       expect(() => ParameterValidator.validatePrompt('   ')).toThrow('提示词必须是非空字符串');
-      expect(() => ParameterValidator.validatePrompt('a'.repeat(60000))).toThrow('提示词过长');
+      expect(() => ParameterValidator.validatePrompt('a'.repeat(CONSTRAINTS.mcp.maxPromptLength + 1))).toThrow('提示词过长');
     });
 
     it('应该正确验证需求输入', () => {
       expect(() => ParameterValidator.validateRequirements('有效的需求描述')).not.toThrow();
       expect(() => ParameterValidator.validateRequirements('')).toThrow('需求描述必须是非空字符串');
       expect(() => ParameterValidator.validateRequirements('   ')).toThrow('需求描述必须是非空字符串');
-      expect(() => ParameterValidator.validateRequirements('a'.repeat(15000))).toThrow('需求描述过长');
+      expect(() => ParameterValidator.validateRequirements('a'.repeat(CONSTRAINTS.mcp.maxRequirementsLength + 1))).toThrow('需求描述过长');
     });
 
     it('应该正确验证模板输入', () => {
