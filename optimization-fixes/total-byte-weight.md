@@ -6,7 +6,7 @@
 
 **Description:** Large network payloads cost users real money and are highly correlated with long load times. [Learn how to reduce payload sizes](https://developer.chrome.com/docs/lighthouse/performance/total-byte-weight/).
 
-**Current Value:** Total size was 4,680 KiB
+**Current Value:** Total size was 18,671 KiB
 
 ## Recommended Fix
 
