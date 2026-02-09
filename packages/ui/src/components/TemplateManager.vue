@@ -113,6 +113,29 @@
       
       <NScrollbar style="max-height: 60vh;">
         <NSpace vertical :size="12">
+          <!-- 🎨 Palette: Loading skeleton for better perceived performance -->
+          <template v-if="isLoading">
+            <NCard v-for="i in 3" :key="`skeleton-${i}`" embedded>
+              <NSpace vertical :size="12">
+                <NSpace justify="space-between" align="center">
+                  <NSpace vertical :size="8" style="flex: 1;">
+                    <NSkeleton height="20px" width="40%" />
+                    <NSkeleton height="14px" width="70%" />
+                    <NSkeleton height="12px" width="30%" />
+                  </NSpace>
+                  <NSpace>
+                    <NSkeleton height="28px" width="60px" />
+                    <NSkeleton height="28px" width="60px" />
+                  </NSpace>
+                </NSpace>
+                <NSpace>
+                  <NSkeleton height="24px" width="80px" />
+                  <NSkeleton height="24px" width="100px" />
+                </NSpace>
+              </NSpace>
+            </NCard>
+          </template>
+          <template v-else>
           <NCard
             v-for="template in filteredTemplates"
             :key="template.id"
@@ -287,6 +310,7 @@
               {{ t('templateManager.emptyState.createButton') }}
             </NButton>
           </div>
+          </template>
         </NSpace>
       </NScrollbar>
     </NSpace>
@@ -674,7 +698,7 @@ import { useI18n } from 'vue-i18n'
 import {
   NModal, NCard, NButton, NTag, NInput,
   NSelect, NSpace, NText, NH3, NH4, NScrollbar,
-  NCode,
+  NCode, NSkeleton,
   NGrid, NGridItem, NEl
 } from 'naive-ui'
 import { TemplateProcessor, type Template, type MessageTemplate, type ITemplateManager, TemplateLanguageService } from '@prompt-optimizer/core'
@@ -736,6 +760,7 @@ const imageText2ImageSession = useImageText2ImageSession()
 const imageImage2ImageSession = useImageImage2ImageSession()
 
 const templates = ref<Template[]>([])
+const isLoading = ref(false)
 const currentCategory = ref(getCategoryFromProps())
 const currentType = computed(() => getCurrentTemplateType())
 const showAddForm = ref(false)
@@ -934,6 +959,7 @@ const processedPreview = computed(() => {
 
 // 加载提示词列表
 const loadTemplates = async () => {
+  isLoading.value = true
   try {
     // 统一使用异步方法
     const allTemplates = await getTemplateManager.value.listTemplates()
@@ -942,6 +968,8 @@ const loadTemplates = async () => {
   } catch (error) {
     console.error('加载提示词失败:', error)
     toast.error('加载提示词失败')
+  } finally {
+    isLoading.value = false
   }
 }
 
