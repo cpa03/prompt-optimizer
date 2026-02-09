@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { GEMINI_MODELS, MODEL_CONTEXT_LENGTHS } from '../../../constants/models'
 import type {
   TextProvider,
   TextModel,
@@ -30,36 +31,37 @@ interface ModelOverride {
 
 /**
  * Gemini 静态模型定义
+ * Flexy loves modularity! Uses centralized model constants.
  */
 const GEMINI_STATIC_MODELS: ModelOverride[] = [
   {
-    id: 'gemini-2.5-flash',
+    id: GEMINI_MODELS.GEMINI_2_5_FLASH,
     name: 'Gemini 2.5 Flash',
     description: 'Latest Gemini 2.5 Flash model, fast and efficient',
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
+      maxContextLength: MODEL_CONTEXT_LENGTHS.GEMINI_DEFAULT
     }
   },
   {
-    id: 'gemini-2.5-pro',
+    id: GEMINI_MODELS.GEMINI_2_5_PRO,
     name: 'Gemini 2.5 Pro',
     description: 'Gemini 2.5 Pro model with enhanced reasoning capabilities',
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: MODEL_CONTEXT_LENGTHS.GEMINI_DEFAULT
     }
   },
   {
-    id: 'gemini-3-pro-preview',
+    id: GEMINI_MODELS.GEMINI_3_PRO_PREVIEW,
     name: 'Gemini 3 Pro Preview',
     description: 'Preview version of Gemini 3 Pro with cutting-edge capabilities',
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: MODEL_CONTEXT_LENGTHS.GEMINI_DEFAULT
     }
   }
 ]

@@ -18,6 +18,7 @@ import {
 import { TypeMapper } from './type-mapper';
 import { TagTypeConverter } from './type-converter';
 import { FAVORITE_KEYS } from '../../constants/storage-keys';
+import { extractErrorMessage } from '../../utils/error';
 
 /**
  * 收藏管理器实现
@@ -124,7 +125,7 @@ export class FavoriteManager implements IFavoriteManager {
         console.info('[FavoriteManager] 数据迁移完成，已更新收藏项格式');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       const migrationError = new FavoriteMigrationError(
         `Legacy data migration failed: ${errorMessage}`,
         error instanceof Error ? error : undefined
@@ -242,7 +243,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to add favorite: ${errorMessage}`);
     }
   }
@@ -313,7 +314,7 @@ export class FavoriteManager implements IFavoriteManager {
 
       return favoritesList;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get favorites: ${errorMessage}`);
     }
   }
@@ -332,7 +333,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get favorite details: ${errorMessage}`);
     }
   }
@@ -362,7 +363,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to update favorite: ${errorMessage}`);
     }
   }
@@ -386,7 +387,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to delete favorite: ${errorMessage}`);
     }
   }
@@ -408,7 +409,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to batch delete favorites: ${errorMessage}`);
     }
   }
@@ -429,7 +430,7 @@ export class FavoriteManager implements IFavoriteManager {
       const categories = await this.storageProvider.getItem(this.STORAGE_KEYS.CATEGORIES);
       return categories ? JSON.parse(categories) : [];
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get categories: ${errorMessage}`);
     }
   }
@@ -467,7 +468,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to add category: ${errorMessage}`);
     }
   }
@@ -492,7 +493,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to update category: ${errorMessage}`);
     }
   }
@@ -536,7 +537,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to delete category: ${errorMessage}`);
     }
   }
@@ -551,7 +552,7 @@ export class FavoriteManager implements IFavoriteManager {
       // 如果没有缓存的统计数据，计算并缓存
       return await this.updateStats();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get statistics: ${errorMessage}`);
     }
   }
@@ -645,7 +646,7 @@ export class FavoriteManager implements IFavoriteManager {
 
       return JSON.stringify(exportData, null, 2);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteImportExportError(
         `Failed to export favorites: ${errorMessage}`,
         error instanceof Error ? error : undefined
@@ -698,7 +699,7 @@ export class FavoriteManager implements IFavoriteManager {
           return TagTypeConverter.compareTagNames(a.tag, b.tag); // 相同次数按标签名升序
         });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get tags: ${errorMessage}`);
     }
   }
@@ -742,7 +743,7 @@ export class FavoriteManager implements IFavoriteManager {
       if (error instanceof FavoriteError) {
         throw error;
       }
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(
         `Failed to add tag: ${errorMessage}`,
         error instanceof Error ? error : undefined
@@ -816,7 +817,7 @@ export class FavoriteManager implements IFavoriteManager {
       await this.updateStats();
       return affectedCount;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to rename tag: ${errorMessage}`);
     }
   }
@@ -884,7 +885,7 @@ export class FavoriteManager implements IFavoriteManager {
       await this.updateStats();
       return affectedCount;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to merge tags: ${errorMessage}`);
     }
   }
@@ -922,7 +923,7 @@ export class FavoriteManager implements IFavoriteManager {
       await this.updateStats();
       return affectedCount;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to delete tag: ${errorMessage}`);
     }
   }
@@ -964,7 +965,7 @@ export class FavoriteManager implements IFavoriteManager {
         return reorderedCategories;
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to reorder categories: ${errorMessage}`);
     }
   }
@@ -974,7 +975,7 @@ export class FavoriteManager implements IFavoriteManager {
       const favorites = await this.getFavorites({ categoryId });
       return favorites.length;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteStorageError(`Failed to get category usage: ${errorMessage}`);
     }
   }
@@ -1198,7 +1199,7 @@ export class FavoriteManager implements IFavoriteManager {
             timestampOffset++;
             result.imported++;
           } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = extractErrorMessage(error);
             result.errors.push(`Failed to import favorite: ${errorMessage}`);
           }
         });
@@ -1209,7 +1210,7 @@ export class FavoriteManager implements IFavoriteManager {
       await this.updateStats();
       return result;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage = extractErrorMessage(error);
       throw new FavoriteImportExportError(
         `Failed to import favorites: ${errorMessage}`,
         error instanceof Error ? error : undefined,

@@ -1,8 +1,10 @@
 import { ref, onUnmounted } from 'vue'
+import { DEBOUNCE_DEFAULTS, SMART_DEBOUNCE, TIME_CONSTANTS } from '@prompt-optimizer/core'
 
 /**
  * 防抖和节流 Composable
  * 提供性能优化的事件处理
+ * Flexy loves modularity! Uses centralized time constants.
  */
 export function useDebounceThrottle() {
   const timers = ref(new Map<string, number>())
@@ -16,7 +18,7 @@ export function useDebounceThrottle() {
    */
   const debounce = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
-    delay: number = 300,
+    delay: number = DEBOUNCE_DEFAULTS.DELAY_MS,
     immediate: boolean = false,
     key: string = 'default'
   ) => {
@@ -50,7 +52,7 @@ export function useDebounceThrottle() {
    */
   const throttle = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
-    delay: number = 100,
+    delay: number = DEBOUNCE_DEFAULTS.THROTTLE_DELAY_MS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     key: string = 'default'
   ) => {
@@ -139,8 +141,8 @@ export function useDebounceThrottle() {
    */
   const smartDebounce = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
-    minDelay: number = 100,
-    maxDelay: number = 1000,
+    minDelay: number = SMART_DEBOUNCE.MIN_DELAY_MS,
+    maxDelay: number = SMART_DEBOUNCE.MAX_DELAY_MS,
     key: string = 'default'
   ) => {
     let callCount = 0
@@ -157,16 +159,16 @@ export function useDebounceThrottle() {
       const frequency = callCount / Math.max(1, timeSinceLastCall / 1000)
       let adaptiveDelay = minDelay
       
-      if (frequency > 10) {
+      if (frequency > SMART_DEBOUNCE.FREQUENCY_THRESHOLDS.HIGH) {
         adaptiveDelay = maxDelay
-      } else if (frequency > 5) {
+      } else if (frequency > SMART_DEBOUNCE.FREQUENCY_THRESHOLDS.MEDIUM) {
         adaptiveDelay = Math.min(maxDelay, minDelay * 3)
-      } else if (frequency > 2) {
+      } else if (frequency > SMART_DEBOUNCE.FREQUENCY_THRESHOLDS.LOW) {
         adaptiveDelay = Math.min(maxDelay, minDelay * 2)
       }
       
       // 重置计数器（每10秒）
-      if (timeSinceLastCall > 10000) {
+      if (timeSinceLastCall > SMART_DEBOUNCE.COUNTER_RESET_MS) {
         callCount = 0
       }
 
@@ -179,7 +181,7 @@ export function useDebounceThrottle() {
    */
   const batchExecute = <T>(
     fn: (batch: T[]) => void,
-    delay: number = 100,
+    delay: number = DEBOUNCE_DEFAULTS.THROTTLE_DELAY_MS,
     key: string = 'default'
   ) => {
     const batches = new Map<string, T[]>()

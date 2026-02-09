@@ -18,3 +18,12 @@ export * from './http-codes';
 
 // API endpoints - eliminates hardcoded URLs
 export * from './api-endpoints';
+
+// Model constants - eliminates hardcoded model IDs
+export * from './models';
+
+// Time constants - eliminates magic numbers for timing
+export * from './time-constants';
+
+// Version constants - eliminates hardcoded version strings
+export * from './versions';
