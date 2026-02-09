@@ -83,42 +83,72 @@
         </NText>
         
         <!-- 文件选择区域 -->
-        <NUpload
-          :file-list="selectedFile ? [selectedFile] : []"
-          accept=".json"
-          :show-file-list="false"
-          @change="handleFileChange"
-          :custom-request="() => {}"
+        <!-- 🎨 Palette: Enhanced drag-and-drop with visual feedback -->
+        <div
+          class="upload-wrapper"
+          :class="{
+            'is-drag-over': isDragOver,
+            'has-file': selectedFile
+          }"
+          @dragenter="handleDragEnter"
+          @dragleave="handleDragLeave"
+          @drop="handleDrop"
         >
-          <NUploadDragger>
-            <div v-if="!selectedFile" style="padding: 24px;">
-              <div style="margin-bottom: 12px;">
-                <NIcon size="48" :depth="3">
-                  <svg viewBox="0 0 48 48" fill="none" stroke="currentColor">
-                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </NIcon>
+          <NUpload
+            :file-list="selectedFile ? [selectedFile] : []"
+            accept=".json"
+            :show-file-list="false"
+            @change="handleFileChange"
+            :custom-request="() => {}"
+          >
+            <NUploadDragger class="palette-upload-dragger">
+              <div v-if="!selectedFile" class="upload-placeholder">
+                <div class="upload-icon-wrapper" :class="{ 'is-bouncing': isDragOver }">
+                  <NIcon size="48" :depth="3" class="upload-icon">
+                    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </NIcon>
+                  <span v-if="isDragOver" class="drop-hint" aria-live="polite">
+                    {{ $t('dataManager.import.dropHint', '释放以上传文件') }}
+                  </span>
+                </div>
+                <NText :depth="3" class="upload-text">
+                  {{ isDragOver ? '' : $t('dataManager.import.selectFile') }}
+                </NText>
+                <NText v-if="!isDragOver" depth="3" class="upload-hint">
+                  {{ $t('dataManager.import.dragHint', '或将文件拖放到此处') }}
+                </NText>
               </div>
-              <NText :depth="3">
-                {{ $t('dataManager.import.selectFile') }}
-              </NText>
-            </div>
-            
-            <div v-else style="padding: 24px;">
-              <NText strong style="display: block; margin-bottom: 8px;">
-                {{ selectedFile.name }}
-              </NText>
-              <NText :depth="3" style="display: block; margin-bottom: 12px;">
-                {{ formatFileSize(selectedFile.file?.size ?? 0) }}
-              </NText>
-              <NSpace>
-                <NButton text @click.stop="clearSelectedFile">
-                  {{ $t('common.clear') }}
-                </NButton>
-              </NSpace>
-            </div>
-          </NUploadDragger>
-        </NUpload>
+
+              <div v-else class="upload-file-selected">
+                <div class="file-icon-wrapper">
+                  <NIcon size="32" class="file-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M9 15l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
+                    </svg>
+                  </NIcon>
+                </div>
+                <NText strong class="file-name">
+                  {{ selectedFile.name }}
+                </NText>
+                <NText depth="3" class="file-size">
+                  {{ formatFileSize(selectedFile.file?.size ?? 0) }}
+                </NText>
+                <NSpace class="file-actions">
+                  <NButton text size="small" @click.stop="clearSelectedFile" class="clear-file-btn">
+                    <template #icon>
+                      <span>✕</span>
+                    </template>
+                    {{ $t('common.clear') }}
+                  </NButton>
+                </NSpace>
+              </div>
+            </NUploadDragger>
+          </NUpload>
+        </div>
 
         <!-- 导入按钮 -->
         <NButton
@@ -274,6 +304,37 @@ const getDataManager = computed(() => {
 const isExporting = ref(false)
 const isImporting = ref(false)
 const selectedFile = ref<UploadFileInfo | null>(null)
+
+// 🎨 Palette: Drag-and-drop state for enhanced UX
+const isDragOver = ref(false)
+const dragCounter = ref(0)
+
+// 🎨 Palette: Handle drag enter with counter to prevent flickering
+const handleDragEnter = (event: DragEvent) => {
+  event.preventDefault()
+  dragCounter.value++
+  if (dragCounter.value === 1) {
+    isDragOver.value = true
+  }
+}
+
+// 🎨 Palette: Handle drag leave with counter
+const handleDragLeave = (event: DragEvent) => {
+  event.preventDefault()
+  dragCounter.value--
+  if (dragCounter.value <= 0) {
+    dragCounter.value = 0
+    isDragOver.value = false
+  }
+}
+
+// 🎨 Palette: Handle drop with animation feedback
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault()
+  dragCounter.value = 0
+  isDragOver.value = false
+  // The NUpload component will handle the actual file drop
+}
 
 const isContextBundle = (data: unknown): data is ContextBundle => {
   if (!data || typeof data !== 'object') return false
@@ -656,5 +717,230 @@ const handleContextImportFromClipboard = async () => {
 :deep(.context-upload .n-upload-trigger) {
   width: 100%;
   display: block;
+}
+
+/* 🎨 Palette: Enhanced upload area with drag-and-drop animations */
+.upload-wrapper {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+}
+
+/* Drag over state - visual feedback */
+.upload-wrapper.is-drag-over {
+  transform: scale(1.02);
+}
+
+.upload-wrapper.is-drag-over :deep(.n-upload-dragger) {
+  border-color: var(--n-primary-color, #18a058) !important;
+  background: rgba(24, 160, 88, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(24, 160, 88, 0.15),
+              0 8px 24px rgba(24, 160, 88, 0.15) !important;
+}
+
+/* File selected state */
+.upload-wrapper.has-file :deep(.n-upload-dragger) {
+  border-color: var(--n-success-color, #18a058) !important;
+  background: rgba(24, 160, 88, 0.04) !important;
+}
+
+/* Upload dragger base styles */
+.palette-upload-dragger {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Upload placeholder styles */
+.upload-placeholder {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-icon-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.upload-icon-wrapper.is-bouncing {
+  animation: upload-icon-bounce 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes upload-icon-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(-8px) scale(1.1);
+  }
+  50% {
+    transform: translateY(4px) scale(0.95);
+  }
+  75% {
+    transform: translateY(-4px) scale(1.05);
+  }
+}
+
+.upload-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--n-text-color-3, #999);
+}
+
+.upload-wrapper.is-drag-over .upload-icon {
+  color: var(--n-primary-color, #18a058);
+  transform: scale(1.15);
+}
+
+/* Drop hint text */
+.drop-hint {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--n-primary-color, #18a058);
+  background: rgba(24, 160, 88, 0.1);
+  padding: 6px 16px;
+  border-radius: 20px;
+  animation: drop-hint-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes drop-hint-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Upload text styles */
+.upload-text {
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.upload-hint {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* File selected state styles */
+.upload-file-selected {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: file-selected-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes file-selected-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.file-icon-wrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(24, 160, 88, 0.1);
+  border-radius: 50%;
+  margin-bottom: 4px;
+  animation: file-icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes file-icon-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(24, 160, 88, 0);
+  }
+}
+
+.file-icon {
+  color: var(--n-success-color, #18a058);
+}
+
+.file-icon .check-path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  animation: check-draw 0.6s ease forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.file-name {
+  font-size: 14px;
+  text-align: center;
+  word-break: break-all;
+  max-width: 100%;
+}
+
+.file-size {
+  font-size: 12px;
+}
+
+.file-actions {
+  margin-top: 4px;
+}
+
+/* Clear file button micro-interaction */
+.clear-file-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clear-file-btn:hover {
+  color: #d03050 !important;
+  background: rgba(208, 48, 80, 0.1) !important;
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .upload-wrapper,
+  .upload-wrapper.is-drag-over,
+  .palette-upload-dragger,
+  .upload-icon-wrapper,
+  .upload-icon,
+  .drop-hint,
+  .upload-text,
+  .upload-file-selected,
+  .file-icon-wrapper,
+  .file-icon .check-path,
+  .clear-file-btn {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .upload-wrapper.is-drag-over {
+    transform: none;
+  }
+
+  .file-icon-wrapper {
+    box-shadow: none;
+  }
+
+  .file-icon .check-path {
+    stroke-dashoffset: 0;
+  }
 }
 </style>
