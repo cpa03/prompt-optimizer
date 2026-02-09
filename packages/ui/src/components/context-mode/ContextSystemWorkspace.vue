@@ -100,7 +100,7 @@
 
                     <!-- 优化结果面板 -->
                     <NCard
-                        :style="{ flex: 1, minHeight: `${UI_DIMENSIONS.WORKSPACE.PANEL_MIN_HEIGHT_PX}px`, overflow: 'hidden' }"
+                        :style="{ flex: 1, minHeight: '200px', overflow: 'hidden' }"
                         content-style="height: 100%; max-height: 100%; overflow: hidden;"
                     >
                         <template v-if="displayAdapter.isInMessageOptimizationMode.value">
@@ -498,7 +498,7 @@ import type { TestAreaPanelInstance } from "../types/test-area";
 import type { IteratePayload, SaveFavoritePayload } from "../../types/workspace";
 import type { VariableManagerHooks } from '../../composables/prompt/useVariableManager'
 import type { AppServices } from '../../types/services'
-import { UI_DIMENSIONS } from '../../config/constants'
+
 
 interface Props {
     // 核心状态
