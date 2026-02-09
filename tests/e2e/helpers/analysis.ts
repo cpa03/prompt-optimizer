@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test'
+import { TIMEOUTS } from '../constants/timeouts'
 
 /**
  * 工作区模式类型
@@ -58,7 +59,7 @@ export async function fillOriginalPrompt(
 
   // 使用 testIdPrefix 动态生成的 data-testid 精确定位
   const input = workspace.locator(`[data-testid="${mode}-input"]`)
-  await expect(input).toBeVisible({ timeout: 15000 })
+  await expect(input).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
   // 支持两种输入方式：CodeMirror 和 NInput
   const cmContent = input.locator('.cm-content')
@@ -75,7 +76,7 @@ export async function fillOriginalPrompt(
 
   // 等待 v-model 更新：分析按钮由禁用变为可用
   const analyzeButton = workspace.locator(`[data-testid="${mode}-analyze-button"]`)
-  await expect(analyzeButton).toBeEnabled({ timeout: 15000 })
+  await expect(analyzeButton).toBeEnabled({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 }
 
 /**
@@ -98,8 +99,8 @@ export async function clickAnalyzeButton(
 
   // 使用 testIdPrefix 动态生成的 data-testid 精确定位
   const button = workspace.locator(`[data-testid="${mode}-analyze-button"]`)
-  await expect(button).toBeVisible({ timeout: 15000 })
-  await expect(button).toBeEnabled({ timeout: 15000 })
+  await expect(button).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
+  await expect(button).toBeEnabled({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
   await button.click()
 }
@@ -130,14 +131,14 @@ export async function getEvaluationScore(
 
   // 使用组合 testid 精确定位：score-badge-analysis, score-badge-original
   const scoreBadge = workspace.locator(`[data-testid="score-badge-${evalType}"]`)
-  await expect(scoreBadge).toBeVisible({ timeout: 90000 })
+  await expect(scoreBadge).toBeVisible({ timeout: TIMEOUTS.API.MEDIUM_OPERATION })
 
   // 等待加载完成
-  await expect(scoreBadge).not.toHaveClass(/loading/, { timeout: 60000 })
+  await expect(scoreBadge).not.toHaveClass(/loading/, { timeout: TIMEOUTS.API.SHORT_OPERATION })
 
   // 获取分数值
   const scoreValue = scoreBadge.locator('[data-testid="score-value"]')
-  await expect(scoreValue).toBeVisible({ timeout: 10000 })
+  await expect(scoreValue).toBeVisible({ timeout: TIMEOUTS.API.SHORT_OPERATION })
 
   const scoreText = await scoreValue.textContent()
   const score = parseInt(scoreText?.trim() || '0')
@@ -162,6 +163,6 @@ export async function verifyAnalyzeButtonDisabledWhenEmpty(
   const workspace = getWorkspace(page, mode)
   const button = workspace.locator(`[data-testid="${mode}-analyze-button"]`)
 
-  await expect(button).toBeVisible({ timeout: 15000 })
+  await expect(button).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
   await expect(button).toBeDisabled()
 }

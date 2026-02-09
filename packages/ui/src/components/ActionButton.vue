@@ -7,7 +7,7 @@
     :disabled="loading"
     @click="handleClick"
     class="action-button"
-    :class="{ 'is-pressed': isPressed }"
+    :class="{ 'is-pressed': isPressed, 'is-loading': loading }"
     :ghost="ghost"
     :round="round"
     :title="title || text"
@@ -150,6 +150,33 @@ const handleClick = () => {
   }
 }
 
+/* 加载状态的闪烁动画 - 提供视觉反馈 */
+.action-button.is-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  animation: loading-shimmer 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 /* 尊重用户减少动画的偏好设置 */
 @media (prefers-reduced-motion: reduce) {
   .action-button,
@@ -162,6 +189,10 @@ const handleClick = () => {
   }
   
   .action-button :deep(.n-button__loading) {
+    animation: none;
+  }
+  
+  .action-button.is-loading::after {
     animation: none;
   }
 }

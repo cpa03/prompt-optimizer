@@ -12,6 +12,7 @@
  */
 import { test, expect } from '../fixtures'
 import { navigateToMode } from '../helpers/common'
+import { TIMEOUTS } from '../constants/timeouts'
 
 type RouteCase = {
   name: string
@@ -79,7 +80,7 @@ const ROUTES: RouteCase[] = [
  */
 async function expectSelectHasOptions(page: Parameters<typeof test>[0]['page'], label: RegExp): Promise<void> {
   const labelNode = page.getByText(label).first()
-  await expect(labelNode).toBeVisible({ timeout: 15000 })
+  await expect(labelNode).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
   // 找到包含该 label 的最近选择器容器（Naive UI NSelect 会渲染 .n-base-selection）
   const container = labelNode.locator(
@@ -87,12 +88,12 @@ async function expectSelectHasOptions(page: Parameters<typeof test>[0]['page'], 
   )
   const select = container.locator('.n-base-selection').first()
 
-  await expect(select).toBeVisible({ timeout: 15000 })
+  await expect(select).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
   await select.click()
 
   // 有选项时会渲染 .n-base-select-option；空态会渲染 empty slot
   const firstOption = page.locator('.n-base-select-option').first()
-  await expect(firstOption).toBeVisible({ timeout: 15000 })
+  await expect(firstOption).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
   const optionCount = await page.locator('.n-base-select-option').count()
   expect(optionCount).toBeGreaterThan(0)

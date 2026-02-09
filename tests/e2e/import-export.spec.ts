@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * 导入导出完整流程 E2E 测试
@@ -25,7 +26,7 @@ test.describe('导入导出完整流程', () => {
       return null;
     }
     await favoriteButton.first().click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const managerDialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|Favorites/i }).first();
     if (await managerDialog.isVisible().catch(() => false)) {
@@ -49,7 +50,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 准备导入数据
     const importData = {
@@ -98,7 +99,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 验证导入成功消息
         const successMessage = page.locator('.n-message, .n-notification').filter({
@@ -141,7 +142,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importDialog = page.locator('[role="dialog"]').last();
     const jsonInput = importDialog.locator('textarea').first();
@@ -153,7 +154,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
         // 应该显示错误消息
         const errorMessage = page.locator('.n-message, .n-notification').filter({
@@ -190,7 +191,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importData = {
       favorites: [
@@ -216,7 +217,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 验证收藏数量增加
         const finalFavorites = await managerDialog.locator('.n-card, [class*="favorite"]').count();
@@ -239,7 +240,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importData = {
       favorites: [
@@ -273,7 +274,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 验证收藏已导入
         const importedFavorite = managerDialog.locator('text=分类测试收藏');
@@ -302,7 +303,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importData = {
       favorites: [
@@ -329,13 +330,13 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 第二次导入相同ID的数据
         const importButton2 = managerDialog.getByRole('button', { name: /导入|Import/i });
         if (await importButton2.count() > 0) {
           await importButton2.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
           const importData2 = {
             favorites: [
@@ -362,7 +363,7 @@ test.describe('导入导出完整流程', () => {
             const confirmButton2 = importDialog2.getByRole('button', { name: /确定|确认|导入|ok|import/i });
             if (await confirmButton2.count() > 0) {
               await confirmButton2.click();
-              await page.waitForTimeout(1500);
+              await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
               // 验证两个收藏都存在（ID冲突应该生成新ID）
               const favorites = managerDialog.locator('.n-card, [class*="favorite"]').filter({
@@ -390,7 +391,7 @@ test.describe('导入导出完整流程', () => {
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     if (await addButton.count() > 0) {
       await addButton.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       const createDialog = page.locator('[role="dialog"]').last();
       const titleInput = createDialog.getByPlaceholder(/标题|title/i);
@@ -406,17 +407,17 @@ test.describe('导入导出完整流程', () => {
         const saveButton = createDialog.getByRole('button', { name: /保存|save|确定|ok/i });
         if (await saveButton.count() > 0) {
           await saveButton.click();
-          await page.waitForTimeout(1000);
+          await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
           // 等待创建对话框的遮罩层消失
-          await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: 3000 }).catch(() => {});
+          await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: TIMEOUTS.NAVIGATION.ELEMENT_HIDDEN }).catch(() => {});
         }
       }
     }
 
     // 等待创建对话框完全关闭后再打开更多菜单
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 打开更多菜单导出
     const moreButton = managerDialog.getByRole('button').filter({
@@ -425,12 +426,12 @@ test.describe('导入导出完整流程', () => {
 
     if (await moreButton.count() > 0) {
       await moreButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const exportOption = page.locator('text=/导出|Export/i');
       if (await exportOption.count() > 0) {
         // 监听下载事件
-        const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
+        const downloadPromise = page.waitForEvent('download', { timeout: TIMEOUTS.OPERATION.DOWNLOAD }).catch(() => null);
 
         await exportOption.click();
 
@@ -480,7 +481,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importData = {
       favorites: [
@@ -506,7 +507,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 查找并编辑导入的收藏
         const favoriteCard = managerDialog.locator('text=可编辑导入收藏').locator('..').locator('..');
@@ -518,7 +519,7 @@ test.describe('导入导出完整流程', () => {
 
           if (await editButton.count() > 0) {
             await editButton.click();
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
             // 修改标题
             const editDialog = page.locator('[role="dialog"]').last();
@@ -531,7 +532,7 @@ test.describe('导入导出完整流程', () => {
               const saveButton = editDialog.getByRole('button', { name: /保存|save|确定|ok/i });
               if (await saveButton.count() > 0) {
                 await saveButton.click();
-                await page.waitForTimeout(1000);
+                await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
                 // 验证修改成功
                 const updatedCard = managerDialog.locator('text=编辑后的导入收藏');
@@ -561,7 +562,7 @@ test.describe('导入导出完整流程', () => {
     }
 
     await importButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const importData = {
       favorites: [
@@ -587,7 +588,7 @@ test.describe('导入导出完整流程', () => {
       const confirmButton = importDialog.getByRole('button', { name: /确定|确认|导入|ok|import/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(1500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.SHORT_WAIT);
 
         // 查找并删除导入的收藏
         const favoriteCard = managerDialog.locator('text=可删除导入收藏').locator('..').locator('..');
@@ -598,13 +599,13 @@ test.describe('导入导出完整流程', () => {
 
           if (await deleteButton.count() > 0) {
             await deleteButton.click();
-            await page.waitForTimeout(300);
+            await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
             // 确认删除
             const confirmDeleteButton = page.getByRole('button', { name: /确定|确认|ok|confirm/i }).last();
             if (await confirmDeleteButton.count() > 0) {
               await confirmDeleteButton.click();
-              await page.waitForTimeout(1000);
+              await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
               // 验证已删除
               const deletedCard = managerDialog.locator('text=可删除导入收藏');

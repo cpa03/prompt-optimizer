@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * 分类管理完整 CRUD 流程 E2E 测试
@@ -22,13 +23,13 @@ test.describe('分类管理完整流程', () => {
     // 尝试多种方法关闭现有对话框：
     // 1. 尝试按Esc键关闭
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 2. 尝试点击遮罩层关闭（如果点击遮罩层可以关闭的话）
     const mask = page.locator('.n-modal-mask').first();
     if (await mask.count() > 0 && await mask.isVisible()) {
-      await mask.click({ timeout: 1000 }).catch(() => {});
-      await page.waitForTimeout(300);
+      await mask.click({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE }).catch(() => {});
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
     }
 
     // 3. 尝试点击所有关闭按钮
@@ -36,15 +37,15 @@ test.describe('分类管理完整流程', () => {
     const buttonCount = await closeButtons.count();
     for (let i = 0; i < Math.min(buttonCount, 3); i++) { // 最多尝试关闭3个对话框
       try {
-        await closeButtons.nth(i).click({ timeout: 1000 });
-        await page.waitForTimeout(300);
+        await closeButtons.nth(i).click({ timeout: TIMEOUTS.NAVIGATION.MODAL_VISIBLE });
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
       } catch (e) {
         // 忽略点击失败
       }
     }
 
     // 4. 最后等待所有遮罩层消失
-    await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: 3000 }).catch(() => {});
+    await page.waitForSelector('.n-modal-mask', { state: 'hidden', timeout: TIMEOUTS.NAVIGATION.ELEMENT_HIDDEN }).catch(() => {});
   }
 
   /**
@@ -58,7 +59,7 @@ test.describe('分类管理完整流程', () => {
     const favoriteButton = page.getByRole('button', { name: /收藏|favorite/i }).first();
     await expect(favoriteButton).toBeVisible();
     await favoriteButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const managerDialog = page.locator('[role="dialog"]').filter({ hasText: /收藏|Favorites/i }).first();
     await expect(managerDialog).toBeVisible();
@@ -67,13 +68,13 @@ test.describe('分类管理完整流程', () => {
     const moreButton = managerDialog.getByTestId('favorites-manager-actions');
     await expect(moreButton).toBeVisible();
     await moreButton.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 3. 点击分类管理选项
     const categoryManagerOption = page.getByTestId('favorites-manager-action-manage-categories');
     await expect(categoryManagerOption).toBeVisible();
     await categoryManagerOption.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     // 4. 返回分类管理器对话框
     const categoryDialog = page
@@ -92,7 +93,7 @@ test.describe('分类管理完整流程', () => {
     await expect(addButton).toBeVisible();
 
     await addButton.click();
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
     // 在弹出的对话框中填写分类信息
     const createDialog = page.locator('[role="dialog"]').last();
@@ -115,7 +116,7 @@ test.describe('分类管理完整流程', () => {
       const colorPicker = createDialog.locator('.n-color-picker, [class*="color"]');
       if (await colorPicker.count() > 0) {
         await colorPicker.first().click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         // 选择一个颜色（点击颜色面板中的某个位置）
         const colorPanel = page.locator('.n-color-picker-panel, .n-popover');
@@ -124,7 +125,7 @@ test.describe('分类管理完整流程', () => {
           const presetColor = colorPanel.locator('.n-color-picker-swatch, [class*="swatch"]').first();
           if (await presetColor.count() > 0) {
             await presetColor.click();
-            await page.waitForTimeout(200);
+            await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
           }
         }
       }
@@ -133,7 +134,7 @@ test.describe('分类管理完整流程', () => {
       const confirmButton = createDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
       if (await confirmButton.count() > 0) {
         await confirmButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
         // 验证分类已创建
         const categoryRow = categoryDialog.locator('tr, .n-list-item, [class*="category"]').filter({
@@ -154,7 +155,7 @@ test.describe('分类管理完整流程', () => {
     const addButton = categoryDialog.getByRole('button', { name: /添加|新建|创建|add|create/i });
     if (await addButton.count() > 0) {
       await addButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const createDialog = page.locator('[role="dialog"]').last();
       const nameInput = createDialog.locator('input[type="text"]').first();
@@ -165,7 +166,7 @@ test.describe('分类管理完整流程', () => {
         const confirmButton = createDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
         }
       }
     }
@@ -187,7 +188,7 @@ test.describe('分类管理完整流程', () => {
 
     if (await editButton.count() > 0) {
       await editButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       // 在编辑对话框中修改名称
       const editDialog = page.locator('[role="dialog"]').last();
@@ -201,7 +202,7 @@ test.describe('分类管理完整流程', () => {
         const confirmButton = editDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
           // 验证新名称出现
           const updatedRow = categoryDialog.locator('tr, .n-list-item').filter({
@@ -226,7 +227,7 @@ test.describe('分类管理完整流程', () => {
       const addButton = categoryDialog.getByRole('button', { name: /添加|新建|创建|add|create/i });
       if (await addButton.count() > 0) {
         await addButton.click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         const createDialog = page.locator('[role="dialog"]').last();
         const nameInput = createDialog.locator('input[type="text"]').first();
@@ -237,7 +238,7 @@ test.describe('分类管理完整流程', () => {
           const confirmButton = createDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
           if (await confirmButton.count() > 0) {
             await confirmButton.click();
-            await page.waitForTimeout(500);
+            await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
           }
         }
       }
@@ -256,7 +257,7 @@ test.describe('分类管理完整流程', () => {
 
       if (await moveUpButton.count() > 0) {
         await moveUpButton.click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
         // 验证顺序已改变（这里只验证按钮可点击，实际顺序验证较复杂）
         // 在实际应用中，可以通过检查所有行的顺序来验证
@@ -276,7 +277,7 @@ test.describe('分类管理完整流程', () => {
     const addButton = categoryDialog.getByRole('button', { name: /添加|新建|创建|add|create/i });
     if (await addButton.count() > 0) {
       await addButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const createDialog = page.locator('[role="dialog"]').last();
       const nameInput = createDialog.locator('input[type="text"]').first();
@@ -287,7 +288,7 @@ test.describe('分类管理完整流程', () => {
         const confirmButton = createDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
         }
       }
     }
@@ -305,13 +306,13 @@ test.describe('分类管理完整流程', () => {
 
       if (await deleteButton.count() > 0) {
         await deleteButton.click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         // 确认删除
         const confirmButton = page.getByRole('button', { name: /确定|确认|ok|confirm/i }).last();
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
           // 验证分类已删除
           const deletedRow = categoryDialog.locator('tr, .n-list-item').filter({
@@ -336,7 +337,7 @@ test.describe('分类管理完整流程', () => {
     const addCategoryButton = categoryDialog.getByRole('button', { name: /添加|新建|创建|add|create/i });
     if (await addCategoryButton.count() > 0) {
       await addCategoryButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const createDialog = page.locator('[role="dialog"]').last();
       const nameInput = createDialog.locator('input[type="text"]').first();
@@ -347,7 +348,7 @@ test.describe('分类管理完整流程', () => {
         const confirmButton = createDialog.getByRole('button', { name: /确定|确认|保存|ok|save/i });
         if (await confirmButton.count() > 0) {
           await confirmButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
         }
       }
     }
@@ -356,13 +357,13 @@ test.describe('分类管理完整流程', () => {
     const closeButton = categoryDialog.locator('[aria-label="close"], .n-base-close').first();
     if (await closeButton.count() > 0) {
       await closeButton.click();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
     }
 
     // 3. 创建一个属于该分类的收藏
     const addFavoriteButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addFavoriteButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
     const createFavDialog = page.locator('[role="dialog"]').last();
     const titleInput = createFavDialog.getByPlaceholder(/标题|title/i);
@@ -379,7 +380,7 @@ test.describe('分类管理完整流程', () => {
       const categorySelect = createFavDialog.locator('.n-base-selection, .n-select').first();
       if (await categorySelect.count() > 0) {
         await categorySelect.click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         const categoryOption = page.locator('.n-base-select-option').filter({
           hasText: '有收藏的分类'
@@ -387,7 +388,7 @@ test.describe('分类管理完整流程', () => {
 
         if (await categoryOption.count() > 0) {
           await categoryOption.first().click();
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
         }
       }
 
@@ -416,7 +417,7 @@ test.describe('分类管理完整流程', () => {
 
       if (await deleteButton.count() > 0) {
         await deleteButton.click();
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
         // 应该显示警告或错误提示（不能删除有收藏的分类）
         // 检查是否有警告消息
@@ -462,7 +463,7 @@ test.describe('分类管理完整流程', () => {
     if (await searchInput.count() > 0) {
       // 输入搜索关键词
       await searchInput.fill('测试');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.WAIT.STANDARD_WAIT);
 
       // 验证搜索框的值
       const inputValue = await searchInput.inputValue();
@@ -470,7 +471,7 @@ test.describe('分类管理完整流程', () => {
 
       // 清空搜索
       await searchInput.clear();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.WAIT.QUICK_CHECK);
 
       const clearedValue = await searchInput.inputValue();
       expect(clearedValue).toBe('');
