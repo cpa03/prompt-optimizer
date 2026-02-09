@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const CONFIG = {
-  mainBranch: 'main',
+  mainBranch: 'develop',
   minLighthouseScore: 90,
   checkInterval: 300000, // 5 minutes in continuous mode
   maxRetries: 3
