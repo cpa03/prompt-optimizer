@@ -1,37 +1,95 @@
 <template>
-  <NDropdown
-    :options="dropdownOptions"
-    @select="handleThemeSelect"
-    placement="bottom-end"
-    trigger="click"
+  <!-- 🎨 Palette: Enhanced theme toggle with keyboard shortcut support and tooltip -->
+  <NTooltip
+    :placement="tooltipPlacement"
+    :delay="300"
+    :disabled="isDropdownOpen"
   >
-    <NButton 
-      quaternary 
-      size="small"
-      class="flex items-center justify-center gap-1 theme-toggle-btn"
-    >
-      <template #icon>
-        <div class="theme-icon-wrapper" :class="{ 'is-animating': isAnimating }">
-          <component :is="currentThemeIcon" />
-        </div>
-      </template>
-      <span class="text-sm max-md:hidden truncate">{{ currentThemeLabel }}</span>
-    </NButton>
-  </NDropdown>
+    <template #trigger>
+      <NDropdown
+        :options="dropdownOptions"
+        @select="handleThemeSelect"
+        placement="bottom-end"
+        trigger="click"
+        @update:show="(show: boolean) => isDropdownOpen = show"
+      >
+        <NButton 
+          quaternary 
+          size="small"
+          class="flex items-center justify-center gap-1 theme-toggle-btn"
+          :aria-label="ariaLabel"
+          :title="buttonTitle"
+          @mouseenter="isHovered = true"
+          @mouseleave="isHovered = false"
+          @focus="isFocused = true"
+          @blur="isFocused = false"
+        >
+          <template #icon>
+            <!-- 🎨 Palette: Icon wrapper with enhanced animation states -->
+            <div 
+              class="theme-icon-wrapper" 
+              :class="{ 
+                'is-animating': isAnimating,
+                'is-hovered': isHovered,
+                'is-focused': isFocused
+              }"
+            >
+              <component :is="currentThemeIcon" />
+            </div>
+          </template>
+          <span class="text-sm max-md:hidden truncate">{{ currentThemeLabel }}</span>
+          <!-- 🎨 Palette: Keyboard shortcut hint badge (visible on hover/focus) -->
+          <span 
+            v-if="showShortcutHint" 
+            class="shortcut-hint"
+            aria-hidden="true"
+          >
+            {{ shortcutDisplay }}
+          </span>
+        </NButton>
+      </NDropdown>
+    </template>
+    <!-- 🎨 Palette: Informative tooltip content -->
+    <div class="theme-tooltip">
+      <div class="theme-tooltip-title">{{ currentThemeLabel }}</div>
+      <div class="theme-tooltip-hint">
+        {{ t('theme.tooltip.hint', 'Click to change theme') }}
+      </div>
+      <div class="theme-tooltip-shortcut">
+        <kbd>{{ modifierKey }}</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
+      </div>
+    </div>
+  </NTooltip>
 </template>
   
 <script setup lang="ts">
-import { computed, h, ref, watch } from 'vue'
+import { computed, h, ref, watch, onMounted, onUnmounted } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import { NButton, NDropdown, type DropdownOption } from 'naive-ui'
+import { NButton, NDropdown, NTooltip, type DropdownOption } from 'naive-ui'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
 
 const { t } = useI18n()
 
-// Animation state
+// 🎨 Palette: Enhanced interaction states
 const isAnimating = ref(false)
 const lastThemeId = ref('')
+const isHovered = ref(false)
+const isFocused = ref(false)
+const isDropdownOpen = ref(false)
+
+// 🎨 Palette: Detect modifier key based on platform
+const isMac = computed(() => typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform))
+const modifierKey = computed(() => isMac.value ? '⌘' : 'Ctrl')
+const shortcutDisplay = computed(() => `${modifierKey.value}⇧T`)
+
+// 🎨 Palette: Show shortcut hint on hover or focus
+const showShortcutHint = computed(() => (isHovered.value || isFocused.value) && !isDropdownOpen.value)
+
+// 🎨 Palette: Accessibility labels
+const ariaLabel = computed(() => t('theme.ariaLabel', { theme: currentThemeLabel.value }))
+const buttonTitle = computed(() => t('theme.buttonTitle', { shortcut: shortcutDisplay.value }))
+const tooltipPlacement = computed(() => 'bottom-end')
 
 // 使用新的主题系统
 const { 
@@ -164,11 +222,49 @@ watch(themeId, (newId, oldId) => {
     }, 400)
   }
 })
+
+// 🎨 Palette: Cycle to next theme (for keyboard shortcut)
+const cycleToNextTheme = () => {
+  const currentIndex = availableThemes.findIndex(theme => theme.id === themeId.value)
+  const nextIndex = (currentIndex + 1) % availableThemes.length
+  const nextTheme = availableThemes[nextIndex]
+  
+  if (nextTheme && nextTheme.id !== themeId.value) {
+    lastThemeId.value = themeId.value
+    isAnimating.value = true
+    changeTheme(nextTheme.id)
+    setTimeout(() => {
+      isAnimating.value = false
+    }, 400)
+  }
+}
+
+// 🎨 Palette: Keyboard shortcut handler
+const handleKeydown = (event: KeyboardEvent) => {
+  // Check for Ctrl/Cmd + Shift + T
+  if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'T') {
+    event.preventDefault()
+    cycleToNextTheme()
+  }
+}
+
+// 🎨 Palette: Register keyboard shortcut on mount
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+})
+
+// 🎨 Palette: Cleanup keyboard listener on unmount
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <style scoped>
+/* 🎨 Palette: Base button styles with enhanced transitions */
 .theme-toggle-btn {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
 }
 
 .theme-toggle-btn:hover {
@@ -179,6 +275,13 @@ watch(themeId, (newId, oldId) => {
   transform: scale(0.98);
 }
 
+/* 🎨 Palette: Focus-visible ring for keyboard navigation */
+.theme-toggle-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* 🎨 Palette: Enhanced icon wrapper with hover and focus states */
 .theme-icon-wrapper {
   display: flex;
   align-items: center;
@@ -190,6 +293,16 @@ watch(themeId, (newId, oldId) => {
   animation: theme-spin 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 🎨 Palette: Scale up on hover for better visual feedback */
+.theme-icon-wrapper.is-hovered {
+  transform: scale(1.15);
+}
+
+/* 🎨 Palette: Subtle glow on focus */
+.theme-icon-wrapper.is-focused {
+  filter: drop-shadow(0 0 4px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.5));
+}
+
 @keyframes theme-spin {
   0% {
     transform: rotate(0deg) scale(1);
@@ -199,6 +312,100 @@ watch(themeId, (newId, oldId) => {
   }
   100% {
     transform: rotate(360deg) scale(1);
+  }
+}
+
+/* 🎨 Palette: Keyboard shortcut hint badge */
+.shortcut-hint {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--n-text-color-3, #999);
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transform: translateX(-4px);
+  animation: shortcut-hint-appear 0.2s ease forwards;
+}
+
+.dark .shortcut-hint {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes shortcut-hint-appear {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 🎨 Palette: Tooltip styles */
+.theme-tooltip {
+  text-align: center;
+  padding: 4px 0;
+}
+
+.theme-tooltip-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.theme-tooltip-hint {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.theme-tooltip-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.theme-tooltip-shortcut kbd {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 10px;
+}
+
+.dark .theme-tooltip-shortcut kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 🎨 Palette: Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-btn,
+  .theme-icon-wrapper {
+    transition: none !important;
+  }
+  
+  .theme-icon-wrapper.is-animating {
+    animation: none !important;
+  }
+  
+  .shortcut-hint {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 🎨 Palette: Hide shortcut hint on mobile */
+@media (max-width: 768px) {
+  .shortcut-hint {
+    display: none;
   }
 }
 </style>
