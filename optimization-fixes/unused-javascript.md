@@ -6,7 +6,7 @@
 
 **Description:** Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. [Learn how to reduce unused JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unused-javascript/).
 
-**Current Value:** Potential savings of 2,018 KiB
+**Current Value:** Potential savings of 556 KiB
 
 ## Recommended Fix
 
