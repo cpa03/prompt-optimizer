@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { compression } from 'vite-plugin-compression2'
 import { resolve } from 'path'
 import path from 'path'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -30,6 +31,12 @@ export default defineConfig(({ mode }) => {
         algorithm: 'brotliCompress',
         exclude: [/\.(br)$/, /\.(gz)$/],
         threshold: 1024
+      }),
+      mode === 'analyze' && visualizer({
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+        filename: 'dist/stats.html'
       })
     ],
     server: {
@@ -47,14 +54,22 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       minify: 'terser',
+      target: 'esnext',
+      cssTarget: 'chrome80',
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
           pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+          passes: 2,
+          dead_code: true,
+          unused: true,
         },
         mangle: {
           safari10: true,
+          properties: {
+            regex: /^_/
+          }
         },
       },
       rollupOptions: {

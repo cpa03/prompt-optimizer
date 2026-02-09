@@ -6,7 +6,7 @@
 
 **Description:** Minifying JavaScript files can reduce payload sizes and script parse time. [Learn how to minify JavaScript](https://developer.chrome.com/docs/lighthouse/performance/unminified-javascript/).
 
-**Current Value:** Potential savings of 11,054 KiB
+**Current Value:** Potential savings of 11,118 KiB
 
 ## Recommended Fix
 

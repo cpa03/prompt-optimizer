@@ -6,7 +6,7 @@
 
 **Description:** Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity. [Learn how to reduce unused CSS](https://developer.chrome.com/docs/lighthouse/performance/unused-css-rules/).
 
-**Current Value:** Potential savings of 108 KiB
+**Current Value:** Potential savings of 18 KiB
 
 ## Recommended Fix
 
