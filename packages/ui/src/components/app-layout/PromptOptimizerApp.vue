@@ -313,7 +313,7 @@ import { DataTransformer } from '../../utils/data-transformer'
 
 // Types
 import type { ModelSelectOption, TestAreaPanelInstance } from '../../types'
-import { type IPromptService, type PromptRecordChain, type PatchOperation, type Template, type TemplateType, type FunctionMode, type BasicSubMode, type ProSubMode, type ImageSubMode, type OptimizationMode, type ConversationMessage, type ToolDefinition, type ContextEditorState, type ContextMode, EXTERNAL_URLS } from "@prompt-optimizer/core";
+import { type IPromptService, type PromptRecordChain, type PatchOperation, type Template, type TemplateType, type FunctionMode, type BasicSubMode, type ProSubMode, type ImageSubMode, type OptimizationMode, type ConversationMessage, type ToolDefinition, type ContextEditorState, type ContextMode, EXTERNAL_URLS, TIMEOUTS } from "@prompt-optimizer/core"
 
 // 1. 基础 composables
 const hljsInstance = hljs;
@@ -2201,7 +2201,7 @@ onMounted(() => {
   });
 
   // ⚠️ 使用 watchEffect + 独立超时定时器（Codex 建议）
-  const TIMEOUT = 10000 // 10秒超时
+  const TIMEOUT = TIMEOUTS.service.emergencyExit // 使用配置的超时时间
 
   // ⚠️ 避免 watchEffect 回调内 stopWatch() 的 TDZ 风险
   let stopWatch: (() => void) | null = null
@@ -2260,7 +2260,7 @@ onMounted(() => {
 
         const currentKey = sessionManager.getActiveSubModeKey()
         await sessionManager.saveSubModeSession(currentKey)
-      }, 30000) // 每30秒
+      }, TIMEOUTS.retry.maxDelay) // 使用配置的最大重试延迟作为保存间隔
 
       // ⚠️ Codex 建议：使用 pagehide 代替 beforeunload（更可靠）
       // pagehide 在页面即将卸载时触发，比 beforeunload 更可靠

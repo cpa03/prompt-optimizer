@@ -106,7 +106,7 @@ import TestControlBar from "../TestControlBar.vue";
 import TestResultSection from "../TestResultSection.vue";
 import TemporaryVariablesPanel from "../variable/TemporaryVariablesPanel.vue";
 import VariableValuePreviewDialog from "../variable/VariableValuePreviewDialog.vue";
-import type { EvaluationResponse, EvaluationType } from '@prompt-optimizer/core';
+import { type EvaluationResponse, type EvaluationType, TIMEOUTS } from '@prompt-optimizer/core'
 import type { ScoreLevel } from '../../composables/prompt/useEvaluation';
 import type { AppServices } from '../../types/services';
 
@@ -335,12 +335,12 @@ if (import.meta.env.DEV) {
                 console.warn("ContextUserTestPanel 性能较差:", report);
             }
         },
-        5000,
+        TIMEOUTS.network.short, // 使用配置的短网络超时
         false,
         "performanceLog",
     );
 
-    const timer = setInterval(logPerformance, 10000);
+    const timer = setInterval(logPerformance, TIMEOUTS.medium); // 使用配置的中等超时
     onUnmounted(() => clearInterval(timer));
 }
 

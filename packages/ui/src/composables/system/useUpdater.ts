@@ -4,6 +4,7 @@ import { isRunningInElectron } from '@prompt-optimizer/core'
 import { usePreferences } from '../storage/usePreferenceManager'
 import { useI18n } from 'vue-i18n'
 import { asExtendedError } from '../../utils/error'
+import { TIME_CONSTANTS } from '../../config/constants'
 // 移除过度抽象的 Hook，直接使用 window.electronAPI
 import type { DownloadProgress, UpdateInfo } from '@/types/electron'
 import type { AppServices } from '../../types/services'
@@ -955,12 +956,12 @@ export function useUpdater() {
 
       // 每次启动都自动检查更新，确保状态最新
       console.log('[useUpdater] Performing automatic update check on startup')
-      // 延迟3秒后自动检测，避免影响应用启动速度
+      // 延迟后自动检测，避免影响应用启动速度
       setTimeout(() => {
         checkUpdate().catch(error => {
           console.warn('[useUpdater] Automatic update check failed:', error)
         })
-      }, 3000)
+      }, TIME_CONSTANTS.UPDATE_CHECK_DELAY_MS)
 
       console.log('[useUpdater] Updater initialized')
     } catch (error) {

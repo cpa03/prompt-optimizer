@@ -303,7 +303,7 @@
 
             <!-- 优化结果区域 - 使用与基础模式一致的卡片容器 -->
             <NCard
-                :style="{ flex: 1, minHeight: '200px', overflow: 'hidden' }"
+                :style="{ flex: 1, minHeight: `${UI_DIMENSIONS.WORKSPACE.PANEL_MIN_HEIGHT_PX}px`, overflow: 'hidden' }"
                 content-style="height: 100%; max-height: 100%; overflow: hidden;"
             >
                 <PromptPanelUI
@@ -689,6 +689,7 @@ import {
     type Template,
 } from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
+import { UI_DIMENSIONS } from '../../config/constants'
 
 // 国际化
 const { t } = useI18n();
