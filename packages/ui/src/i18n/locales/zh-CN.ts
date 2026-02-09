@@ -72,6 +72,8 @@ export default {
     copy: "复制",
     content: "内容",
     noContent: "暂无内容",
+    empty: "空",
+    emptyHint: "开始添加一些内容吧",
     getStartedHint: "输入提示词并点击\"优化\"，见证魔法发生 ✨",
     clickToEdit: "点击编辑",
     generating: "生成中...",
@@ -101,6 +103,14 @@ export default {
     import: "导入",
     export: "导出",
     next: "下一步",
+  },
+  icon: {
+    refresh: "刷新",
+    check: "检查",
+    copy: "复制",
+    edit: "编辑",
+    delete: "删除",
+    loading: "加载中",
   },
   actions: {
     copy: "复制",

@@ -74,6 +74,8 @@ export default {
     optional: "Optional",
     content: "Content",
     noContent: "No content",
+    empty: "Empty",
+    emptyHint: "Get started by adding some content",
     getStartedHint: "Enter a prompt and click \"Optimize\" to see the magic happen ✨",
     clickToEdit: "Click to edit",
     generating: "Generating...",
@@ -105,6 +107,14 @@ export default {
     import: "Import",
     export: "Export",
     next: "Next",
+  },
+  icon: {
+    refresh: "Refresh",
+    check: "Check",
+    copy: "Copy",
+    edit: "Edit",
+    delete: "Delete",
+    loading: "Loading",
   },
   actions: {
     copy: "Copy",
