@@ -74,6 +74,7 @@ export default {
     optional: "Optional",
     content: "Content",
     noContent: "No content",
+    getStartedHint: "Enter a prompt and click \"Optimize\" to see the magic happen ✨",
     clickToEdit: "Click to edit",
     generating: "Generating...",
     generatingReasoning: "Thinking...",
@@ -967,6 +968,13 @@ export default {
     applyMigration: "Apply Conversion",
     migrationSuccess: "Template converted successfully",
     migrationFailed: "Template conversion failed",
+
+    // Empty State
+    emptyState: {
+      title: "No Templates Yet",
+      description: "Get started by creating your first template for this category",
+      createButton: "Create First Template",
+    },
 
     // Syntax Guide
     syntaxGuide: "Syntax Guide",

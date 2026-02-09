@@ -190,18 +190,24 @@
             :streaming="streaming"
             style="flex: 1; min-height: 0; overflow: auto;"
           />
-          <NEmpty
+          <!-- 🎨 Palette: Enhanced empty state with contextual guidance and animation -->
+          <div
             v-else-if="!loading && !streaming"
-            :description="placeholder || t('common.noContent')"
-            class="flex items-center justify-center"
-            style="height: 100%;"
+            class="enhanced-empty-state flex flex-col items-center justify-center h-full px-6"
           >
-            <template #icon>
-              <NIcon :size="ICON_SIZES.XXL" class="text-gray-300 dark:text-gray-600">
+            <div class="empty-state-illustration">
+              <NIcon :size="ICON_SIZES.XXL" class="empty-state-icon text-gray-300 dark:text-gray-600">
                 <FileText />
               </NIcon>
-            </template>
-          </NEmpty>
+              <div class="empty-state-decoration" aria-hidden="true"></div>
+            </div>
+            <NText class="empty-state-title text-lg font-medium mt-4 text-gray-600 dark:text-gray-400">
+              {{ placeholder || t('common.noContent') }}
+            </NText>
+            <NText class="empty-state-hint text-sm mt-2 text-gray-400 dark:text-gray-500 text-center max-w-md">
+              {{ t('common.getStartedHint') }}
+            </NText>
+          </div>
           <!-- 🎨 Palette: Enhanced skeleton loader with shimmer effect -->
           <div v-else class="skeleton-loader">
             <div class="skeleton-header">
@@ -232,7 +238,7 @@ import { computed, ref, watch, nextTick, onMounted, inject, type Ref } from 'vue
 import { useI18n } from 'vue-i18n'
 import {
   NCard, NButton, NButtonGroup, NIcon, NCollapse, NCollapseItem,
-  NInput, NEmpty, NSpin, NScrollbar, NFlex, NText, NSpace
+  NInput, NSpin, NScrollbar, NFlex, NText, NSpace
 } from 'naive-ui'
 import { useToast } from '../composables/ui/useToast'
 import { Star, FileText, Check } from '@vicons/tabler'
@@ -870,6 +876,77 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
   color: rgba(255, 255, 255, 0.4);
 }
 
+/* 🎨 Palette: Enhanced empty state styles */
+.enhanced-empty-state {
+  animation: emptyStateFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes emptyStateFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.empty-state-illustration {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state-icon {
+  animation: emptyStateFloat 3s ease-in-out infinite;
+  transition: color 0.3s ease;
+}
+
+@keyframes emptyStateFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.empty-state-decoration {
+  position: absolute;
+  bottom: -4px;
+  width: 48px;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, rgba(128, 128, 128, 0.15), transparent);
+  border-radius: 50%;
+  animation: emptyStateShadow 3s ease-in-out infinite;
+}
+
+@keyframes emptyStateShadow {
+  0%, 100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleX(0.85);
+    opacity: 0.6;
+  }
+}
+
+.empty-state-title {
+  transition: color 0.3s ease;
+}
+
+.empty-state-hint {
+  line-height: 1.5;
+}
+
+/* Dark mode adjustments */
+.dark .empty-state-decoration {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
 /* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   .skeleton-line {
@@ -878,6 +955,18 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
   }
 
   .skeleton-pulse-indicator {
+    animation: none;
+  }
+
+  .enhanced-empty-state {
+    animation: none;
+  }
+
+  .empty-state-icon {
+    animation: none;
+  }
+
+  .empty-state-decoration {
     animation: none;
   }
 }

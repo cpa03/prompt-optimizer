@@ -73,6 +73,7 @@ export default {
     content: "內容",
     focus: "聚焦",
     noContent: "暫無內容",
+    getStartedHint: "輸入提示詞並點擊\"最佳化\"，見證魔法發生 ✨",
     clickToEdit: "點選編輯",
     generating: "生成中...",
     generatingReasoning: "思考中...",
@@ -930,6 +931,13 @@ export default {
     applyMigration: "套用轉換",
     migrationSuccess: "範本轉換成功",
     migrationFailed: "範本轉換失敗",
+
+    // 空狀態
+    emptyState: {
+      title: "暫無範本",
+      description: "開始建立你的第一個範本吧",
+      createButton: "建立第一個範本",
+    },
 
     // 語法指南
     syntaxGuide: "語法指南",
