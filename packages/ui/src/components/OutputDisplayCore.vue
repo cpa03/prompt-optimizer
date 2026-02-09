@@ -9,99 +9,167 @@
       <!-- 统一顶层工具栏 -->
       <NFlex v-if="hasToolbar" justify="space-between" align="center" style="flex: 0 0 auto;">
         <!-- 左侧：视图控制按钮组 -->
-        <NButtonGroup>
-          <NButton 
-            @click="internalViewMode = 'render'"
-            :disabled="internalViewMode === 'render'"
-            size="small"
-            :type="internalViewMode === 'render' ? 'primary' : 'default'"
-            :title="t('common.render') + ' (Ctrl+1)'"
-          >
-            {{ t('common.render') }}
-          </NButton>
-          <NButton 
-            @click="internalViewMode = 'source'"
-            :disabled="internalViewMode === 'source'"
-            size="small"
-            :type="internalViewMode === 'source' ? 'primary' : 'default'"
-            :title="t('common.source') + ' (Ctrl+2)'"
-          >
-            {{ t('common.source') }}
-          </NButton>
-          <NButton 
-            v-if="isActionEnabled('diff') && originalContent"
-            @click="internalViewMode = 'diff'"
-            :disabled="internalViewMode === 'diff' || !originalContent"
-            size="small"
-            :type="internalViewMode === 'diff' ? 'primary' : 'default'"
-            :title="t('common.compare') + ' (Ctrl+3)'"
-          >
-            {{ t('common.compare') }}
-          </NButton>
+        <NButtonGroup class="toolbar-button-group">
+          <div class="toolbar-btn-wrapper">
+            <NButton 
+              @click="internalViewMode = 'render'"
+              :disabled="internalViewMode === 'render'"
+              size="small"
+              :type="internalViewMode === 'render' ? 'primary' : 'default'"
+              :title="t('common.render') + ' (Ctrl+1)'"
+              @mouseenter="showShortcutHint('ctrl+1', true)"
+              @mouseleave="showShortcutHint('ctrl+1', false)"
+              @focus="showShortcutHint('ctrl+1', true)"
+              @blur="showShortcutHint('ctrl+1', false)"
+            >
+              {{ t('common.render') }}
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+1']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+1</span>
+              </div>
+            </Transition>
+          </div>
+          <div class="toolbar-btn-wrapper">
+            <NButton 
+              @click="internalViewMode = 'source'"
+              :disabled="internalViewMode === 'source'"
+              size="small"
+              :type="internalViewMode === 'source' ? 'primary' : 'default'"
+              :title="t('common.source') + ' (Ctrl+2)'"
+              @mouseenter="showShortcutHint('ctrl+2', true)"
+              @mouseleave="showShortcutHint('ctrl+2', false)"
+              @focus="showShortcutHint('ctrl+2', true)"
+              @blur="showShortcutHint('ctrl+2', false)"
+            >
+              {{ t('common.source') }}
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+2']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+2</span>
+              </div>
+            </Transition>
+          </div>
+          <div v-if="isActionEnabled('diff') && originalContent" class="toolbar-btn-wrapper">
+            <NButton 
+              @click="internalViewMode = 'diff'"
+              :disabled="internalViewMode === 'diff' || !originalContent"
+              size="small"
+              :type="internalViewMode === 'diff' ? 'primary' : 'default'"
+              :title="t('common.compare') + ' (Ctrl+3)'"
+              @mouseenter="showShortcutHint('ctrl+3', true)"
+              @mouseleave="showShortcutHint('ctrl+3', false)"
+              @focus="showShortcutHint('ctrl+3', true)"
+              @blur="showShortcutHint('ctrl+3', false)"
+            >
+              {{ t('common.compare') }}
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+3']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+3</span>
+              </div>
+            </Transition>
+          </div>
         </NButtonGroup>
         
         <!-- 右侧：操作按钮 -->
         <NFlex align="center" :size="8" :wrap="false">
           <slot name="toolbar-right-extra"></slot>
-          <NButtonGroup>
-          <NButton
-            v-if="isActionEnabled('favorite')"
-            @click="handleFavorite"
-            size="small"
-            quaternary
-            circle
-            :title="t('common.addToFavorites') + ' (Ctrl+S)'"
-            :aria-label="t('common.addToFavorites')"
-          >
-            <template #icon>
-              <NIcon>
-                <Star />
-              </NIcon>
-            </template>
-          </NButton>
-          <NButton
-            v-if="isActionEnabled('copy')"
-            @click="handleCopy('content')"
-            size="small"
-            quaternary
-            circle
-            :title="(copySuccess ? t('common.copied') : t('common.copy')) + ' (Ctrl+C)'"
-            :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
-            :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
-          >
-            <template #icon>
-              <div class="copy-icon-container">
-                <Transition name="icon-morph" mode="out-in">
-                  <NIcon v-if="copySuccess" key="check" class="check-icon">
-                    <Check />
-                  </NIcon>
-                  <NIcon v-else key="copy" class="copy-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
-                    </svg>
-                  </NIcon>
-                </Transition>
-                <span v-if="copySuccess" class="success-ring" aria-hidden="true"></span>
+          <NButtonGroup class="toolbar-button-group">
+          <div v-if="isActionEnabled('favorite')" class="toolbar-btn-wrapper">
+            <NButton
+              @click="handleFavorite"
+              size="small"
+              quaternary
+              circle
+              :title="t('common.addToFavorites') + ' (Ctrl+S)'"
+              :aria-label="t('common.addToFavorites')"
+              @mouseenter="showShortcutHint('ctrl+s', true)"
+              @mouseleave="showShortcutHint('ctrl+s', false)"
+              @focus="showShortcutHint('ctrl+s', true)"
+              @blur="showShortcutHint('ctrl+s', false)"
+            >
+              <template #icon>
+                <NIcon>
+                  <Star />
+                </NIcon>
+              </template>
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+s']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+S</span>
               </div>
-            </template>
-          </NButton>
-          <NButton
-            v-if="isActionEnabled('fullscreen')"
-            @click="handleFullscreen"
-            size="small"
-            quaternary
-            circle
-            :title="t('common.fullscreen') + ' (Ctrl+Enter)'"
-            :aria-label="t('common.fullscreen')"
-          >
-            <template #icon>
-              <NIcon>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                </svg>
-              </NIcon>
-            </template>
-          </NButton>
+            </Transition>
+          </div>
+          <div v-if="isActionEnabled('copy')" class="toolbar-btn-wrapper">
+            <NButton
+              @click="handleCopy('content')"
+              size="small"
+              quaternary
+              circle
+              :title="(copySuccess ? t('common.copied') : t('common.copy')) + ' (Ctrl+C)'"
+              :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
+              :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
+              @mouseenter="showShortcutHint('ctrl+c', true)"
+              @mouseleave="showShortcutHint('ctrl+c', false)"
+              @focus="showShortcutHint('ctrl+c', true)"
+              @blur="showShortcutHint('ctrl+c', false)"
+            >
+              <template #icon>
+                <div class="copy-icon-container">
+                  <Transition name="icon-morph" mode="out-in">
+                    <NIcon v-if="copySuccess" key="check" class="check-icon">
+                      <Check />
+                    </NIcon>
+                    <NIcon v-else key="copy" class="copy-icon">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
+                      </svg>
+                    </NIcon>
+                  </Transition>
+                  <span v-if="copySuccess" class="success-ring" aria-hidden="true"></span>
+                </div>
+              </template>
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+c']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+C</span>
+              </div>
+            </Transition>
+          </div>
+          <div v-if="isActionEnabled('fullscreen')" class="toolbar-btn-wrapper">
+            <NButton
+              @click="handleFullscreen"
+              size="small"
+              quaternary
+              circle
+              :title="t('common.fullscreen') + ' (Ctrl+Enter)'"
+              :aria-label="t('common.fullscreen')"
+              @mouseenter="showShortcutHint('ctrl+enter', true)"
+              @mouseleave="showShortcutHint('ctrl+enter', false)"
+              @focus="showShortcutHint('ctrl+enter', true)"
+              @blur="showShortcutHint('ctrl+enter', false)"
+            >
+              <template #icon>
+                <NIcon>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                  </svg>
+                </NIcon>
+              </template>
+            </NButton>
+            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+            <Transition name="shortcut-hint">
+              <div v-if="shortcutHints['ctrl+enter']" class="keyboard-shortcut-hint" role="tooltip">
+                <span class="shortcut-key">Ctrl+Enter</span>
+              </div>
+            </Transition>
+          </div>
           </NButtonGroup>
         </NFlex>
       </NFlex>
@@ -366,6 +434,37 @@ const userHasManuallyToggledReasoning = ref(false)
 // Copy feedback state
 const copySuccess = ref(false)
 const copySuccessTimeout = ref<number | null>(null)
+
+// 🎨 Palette: Keyboard shortcut hint visibility state
+const shortcutHints = ref<Record<string, boolean>>({
+  'ctrl+1': false,
+  'ctrl+2': false,
+  'ctrl+3': false,
+  'ctrl+s': false,
+  'ctrl+c': false,
+  'ctrl+enter': false
+})
+
+// 🎨 Palette: Show/hide keyboard shortcut hint with debounce for better UX
+const shortcutHintTimeouts = ref<Record<string, number | null>>({})
+
+const showShortcutHint = (key: string, show: boolean) => {
+  // Clear existing timeout for this key
+  if (shortcutHintTimeouts.value[key]) {
+    clearTimeout(shortcutHintTimeouts.value[key]!)
+    shortcutHintTimeouts.value[key] = null
+  }
+  
+  if (show) {
+    // Small delay before showing to avoid flickering on quick mouse passes
+    shortcutHintTimeouts.value[key] = window.setTimeout(() => {
+      shortcutHints.value[key] = true
+    }, 100)
+  } else {
+    // Immediate hide when mouse leaves
+    shortcutHints.value[key] = false
+  }
+}
 
 // 新的视图状态机
 const internalViewMode = ref<'render' | 'source' | 'diff'>('render')
@@ -968,6 +1067,108 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 
   .empty-state-decoration {
     animation: none;
+  }
+}
+
+/* 🎨 Palette: Toolbar button wrapper for positioning context */
+.toolbar-button-group {
+  display: flex;
+  gap: 0;
+}
+
+.toolbar-btn-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+/* 🎨 Palette: Keyboard shortcut hint styles */
+.keyboard-shortcut-hint {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Arrow pointing down to the button */
+.keyboard-shortcut-hint::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.85);
+}
+
+.shortcut-key {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Transition animations for the hint */
+.shortcut-hint-enter-active,
+.shortcut-hint-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shortcut-hint-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px) scale(0.95);
+}
+
+.shortcut-hint-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px) scale(0.95);
+}
+
+.shortcut-hint-enter-to,
+.shortcut-hint-leave-from {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* Dark mode adjustments */
+.dark .keyboard-shortcut-hint {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.dark .keyboard-shortcut-hint::after {
+  border-top-color: rgba(255, 255, 255, 0.9);
+}
+
+.dark .shortcut-key {
+  color: #1a1a1a;
+}
+
+/* Mobile: Hide shortcut hints on small screens */
+@media (max-width: 768px) {
+  .keyboard-shortcut-hint {
+    display: none;
+  }
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .shortcut-hint-enter-active,
+  .shortcut-hint-leave-active {
+    transition: opacity 0.1s ease;
+  }
+
+  .shortcut-hint-enter-from,
+  .shortcut-hint-leave-to {
+    transform: translateX(-50%) scale(1);
   }
 }
 </style>
