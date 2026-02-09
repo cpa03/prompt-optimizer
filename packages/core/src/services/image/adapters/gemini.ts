@@ -9,7 +9,12 @@ import type {
   ImageModelConfig
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { PROVIDER_URLS } from '../../../config/providers'
+import { 
+  PROVIDER_URLS,
+  PROVIDER_API_KEY_URLS,
+  getTestPrompt,
+  getGeminiDefaultParameterValues
+} from '../../../config'
 
 export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   getProvider(): ImageProvider {
@@ -20,7 +25,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: false,
-      apiKeyUrl: 'https://aistudio.google.com/apikey',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.gemini,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -33,6 +38,8 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
+    const defaultParams = getGeminiDefaultParameterValues()
+    
     return [
       {
         id: 'gemini-2.5-flash-image',
@@ -45,9 +52,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           multiImage: true
         },
         parameterDefinitions: [],  // Gemini 不需要用户配置参数
-        defaultParameterValues: {
-          outputMimeType: 'image/png'
-        }
+        defaultParameterValues: defaultParams
       },
       {
         id: 'gemini-3-pro-image-preview',
@@ -60,9 +65,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           multiImage: true
         },
         parameterDefinitions: [],
-        defaultParameterValues: {
-          outputMimeType: 'image/png'
-        }
+        defaultParameterValues: defaultParams
       }
     ]
   }
@@ -70,14 +73,14 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a simple red flower',
+        prompt: getTestPrompt('gemini', 'text2image'),
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make this image more colorful',
+        prompt: getTestPrompt('gemini', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
           mimeType: 'image/png'
@@ -95,9 +98,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
-    return {
-      outputMimeType: 'image/png'
-    }
+    return getGeminiDefaultParameterValues()
   }
 
   protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {

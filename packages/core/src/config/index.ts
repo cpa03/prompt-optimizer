@@ -11,3 +11,6 @@ export * from './http';
 export * from './defaults';
 export * from './ports';
 export * from './core-config';
+export * from './test-prompts';
+export * from './provider-urls';
+export * from './image-params';
