@@ -1,21 +1,23 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 import type { ResponsiveConfig } from '../../types/components'
+import { BREAKPOINTS, SPACING } from '../../config/constants'
 
 /**
  * 响应式布局 Composable
  * 提供断点检测和响应式配置
+ * Flexy loves modularity! All breakpoints and spacing use centralized constants
  */
 export function useResponsive() {
   const windowWidth = ref(window.innerWidth)
 
-  // 断点配置
+  // 断点配置 - 使用集中常量
   const breakpoints = {
     xs: 0,
-    sm: 640,
-    md: 768,
-    lg: 1024,
-    xl: 1280
+    sm: BREAKPOINTS.MOBILE,
+    md: BREAKPOINTS.TABLET,
+    lg: BREAKPOINTS.DESKTOP,
+    xl: BREAKPOINTS.LARGE
   }
 
   // 更新窗口宽度
@@ -47,21 +49,21 @@ export function useResponsive() {
     isDesktop: isDesktop.value
   }))
 
-  // 响应式网格配置
+  // 响应式网格配置 - 使用集中间距常量
   const gridConfig = computed(() => {
     switch (currentBreakpoint.value) {
       case 'xs':
-        return { cols: 1, xGap: 8, yGap: 8 }
+        return { cols: 1, xGap: SPACING.SM, yGap: SPACING.SM }
       case 'sm':
-        return { cols: 1, xGap: 12, yGap: 12 }
+        return { cols: 1, xGap: SPACING.MD, yGap: SPACING.MD }
       case 'md':
-        return { cols: 2, xGap: 16, yGap: 16 }
+        return { cols: 2, xGap: SPACING.LG, yGap: SPACING.LG }
       case 'lg':
-        return { cols: 2, xGap: 20, yGap: 20 }
+        return { cols: 2, xGap: SPACING.XL, yGap: SPACING.XL }
       case 'xl':
-        return { cols: 3, xGap: 24, yGap: 24 }
+        return { cols: 3, xGap: SPACING.XXL, yGap: SPACING.XXL }
       default:
-        return { cols: 1, xGap: 12, yGap: 12 }
+        return { cols: 1, xGap: SPACING.MD, yGap: SPACING.MD }
     }
   })
 

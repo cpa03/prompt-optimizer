@@ -53,6 +53,18 @@ import {
 } from '@prompt-optimizer/core';
 import type { AppServices } from '../../types/services';
 import { scheduleImageStorageGc } from '../../stores/session/imageStorageMaintenance'
+import { FILE_SIZE_LIMITS } from '../../config/constants'
+
+/**
+ * Image storage configuration - centralized to eliminate duplication
+ * Flexy loves modularity! Used by both Electron and Web environments
+ */
+const IMAGE_STORAGE_CONFIG = {
+  maxCacheSize: FILE_SIZE_LIMITS.MAX_CACHE_SIZE_BYTES,  // 50 MB from constants
+  maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 days
+  maxCount: 100,                     // Max 100 images
+  autoCleanupThreshold: 0.8         // Trigger cleanup at 80%
+} as const
 
 /**
  * 应用服务统一初始化器。
@@ -123,12 +135,7 @@ export function useAppInitializer(): {
 
         // 🆕 图像存储服务：Electron 渲染进程同样使用 IndexedDB（与 Web 行为一致）
         console.log('[AppInitializer] 初始化图像存储服务（Electron）...');
-        imageStorageService = createImageStorageService({
-          maxCacheSize: 50 * 1024 * 1024,  // 50 MB
-          maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 天
-          maxCount: 100,                     // 最多 100 张
-          autoCleanupThreshold: 0.8         // 达到 80% 时触发清理
-        });
+        imageStorageService = createImageStorageService(IMAGE_STORAGE_CONFIG);
 
         // DataManager在Electron环境下使用代理模式
         dataManager = new ElectronDataManagerProxy();
@@ -219,12 +226,7 @@ export function useAppInitializer(): {
 
         // 🆕 创建图像存储服务（独立 IndexedDB 数据库）
         console.log('[AppInitializer] 初始化图像存储服务...');
-        imageStorageService = createImageStorageService({
-          maxCacheSize: 50 * 1024 * 1024,  // 50 MB
-          maxAge: 7 * 24 * 60 * 60 * 1000,  // 7 天
-          maxCount: 100,                     // 最多 100 张
-          autoCleanupThreshold: 0.8         // 达到 80% 时触发清理
-        });
+        imageStorageService = createImageStorageService(IMAGE_STORAGE_CONFIG);
 
         // 📝 图像数据迁移已移除（session 是本次重构新引入，无历史数据需要迁移）
         // 如果将来需要迁移，可以使用 migrateLegacySessions() 函数
