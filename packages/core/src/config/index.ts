@@ -14,3 +14,4 @@ export * from './core-config';
 export * from './test-prompts';
 export * from './provider-urls';
 export * from './image-params';
+export * from './test-data';
