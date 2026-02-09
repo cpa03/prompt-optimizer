@@ -12,6 +12,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { 
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
+  MIME_TYPES,
   getTestPrompt,
   getGeminiDefaultParameterValues
 } from '../../../config'
@@ -83,7 +84,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         prompt: getTestPrompt('gemini', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         },
         count: 1
       }
@@ -122,7 +123,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         { text: request.prompt },
         {
           inlineData: {
-            mimeType: request.inputImage.mimeType || 'image/png',
+            mimeType: request.inputImage.mimeType || MIME_TYPES.PNG,
             data: request.inputImage.b64
           }
         }
@@ -155,7 +156,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           responseText = part.text
         } else if (part.inlineData) {
           const imageData = part.inlineData.data
-          const mimeType = part.inlineData.mimeType || 'image/png'
+          const mimeType = part.inlineData.mimeType || MIME_TYPES.PNG
 
           // 构建 data URL
           const dataUrl = `data:${mimeType};base64,${imageData}`

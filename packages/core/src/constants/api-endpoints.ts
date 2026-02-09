@@ -70,3 +70,27 @@ export const MIME_PATTERNS = {
   TEXT: /^text\//,
   STREAM: /^text\/event-stream/,
 } as const;
+
+// MIME type constants - eliminates hardcoded MIME type strings
+export const MIME_TYPES = {
+  // Image types
+  PNG: 'image/png',
+  JPEG: 'image/jpeg',
+  WEBP: 'image/webp',
+  GIF: 'image/gif',
+  
+  // Application types
+  JSON: 'application/json',
+  
+  // Text types
+  PLAIN_TEXT: 'text/plain',
+  HTML: 'text/html',
+  CSV: 'text/csv',
+} as const;
+
+// XML namespaces - eliminates hardcoded namespace strings
+export const XML_NAMESPACES = {
+  SVG: 'http://www.w3.org/2000/svg',
+  XHTML: 'http://www.w3.org/1999/xhtml',
+  XLINK: 'http://www.w3.org/1999/xlink',
+} as const;

@@ -9,9 +9,10 @@ import type {
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { 
+import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
+  MIME_TYPES,
   getTestPrompt,
   getDashScopeParameterDefinitions,
   getDashScopeEditParameterDefinitions,
@@ -210,7 +211,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     return {
       images: [{
         url: imageContent.image,
-        mimeType: 'image/png'
+        mimeType: MIME_TYPES.PNG
       }],
       metadata: {
         providerId: 'dashscope',
@@ -240,7 +241,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     if (request.inputImage) {
       // DashScope 的 image 字段要求：公网 URL 或 data:{mime};base64,{data}。
       // 本项目只支持本地 base64，因此这里统一拼成 data URL。
-      const mimeType = request.inputImage.mimeType || 'image/png'
+      const mimeType = request.inputImage.mimeType || MIME_TYPES.PNG
       const b64 = request.inputImage.b64 || ''
       const dataUrl = b64.startsWith('data:') ? b64 : `data:${mimeType};base64,${b64}`
       content.push({ image: dataUrl })
@@ -310,7 +311,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
           return {
             images: [{
               url: item.image,
-              mimeType: 'image/png'
+              mimeType: MIME_TYPES.PNG
             }],
             metadata: {
               providerId: 'dashscope',

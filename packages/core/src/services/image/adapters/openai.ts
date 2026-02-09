@@ -161,7 +161,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     // 转换base64图像为Blob
     const imageBlob = this.base64ToBlob(
       request.inputImage.b64 || '',
-      request.inputImage.mimeType || 'image/png'
+      request.inputImage.mimeType || MIME_TYPES.PNG
     )
     formData.append('image', imageBlob, 'input.png')
 
@@ -192,7 +192,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
 
       return {
         b64: item.b64_json,
-        mimeType: 'image/png',
+        mimeType: MIME_TYPES.PNG,
         url: dataUrl
       }
     })

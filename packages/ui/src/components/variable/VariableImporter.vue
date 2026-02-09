@@ -164,7 +164,7 @@ import {
   NRadioGroup, NRadio, NCard, NList, NListItem, NScrollbar, NIcon,
   type UploadFileInfo 
 } from 'naive-ui'
-import { UI_DIMENSIONS, COMPONENT_CONSTANTS, ICON_SIZES } from '../../config/constants'
+import { UI_DIMENSIONS, COMPONENT_CONSTANTS, ICON_SIZES, FILE_SIZE_LIMITS } from '../../config/constants'
 import { truncateText } from '../../utils/text'
 
 // Destructure constants for cleaner usage
@@ -330,7 +330,7 @@ const handleFile = (file: File) => {
     return
   }
   
-  if (file.size > 10 * 1024 * 1024) { // 10MB
+  if (file.size > FILE_SIZE_LIMITS.MAX_VARIABLE_FILE_SIZE_BYTES) {
     error.value = t('variables.importer.errors.fileTooLarge')
     return
   }

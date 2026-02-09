@@ -296,6 +296,16 @@ export const ICON_SIZES = {
   XXL: 48,
 } as const
 
+// File size limits (in bytes) - eliminates hardcoded file size values
+export const FILE_SIZE_LIMITS = {
+  // Maximum upload size for variable files (10MB)
+  MAX_VARIABLE_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+  // Maximum upload size for images (10MB)
+  MAX_IMAGE_FILE_SIZE_BYTES: 10 * 1024 * 1024,
+  // Maximum cache size (50MB)
+  MAX_CACHE_SIZE_BYTES: 50 * 1024 * 1024,
+} as const
+
 // Component-specific constants
 export const COMPONENT_CONSTANTS = {
   // VariableImporter
@@ -307,6 +317,7 @@ export const COMPONENT_CONSTANTS = {
     HELP_TEXT_FONT_SIZE: 12,
     PREVIEW_MAX_HEIGHT: 240,
     MODAL_MAX_WIDTH: '90vw',
+    MAX_FILE_SIZE_BYTES: FILE_SIZE_LIMITS.MAX_VARIABLE_FILE_SIZE_BYTES,
   },
   
   // TextModelEditModal

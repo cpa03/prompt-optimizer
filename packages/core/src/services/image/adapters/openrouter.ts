@@ -12,6 +12,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { URL_PATTERNS } from '../../../constants/api-endpoints'
 import { CONTENT_TYPES, HTTP_HEADERS } from '../../../constants/http-codes'
+import { MIME_TYPES } from '../../../config'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -140,7 +141,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         prompt: 'make this image more colorful',
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         },
         count: 1
       }
@@ -170,7 +171,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
 
     // 如果有输入图像，添加到消息中
     if (request.inputImage) {
-      const imageContent = `data:${request.inputImage.mimeType || 'image/png'};base64,${request.inputImage.b64}`
+      const imageContent = `data:${request.inputImage.mimeType || MIME_TYPES.PNG};base64,${request.inputImage.b64}`
 
       messages[0].content = [
         { type: 'text', text: request.prompt },
@@ -214,7 +215,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       // 解析 data URL: data:image/png;base64,iVBORw0KGgo...
       const [header, base64Data] = dataUrl.split(',')
       const mimeMatch = header.match(/data:([^;]+)/)
-      const mimeType = mimeMatch?.[1] || 'image/png'
+      const mimeType = mimeMatch?.[1] || MIME_TYPES.PNG
 
       return {
         b64: base64Data,
