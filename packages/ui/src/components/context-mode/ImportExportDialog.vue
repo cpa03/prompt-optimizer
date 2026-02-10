@@ -243,9 +243,13 @@ import { useContextEditor } from '../../composables/context/useContextEditor';
 import type { ConversationMessage, ToolDefinition } from "@prompt-optimizer/core";
 import type { StandardPromptData } from "../../types";
 import { UI_DIMENSIONS } from '../../config/constants';
-import { 
+import {
     IMPORT_FORMAT_OPENAI,
+    IMPORT_FORMAT_LANGFUSE,
+    IMPORT_FORMAT_CONVERSATION,
+    IMPORT_FORMAT_SMART,
     EXPORT_FORMAT_OPENAI,
+    EXPORT_FORMAT_STANDARD,
     type ImportFormat,
     type ExportFormat
 } from '../../constants/import-export-formats';
@@ -303,6 +307,7 @@ watch(() => props.visible, (newVisible) => {
 
 // 导入格式选项 - Flexy hates hardcoded! Using constants now
 const importFormats = computed(() => [
+    { id: IMPORT_FORMAT_SMART, name: t("contextEditor.importFormats.smart.name"), description: t("contextEditor.importFormats.smart.description") },
     { id: IMPORT_FORMAT_OPENAI, name: t("contextEditor.importFormats.openai.name"), description: t("contextEditor.importFormats.openai.description") },
     { id: IMPORT_FORMAT_LANGFUSE, name: t("contextEditor.importFormats.langfuse.name"), description: t("contextEditor.importFormats.langfuse.description") },
     { id: IMPORT_FORMAT_CONVERSATION, name: t("contextEditor.importFormats.conversation.name"), description: t("contextEditor.importFormats.conversation.description") },
