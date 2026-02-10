@@ -359,7 +359,7 @@ importers:
         specifier: ^11.0.5
         version: 11.1.0
       vue:
-        specifier: ^3.3.4
+        specifier: ^3.5.13
         version: 3.5.17(typescript@5.8.3)
       vue-router:
         specifier: '4'

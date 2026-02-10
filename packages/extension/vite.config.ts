@@ -38,6 +38,10 @@ export default defineConfig({
             (warning.message && warning.message.includes('dynamic import'))) {
           return;
         }
+        // Suppress currentInstance warning - it's a false positive from Vue internals
+        if (warning.message && warning.message.includes('currentInstance')) {
+          return;
+        }
         warn(warning);
       },
       output: {
