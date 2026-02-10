@@ -62,7 +62,7 @@
 import { computed, ref, useSlots, h, type Component } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NCard, NSpace, NIcon, NText } from 'naive-ui'
-import { SPACING, ICON_SIZES } from '../config/constants'
+import { SPACING, ICON_SIZES, ANIMATION_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -109,6 +109,15 @@ const props = withDefaults(defineProps<Props>(), {
 const slots = useSlots()
 const isHovered = ref(false)
 
+// Animation constants for CSS v-bind
+const animDurationNormal = ANIMATION_CONSTANTS.ANIMATION_DURATION_NORMAL_S
+const animDelayFast = ANIMATION_CONSTANTS.ANIMATION_DELAY_FAST
+const animDelayNormal = ANIMATION_CONSTANTS.ANIMATION_DELAY_NORMAL
+const animDelaySlow = ANIMATION_CONSTANTS.ANIMATION_DELAY_SLOW
+const transitionDurationMs = ANIMATION_CONSTANTS.TRANSITION_DURATION_MS + 'ms'
+const hoverTransitionMs = ANIMATION_CONSTANTS.HOVER_TRANSITION_MS + 'ms'
+const feedbackAnimationMs = ANIMATION_CONSTANTS.FEEDBACK_ANIMATION_MS + 'ms'
+
 // Check if slot content is empty
 const isEmpty = computed(() => {
   if (props.loading) return false
@@ -134,10 +143,10 @@ const handleMouseLeave = () => {
 <style scoped>
 /* 🎨 Palette: Base card styles with smooth transitions */
 .content-card {
-  transition: 
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.2s ease;
+  transition:
+    transform v-bind('feedbackAnimationMs') cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow v-bind('feedbackAnimationMs') cubic-bezier(0.4, 0, 0.2, 1),
+    border-color v-bind('hoverTransitionMs') ease;
   position: relative;
   overflow: hidden;
 }
@@ -157,10 +166,10 @@ const handleMouseLeave = () => {
 
 .content-card.content-card--interactive:active {
   transform: translateY(0) scale(0.995);
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.06),
     0 1px 2px rgba(0, 0, 0, 0.04);
-  transition-duration: 0.1s;
+  transition-duration: v-bind('transitionDurationMs');
 }
 
 /* 🎨 Palette: Focus ring for keyboard navigation */
@@ -208,7 +217,7 @@ const handleMouseLeave = () => {
   );
   background-size: 200% 100%;
   border-radius: 6px;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer v-bind('animDurationNormal') ease-in-out infinite;
 }
 
 .shimmer-line--title {
@@ -219,17 +228,17 @@ const handleMouseLeave = () => {
 
 .shimmer-line--long {
   width: 100%;
-  animation-delay: 0.1s;
+  animation-delay: v-bind('animDelayFast');
 }
 
 .shimmer-line--medium {
   width: 75%;
-  animation-delay: 0.2s;
+  animation-delay: v-bind('animDelayNormal');
 }
 
 .shimmer-line--short {
   width: 40%;
-  animation-delay: 0.3s;
+  animation-delay: v-bind('animDelaySlow');
 }
 
 @keyframes shimmer {
