@@ -34,11 +34,12 @@
     </template>
 
     <NScrollbar style="max-height: 65vh;">
-      <NSpace vertical :size="16" v-if="sortedHistory && sortedHistory.length > 0">
+        <TransitionGroup name="history-item" tag="div" class="history-list" v-if="sortedHistory && sortedHistory.length > 0">
         <NCard
           v-for="chain in filteredHistory"
           :key="chain.chainId"
           hoverable
+          :class="{ 'history-item-removing': removingChainId === chain.chainId }"
         >
           <template #header>
             <NSpace justify="space-between" align="center">
@@ -196,7 +197,7 @@
             </NCollapse>
           </NSpace>
         </NCard>
-      </NSpace>
+      </TransitionGroup>
       
       <NEmpty v-else :description="$t('history.noHistory')">
         <template #icon>
@@ -254,6 +255,9 @@ const emit = defineEmits<{
 void useToast
 const expandedVersions = ref<Record<string, boolean>>({})
 const searchQuery = ref('')
+
+// 🎨 Palette: Track which history item is being removed for animation
+const removingChainId = ref<string | null>(null)
 
 // --- Close Logic ---
 const close = () => {
@@ -354,12 +358,18 @@ const getFunctionModeLabel = (recordType: string) => {
   }
 }
 
-// 添加删除单条记录的方法
-const deleteChain = (chainId: string) => {
-  if (confirm(t('history.confirmDeleteChain'))) {
-    emit('deleteChain', chainId)
-    // 不需要强制刷新，因为现在使用props.history
-  }
+// 🎨 Palette: Delete with smooth removal animation
+const deleteChain = async (chainId: string) => {
+  if (!confirm(t('history.confirmDeleteChain'))) return
+  
+  // Start removal animation
+  removingChainId.value = chainId
+  
+  // Wait for animation to complete before actual deletion
+  await new Promise(resolve => setTimeout(resolve, 300))
+  
+  emit('deleteChain', chainId)
+  removingChainId.value = null
 }
 </script>
 
@@ -404,6 +414,81 @@ const deleteChain = (chainId: string) => {
   50% {
     opacity: 1;
     transform: scale(1.1);
+  }
+}
+
+/* 🎨 Palette: History item removal animations */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Transition group animations */
+.history-item-enter-active,
+.history-item-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-item-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.history-item-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* Removal animation class */
+.history-item-removing {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Visual feedback for deletion */
+.history-item-removing :deep(.n-card) {
+  background-color: rgba(var(--n-color-error-rgb, 255, 77, 79), 0.05);
+  border-color: rgba(var(--n-color-error-rgb, 255, 77, 79), 0.3);
+}
+
+/* Card hover enhancement */
+:deep(.n-card) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-card:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode adjustments */
+.dark :deep(.n-card:hover) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .history-item-enter-active,
+  .history-item-leave-active,
+  .history-item-removing {
+    transition: opacity 0.1s ease;
+    transform: none;
+  }
+  
+  .history-item-enter-from,
+  .history-item-leave-to {
+    transform: none;
+  }
+  
+  :deep(.n-card) {
+    transition: none;
+  }
+  
+  :deep(.n-card:hover) {
+    transform: none;
   }
 }
 </style> 
