@@ -23,6 +23,7 @@
       <!-- 原始结果 -->
       <NCard
         size="small"
+        class="test-result-card"
         :style="{
           flex: 1,
           height: '100%',
@@ -77,6 +78,7 @@
       <!-- 优化结果 -->
       <NCard
         size="small"
+        class="test-result-card"
         :style="{
           flex: 1,
           height: '100%',
@@ -133,6 +135,7 @@
     <NCard
       v-else
       size="small"
+      class="test-result-card"
       :style="{
         flex: 1,
         height: '100%',
@@ -347,5 +350,72 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
 .tool-calls-section {
   flex: 0 0 auto;
   /* 工具调用区域根据内容自适应高度 */
+}
+
+/* 🎨 Palette: Enhanced card hover effects with subtle lift and shadow */
+.test-result-card {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.test-result-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* 🎨 Palette: Smooth evaluation button appearance transition */
+.evaluation-entry {
+  flex-shrink: 0;
+  margin-left: 8px;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.evaluation-entry:empty {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+/* 🎨 Palette: Header text hover feedback */
+.card-header-content :deep(.n-text) {
+  transition: color 0.2s ease;
+}
+
+.card-header-content:hover :deep(.n-text) {
+  color: var(--n-primary-color, #18a058);
+}
+
+/* 🎨 Palette: Focus-visible rings for accessibility */
+.test-result-card:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25),
+              0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 🎨 Palette: Dark mode adjustments */
+.dark .test-result-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 🎨 Palette: Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .test-result-card {
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .test-result-card:hover {
+    transform: none;
+  }
+  
+  .test-result-card:focus-within {
+    transform: none;
+  }
+  
+  .evaluation-entry {
+    transition: opacity 0.2s ease;
+  }
+  
+  .card-header-content :deep(.n-text) {
+    transition: none;
+  }
 }
 </style>
