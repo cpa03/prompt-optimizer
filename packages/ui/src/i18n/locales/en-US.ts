@@ -1968,6 +1968,7 @@ export default {
       downloadFailed: "Download failed",
       copyBase64: "Copy Base64",
       copyText: "Copy Text",
+      copied: "Copied!",
       copySuccess: "Copied successfully",
       copyError: "Copy failed",
       textOutput: "Text output",
