@@ -306,6 +306,24 @@ export const FILE_SIZE_LIMITS = {
   MAX_CACHE_SIZE_BYTES: 50 * 1024 * 1024,
 } as const
 
+// Layout constants
+export const LAYOUT_CONSTANTS = {
+  // Test column configuration
+  TEST_COLUMN: {
+    DEFAULT_COUNT: 2,
+    MIN_COUNT: 2,
+    MAX_COUNT: 4,
+    VALID_COUNTS: [2, 3, 4] as const,
+  },
+  
+  // Split panel configuration
+  SPLIT_PANEL: {
+    DEFAULT_LEFT_PCT: 50,
+    MIN_LEFT_PCT: 20,
+    MAX_LEFT_PCT: 80,
+  },
+} as const
+
 // Component-specific constants
 export const COMPONENT_CONSTANTS = {
   // VariableImporter

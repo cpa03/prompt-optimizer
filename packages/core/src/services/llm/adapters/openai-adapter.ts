@@ -5,6 +5,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
 import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
+import { OPENAI_MODELS, getModelDisplayName } from '../../../constants/models'
 import type {
   TextProvider,
   TextModel,
@@ -26,11 +27,12 @@ interface ModelOverride {
 
 /**
  * OpenAI 静态模型定义
+ * Uses centralized model registry to eliminate hardcoded IDs
  */
 const OPENAI_STATIC_MODELS: ModelOverride[] = [
   {
-    id: 'gpt-5-mini',
-    name: 'GPT-5 Mini',
+    id: OPENAI_MODELS.GPT5_MINI,
+    name: getModelDisplayName(OPENAI_MODELS.GPT5_MINI),
     description: 'Fast, capable, and efficient small model with significant improvements in instruction-following and coding',
     capabilities: {
       supportsTools: true,
@@ -39,8 +41,8 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     }
   },
   {
-    id: 'gpt-5.1',
-    name: 'GPT-5.1',
+    id: OPENAI_MODELS.GPT5_1,
+    name: getModelDisplayName(OPENAI_MODELS.GPT5_1),
     description: 'Latest GPT-5.1 flagship model with enhanced capabilities',
     capabilities: {
       supportsTools: true,

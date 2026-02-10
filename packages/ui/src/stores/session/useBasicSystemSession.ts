@@ -21,6 +21,7 @@ import {
   createDefaultEvaluationResults,
   type PersistedEvaluationResults,
 } from '../../types/evaluation'
+import { LAYOUT_CONSTANTS } from '../../config/constants'
 
 /**
  * 测试结果结构
@@ -120,7 +121,10 @@ const createDefaultState = (): BasicSystemSessionState => ({
   versionId: '',
   testContent: '',
   testResults: null,
-  layout: { mainSplitLeftPct: 50, testColumnCount: 2 },
+  layout: { 
+    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT, 
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT 
+  },
   testVariants: [
     { id: 'a', version: 0, modelKey: '' },
     { id: 'b', version: 'latest', modelKey: '' },
@@ -166,8 +170,11 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
   // 测试结果
   const testResults = ref<TestResults | null>(null)
 
-  // 测试布局与列配置（最多 4 列）
-  const layout = ref<BasicSystemLayoutConfig>({ mainSplitLeftPct: 50, testColumnCount: 2 })
+  // 测试布局与列配置（使用集中常量）
+  const layout = ref<BasicSystemLayoutConfig>({ 
+    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT, 
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT 
+  })
   const testVariants = ref<TestVariantConfig[]>([
     { id: 'a', version: 0, modelKey: '' },
     { id: 'b', version: 'latest', modelKey: '' },
@@ -342,7 +349,10 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
    */
   const setMainSplitLeftPct = (pct: number) => {
     const normalized = Number.isFinite(pct) ? Math.round(pct) : layout.value.mainSplitLeftPct
-    const next = Math.min(50, Math.max(25, normalized))
+    const next = Math.min(
+      LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT, 
+      Math.max(LAYOUT_CONSTANTS.SPLIT_PANEL.MIN_LEFT_PCT, normalized)
+    )
     if (layout.value.mainSplitLeftPct === next) return
     layout.value = { ...layout.value, mainSplitLeftPct: next }
     lastActiveAt.value = Date.now()
@@ -515,8 +525,11 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
         const savedLeftRaw = savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
           ? savedLayout.mainSplitLeftPct
           : defaultState.layout.mainSplitLeftPct
-        const savedLeft = Math.min(50, Math.max(25, Math.round(savedLeftRaw)))
-        const savedCols = savedLayout && (savedLayout.testColumnCount === 2 || savedLayout.testColumnCount === 3 || savedLayout.testColumnCount === 4)
+        const savedLeft = Math.min(
+          LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT, 
+          Math.max(LAYOUT_CONSTANTS.SPLIT_PANEL.MIN_LEFT_PCT, Math.round(savedLeftRaw))
+        )
+        const savedCols = savedLayout && LAYOUT_CONSTANTS.TEST_COLUMN.VALID_COUNTS.includes(savedLayout.testColumnCount as 2 | 3 | 4)
           ? savedLayout.testColumnCount
           : defaultState.layout.testColumnCount
         layout.value = {

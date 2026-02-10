@@ -4,7 +4,7 @@
  */
 
 // 导入静态常量
-const { IPC_EVENTS, PREFERENCE_KEYS, DEFAULT_CONFIG } = require('./constants');
+const { IPC_EVENTS, PREFERENCE_KEYS, DEFAULT_CONFIG, PORTS, TIMEOUTS, MAX_SAVE_TIME, EMERGENCY_EXIT_TIME } = require('./constants');
 
 // 从package.json读取仓库信息
 const packageJson = require('../package.json');
@@ -82,5 +82,9 @@ module.exports = {
   // 重新导出静态常量（保持向后兼容）
   IPC_EVENTS,
   PREFERENCE_KEYS,
-  DEFAULT_CONFIG
+  DEFAULT_CONFIG,
+  PORTS,
+  TIMEOUTS,
+  MAX_SAVE_TIME,
+  EMERGENCY_EXIT_TIME
 };

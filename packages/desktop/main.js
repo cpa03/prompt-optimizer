@@ -29,7 +29,8 @@ const {
   validateVersion,
   IPC_EVENTS,
   PREFERENCE_KEYS,
-  DEFAULT_CONFIG
+  DEFAULT_CONFIG,
+  PORTS
 } = require('./config/update-config');
 const path = require('path');
 
@@ -457,7 +458,7 @@ function createWindow() {
   // In development, we can point to the vite dev server
   if (process.env.NODE_ENV === 'development') {
     console.log('[Main Process] Running in development mode, loading from Vite dev server');
-    mainWindow.loadURL('http://localhost:18181');
+    mainWindow.loadURL(`http://localhost:${PORTS.web.dev}`);
     mainWindow.webContents.openDevTools();
   } else {
     // In production, load the built file from the web package
