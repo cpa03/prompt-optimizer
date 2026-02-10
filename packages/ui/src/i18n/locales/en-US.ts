@@ -108,6 +108,7 @@ export default {
     import: "Import",
     export: "Export",
     next: "Next",
+    scrollToTop: "Scroll to Top",
   },
   icon: {
     refresh: "Refresh",
