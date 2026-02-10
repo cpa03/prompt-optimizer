@@ -43,6 +43,9 @@ export const STORAGE_CONSTRAINTS = {
 
   // Maximum file operations
   MAX_CONCURRENT_WRITES: getEnvInt('STORAGE_MAX_CONCURRENT_WRITES', 3),
+
+  // Maximum storage size for providers (in bytes, default 5MB for localStorage)
+  MAX_STORAGE_SIZE_BYTES: getEnvInt('STORAGE_MAX_SIZE_MB', 5) * 1024 * 1024,
 } as const
 
 // Prompt constraints - now environment-configurable
