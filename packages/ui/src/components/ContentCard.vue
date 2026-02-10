@@ -101,7 +101,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   interactive: false,
-  emptyIcon: null,
+  emptyIcon: undefined,
   emptyTitle: '',
   emptyHint: ''
 })

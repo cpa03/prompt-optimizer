@@ -117,7 +117,7 @@
                   v-else
                   type="default"
                   class="favorites-empty-clear"
-                  @click="searchKeyword = ''; handleSearch('')"
+                  @click="searchKeyword = ''; handleSearch()"
                 >
                   <template #icon>
                     <span>🔄</span>

@@ -67,6 +67,9 @@ import { computed, h, ref, watch, onMounted, onUnmounted } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NButton, NDropdown, NTooltip, type DropdownOption } from 'naive-ui'
+
+// Tooltip placement type
+type Placement = 'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
 
 const { t } = useI18n()
@@ -89,7 +92,7 @@ const showShortcutHint = computed(() => (isHovered.value || isFocused.value) && 
 // 🎨 Palette: Accessibility labels
 const ariaLabel = computed(() => t('theme.ariaLabel', { theme: currentThemeLabel.value }))
 const buttonTitle = computed(() => t('theme.buttonTitle', { shortcut: shortcutDisplay.value }))
-const tooltipPlacement = computed(() => 'bottom-end')
+const tooltipPlacement = computed<Placement>(() => 'bottom-end')
 
 // 使用新的主题系统
 const { 
