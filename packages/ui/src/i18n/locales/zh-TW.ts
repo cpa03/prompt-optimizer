@@ -94,6 +94,7 @@ export default {
     switchToTextView: "切換到純文字檢視",
     switchToMarkdownView: "切換到Markdown渲染檢視",
     copied: "已複製",
+    applied: "已應用",
     render: "渲染",
     source: "原文",
     reasoning: "思考過程",

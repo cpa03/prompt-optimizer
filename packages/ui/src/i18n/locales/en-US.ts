@@ -97,6 +97,7 @@ export default {
     switchToTextView: "Switch to Plain Text View",
     switchToMarkdownView: "Switch to Markdown Render View",
     copied: "Copied",
+    applied: "Applied",
     render: "Render",
     source: "Source",
     reasoning: "Reasoning",

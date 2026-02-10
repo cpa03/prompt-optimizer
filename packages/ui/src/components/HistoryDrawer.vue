@@ -188,8 +188,13 @@
                       size="small"
                       type="primary"
                       quaternary
+                      :class="{ 'use-btn--used': usedVersionId === record.id }"
+                      class="use-btn"
                     >
-                      {{ $t('history.useThisVersion') }}
+                      <template #icon v-if="usedVersionId === record.id">
+                        <span class="check-icon">✓</span>
+                      </template>
+                      {{ usedVersionId === record.id ? $t('common.applied') : $t('history.useThisVersion') }}
                     </NButton>
                   </div>
                 </NSpace>
@@ -259,6 +264,10 @@ const searchQuery = ref('')
 // 🎨 Palette: Track which history item is being removed for animation
 const removingChainId = ref<string | null>(null)
 
+// 🎨 Palette: Track which version was just used for visual feedback
+const usedVersionId = ref<string | null>(null)
+const useVersionTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
 // --- Close Logic ---
 const close = () => {
   emit('update:show', false)
@@ -317,7 +326,18 @@ watch(() => props.show, (newShow) => {
 
 
 
-const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
+const reuse = async (record: PromptRecord, chain: PromptRecordChain) => {
+  // 🎨 Palette: Show visual feedback before closing
+  usedVersionId.value = record.id
+  
+  // Clear any existing timeout
+  if (useVersionTimeout.value) {
+    clearTimeout(useVersionTimeout.value)
+  }
+  
+  // Wait for visual feedback animation
+  await new Promise(resolve => setTimeout(resolve, 400))
+  
   emit('reuse', {
     record,
     chainId: chain.chainId,
@@ -325,6 +345,11 @@ const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
     chain
   })
   emit('update:show', false)
+  
+  // Reset after modal closes
+  useVersionTimeout.value = setTimeout(() => {
+    usedVersionId.value = null
+  }, 500)
 }
 
 const isMessageOptimizationType = (recordType: string) => {
@@ -469,6 +494,60 @@ const deleteChain = async (chainId: string) => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+/* 🎨 Palette: Use button micro-interactions */
+.use-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.use-btn:hover {
+  transform: translateY(-1px);
+}
+
+.use-btn:active {
+  transform: scale(0.95);
+}
+
+.use-btn--used {
+  color: #18a058 !important;
+  font-weight: 600;
+  animation: use-btn-success 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes use-btn-success {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.check-icon {
+  display: inline-block;
+  animation: check-icon-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes check-icon-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
 /* Respect user motion preferences for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .history-item-enter-active,
@@ -488,6 +567,18 @@ const deleteChain = async (chainId: string) => {
   }
   
   :deep(.n-card:hover) {
+    transform: none;
+  }
+  
+  .use-btn,
+  .use-btn--used,
+  .check-icon {
+    transition: none;
+    animation: none;
+  }
+  
+  .check-icon {
+    opacity: 1;
     transform: none;
   }
 }

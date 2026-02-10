@@ -93,6 +93,7 @@ export default {
     switchToTextView: "切换到纯文本视图",
     switchToMarkdownView: "切换到Markdown渲染视图",
     copied: "已复制",
+    applied: "已应用",
     render: "渲染",
     source: "原文",
     reasoning: "思考过程",
