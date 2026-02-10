@@ -37,6 +37,10 @@ export const IMAGE_SIZE_PRESETS = {
     default: getEnvString('VITE_MODELSCOPE_IMAGE_SIZE_DEFAULT', '1024x1024'),
     available: (getEnvString('VITE_MODELSCOPE_IMAGE_SIZE_OPTIONS', '1024x1024,1536x1024,1024x1536').split(',')) as string[],
   },
+  dashscope: {
+    default: getEnvString('VITE_DASHSCOPE_IMAGE_SIZE_DEFAULT', '1328*1328'),
+    available: (getEnvString('VITE_DASHSCOPE_IMAGE_SIZE_OPTIONS', '1328*1328,1024*1024').split(',')) as string[],
+  },
 } as const;
 
 // LLM default parameters - fully configurable via environment

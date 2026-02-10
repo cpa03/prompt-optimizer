@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 import { platform } from '../../utils/platform'
 import { useToast } from '../ui/useToast'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 export type VariableExtractionType = 'global' | 'temporary'
 
@@ -106,7 +107,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
             name: data.variableName,
             undo: platform.getUndoKey(),
           }),
-          { duration: 8000, closable: true },
+          { duration: TIME_CONSTANTS.ERROR_TOAST_DURATION, closable: true },
         )
       }
 
@@ -124,7 +125,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
           name: data.variableName,
           undo: platform.getUndoKey(),
         }),
-        { duration: 8000, closable: true },
+        { duration: TIME_CONSTANTS.ERROR_TOAST_DURATION, closable: true },
       )
     }
 
@@ -145,7 +146,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
           name,
           undo: platform.getUndoKey(),
         }),
-        { duration: 8000, closable: true },
+        { duration: TIME_CONSTANTS.ERROR_TOAST_DURATION, closable: true },
       )
     }
 

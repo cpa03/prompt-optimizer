@@ -13,6 +13,7 @@ import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
+  IMAGE_SIZE_PRESETS,
   getTestPrompt,
   getDashScopeParameterDefinitions,
   getDashScopeEditParameterDefinitions,
@@ -157,7 +158,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         ]
       },
       parameters: {
-        size: merged.size || '1328*1328',
+        size: merged.size || IMAGE_SIZE_PRESETS.dashscope.default,
         ...(merged.negative_prompt ? { negative_prompt: merged.negative_prompt } : {}),
         ...(merged.prompt_extend !== undefined ? { prompt_extend: merged.prompt_extend } : {}),
         ...(merged.watermark !== undefined ? { watermark: merged.watermark } : {}),

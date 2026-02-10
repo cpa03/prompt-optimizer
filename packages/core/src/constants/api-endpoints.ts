@@ -56,6 +56,25 @@ export const IMAGE_ENDPOINTS = {
   VARIATIONS: '/images/variations',
 } as const;
 
+// Image response formats
+export const IMAGE_RESPONSE_FORMATS = {
+  B64_JSON: 'b64_json',
+  URL: 'url',
+} as const;
+
+// Image output formats
+export const IMAGE_OUTPUT_FORMATS = {
+  PNG: 'png',
+  JPEG: 'jpeg',
+  WEBP: 'webp',
+} as const;
+
+// Default filenames for image operations
+export const IMAGE_FILENAMES = {
+  INPUT: 'input.png',
+  OUTPUT: 'output.png',
+} as const;
+
 // Data URL patterns
 export const DATA_URL_PATTERNS = {
   PREFIX: 'data:',

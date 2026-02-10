@@ -7,6 +7,7 @@
 export const TIME_CONSTANTS = {
   // Toast notifications
   TOAST_DURATION: 3000,
+  ERROR_TOAST_DURATION: 8000, // Longer duration for error messages that need user attention
   
   // Cache expiration
   CACHE_EXPIRY_MS: 5 * 60 * 1000, // 5 minutes
@@ -321,6 +322,46 @@ export const LAYOUT_CONSTANTS = {
     DEFAULT_LEFT_PCT: 50,
     MIN_LEFT_PCT: 20,
     MAX_LEFT_PCT: 80,
+  },
+} as const
+
+// Focus management constants
+export const FOCUS_CONSTANTS = {
+  // Focusable element selectors
+  SELECTORS: {
+    BUTTON: 'button:not([disabled]):not([tabindex="-1"])',
+    INPUT: 'input:not([disabled]):not([tabindex="-1"])',
+    SELECT: 'select:not([disabled]):not([tabindex="-1"])',
+    TEXTAREA: 'textarea:not([disabled]):not([tabindex="-1"])',
+    LINK: 'a[href]:not([tabindex="-1"])',
+    TABINDEX: '[tabindex]:not([tabindex="-1"])',
+    CONTENTEDITABLE: '[contenteditable="true"]:not([tabindex="-1"])',
+    AUDIO: 'audio[controls]:not([tabindex="-1"])',
+    VIDEO: 'video[controls]:not([tabindex="-1"])',
+    DETAILS_SUMMARY: 'details summary:not([tabindex="-1"])',
+  },
+  
+  // Keyboard keys
+  KEYS: {
+    TAB: 'Tab',
+    ARROW_DOWN: 'ArrowDown',
+    ARROW_RIGHT: 'ArrowRight',
+    ARROW_UP: 'ArrowUp',
+    ARROW_LEFT: 'ArrowLeft',
+    HOME: 'Home',
+    END: 'End',
+    ESCAPE: 'Escape',
+  },
+  
+  // Focus indicator styles
+  INDICATOR: {
+    BORDER_WIDTH: '2px',
+    BORDER_COLOR: '#0066cc',
+    BORDER_RADIUS: '4px',
+    Z_INDEX: 10000,
+    TRANSITION_DURATION: '0.15s',
+    BOX_SHADOW: '0 0 0 1px rgba(255, 255, 255, 0.8)',
+    OFFSET: 2, // pixels to expand beyond element
   },
 } as const
 

@@ -1,6 +1,7 @@
 import { ref, nextTick, computed } from 'vue'
 
 import { useAccessibility } from './useAccessibility'
+import { FOCUS_CONSTANTS } from '../../config/constants'
 
 export interface FocusManagerOptions {
   /** 容器选择器或元素 */
@@ -37,16 +38,16 @@ export function useFocusManager(options: FocusManagerOptions = {}) {
   
   // 默认可焦点元素选择器
   const defaultFocusableSelector = [
-    'button:not([disabled]):not([tabindex="-1"])',
-    'input:not([disabled]):not([tabindex="-1"])',
-    'select:not([disabled]):not([tabindex="-1"])',
-    'textarea:not([disabled]):not([tabindex="-1"])',
-    'a[href]:not([tabindex="-1"])',
-    '[tabindex]:not([tabindex="-1"])',
-    '[contenteditable="true"]:not([tabindex="-1"])',
-    'audio[controls]:not([tabindex="-1"])',
-    'video[controls]:not([tabindex="-1"])',
-    'details summary:not([tabindex="-1"])'
+    FOCUS_CONSTANTS.SELECTORS.BUTTON,
+    FOCUS_CONSTANTS.SELECTORS.INPUT,
+    FOCUS_CONSTANTS.SELECTORS.SELECT,
+    FOCUS_CONSTANTS.SELECTORS.TEXTAREA,
+    FOCUS_CONSTANTS.SELECTORS.LINK,
+    FOCUS_CONSTANTS.SELECTORS.TABINDEX,
+    FOCUS_CONSTANTS.SELECTORS.CONTENTEDITABLE,
+    FOCUS_CONSTANTS.SELECTORS.AUDIO,
+    FOCUS_CONSTANTS.SELECTORS.VIDEO,
+    FOCUS_CONSTANTS.SELECTORS.DETAILS_SUMMARY,
   ].join(', ')
   
   // 计算属性
@@ -259,38 +260,38 @@ export function useFocusManager(options: FocusManagerOptions = {}) {
     if (!isTrapped.value) return
     
     switch (event.key) {
-      case 'Tab':
+      case FOCUS_CONSTANTS.KEYS.TAB:
         event.preventDefault()
         moveFocus(event.shiftKey ? 'previous' : 'next')
         break
         
-      case 'ArrowDown':
-      case 'ArrowRight':
+      case FOCUS_CONSTANTS.KEYS.ARROW_DOWN:
+      case FOCUS_CONSTANTS.KEYS.ARROW_RIGHT:
         if (!event.ctrlKey && !event.metaKey) {
           event.preventDefault()
           moveFocus('next')
         }
         break
         
-      case 'ArrowUp':
-      case 'ArrowLeft':
+      case FOCUS_CONSTANTS.KEYS.ARROW_UP:
+      case FOCUS_CONSTANTS.KEYS.ARROW_LEFT:
         if (!event.ctrlKey && !event.metaKey) {
           event.preventDefault()
           moveFocus('previous')
         }
         break
         
-      case 'Home':
+      case FOCUS_CONSTANTS.KEYS.HOME:
         event.preventDefault()
         moveFocus('first')
         break
         
-      case 'End':
+      case FOCUS_CONSTANTS.KEYS.END:
         event.preventDefault()
         moveFocus('last')
         break
         
-      case 'Escape':
+      case FOCUS_CONSTANTS.KEYS.ESCAPE:
         if (event.target !== getContainer()) {
           event.preventDefault()
           releaseFocus()
@@ -347,12 +348,12 @@ export function useFocusManager(options: FocusManagerOptions = {}) {
       indicator.id = 'focus-manager-indicator'
       indicator.style.cssText = `
         position: absolute;
-        border: 2px solid #0066cc;
-        border-radius: 4px;
+        border: ${FOCUS_CONSTANTS.INDICATOR.BORDER_WIDTH} solid ${FOCUS_CONSTANTS.INDICATOR.BORDER_COLOR};
+        border-radius: ${FOCUS_CONSTANTS.INDICATOR.BORDER_RADIUS};
         pointer-events: none;
-        z-index: 10000;
-        transition: all 0.15s ease;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
+        z-index: ${FOCUS_CONSTANTS.INDICATOR.Z_INDEX};
+        transition: all ${FOCUS_CONSTANTS.INDICATOR.TRANSITION_DURATION} ease;
+        box-shadow: ${FOCUS_CONSTANTS.INDICATOR.BOX_SHADOW};
       `
       document.body.appendChild(indicator)
     }
@@ -366,11 +367,12 @@ export function useFocusManager(options: FocusManagerOptions = {}) {
     
     const indicator = createFocusIndicator()
     const rect = element.getBoundingClientRect()
+    const offset = FOCUS_CONSTANTS.INDICATOR.OFFSET
     
-    indicator.style.left = `${rect.left - 2}px`
-    indicator.style.top = `${rect.top - 2}px`
-    indicator.style.width = `${rect.width + 4}px`
-    indicator.style.height = `${rect.height + 4}px`
+    indicator.style.left = `${rect.left - offset}px`
+    indicator.style.top = `${rect.top - offset}px`
+    indicator.style.width = `${rect.width + offset * 2}px`
+    indicator.style.height = `${rect.height + offset * 2}px`
     indicator.style.display = 'block'
   }
   

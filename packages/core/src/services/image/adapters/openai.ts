@@ -18,6 +18,12 @@ import {
   getOpenAIParameterDefinitions,
   getOpenAIDefaultParameterValues
 } from '../../../config'
+import { 
+  IMAGE_ENDPOINTS, 
+  IMAGE_RESPONSE_FORMATS, 
+  IMAGE_OUTPUT_FORMATS,
+  IMAGE_FILENAMES
+} from '../../../constants/api-endpoints'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -109,8 +115,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const merged: Record<string, any> = {
       model: config.modelId,
       prompt: request.prompt,
-      response_format: 'b64_json',
-      output_format: 'png', // 固定为png
+      response_format: IMAGE_RESPONSE_FORMATS.B64_JSON,
+      output_format: IMAGE_OUTPUT_FORMATS.PNG, // 固定为png
       stream: false,
       // 合并参数覆盖（先合并，后强制覆盖）
       ...config.paramOverrides,
@@ -121,7 +127,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     delete (merged as any).batch_size
     const payload = { ...merged, n: 1 }
 
-    const response = await this.apiCall(config, '/images/generations', {
+    const response = await this.apiCall(config, IMAGE_ENDPOINTS.GENERATIONS, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
@@ -142,8 +148,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const formData = new FormData()
     formData.append('model', config.modelId)
     formData.append('prompt', request.prompt)
-    formData.append('response_format', 'b64_json')
-    formData.append('output_format', 'png') // 固定为png
+    formData.append('response_format', IMAGE_RESPONSE_FORMATS.B64_JSON)
+    formData.append('output_format', IMAGE_OUTPUT_FORMATS.PNG) // 固定为png
 
     // 添加参数覆盖（隐藏多图相关参数）
     const allParams: Record<string, any> = { ...config.paramOverrides, ...request.paramOverrides }
@@ -163,9 +169,9 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       request.inputImage.b64 || '',
       request.inputImage.mimeType || MIME_TYPES.PNG
     )
-    formData.append('image', imageBlob, 'input.png')
+    formData.append('image', imageBlob, IMAGE_FILENAMES.INPUT)
 
-    const response = await this.apiCall(config, '/images/edits', {
+    const response = await this.apiCall(config, IMAGE_ENDPOINTS.EDITS, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.connectionConfig?.apiKey}`
