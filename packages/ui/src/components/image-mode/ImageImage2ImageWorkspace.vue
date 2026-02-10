@@ -171,8 +171,8 @@
                                     data-testid="image-image2image-input-preview"
                                     :src="previewImageUrl"
                                     :style="{
-                                        width: `${UI_DIMENSIONS.WORKSPACE.BUTTON_SIZE_MEDIUM}px`,
-                                        height: `${UI_DIMENSIONS.WORKSPACE.BUTTON_SIZE_MEDIUM}px`,
+                                        width: `120px`,
+                                        height: `120px`,
                                         borderRadius: ANIMATION_CONSTANTS.BORDER_RADIUS_LARGE,
                                         cursor: 'pointer',
                                         objectFit: 'cover',
@@ -363,7 +363,7 @@
 
             <!-- 优化结果区域 - 使用与基础模式一致的卡片容器 -->
             <NCard
-                :style="{ flex: 1, minHeight: `${UI_DIMENSIONS.WORKSPACE.PANEL_MIN_HEIGHT_PX}px`, overflow: 'hidden' }"
+                :style="{ flex: 1, minHeight: `${COMPONENT_CONSTANTS.WORKSPACE.PANEL_MIN_HEIGHT}px`, overflow: 'hidden' }"
                 content-style="height: 100%; max-height: 100%; overflow: hidden;"
             >
                 <PromptPanelUI
@@ -812,7 +812,7 @@ import {
     type Template,
 } from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
-import { FILE_SIZE_LIMITS, UI_DIMENSIONS, ANIMATION_CONSTANTS } from '../../config/constants'
+import { FILE_SIZE_LIMITS, COMPONENT_CONSTANTS, ANIMATION_CONSTANTS } from '../../config/constants'
 
 // 国际化
 const { t } = useI18n();
