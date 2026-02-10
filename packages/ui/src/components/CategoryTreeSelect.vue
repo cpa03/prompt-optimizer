@@ -10,18 +10,42 @@
     @update:value="handleValueChange"
   >
     <template v-if="showManageButton" #action>
-      <NButton
-        text
-        block
-        class="category-manage-btn"
-        @click="handleOpenManager"
-        :style="{ justifyContent: 'flex-start', padding: `${SPACING.SM}px ${SPACING.MD}px` }"
+      <!-- 🎨 Palette: Enhanced category manage button with keyboard shortcut hint -->
+      <div
+        class="category-manage-btn-wrapper"
+        @mouseenter="isHovered = true"
+        @mouseleave="isHovered = false"
       >
-        <template #icon>
-          <NIcon class="folder-icon"><Folder /></NIcon>
-        </template>
-        {{ t('favorites.manager.categoryManager.title') }}
-      </NButton>
+        <NButton
+          text
+          block
+          class="category-manage-btn"
+          :class="{ 'is-hovered': isHovered, 'is-focused': isFocused }"
+          @click="handleOpenManager"
+          @focus="isFocused = true"
+          @blur="isFocused = false"
+          :style="{ justifyContent: 'flex-start', padding: `${SPACING.SM}px ${SPACING.MD}px` }"
+          :title="manageButtonTitle"
+          :aria-label="manageButtonTitle"
+        >
+          <template #icon>
+            <NIcon class="folder-icon" :class="{ 'is-hovered': isHovered }">
+              <Folder />
+            </NIcon>
+          </template>
+          <span class="manage-btn-text">{{ t('favorites.manager.categoryManager.title') }}</span>
+          <!-- 🎨 Palette: Keyboard shortcut hint (visible on hover/focus) -->
+          <Transition name="shortcut-hint">
+            <span
+              v-if="showShortcutHint"
+              class="shortcut-hint"
+              aria-hidden="true"
+            >
+              {{ shortcutDisplay }}
+            </span>
+          </Transition>
+        </NButton>
+      </div>
     </template>
   </NTreeSelect>
 
@@ -51,40 +75,27 @@ import { SPACING, UI_DIMENSIONS } from '../config/constants';
 
 const { t } = useI18n();
 
-interface Props {
-  /** 当前选中的分类ID */
-  modelValue?: string;
-  /** 占位符文本 */
-  placeholder?: string;
-  /** 是否可清除 */
-  clearable?: boolean;
-  /** 是否显示"全部分类"选项(用于筛选场景) */
-  showAllOption?: boolean;
-  /** 是否显示管理按钮 */
-  showManageButton?: boolean;
-  /** 自定义样式 */
-  style?: string;
-  /** 是否保持菜单宽度一致 */
-  consistentMenuWidth?: boolean;
-}
+const services = inject<Ref<AppServices | null> | null>('services', null);
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: '',
-  placeholder: '',
-  clearable: true,
-  showAllOption: false,
-  showManageButton: true,
-  style: 'min-width: 180px; max-width: 250px;',
-  consistentMenuWidth: true
+// 🎨 Palette: Interaction states for enhanced UX
+const isHovered = ref(false);
+const isFocused = ref(false);
+
+// 🎨 Palette: Keyboard shortcut configuration
+const modifierKey = computed(() => {
+  if (typeof navigator === 'undefined') return 'Ctrl';
+  return /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl';
 });
 
-const emit = defineEmits<{
-  'update:modelValue': [value: string];
-  'change': [value: string];
-  'category-updated': [];
-}>();
+const shortcutDisplay = computed(() => `${modifierKey.value}⇧C`);
 
-const services = inject<Ref<AppServices | null> | null>('services', null);
+// 🎨 Palette: Show shortcut hint on hover or focus
+const showShortcutHint = computed(() => isHovered.value || isFocused.value);
+
+// 🎨 Palette: Enhanced button title with shortcut
+const manageButtonTitle = computed(() => {
+  return `${t('favorites.manager.categoryManager.title')} (${shortcutDisplay.value})`;
+});
 
 // 内部状态
 const internalValue = ref(props.modelValue);
@@ -177,16 +188,183 @@ defineExpose({
 </script>
 
 <style scoped>
-.category-manage-btn {
-  transition: all 0.2s ease;
+/* 🎨 Palette: Wrapper for positioning context */
+.category-manage-btn-wrapper {
+  position: relative;
 }
 
-.category-manage-btn:hover {
-  background-color: rgba(64, 128, 128, 0.08);
+/* 🎨 Palette: Base button styles with enhanced transitions */
+.category-manage-btn {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: visible;
+}
+
+/* 🎨 Palette: Enhanced hover state */
+.category-manage-btn:hover,
+.category-manage-btn.is-hovered {
+  background-color: rgba(64, 128, 128, 0.1);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(64, 128, 128, 0.15);
+}
+
+/* 🎨 Palette: Focus-visible state for keyboard navigation */
+.category-manage-btn:focus-visible,
+.category-manage-btn.is-focused {
+  outline: none;
+  background-color: rgba(64, 128, 128, 0.12);
+  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3),
+              0 2px 8px rgba(64, 128, 128, 0.15);
+  transform: translateX(4px);
+}
+
+/* 🎨 Palette: Icon animations */
+.category-manage-btn .folder-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-manage-btn:hover .folder-icon,
+.category-manage-btn.is-hovered .folder-icon {
+  color: var(--n-primary-color, #18a058);
+  transform: scale(1.15) rotate(-5deg);
+}
+
+/* 🎨 Palette: Active/pressed state */
+.category-manage-btn:active {
+  transform: translateX(2px) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* 🎨 Palette: Text label transition */
+.manage-btn-text {
+  transition: transform 0.2s ease;
+}
+
+.category-manage-btn:hover .manage-btn-text,
+.category-manage-btn.is-hovered .manage-btn-text {
   transform: translateX(2px);
 }
 
-.category-manage-btn:hover .folder-icon {
-  color: #408080;
+/* 🎨 Palette: Keyboard shortcut hint badge */
+.shortcut-hint {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--n-text-color-3, #999);
+  background: rgba(0, 0, 0, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transform: translateX(-4px);
+  animation: shortcut-hint-appear 0.2s ease forwards;
+}
+
+.dark .shortcut-hint {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@keyframes shortcut-hint-appear {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 🎨 Palette: Shortcut hint transition animations */
+.shortcut-hint-enter-active,
+.shortcut-hint-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shortcut-hint-enter-from {
+  opacity: 0;
+  transform: translateX(-4px) scale(0.95);
+}
+
+.shortcut-hint-leave-to {
+  opacity: 0;
+  transform: translateX(-4px) scale(0.95);
+}
+
+.shortcut-hint-enter-to,
+.shortcut-hint-leave-from {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+/* 🎨 Palette: Dark mode adjustments */
+.dark .category-manage-btn:hover,
+.dark .category-manage-btn.is-hovered {
+  background-color: rgba(64, 128, 128, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dark .category-manage-btn:focus-visible,
+.dark .category-manage-btn.is-focused {
+  background-color: rgba(64, 128, 128, 0.18);
+  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4),
+              0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 🎨 Palette: Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .category-manage-btn,
+  .category-manage-btn .folder-icon,
+  .manage-btn-text {
+    transition: none;
+  }
+  
+  .category-manage-btn:hover,
+  .category-manage-btn.is-hovered,
+  .category-manage-btn:focus-visible,
+  .category-manage-btn.is-focused {
+    transform: none;
+  }
+  
+  .category-manage-btn:hover .folder-icon,
+  .category-manage-btn.is-hovered .folder-icon {
+    transform: none;
+  }
+  
+  .category-manage-btn:hover .manage-btn-text,
+  .category-manage-btn.is-hovered .manage-btn-text {
+    transform: none;
+  }
+  
+  .shortcut-hint {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .shortcut-hint-enter-active,
+  .shortcut-hint-leave-active {
+    transition: opacity 0.1s ease;
+  }
+  
+  .shortcut-hint-enter-from,
+  .shortcut-hint-leave-to {
+    transform: none;
+  }
+}
+
+/* 🎨 Palette: High contrast mode support */
+@media (prefers-contrast: high) {
+  .category-manage-btn:focus-visible,
+  .category-manage-btn.is-focused {
+    outline: 2px solid var(--n-primary-color, #18a058);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+/* 🎨 Palette: Mobile - hide shortcut hints on small screens */
+@media (max-width: 768px) {
+  .shortcut-hint {
+    display: none;
+  }
 }
 </style>
