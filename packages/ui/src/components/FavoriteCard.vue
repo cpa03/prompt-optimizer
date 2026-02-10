@@ -1,3 +1,11 @@
+<!--
+  🎨 Palette: Enhanced FavoriteCard with micro-UX improvements
+  - Copy button with visual success feedback
+  - Keyboard shortcut hints on action buttons
+  - Enhanced hover/focus states for accessibility
+  - Smooth micro-interactions
+  - Reduced motion support
+-->
 <template>
   <NCard
     hoverable
@@ -190,8 +198,9 @@
           </NTooltip>
         </NSpace>
 
-        <!-- 右侧操作按钮 -->
+        <!-- 🎨 Palette: Enhanced action buttons with feedback and keyboard shortcuts -->
         <NSpace :size="4" class="card-actions">
+          <!-- Copy Button with Success Feedback -->
           <NTooltip
             trigger="hover"
             :overlay-style="tooltipOverlayStyle"
@@ -202,13 +211,36 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.copyContent')" @click.stop="$emit('copy', favorite)">
-                <template #icon><NIcon><Copy /></NIcon></template>
+              <NButton
+                size="small"
+                quaternary
+                circle
+                :class="['action-btn', 'copy-btn', { 'copy-success': copySuccess }]"
+                :aria-label="t('favorites.manager.card.copyContent')"
+                @mouseenter="hoveredAction = 'copy'"
+                @mouseleave="hoveredAction = null"
+                @focus="focusedAction = 'copy'"
+                @blur="focusedAction = null"
+                @click.stop="handleCopy"
+              >
+                <template #icon>
+                  <NIcon :class="{ 'success-icon': copySuccess }">
+                    <Check v-if="copySuccess" />
+                    <Copy v-else />
+                  </NIcon>
+                </template>
+                <!-- Keyboard shortcut hint -->
+                <Transition name="shortcut-hint">
+                  <span v-if="showShortcutHint('copy')" class="shortcut-hint" aria-hidden="true">
+                    {{ modifierKey }}C
+                  </span>
+                </Transition>
               </NButton>
             </template>
-            {{ t('favorites.manager.card.copyContent') }}
+            {{ copySuccess ? t('favorites.manager.card.copied') : t('favorites.manager.card.copyContent') }}
           </NTooltip>
 
+          <!-- Use Button -->
           <NTooltip
             trigger="hover"
             :overlay-style="tooltipOverlayStyle"
@@ -219,13 +251,36 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.useNow')" @click.stop="$emit('use', favorite)">
-                <template #icon><NIcon><PlayerPlay /></NIcon></template>
+              <NButton
+                size="small"
+                quaternary
+                circle
+                :class="['action-btn', 'use-btn', { 'use-success': useSuccess }]"
+                :aria-label="t('favorites.manager.card.useNow')"
+                @mouseenter="hoveredAction = 'use'"
+                @mouseleave="hoveredAction = null"
+                @focus="focusedAction = 'use'"
+                @blur="focusedAction = null"
+                @click.stop="handleUse"
+              >
+                <template #icon>
+                  <NIcon :class="{ 'success-icon': useSuccess }">
+                    <Check v-if="useSuccess" />
+                    <PlayerPlay v-else />
+                  </NIcon>
+                </template>
+                <!-- Keyboard shortcut hint -->
+                <Transition name="shortcut-hint">
+                  <span v-if="showShortcutHint('use')" class="shortcut-hint" aria-hidden="true">
+                    {{ modifierKey }}U
+                  </span>
+                </Transition>
               </NButton>
             </template>
-            {{ t('favorites.manager.card.useNow') }}
+            {{ useSuccess ? t('favorites.manager.card.used') : t('favorites.manager.card.useNow') }}
           </NTooltip>
 
+          <!-- Edit Button -->
           <NTooltip
             trigger="hover"
             :overlay-style="tooltipOverlayStyle"
@@ -236,21 +291,61 @@
             :flip="true"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle :aria-label="t('favorites.manager.card.edit')" @click.stop="$emit('edit', favorite)">
-                <template #icon><NIcon><Edit /></NIcon></template>
+              <NButton
+                size="small"
+                quaternary
+                circle
+                class="action-btn edit-btn"
+                :aria-label="t('favorites.manager.card.edit')"
+                @mouseenter="hoveredAction = 'edit'"
+                @mouseleave="hoveredAction = null"
+                @focus="focusedAction = 'edit'"
+                @blur="focusedAction = null"
+                @click.stop="$emit('edit', favorite)"
+              >
+                <template #icon>
+                  <NIcon><Edit /></NIcon>
+                </template>
+                <!-- Keyboard shortcut hint -->
+                <Transition name="shortcut-hint">
+                  <span v-if="showShortcutHint('edit')" class="shortcut-hint" aria-hidden="true">
+                    {{ modifierKey }}E
+                  </span>
+                </Transition>
               </NButton>
             </template>
             {{ t('favorites.manager.card.edit') }}
           </NTooltip>
 
+          <!-- Delete Button -->
           <NPopconfirm
             @positive-click="$emit('delete', favorite)"
             :positive-text="t('favorites.manager.card.delete')"
             :negative-text="t('favorites.manager.card.cancel')"
           >
             <template #trigger>
-              <NButton size="small" quaternary circle type="error" :aria-label="t('favorites.manager.card.delete')" @click.stop>
-                <template #icon><NIcon><Trash /></NIcon></template>
+              <NButton
+                size="small"
+                quaternary
+                circle
+                type="error"
+                class="action-btn delete-btn"
+                :aria-label="t('favorites.manager.card.delete')"
+                @mouseenter="hoveredAction = 'delete'"
+                @mouseleave="hoveredAction = null"
+                @focus="focusedAction = 'delete'"
+                @blur="focusedAction = null"
+                @click.stop
+              >
+                <template #icon>
+                  <NIcon><Trash /></NIcon>
+                </template>
+                <!-- Keyboard shortcut hint -->
+                <Transition name="shortcut-hint">
+                  <span v-if="showShortcutHint('delete')" class="shortcut-hint" aria-hidden="true">
+                    {{ modifierKey }}⌫
+                  </span>
+                </Transition>
               </NButton>
             </template>
             {{ t('favorites.manager.card.deleteConfirm', { title: favorite.title }) }}
@@ -281,7 +376,8 @@ import {
   PlayerPlay,
   Eye,
   Edit,
-  Trash
+  Trash,
+  Check
 } from '@vicons/tabler';
 import { useI18n } from 'vue-i18n';
 import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core';
@@ -296,9 +392,9 @@ interface Props {
   cardHeight?: number;
 }
 
-defineProps<Props>()
+const props = defineProps<Props>();
 
-defineEmits<{
+const emit = defineEmits<{
   'select': [favorite: FavoritePrompt];
   'edit': [favorite: FavoritePrompt];
   'copy': [favorite: FavoritePrompt];
@@ -618,7 +714,7 @@ const formatDate = (timestamp: number) => {
   box-shadow: 0 0 0 2px rgba(var(--primary-color), 0.2);
 }
 
-/* 操作按钮悬停显示 */
+/* 🎨 Palette: Enhanced action buttons */
 .card-actions {
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -628,17 +724,141 @@ const formatDate = (timestamp: number) => {
   opacity: 1;
 }
 
-/* 操作按钮微交互动画 */
-.card-actions :deep(.n-button) {
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* 🎨 Palette: Action button base styles */
+.action-btn {
+  position: relative;
+  overflow: visible !important;
 }
 
-.card-actions :deep(.n-button:hover) {
-  transform: scale(1.15);
+.action-btn :deep(.n-button__icon) {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card-actions :deep(.n-button:active) {
+/* 🎨 Palette: Hover effects */
+.action-btn:hover :deep(.n-button__icon) {
+  transform: scale(1.2);
+}
+
+.action-btn:active :deep(.n-button__icon) {
   transform: scale(0.95);
+}
+
+/* 🎨 Palette: Focus-visible state for keyboard navigation */
+.action-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* 🎨 Palette: Copy button success state */
+.copy-btn.copy-success {
+  color: var(--n-success-color, #18a058) !important;
+}
+
+.copy-btn.copy-success :deep(.n-button__icon) {
+  animation: icon-success-pop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🎨 Palette: Use button success state */
+.use-btn.use-success {
+  color: var(--n-success-color, #18a058) !important;
+}
+
+.use-btn.use-success :deep(.n-button__icon) {
+  animation: icon-success-pop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🎨 Palette: Success icon animation */
+@keyframes icon-success-pop {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-icon {
+  animation: checkmark-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes checkmark-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* 🎨 Palette: Keyboard shortcut hint badge */
+.shortcut-hint {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 9px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 2px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+  opacity: 0;
+  transform: scale(0.8);
+  animation: shortcut-hint-appear 0.2s ease forwards;
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.dark .shortcut-hint {
+  background: rgba(255, 255, 255, 0.85);
+  color: #1a1a1a;
+}
+
+@keyframes shortcut-hint-appear {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 🎨 Palette: Shortcut hint transition animations */
+.shortcut-hint-enter-active,
+.shortcut-hint-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shortcut-hint-enter-from {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.shortcut-hint-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+/* 🎨 Palette: Delete button hover effect */
+.delete-btn:hover {
+  background-color: rgba(var(--n-error-color-rgb, 240, 72, 72), 0.1) !important;
+}
+
+/* 🎨 Palette: Edit button hover effect */
+.edit-btn:hover {
+  background-color: rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.1) !important;
 }
 
 /* 移动端始终显示按钮 */
@@ -646,11 +866,66 @@ const formatDate = (timestamp: number) => {
   .card-actions {
     opacity: 1;
   }
+
+  /* 🎨 Palette: Hide keyboard shortcuts on mobile */
+  .shortcut-hint {
+    display: none;
+  }
 }
 
 .tooltip-text {
   white-space: pre-wrap;
   word-break: break-word;
   display: block;
+}
+
+/* 🎨 Palette: Respect reduced motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .action-btn :deep(.n-button__icon),
+  .action-btn:hover :deep(.n-button__icon),
+  .action-btn:active :deep(.n-button__icon) {
+    transition: none;
+    transform: none;
+  }
+
+  .copy-btn.copy-success :deep(.n-button__icon),
+  .use-btn.use-success :deep(.n-button__icon) {
+    animation: none;
+  }
+
+  .success-icon {
+    animation: none;
+  }
+
+  .shortcut-hint {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .shortcut-hint-enter-active,
+  .shortcut-hint-leave-active {
+    transition: opacity 0.1s ease;
+  }
+
+  .shortcut-hint-enter-from,
+  .shortcut-hint-leave-to {
+    transform: none;
+  }
+}
+
+/* 🎨 Palette: High contrast mode support */
+@media (prefers-contrast: high) {
+  .action-btn:focus-visible {
+    outline: 2px solid var(--n-primary-color, #18a058);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .copy-btn.copy-success,
+  .use-btn.use-success {
+    outline: 2px solid var(--n-success-color, #18a058);
+    outline-offset: 2px;
+  }
 }
 </style>
