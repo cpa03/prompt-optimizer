@@ -1,5 +1,6 @@
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+import { STORAGE_CONSTRAINTS } from '../../constants/constraints';
 
 /**
  * 简单的异步锁实现
@@ -130,7 +131,7 @@ export class LocalStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true, // 通过手动锁实现
       supportsBatch: true,
-      maxStorageSize: 5 * 1024 * 1024 // 约5MB
+      maxStorageSize: STORAGE_CONSTRAINTS.MAX_STORAGE_SIZE_BYTES
     };
   }
 

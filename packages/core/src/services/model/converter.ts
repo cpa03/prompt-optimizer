@@ -261,7 +261,7 @@ function createModelMeta(modelId: string, providerId: string, legacy: ModelConfi
   const defaultCapabilities = {
         supportsTools: providerId !== PROVIDER_IDS.GEMINI, // Gemini 工具支持可能不同
     supportsReasoning: modelId.includes('o1') || modelId.includes('reasoner') || modelId.includes('thinking'),
-    maxContextLength: 4096
+    maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT
   };
 
   // 根据模型 ID 调整 capabilities

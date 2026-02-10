@@ -1,6 +1,7 @@
 import { TextModelConfig, TextProvider, TextModel } from './types';
 import { ValidatedCustomModelEnvConfig, scanCustomModelEnvVars } from '../../utils/environment';
 import { getDefaultTextModels } from './defaults';
+import { MODEL_CONTEXT_LIMITS } from '../../constants/templates';
 
 /**
  * 获取静态模型键列表
@@ -64,7 +65,7 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
     capabilities: {
       supportsTools: false,
       supportsReasoning: false,
-      maxContextLength: 4096
+      maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT
     },
     parameterDefinitions: [
       {
