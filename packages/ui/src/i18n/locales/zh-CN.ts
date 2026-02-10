@@ -564,6 +564,14 @@ export default {
         valueRequired: "变量值不能为空",
         valueTooLong: "变量值不能超过5000个字符",
       },
+      fixSuggestions: {
+        label: "建议修复",
+        removeSpaces: "用下划线替换空格",
+        removeSpecialChars: "移除特殊字符",
+        addPrefix: "添加'var_'前缀",
+        toSnakeCase: "转换为蛇形命名",
+      },
+      fixApplied: "已应用修复",
     },
     preview: {
       title: "变量预览",

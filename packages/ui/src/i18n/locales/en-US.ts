@@ -585,6 +585,14 @@ export default {
         valueRequired: "Variable value is required",
         valueTooLong: "Variable value cannot exceed 5000 characters",
       },
+      fixSuggestions: {
+        label: "Suggested fixes",
+        removeSpaces: "Replace spaces with underscores",
+        removeSpecialChars: "Remove special characters",
+        addPrefix: "Add 'var_' prefix",
+        toSnakeCase: "Convert to snake_case",
+      },
+      fixApplied: "Fix applied",
     },
     preview: {
       title: "Variable Preview",
