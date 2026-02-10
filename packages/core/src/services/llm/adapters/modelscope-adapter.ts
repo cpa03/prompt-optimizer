@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -22,7 +23,7 @@ const MODELSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: false, // 未验证 ModelScope 的工具调用兼容性
       supportsReasoning: false,
-      maxContextLength: 131072
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K_BINARY
     }
   }
 ]
@@ -49,7 +50,7 @@ export class ModelScopeAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.modelscope,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://modelscope.cn/my/myaccesstoken',
+      apiKeyUrl: getTextProviderApiKeyUrl('modelscope')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

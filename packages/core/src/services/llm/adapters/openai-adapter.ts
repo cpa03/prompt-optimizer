@@ -5,6 +5,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { TIMEOUTS } from '../../../config/timeouts'
 import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 import type {
   TextProvider,
   TextModel,
@@ -35,7 +36,7 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: CONTEXT_LENGTHS.VERY_LARGE_1M_PLUS
     }
   },
   {
@@ -45,7 +46,7 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
+      maxContextLength: CONTEXT_LENGTHS.VERY_LARGE_1M_PLUS
     }
   }
 ]
@@ -75,7 +76,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.openai,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://platform.openai.com/api-keys',
+      apiKeyUrl: getTextProviderApiKeyUrl('openai')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

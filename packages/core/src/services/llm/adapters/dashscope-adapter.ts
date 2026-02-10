@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -21,7 +22,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 131072
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K_BINARY
     }
   },
   {
@@ -31,7 +32,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K_BINARY
     }
   },
   {
@@ -41,7 +42,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
+      maxContextLength: CONTEXT_LENGTHS.LARGE_1M
     }
   },
   {
@@ -51,7 +52,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K_BINARY
     }
   }
 ]
@@ -72,7 +73,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.dashscope,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key',
+      apiKeyUrl: getTextProviderApiKeyUrl('dashscope')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

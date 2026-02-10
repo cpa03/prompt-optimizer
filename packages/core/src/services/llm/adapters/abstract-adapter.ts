@@ -10,6 +10,7 @@ import type {
   ParameterDefinition
 } from '../types'
 import { RequestConfigError } from '../errors'
+import { CONTEXT_LENGTHS } from '../../../config/llm-models'
 
 /**
  * 抽象文本模型Provider适配器基类
@@ -328,7 +329,7 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
       capabilities: {
         supportsTools: true, // 默认支持工具
         supportsReasoning: true, // 默认支持推理
-        maxContextLength: 128000 // 默认上下文长度
+        maxContextLength: CONTEXT_LENGTHS.STANDARD_128K // 默认上下文长度
       },
       parameterDefinitions: this.getParameterDefinitions(modelId),
       defaultParameterValues: this.getDefaultParameterValues(modelId)

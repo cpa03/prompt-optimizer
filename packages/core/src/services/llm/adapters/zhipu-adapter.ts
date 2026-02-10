@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -18,7 +19,7 @@ const ZHIPU_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 128000
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K
     }
   },
   {
@@ -28,7 +29,7 @@ const ZHIPU_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 128000
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K
     }
   }
 ]
@@ -42,7 +43,7 @@ export class ZhipuAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.zhipu,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
+      apiKeyUrl: getTextProviderApiKeyUrl('zhipu')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

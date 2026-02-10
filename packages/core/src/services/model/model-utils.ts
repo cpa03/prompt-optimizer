@@ -1,6 +1,8 @@
 import { TextModelConfig, TextProvider, TextModel } from './types';
 import { ValidatedCustomModelEnvConfig, scanCustomModelEnvVars } from '../../utils/environment';
 import { getDefaultTextModels } from './defaults';
+import { PROVIDER_URLS } from '../../config';
+import { CONTEXT_LENGTHS } from '../../config/llm-models';
 
 /**
  * 获取静态模型键列表
@@ -41,7 +43,7 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
     name: 'OpenAI',
     description: 'OpenAI-compatible API',
     requiresApiKey: true,
-    defaultBaseURL: 'https://api.openai.com/v1',
+    defaultBaseURL: PROVIDER_URLS.openai,
     supportsDynamicModels: true,
     connectionSchema: {
       required: ['apiKey'],
@@ -64,7 +66,7 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
     capabilities: {
       supportsTools: false,
       supportsReasoning: false,
-      maxContextLength: 4096
+      maxContextLength: CONTEXT_LENGTHS.SMALL_4K
     },
     parameterDefinitions: [
       {

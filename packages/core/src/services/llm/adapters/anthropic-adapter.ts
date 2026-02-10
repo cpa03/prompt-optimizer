@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { MAX_TOKENS, CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 import type {
   TextProvider,
   TextModel,
@@ -16,7 +17,7 @@ import type {
 // Anthropic 建议对于非流式请求使用较小的 max_tokens 值
 // 过大的值可能触发 "Streaming is required for operations that may take longer than 10 minutes" 错误
 // 参考: https://github.com/anthropics/anthropic-sdk-typescript#long-requests
-const DEFAULT_MAX_TOKENS = 8192
+const DEFAULT_MAX_TOKENS = MAX_TOKENS.REASONING
 
 /**
  * Anthropic 官方 SDK 适配器实现
@@ -44,7 +45,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.anthropic,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://console.anthropic.com/settings/keys',
+      apiKeyUrl: getTextProviderApiKeyUrl('anthropic')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -73,7 +74,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         capabilities: {
                     supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: CONTEXT_LENGTHS.MAX_200K
         },
         parameterDefinitions: this.getParameterDefinitions('claude-opus-4-20250514'),
         defaultParameterValues: this.getDefaultParameterValues('claude-opus-4-20250514')
@@ -86,7 +87,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         capabilities: {
                     supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: CONTEXT_LENGTHS.MAX_200K
         },
         parameterDefinitions: this.getParameterDefinitions('claude-sonnet-4-20250514'),
         defaultParameterValues: this.getDefaultParameterValues('claude-sonnet-4-20250514')

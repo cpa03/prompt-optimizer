@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -18,7 +19,7 @@ const OPENROUTER_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 96000
+      maxContextLength: CONTEXT_LENGTHS.LARGE_96K
     }
   }
 ]
@@ -32,7 +33,7 @@ export class OpenRouterAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.openrouter,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://openrouter.ai/settings/keys',
+      apiKeyUrl: getTextProviderApiKeyUrl('openrouter')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

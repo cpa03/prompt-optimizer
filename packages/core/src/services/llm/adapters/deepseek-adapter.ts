@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -18,7 +19,7 @@ const DEEPSEEK_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 128000
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K
     }
   },
   {
@@ -27,7 +28,7 @@ const DEEPSEEK_STATIC_MODELS: ModelOverride[] = [
     description: 'DeepSeek reasoning model with step-by-step thinking outputs',
     capabilities: {
       supportsReasoning: true,
-      maxContextLength: 128000
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K
     }
   }
 ]
@@ -41,7 +42,7 @@ export class DeepseekAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.deepseek,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://platform.deepseek.com/api_keys',
+      apiKeyUrl: getTextProviderApiKeyUrl('deepseek')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

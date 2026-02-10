@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 import type {
   TextProvider,
   TextModel,
@@ -39,7 +40,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
+      maxContextLength: CONTEXT_LENGTHS.LARGE_1M
     }
   },
   {
@@ -49,7 +50,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: CONTEXT_LENGTHS.LARGE_1M
     }
   },
   {
@@ -59,7 +60,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
+      maxContextLength: CONTEXT_LENGTHS.LARGE_1M
     }
   }
 ]
@@ -92,7 +93,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: true, // 新版 SDK 支持动态模型获取
-      apiKeyUrl: 'https://aistudio.google.com/apikey',
+      apiKeyUrl: getTextProviderApiKeyUrl('gemini')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -168,7 +169,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
           capabilities: {
             supportsTools: true,
             supportsReasoning: false,
-            maxContextLength: model.inputTokenLimit || 1000000
+            maxContextLength: model.inputTokenLimit || CONTEXT_LENGTHS.LARGE_1M
           },
           parameterDefinitions: this.getParameterDefinitions(model.name || ''),
           defaultParameterValues: this.getDefaultParameterValues(model.name || '')

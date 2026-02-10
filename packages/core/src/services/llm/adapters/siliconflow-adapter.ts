@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { CONTEXT_LENGTHS, getTextProviderApiKeyUrl } from '../../../config/llm-models'
 
 interface ModelOverride {
   id: string
@@ -18,7 +19,7 @@ const SILICONFLOW_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 128000
+      maxContextLength: CONTEXT_LENGTHS.STANDARD_128K
     }
   }
 ]
@@ -32,7 +33,7 @@ export class SiliconflowAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.siliconflow,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://cloud.siliconflow.cn/account/ak',
+      apiKeyUrl: getTextProviderApiKeyUrl('siliconflow')!,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
