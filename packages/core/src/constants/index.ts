@@ -7,6 +7,15 @@
 // Template constants
 export * from './templates';
 
+// Template IDs - eliminates hardcoded template identifiers
+export * from './template-ids';
+
+// Message roles - eliminates hardcoded LLM message role strings
+export * from './message-roles';
+
+// Provider IDs - eliminates hardcoded provider identifiers
+export * from './provider-ids';
+
 // Error codes
 export * from './error-codes';
 

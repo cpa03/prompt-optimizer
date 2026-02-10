@@ -3,6 +3,7 @@ import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { LLM_CONSTRAINTS } from '../../../constants/constraints'
+import { MESSAGE_ROLES } from '../../../constants/message-roles'
 import type {
   TextProvider,
   TextModel,
@@ -585,7 +586,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 提取系统消息
    */
   private extractSystemMessage(messages: Message[]): string | undefined {
-    const systemMessages = messages.filter(msg => msg.role === 'system')
+    const systemMessages = messages.filter(msg => msg.role === MESSAGE_ROLES.SYSTEM)
     return systemMessages.length > 0
       ? systemMessages.map(msg => msg.content).join('\n')
       : undefined
