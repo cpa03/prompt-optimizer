@@ -33,8 +33,9 @@
       </NSpace>
     </template>
 
-    <NScrollbar style="max-height: 65vh;">
-        <TransitionGroup name="history-item" tag="div" class="history-list" v-if="sortedHistory && sortedHistory.length > 0">
+    <div class="history-scrollbar-wrapper">
+      <NScrollbar ref="historyScrollbarRef" style="max-height: 65vh;" class="history-scrollbar">
+          <TransitionGroup name="history-item" tag="div" class="history-list" v-if="sortedHistory && sortedHistory.length > 0">
         <NCard
           v-for="chain in filteredHistory"
           :key="chain.chainId"
@@ -217,7 +218,15 @@
           </NText>
         </template>
       </NEmpty>
-    </NScrollbar>
+      </NScrollbar>
+      <!-- 🎨 Palette: Scroll-to-top button for long history lists -->
+      <ScrollToTop
+        v-if="sortedHistory && sortedHistory.length > 3"
+        container=".history-scrollbar .n-scrollbar-container"
+        :threshold="300"
+        :teleport="false"
+      />
+    </div>
   </NModal>
 </template>
 
@@ -226,12 +235,13 @@ import { ref, watch, computed, type PropType } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import {
-  NModal, NScrollbar, NSpace, NCard, NText, NTag, NButton, 
+  NModal, NScrollbar, NSpace, NCard, NText, NTag, NButton,
   NDivider, NCollapse, NCollapseItem, NEmpty, NInput
 } from 'naive-ui'
 import type { PromptRecord, PromptRecordChain } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { formatDate } from '../utils/date'
+import ScrollToTop from './ScrollToTop.vue'
 import { truncateText } from '../utils/text'
 
 const props = defineProps({
@@ -259,6 +269,7 @@ const emit = defineEmits<{
 // Toast functionality reserved for future use
 void useToast
 const expandedVersions = ref<Record<string, boolean>>({})
+const historyScrollbarRef = ref<InstanceType<typeof NScrollbar> | null>(null)
 const searchQuery = ref('')
 
 // 🎨 Palette: Track which history item is being removed for animation
@@ -581,5 +592,14 @@ const deleteChain = async (chainId: string) => {
     opacity: 1;
     transform: none;
   }
+}
+
+/* 🎨 Palette: Scrollbar wrapper for scroll-to-top positioning */
+.history-scrollbar-wrapper {
+  position: relative;
+}
+
+.history-scrollbar :deep(.n-scrollbar-container) {
+  position: relative;
 }
 </style> 
