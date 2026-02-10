@@ -12,15 +12,18 @@ import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
+import { BROCULA_CONFIG, SERVER_CONFIG } from './config/constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Use centralized configuration
 const CONFIG = {
-  mainBranch: 'develop',
-  minLighthouseScore: 90,
-  checkInterval: 300000, // 5 minutes in continuous mode
-  maxRetries: 3
+  mainBranch: BROCULA_CONFIG.MAIN_BRANCH,
+  minLighthouseScore: BROCULA_CONFIG.MIN_LIGHTHOUSE_SCORE,
+  checkInterval: BROCULA_CONFIG.CHECK_INTERVAL_MS,
+  maxRetries: BROCULA_CONFIG.MAX_RETRIES,
+  devServerStartupWaitMs: SERVER_CONFIG.DEV_SERVER_STARTUP_WAIT_MS
 };
 
 class BroCulaMaster {
@@ -204,7 +207,7 @@ class BroCulaMaster {
 
     // Wait for server to be ready
     console.log('Waiting for server to start...');
-    await this.sleep(10000); // Give it 10 seconds
+    await this.sleep(CONFIG.devServerStartupWaitMs);
 
     console.log('✓ Dev server started\n');
     return server;
@@ -232,7 +235,7 @@ class BroCulaMaster {
       // Run the console monitor script
       execSync('node scripts/brocula-console-monitor.js', { 
         stdio: 'inherit',
-        timeout: 120000
+        timeout: BROCULA_CONFIG.CONSOLE_MONITOR_TIMEOUT_MS
       });
       console.log('✅ NO CONSOLE ERRORS FOUND\n');
     } catch (error) {
@@ -264,7 +267,7 @@ class BroCulaMaster {
       // Run the lighthouse optimizer script
       execSync('node scripts/brocula-lighthouse.js', { 
         stdio: 'inherit',
-        timeout: 120000
+        timeout: BROCULA_CONFIG.LIGHTHOUSE_TIMEOUT_MS
       });
       console.log('✅ LIGHTHOUSE AUDIT PASSED\n');
     } catch (error) {
