@@ -1,106 +1,115 @@
 /**
  * Core constraints and limits
  * Centralizes all validation limits and constraints for easy maintenance
+ * Flexy loves modularity - all values are now environment-configurable!
  */
 
-// Validation constraints
+import { getEnvInt } from '../config/env';
+
+// Validation constraints - now environment-configurable
 export const VALIDATION_CONSTRAINTS = {
   // Key length limits
-  KEY_MAX_LENGTH: 50,
-  KEY_MIN_LENGTH: 1,
-  
+  KEY_MAX_LENGTH: getEnvInt('VALIDATION_KEY_MAX_LENGTH', 50),
+  KEY_MIN_LENGTH: getEnvInt('VALIDATION_KEY_MIN_LENGTH', 1),
+
   // Value length limits  
-  VALUE_MAX_LENGTH: 1000,
-  
+  VALUE_MAX_LENGTH: getEnvInt('VALIDATION_VALUE_MAX_LENGTH', 1000),
+
   // Variable constraints
-  VARIABLE_NAME_MAX_LENGTH: 50,
-  VARIABLE_VALUE_MAX_LENGTH: 10000,
-  VARIABLE_DISPLAY_MAX_LENGTH: 5000,
-  VARIABLE_HISTORY_MAX_ITEMS: 50,
-  
+  VARIABLE_NAME_MAX_LENGTH: getEnvInt('VALIDATION_VARIABLE_NAME_MAX_LENGTH', 50),
+  VARIABLE_VALUE_MAX_LENGTH: getEnvInt('VALIDATION_VARIABLE_VALUE_MAX_LENGTH', 10000),
+  VARIABLE_DISPLAY_MAX_LENGTH: getEnvInt('VALIDATION_VARIABLE_DISPLAY_MAX_LENGTH', 5000),
+  VARIABLE_HISTORY_MAX_ITEMS: getEnvInt('VALIDATION_VARIABLE_HISTORY_MAX_ITEMS', 50),
+
   // Cache constraints
-  MAX_CACHE_SIZE: 100,
-  
+  MAX_CACHE_SIZE: getEnvInt('VALIDATION_MAX_CACHE_SIZE', 100),
+
   // Input history constraints
-  INPUT_HISTORY_MAX_ITEMS: 50,
-  INPUT_HISTORY_MERGE_THRESHOLD_MS: 1000,
-  
+  INPUT_HISTORY_MAX_ITEMS: getEnvInt('VALIDATION_INPUT_HISTORY_MAX_ITEMS', 50),
+  INPUT_HISTORY_MERGE_THRESHOLD_MS: getEnvInt('VALIDATION_INPUT_HISTORY_MERGE_THRESHOLD_MS', 1000),
+
   // Description length
-  MAX_DESCRIPTION_LENGTH: 200,
+  MAX_DESCRIPTION_LENGTH: getEnvInt('VALIDATION_MAX_DESCRIPTION_LENGTH', 200),
 } as const
 
-// Storage constraints
+// Storage constraints - now environment-configurable
 export const STORAGE_CONSTRAINTS = {
   // Write delay for batching
-  WRITE_DELAY_MS: 500,
-  MAX_FLUSH_TIME_MS: 3000,
-  
+  WRITE_DELAY_MS: getEnvInt('STORAGE_WRITE_DELAY_MS', 500),
+  MAX_FLUSH_TIME_MS: getEnvInt('STORAGE_MAX_FLUSH_TIME_MS', 3000),
+
   // Large value threshold
-  LARGE_VALUE_THRESHOLD: 10000,
-  
+  LARGE_VALUE_THRESHOLD: getEnvInt('STORAGE_LARGE_VALUE_THRESHOLD', 10000),
+
   // Maximum file operations
-  MAX_CONCURRENT_WRITES: 3,
+  MAX_CONCURRENT_WRITES: getEnvInt('STORAGE_MAX_CONCURRENT_WRITES', 3),
 } as const
 
-// Prompt constraints
+// Prompt constraints - now environment-configurable
 export const PROMPT_CONSTRAINTS = {
   // Max length for prompt display
-  MAX_DISPLAY_LENGTH: 200,
-  
-  // Template complexity threshold
-  HIGH_COMPLEXITY_THRESHOLD: 0.8,
-  HIGH_LENGTH_THRESHOLD: 1000,
+  MAX_DISPLAY_LENGTH: getEnvInt('PROMPT_MAX_DISPLAY_LENGTH', 200),
+
+  // Template complexity threshold - stored as integer (0-100) for easier env var usage
+  HIGH_COMPLEXITY_THRESHOLD: getEnvInt('PROMPT_HIGH_COMPLEXITY_THRESHOLD', 80) / 100,
+  HIGH_LENGTH_THRESHOLD: getEnvInt('PROMPT_HIGH_LENGTH_THRESHOLD', 1000),
 } as const
 
-// LLM constraints
+// LLM constraints - now environment-configurable
 export const LLM_CONSTRAINTS = {
   // Default token limits
-  DEFAULT_MAX_TOKENS: 8192,
-  MIN_THINKING_BUDGET_TOKENS: 1024,
-  
-  // Context length limits by provider
-  MAX_CONTEXT_LENGTH_CLAUDE: 128000,
-  MAX_CONTEXT_LENGTH_GEMINI: 1000000,
-  MAX_CONTEXT_LENGTH_GPT4: 200000,
-  MAX_CONTEXT_LENGTH_DEFAULT: 8192,
+  DEFAULT_MAX_TOKENS: getEnvInt('LLM_DEFAULT_MAX_TOKENS', 8192),
+  MIN_THINKING_BUDGET_TOKENS: getEnvInt('LLM_MIN_THINKING_BUDGET_TOKENS', 1024),
+
+  // Context length limits by provider - now environment-configurable
+  MAX_CONTEXT_LENGTH_CLAUDE: getEnvInt('LLM_MAX_CONTEXT_LENGTH_CLAUDE', 128000),
+  MAX_CONTEXT_LENGTH_GEMINI: getEnvInt('LLM_MAX_CONTEXT_LENGTH_GEMINI', 1000000),
+  MAX_CONTEXT_LENGTH_GPT4: getEnvInt('LLM_MAX_CONTEXT_LENGTH_GPT4', 200000),
+  MAX_CONTEXT_LENGTH_DEFAULT: getEnvInt('LLM_MAX_CONTEXT_LENGTH_DEFAULT', 8192),
 } as const
 
-// Image constraints
+// Image constraints - now environment-configurable
 export const IMAGE_CONSTRAINTS = {
   // Polling intervals
-  DEFAULT_POLL_INTERVAL_MS: 2000,
-  
-  // Image size limits (in bytes)
-  MAX_IMAGE_SIZE_BYTES: 10 * 1024 * 1024, // 10MB
-  
-  // Supported MIME types
-  SUPPORTED_MIME_TYPES: ['image/png', 'image/jpeg', 'image/webp', 'image/gif'],
+  DEFAULT_POLL_INTERVAL_MS: getEnvInt('IMAGE_DEFAULT_POLL_INTERVAL_MS', 2000),
+
+  // Image size limits (in MB, converted to bytes)
+  MAX_IMAGE_SIZE_BYTES: getEnvInt('IMAGE_MAX_SIZE_MB', 10) * 1024 * 1024,
+
+  // Supported MIME types - using env string with comma separation
+  SUPPORTED_MIME_TYPES: (() => {
+    const envTypes = process?.env?.['IMAGE_SUPPORTED_MIME_TYPES'];
+    if (envTypes) {
+      return envTypes.split(',').map(t => t.trim());
+    }
+    return ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+  })(),
 } as const
 
-// Session constraints
+// Session constraints - now environment-configurable
 export const SESSION_CONSTRAINTS = {
   // Timeouts
-  INIT_TIMEOUT_MS: 5000,
-  RETRY_DELAY_MS: 50,
-  INIT_DELAY_MS: 0,
-  
+  INIT_TIMEOUT_MS: getEnvInt('SESSION_INIT_TIMEOUT_MS', 5000),
+  RETRY_DELAY_MS: getEnvInt('SESSION_RETRY_DELAY_MS', 50),
+  INIT_DELAY_MS: getEnvInt('SESSION_INIT_DELAY_MS', 0),
+
   // GC and cleanup
-  GC_DELAY_MS: 0,
-  MEMORY_CHECK_INTERVAL_MS: 5000,
+  GC_DELAY_MS: getEnvInt('SESSION_GC_DELAY_MS', 0),
+  MEMORY_CHECK_INTERVAL_MS: getEnvInt('SESSION_MEMORY_CHECK_INTERVAL_MS', 5000),
 } as const
 
-// API constraints
+// API constraints - now environment-configurable
 export const API_CONSTRAINTS = {
   // Timeout defaults
-  DEFAULT_TIMEOUT_MS: 5000,
-  LONG_OPERATION_TIMEOUT_MS: 10000,
-  
+  DEFAULT_TIMEOUT_MS: getEnvInt('API_DEFAULT_TIMEOUT_MS', 5000),
+  LONG_OPERATION_TIMEOUT_MS: getEnvInt('API_LONG_OPERATION_TIMEOUT_MS', 10000),
+
   // Rate limiting
-  MIN_REQUEST_DELAY_MS: 100,
-  MAX_REQUEST_DELAY_MS: 1000,
-  
+  MIN_REQUEST_DELAY_MS: getEnvInt('API_MIN_REQUEST_DELAY_MS', 100),
+  MAX_REQUEST_DELAY_MS: getEnvInt('API_MAX_REQUEST_DELAY_MS', 1000),
+
   // Pagination
-  DEFAULT_PAGE_SIZE: 100,
+  DEFAULT_PAGE_SIZE: getEnvInt('API_DEFAULT_PAGE_SIZE', 100),
 } as const
 
 // Export all constraints
@@ -113,3 +122,6 @@ export const CORE_CONSTRAINTS = {
   SESSION: SESSION_CONSTRAINTS,
   API: API_CONSTRAINTS,
 } as const
+
+// Re-export env helpers for convenience
+export { getEnvInt, getEnvFloat, getEnvString, getEnvBoolean as getEnvBool } from '../config/env';
