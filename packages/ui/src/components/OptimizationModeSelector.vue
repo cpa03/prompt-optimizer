@@ -110,6 +110,61 @@ const updateOptimizationMode = (mode: SubMode) => {
 </script>
 
 <style scoped>
+.optimization-mode-selector {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced radio button interactions - 🎨 Palette: Micro-UX improvements */
+.optimization-mode-selector :deep(.n-radio-button) {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover lift effect */
+.optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Active/click press effect */
+.optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
+  transform: scale(0.98) translateY(0);
+}
+
+/* Selected state enhancement */
+.optimization-mode-selector :deep(.n-radio-button.n-radio-button--checked) {
+  font-weight: 500;
+}
+
+/* Ripple effect on click */
+.optimization-mode-selector :deep(.n-radio-button::after) {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.optimization-mode-selector :deep(.n-radio-button:active::after) {
+  width: 100px;
+  height: 100px;
+  opacity: 1;
+}
+
+/* Focus visible styling for accessibility */
+.optimization-mode-selector :deep(.n-radio-button:focus-visible) {
+  outline: 2px solid var(--n-primary-color);
+  outline-offset: 2px;
+}
+
 /* 响应式设计 - 移动端全宽显示 */
 @media (max-width: 640px) {
   .optimization-mode-selector {
@@ -118,6 +173,25 @@ const updateOptimizationMode = (mode: SubMode) => {
 
   .optimization-mode-selector :deep(.n-radio-button) {
     flex: 1;
+  }
+}
+
+/* Respect reduced motion preference for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .optimization-mode-selector,
+  .optimization-mode-selector :deep(.n-radio-button),
+  .optimization-mode-selector :deep(.n-radio-button::after) {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
+    transform: none;
   }
 }
 </style>
