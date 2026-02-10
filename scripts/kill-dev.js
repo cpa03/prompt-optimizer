@@ -14,11 +14,26 @@
 
 const { execSync } = require('child_process');
 const os = require('os');
+const path = require('path');
+
+// Import configuration (supports both ESM and CommonJS)
+const configPath = path.join(__dirname, 'config', 'constants.js');
+let SERVER_CONFIG;
+try {
+  const config = require(configPath);
+  SERVER_CONFIG = config.SERVER_CONFIG;
+} catch (e) {
+  // Fallback if config not available
+  SERVER_CONFIG = {
+    DEFAULT_PORT: 18181,
+    KILL_DEV_WAIT_MS: 2000
+  };
+}
 
 console.log('🧹 Safely cleaning up project development processes...\n');
 
 // Limit to project-specific ports so we do not kill other apps using defaults like 5173
-const PORTS = [18181];
+const PORTS = [SERVER_CONFIG.DEFAULT_PORT];
 
 /**
  * Cross-platform non-blocking sleep
@@ -103,8 +118,9 @@ async function main() {
 
     if (totalKilled > 0) {
       // Wait for parent processes to exit naturally (cross-platform)
-      console.log('\n⏳ Waiting 2 seconds for parent processes to exit naturally...\n');
-      await wait(2000);
+      const waitMs = SERVER_CONFIG.KILL_DEV_WAIT_MS;
+      console.log(`\n⏳ Waiting ${waitMs / 1000} seconds for parent processes to exit naturally...\n`);
+      await wait(waitMs);
 
       // Second round cleanup (ensure no missed processes)
       const round2Killed = killByPorts(2);
