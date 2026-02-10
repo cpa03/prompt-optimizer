@@ -51,7 +51,7 @@
 import { computed, ref, watch } from 'vue'
 import { NSpin, NPopover } from 'naive-ui'
 import EvaluationHoverCard from './EvaluationHoverCard.vue'
-import { COMPONENT_CONSTANTS } from '../../config/constants'
+import { COMPONENT_CONSTANTS, ANIMATION_CONSTANTS } from '../../config/constants'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import type { ScoreLevel } from './types'
 
@@ -102,23 +102,23 @@ const emit = defineEmits<{
 
 // 🎨 Palette: Score animation utilities
 const animateScoreChange = (from: number, to: number) => {
-  const duration = 800 // ms
+  const duration = ANIMATION_CONSTANTS.SCORE_CHANGE_DURATION_MS
   const startTime = performance.now()
   const diff = to - from
-  
+
   // Determine direction for indicator
   if (diff > 0) {
     scoreChangeDirection.value = 'up'
   } else if (diff < 0) {
     scoreChangeDirection.value = 'down'
   }
-  
+
   // Show change indicator briefly
   if (diff !== 0) {
     showScoreChangeIndicator.value = true
     setTimeout(() => {
       showScoreChangeIndicator.value = false
-    }, 2000)
+    }, ANIMATION_CONSTANTS.SCORE_INDICATOR_TIMEOUT_MS)
   }
   
   // Start update animation
