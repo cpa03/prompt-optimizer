@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import type { TextModel, TextModelConfig, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { OLLAMA_CONFIG } from '../../../config'
+import { PROVIDER_OLLAMA } from '../../../constants'
 
 const OLLAMA_DEFAULT_BASE_URL = OLLAMA_CONFIG.defaultBaseURL
 
@@ -11,7 +12,7 @@ const OLLAMA_FALLBACK_API_KEY = OLLAMA_CONFIG.fallbackApiKey
 export class OllamaAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'ollama',
+      id: PROVIDER_OLLAMA,
       name: 'Ollama',
       description: 'Local Ollama (OpenAI-compatible API)',
       // Ollama can be configured with CORS/reverse-proxy; don't hard-mark it as browser-blocked.

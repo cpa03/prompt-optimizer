@@ -50,6 +50,30 @@ export const PROVIDER_OPENAI = 'openai' as const
  */
 export const PROVIDER_CUSTOM = 'custom' as const
 
+/**
+ * DashScope provider ID
+ * Alibaba DashScope models provider
+ */
+export const PROVIDER_DASHSCOPE = 'dashscope' as const
+
+/**
+ * OpenRouter provider ID
+ * OpenRouter universal API provider
+ */
+export const PROVIDER_OPENROUTER = 'openrouter' as const
+
+/**
+ * ModelScope provider ID
+ * Alibaba ModelScope provider
+ */
+export const PROVIDER_MODELSCOPE = 'modelscope' as const
+
+/**
+ * Ollama provider ID
+ * Local Ollama models provider
+ */
+export const PROVIDER_OLLAMA = 'ollama' as const
+
 // ============================================================================
 // Provider Registry
 // ============================================================================
@@ -66,6 +90,10 @@ export const PROVIDER_IDS = {
   ZHIPU: PROVIDER_ZHIPU,
   OPENAI: PROVIDER_OPENAI,
   CUSTOM: PROVIDER_CUSTOM,
+  DASHSCOPE: PROVIDER_DASHSCOPE,
+  OPENROUTER: PROVIDER_OPENROUTER,
+  MODELSCOPE: PROVIDER_MODELSCOPE,
+  OLLAMA: PROVIDER_OLLAMA,
 } as const
 
 /**
@@ -80,6 +108,10 @@ export const LEGACY_PROVIDER_MAP: Record<string, string> = {
   [PROVIDER_ZHIPU]: PROVIDER_ZHIPU,
   [PROVIDER_OPENAI]: PROVIDER_OPENAI,
   [PROVIDER_CUSTOM]: PROVIDER_OPENAI, // Custom defaults to OpenAI
+  [PROVIDER_DASHSCOPE]: PROVIDER_DASHSCOPE,
+  [PROVIDER_OPENROUTER]: PROVIDER_OPENROUTER,
+  [PROVIDER_MODELSCOPE]: PROVIDER_MODELSCOPE,
+  [PROVIDER_OLLAMA]: PROVIDER_OLLAMA,
 } as const
 
 /**
@@ -100,6 +132,10 @@ export const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
   [PROVIDER_ZHIPU]: 'Zhipu AI',
   [PROVIDER_OPENAI]: 'OpenAI',
   [PROVIDER_CUSTOM]: 'Custom',
+  [PROVIDER_DASHSCOPE]: 'DashScope',
+  [PROVIDER_OPENROUTER]: 'OpenRouter',
+  [PROVIDER_MODELSCOPE]: 'ModelScope',
+  [PROVIDER_OLLAMA]: 'Ollama',
 } as const
 
 /**
@@ -114,6 +150,10 @@ export const PROVIDER_DESCRIPTIONS: Record<string, string> = {
   [PROVIDER_ZHIPU]: 'Zhipu GLM OpenAI-compatible models',
   [PROVIDER_OPENAI]: 'OpenAI GPT models and OpenAI-compatible APIs',
   [PROVIDER_CUSTOM]: 'Custom OpenAI-compatible endpoints',
+  [PROVIDER_DASHSCOPE]: 'Alibaba DashScope models',
+  [PROVIDER_OPENROUTER]: 'OpenRouter universal API',
+  [PROVIDER_MODELSCOPE]: 'Alibaba ModelScope models',
+  [PROVIDER_OLLAMA]: 'Local Ollama models',
 } as const
 
 // ============================================================================

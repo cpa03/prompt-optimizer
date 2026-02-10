@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_SILICONFLOW } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -26,7 +27,7 @@ const SILICONFLOW_STATIC_MODELS: ModelOverride[] = [
 export class SiliconflowAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'siliconflow',
+      id: PROVIDER_SILICONFLOW,
       name: 'SiliconFlow',
       description: 'SiliconFlow OpenAI-compatible models',
       requiresApiKey: true,

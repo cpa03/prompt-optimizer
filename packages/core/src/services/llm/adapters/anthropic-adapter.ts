@@ -4,6 +4,7 @@ import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { LLM_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
+import { PROVIDER_ANTHROPIC } from '../../../constants'
 import type {
   TextProvider,
   TextModel,
@@ -38,7 +39,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    */
   public getProvider(): TextProvider {
     return {
-      id: 'anthropic',
+      id: PROVIDER_ANTHROPIC,
       name: 'Anthropic',
       description: 'Anthropic Claude models (Official SDK)',
       requiresApiKey: true,
@@ -61,7 +62,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 从service.ts的fetchAnthropicModelsInfo迁移 (L1115-1120)
    */
   public getModels(): TextModel[] {
-    const providerId = 'anthropic'
+    const providerId = PROVIDER_ANTHROPIC
 
     return [
       // Claude 4.0 系列

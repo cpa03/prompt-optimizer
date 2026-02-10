@@ -15,6 +15,7 @@ import {
 } from './converter';
 import type { ITextAdapterRegistry } from '../llm/types';
 import { SERVICE_KEYS } from '../../config/core-config';
+import { PROVIDER_OLLAMA } from '../../constants';
 
 /**
  * 模型管理器实现
@@ -252,7 +253,7 @@ export class ModelManager implements IModelManager {
 
     // Historical metadata might incorrectly mark Ollama as CORS-restricted.
     // Ollama can be configured (CORS/reverse-proxy), so we force-disable the tag.
-    if (providerId === 'ollama') {
+    if (providerId === PROVIDER_OLLAMA) {
       if (providerMeta.corsRestricted === false) {
         return config
       }
