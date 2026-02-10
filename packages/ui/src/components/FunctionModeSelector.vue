@@ -1,4 +1,12 @@
-<!-- 功能模式选择器组件 - 使用 Naive UI RadioGroup -->
+<!--
+  🎨 Palette: FunctionModeSelector Component
+  Enhanced with micro-UX improvements for better user experience:
+  - Smooth hover lift effects with subtle shadows
+  - Click ripple animation for tactile feedback
+  - Focus-visible rings for keyboard navigation accessibility
+  - Reduced motion support for users with motion sensitivity
+  - Selected state visual enhancement
+-->
 <template>
   <NRadioGroup data-testid="function-mode-selector"
     :value="modelValue"
@@ -62,30 +70,35 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Enhanced radio button interactions */
+/* 🎨 Palette: Enhanced radio button interactions with smooth animations */
 .function-mode-selector :deep(.n-radio-button) {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-/* Hover lift effect */
+/* 🎨 Palette: Hover lift effect for tactile feedback */
 .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Active/click press effect */
+/* 🎨 Palette: Active/click press effect */
 .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
   transform: scale(0.98) translateY(0);
 }
 
-/* Selected state enhancement */
+/* 🎨 Palette: Selected state enhancement with subtle glow */
 .function-mode-selector :deep(.n-radio-button.n-radio-button--checked) {
   font-weight: 500;
 }
 
-/* Ripple effect on click */
+/* 🎨 Palette: Hover glow effect for selected state */
+.function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25);
+}
+
+/* 🎨 Palette: Ripple effect on click for tactile feedback */
 .function-mode-selector :deep(.n-radio-button::after) {
   content: '';
   position: absolute;
@@ -107,10 +120,42 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
   opacity: 1;
 }
 
-/* Focus visible styling for accessibility */
+/* 🎨 Palette: Focus-visible rings for keyboard navigation accessibility */
 .function-mode-selector :deep(.n-radio-button:focus-visible) {
   outline: 2px solid var(--n-primary-color);
   outline-offset: 2px;
+}
+
+/* 🎨 Palette: Dark mode adjustments */
+.dark .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark .function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.35);
+}
+
+/* 🎨 Palette: Respect reduced motion preference for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .function-mode-selector,
+  .function-mode-selector :deep(.n-radio-button),
+  .function-mode-selector :deep(.n-radio-button::after) {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
+    transform: none;
+  }
+  
+  .function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+    box-shadow: none;
+  }
 }
 
 /* 响应式设计 - 移动端全宽显示 */
