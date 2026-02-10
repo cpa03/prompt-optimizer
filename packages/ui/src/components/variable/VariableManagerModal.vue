@@ -388,7 +388,7 @@ import {
 } from "naive-ui";
 import { useResponsive } from "../../composables/ui/useResponsive";
 import { useClipboard } from "../../composables/ui/useClipboard";
-import { UI_DIMENSIONS, SPACING, FONT_SIZES } from "../../config/constants";
+import { UI_DIMENSIONS, SPACING, FONT_SIZES, ANIMATION_CONSTANTS } from "../../config/constants";
 import { truncateText } from "../../utils/text";
 import type {
     VariableManagerModalProps,
@@ -401,6 +401,14 @@ import VariableImporter from "./VariableImporter.vue";
 
 const { t } = useI18n();
 const { copyText } = useClipboard();
+
+// Animation constants for CSS v-bind
+const animDurationSlow = ANIMATION_CONSTANTS.ANIMATION_DURATION_SLOW_S;
+const animDurationVerySlow = ANIMATION_CONSTANTS.ANIMATION_DURATION_VERY_SLOW_S;
+const animDelayNone = ANIMATION_CONSTANTS.ANIMATION_DELAY_NONE;
+const animDelayLong = ANIMATION_CONSTANTS.ANIMATION_DELAY_LONG;
+const animDelayVeryLong = ANIMATION_CONSTANTS.ANIMATION_DELAY_VERY_LONG;
+const successColorRgb = '24, 160, 88'; // THEME_COLORS.SUCCESS without #
 
 interface VariableRow {
     name: string;
@@ -1161,26 +1169,26 @@ const executeExport = () => {
 }
 
 .variable-tag-icon {
-  animation: variable-tag-float 3s ease-in-out infinite;
+  animation: variable-tag-float v-bind('animDurationVerySlow') ease-in-out infinite;
 }
 
 .variable-sparkle {
   position: absolute;
   font-size: 14px;
   opacity: 0;
-  animation: variable-sparkle-twinkle 2s ease-in-out infinite;
+  animation: variable-sparkle-twinkle v-bind('animDurationSlow') ease-in-out infinite;
 }
 
 .variable-sparkle-1 {
   top: -4px;
   right: -4px;
-  animation-delay: 0s;
+  animation-delay: v-bind('animDelayNone');
 }
 
 .variable-sparkle-2 {
   bottom: 0;
   left: -4px;
-  animation-delay: 0.6s;
+  animation-delay: v-bind('animDelayLong');
 }
 
 .variable-empty-content {
@@ -1199,8 +1207,8 @@ const executeExport = () => {
 }
 
 .variable-empty-action {
-  animation: variable-action-pulse 2s ease-in-out infinite;
-  animation-delay: 1s;
+  animation: variable-action-pulse v-bind('animDurationSlow') ease-in-out infinite;
+  animation-delay: v-bind('animDelayVeryLong');
 }
 
 @keyframes variable-tag-float {
@@ -1226,11 +1234,11 @@ const executeExport = () => {
 @keyframes variable-action-pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.2);
+    box-shadow: 0 0 0 0 rgba(v-bind('successColorRgb'), 0.2);
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 0 4px rgba(24, 160, 88, 0);
+    box-shadow: 0 0 0 4px rgba(v-bind('successColorRgb'), 0);
   }
 }
 
