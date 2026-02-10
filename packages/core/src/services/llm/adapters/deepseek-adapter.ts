@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_DEEPSEEK } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -35,7 +36,7 @@ const DEEPSEEK_STATIC_MODELS: ModelOverride[] = [
 export class DeepseekAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'deepseek',
+      id: PROVIDER_DEEPSEEK,
       name: 'DeepSeek',
       description: 'DeepSeek OpenAI-compatible models',
       requiresApiKey: true,

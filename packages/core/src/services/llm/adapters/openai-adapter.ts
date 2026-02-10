@@ -6,6 +6,7 @@ import { TIMEOUTS } from '../../../config/timeouts'
 import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
 import { OPENAI_MODELS, getModelDisplayName } from '../../../constants/models'
+import { PROVIDER_OPENAI } from '../../../constants'
 import type {
   TextProvider,
   TextModel,
@@ -71,7 +72,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
    */
   public getProvider(): TextProvider {
     return {
-      id: 'openai',
+      id: PROVIDER_OPENAI,
       name: 'OpenAI',
       description: 'OpenAI GPT models and OpenAI-compatible APIs',
       requiresApiKey: true,

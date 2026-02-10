@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_OPENROUTER } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -26,7 +27,7 @@ const OPENROUTER_STATIC_MODELS: ModelOverride[] = [
 export class OpenRouterAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'openrouter',
+      id: PROVIDER_OPENROUTER,
       name: 'OpenRouter',
       description: 'OpenRouter 聚合多种 AI 模型的 OpenAI 兼容 API',
       requiresApiKey: true,

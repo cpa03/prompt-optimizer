@@ -4,6 +4,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
 import { API_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
+import { PROVIDER_GEMINI } from '../../../constants'
 import type {
   TextProvider,
   TextModel,
@@ -90,7 +91,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
    */
   public getProvider(): TextProvider {
     return {
-      id: 'gemini',
+      id: PROVIDER_GEMINI,
       name: 'Google Gemini',
       description: 'Google Generative AI models',
       requiresApiKey: true,
@@ -159,7 +160,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       })
 
       const dynamicModels: TextModel[] = []
-      const providerId = 'gemini'
+      const providerId = PROVIDER_GEMINI
 
       for await (const model of modelsPager) {
         // 只包含支持 generateContent 的模型
