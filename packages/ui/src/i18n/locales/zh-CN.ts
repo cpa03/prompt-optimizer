@@ -104,6 +104,7 @@ export default {
     import: "导入",
     export: "导出",
     next: "下一步",
+    scrollToTop: "返回顶部",
   },
   icon: {
     refresh: "刷新",

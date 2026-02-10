@@ -105,6 +105,7 @@ export default {
     import: "匯入",
     export: "匯出",
     next: "下一步",
+    scrollToTop: "返回頂部",
   },
   icon: {
     refresh: "重新整理",
