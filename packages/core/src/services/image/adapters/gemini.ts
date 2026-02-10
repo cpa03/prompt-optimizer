@@ -9,7 +9,8 @@ import type {
   ImageModelConfig
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { 
+import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
+import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
@@ -40,11 +41,11 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
 
   getModels(): ImageModel[] {
     const defaultParams = getGeminiDefaultParameterValues()
-    
+
     return [
       {
-        id: 'gemini-2.5-flash-image',
-        name: 'Gemini 2.5 Flash Image',
+        id: GEMINI_MODELS.GEMINI_25_FLASH_IMAGE,
+        name: getModelDisplayName(GEMINI_MODELS.GEMINI_25_FLASH_IMAGE),
         description: 'Google Gemini 2.5 Flash 图像生成模型（Nano Banana），支持文生图、图生图和多图输入',
         providerId: 'gemini',
         capabilities: {
@@ -56,8 +57,8 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         defaultParameterValues: defaultParams
       },
       {
-        id: 'gemini-3-pro-image-preview',
-        name: 'Gemini 3 Pro Image',
+        id: GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW,
+        name: getModelDisplayName(GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW),
         description: 'Google Gemini 3 Pro 高级图像生成模型（Nano Banana Pro），支持高分辨率输出和高级文本渲染',
         providerId: 'gemini',
         capabilities: {

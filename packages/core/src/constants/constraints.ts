@@ -98,6 +98,9 @@ export const API_CONSTRAINTS = {
   // Rate limiting
   MIN_REQUEST_DELAY_MS: 100,
   MAX_REQUEST_DELAY_MS: 1000,
+  
+  // Pagination
+  DEFAULT_PAGE_SIZE: 100,
 } as const
 
 // Export all constraints

@@ -9,6 +9,7 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
+import { OPENROUTER_MODELS, getModelDisplayName } from '../../../constants/models'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { URL_PATTERNS } from '../../../constants/api-endpoints'
 import { CONTENT_TYPES, HTTP_HEADERS } from '../../../constants/http-codes'
@@ -44,8 +45,8 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   getModels(): ImageModel[] {
     return [
       {
-        id: 'google/gemini-2.5-flash-image',
-        name: 'Gemini 2.5 Flash Image (Nano Banana)',
+        id: OPENROUTER_MODELS.GOOGLE_GEMINI_25_FLASH_IMAGE,
+        name: getModelDisplayName(OPENROUTER_MODELS.GOOGLE_GEMINI_25_FLASH_IMAGE),
         description: 'Google Gemini 2.5 Flash 图像模型（通过 OpenRouter），支持文生图、图生图和多轮对话编辑',
         providerId: 'openrouter',
         capabilities: {
@@ -57,8 +58,8 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         defaultParameterValues: {}
       },
       {
-        id: 'openai/gpt-5-image-mini',
-        name: 'GPT-5 Image Mini',
+        id: OPENROUTER_MODELS.OPENAI_GPT5_IMAGE_MINI,
+        name: getModelDisplayName(OPENROUTER_MODELS.OPENAI_GPT5_IMAGE_MINI),
         description: 'OpenAI GPT-5 Image Mini（通过 OpenRouter），支持文生图与图生图',
         providerId: 'openrouter',
         capabilities: {

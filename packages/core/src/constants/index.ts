@@ -21,3 +21,6 @@ export * from './api-endpoints';
 
 // Constraints - eliminates hardcoded limits and sizes
 export * from './constraints';
+
+// Model registry - eliminates hardcoded model IDs
+export * from './models';
