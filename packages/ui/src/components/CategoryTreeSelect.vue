@@ -8,6 +8,7 @@
     :style="computedStyle"
     :loading="isLoading"
     @update:value="handleValueChange"
+    :class="{ 'is-loading': isLoading }"
   >
     <template v-if="showManageButton" #action>
       <!-- 🎨 Palette: Enhanced category manage button with keyboard shortcut hint -->
@@ -95,6 +96,26 @@ const showShortcutHint = computed(() => isHovered.value || isFocused.value);
 // 🎨 Palette: Enhanced button title with shortcut
 const manageButtonTitle = computed(() => {
   return `${t('favorites.manager.categoryManager.title')} (${shortcutDisplay.value})`;
+});
+
+// Props definition
+interface Props {
+  modelValue: string;
+  placeholder?: string;
+  clearable?: boolean;
+  consistentMenuWidth?: boolean;
+  style?: Record<string, unknown>;
+  showManageButton?: boolean;
+  showAllOption?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  placeholder: '',
+  clearable: true,
+  consistentMenuWidth: true,
+  style: () => ({}),
+  showManageButton: true,
+  showAllOption: false
 });
 
 // 内部状态
@@ -365,6 +386,57 @@ defineExpose({
 @media (max-width: 768px) {
   .shortcut-hint {
     display: none;
+  }
+}
+
+/* 🎨 Palette: Enhanced loading state with smooth animation */
+.category-tree-select :deep(.n-base-loading) {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-tree-select :deep(.n-base-loading .n-base-loading__icon) {
+  animation: category-loading-spin 0.8s linear infinite;
+}
+
+@keyframes category-loading-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* 🎨 Palette: Loading state pulse effect */
+.category-tree-select.is-loading :deep(.n-tree-select-trigger) {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.05) 0%,
+    rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.1) 50%,
+    rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+  0%, 100% {
+    background-position: 200% 0;
+  }
+  50% {
+    background-position: -200% 0;
+  }
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .category-tree-select :deep(.n-base-loading .n-base-loading__icon) {
+    animation: none;
+  }
+  
+  .category-tree-select.is-loading :deep(.n-tree-select-trigger) {
+    animation: none;
+    background: rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.05);
   }
 }
 </style>
