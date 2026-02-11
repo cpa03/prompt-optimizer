@@ -158,7 +158,7 @@ test.describe('收藏完整 CRUD 流程', () => {
       await saveButton.click();
 
       // 等待保存完成
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(TIMEOUTS.UI.TAG_OPERATION);
 
       // 5. 验证收藏已创建 - 搜索刚创建的收藏
       const searchInput = managerDialog.getByPlaceholder(/搜索|search/i);
@@ -225,7 +225,7 @@ test.describe('搜索和过滤功能', () => {
     if (await searchInput.count() > 0) {
       // 输入搜索关键词
       await searchInput.fill('测试');
-      await page.waitForTimeout(800);
+      await page.waitForTimeout(TIMEOUTS.UI.FAVORITE_ANIMATION);
 
       // 验证搜索输入框的值已更新
       const searchValue = await searchInput.inputValue();
@@ -262,7 +262,7 @@ test.describe('搜索和过滤功能', () => {
       const firstOption = page.locator('.n-base-select-option').first();
       if (await firstOption.count() > 0) {
         await firstOption.click();
-        await page.waitForTimeout(800);
+        await page.waitForTimeout(TIMEOUTS.UI.FAVORITE_ANIMATION);
 
         // 验证选择器不再显示下拉菜单（已选择）
         const dropdownHidden = await page.locator('.n-base-select-menu').isHidden().catch(() => true);

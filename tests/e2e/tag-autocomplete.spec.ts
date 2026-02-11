@@ -1,4 +1,5 @@
 import { test, expect } from './fixtures';
+import { TIMEOUTS } from './constants/timeouts';
 
 /**
  * 标签自动完成功能 E2E 测试
@@ -25,7 +26,7 @@ test.describe('标签自动完成功能', () => {
     // 2. 点击添加收藏按钮
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
     // 3. 定位到编辑对话框
     const editDialog = page.locator('[role="dialog"]').last();
@@ -37,7 +38,7 @@ test.describe('标签自动完成功能', () => {
     if (await tagInput.count() > 0) {
       // 5. 输入部分标签文本
       await tagInput.fill('测');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
       // 6. 验证标签输入框的值
       const inputValue = await tagInput.inputValue();
@@ -51,7 +52,7 @@ test.describe('标签自动完成功能', () => {
 
       // 8. 清空输入
       await tagInput.clear();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.UI.SMALL_WAIT);
 
       const clearedValue = await tagInput.inputValue();
       expect(clearedValue).toBe('');
@@ -73,7 +74,7 @@ test.describe('标签自动完成功能', () => {
     // 2. 点击添加收藏按钮
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
     // 3. 定位到编辑对话框
     const editDialog = page.locator('[role="dialog"]').last();
@@ -84,11 +85,11 @@ test.describe('标签自动完成功能', () => {
     if (await tagInput.count() > 0) {
       // 5. 输入标签文本
       await tagInput.fill('E2E测试标签');
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.UI.SMALL_WAIT);
 
       // 6. 按 Enter 键添加标签
       await tagInput.press('Enter');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
       // 7. 验证标签是否被添加（查找标签显示）
       // 标签通常显示为 NTag 组件
@@ -118,7 +119,7 @@ test.describe('标签自动完成功能', () => {
     // 2. 点击添加收藏按钮
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
     // 3. 定位到编辑对话框
     const editDialog = page.locator('[role="dialog"]').last();
@@ -130,7 +131,7 @@ test.describe('标签自动完成功能', () => {
       // 5. 添加一个标签
       await tagInput.fill('可删除标签');
       await tagInput.press('Enter');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
       // 6. 查找已添加的标签
       const addedTag = editDialog.locator('text=可删除标签').first();
@@ -143,7 +144,7 @@ test.describe('标签自动完成功能', () => {
 
         if (await closeButton.count() > 0) {
           await closeButton.click();
-          await page.waitForTimeout(500);
+          await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
           // 8. 验证标签已被删除
           const deletedTag = editDialog.locator('text=可删除标签');
@@ -168,7 +169,7 @@ test.describe('标签自动完成功能', () => {
     // 2. 点击添加收藏按钮
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
     // 3. 定位到编辑对话框
     const editDialog = page.locator('[role="dialog"]').last();
@@ -183,7 +184,7 @@ test.describe('标签自动完成功能', () => {
       for (const tag of tags) {
         await tagInput.fill(tag);
         await tagInput.press('Enter');
-        await page.waitForTimeout(300);
+        await page.waitForTimeout(TIMEOUTS.UI.SMALL_WAIT);
       }
 
       // 6. 验证所有标签都被添加
@@ -222,7 +223,7 @@ test.describe('标签自动完成建议', () => {
 
     const addButton = managerDialog.getByRole('button', { name: /添加|创建|新建|add|create/i }).first();
     await addButton.click();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
     const editDialog = page.locator('[role="dialog"]').last();
     const tagInput = editDialog.getByPlaceholder(/标签|tag/i);
@@ -231,15 +232,15 @@ test.describe('标签自动完成建议', () => {
       // 先添加一个标签到系统中
       await tagInput.fill('前端开发');
       await tagInput.press('Enter');
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.UI.SMALL_WAIT);
 
       // 清空输入框
       await tagInput.clear();
-      await page.waitForTimeout(300);
+      await page.waitForTimeout(TIMEOUTS.UI.SMALL_WAIT);
 
       // 现在输入部分匹配文本
       await tagInput.fill('前');
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(TIMEOUTS.UI.UI_TRANSITION);
 
       // 检查是否有自动完成菜单
       const autocompleteMenu = page.locator('.n-auto-complete-menu, .n-base-select-menu');
