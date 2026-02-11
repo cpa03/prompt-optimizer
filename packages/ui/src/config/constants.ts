@@ -10,6 +10,7 @@ import { getEnvInt as getViteEnvInt } from '@prompt-optimizer/core';
 export const TIME_CONSTANTS = {
   // Toast notifications
   TOAST_DURATION: getViteEnvInt('VITE_TOAST_DURATION', 3000),
+  TOAST_DURATION_LONG: getViteEnvInt('VITE_TOAST_DURATION_LONG', 8000), // For important messages that need user attention
   
   // Cache expiration
   CACHE_EXPIRY_MS: getViteEnvInt('VITE_CACHE_EXPIRY_MINUTES', 5) * 60 * 1000,
@@ -23,6 +24,8 @@ export const TIME_CONSTANTS = {
   DEFAULT_DEBOUNCE_MS: getViteEnvInt('VITE_DEFAULT_DEBOUNCE_MS', 150),
   DEFAULT_THROTTLE_MS: getViteEnvInt('VITE_DEFAULT_THROTTLE_MS', 1000),
   THROTTLE_RESET_MS: getViteEnvInt('VITE_THROTTLE_RESET_MS', 10000),
+  DEBOUNCE_INPUT_MS: getViteEnvInt('VITE_DEBOUNCE_INPUT_MS', 100), // For input field debouncing
+  THROTTLE_UI_MS: getViteEnvInt('VITE_THROTTLE_UI_MS', 300), // For UI updates like scrolling
   
   // GC and cleanup
   GC_DELAY_MS: getViteEnvInt('VITE_GC_DELAY_MS', 0),
@@ -39,6 +42,22 @@ export const TIME_CONSTANTS = {
   
   // Cache max age (7 days)
   CACHE_MAX_AGE_MS: getViteEnvInt('VITE_CACHE_MAX_AGE_DAYS', 7) * 24 * 60 * 60 * 1000,
+  
+  // Tooltip delays
+  TOOLTIP_DELAY_SHORT: getViteEnvInt('VITE_TOOLTIP_DELAY_SHORT', 200),
+  TOOLTIP_DELAY_MEDIUM: getViteEnvInt('VITE_TOOLTIP_DELAY_MEDIUM', 300),
+  TOOLTIP_DELAY_LONG: getViteEnvInt('VITE_TOOLTIP_DELAY_LONG', 500),
+  TOOLTIP_DURATION_SHORT: getViteEnvInt('VITE_TOOLTIP_DURATION_SHORT', 150),
+  
+  // Animation durations
+  ANIMATION_DURATION_SCORE: getViteEnvInt('VITE_ANIMATION_DURATION_SCORE', 800),
+  ANIMATION_INDICATOR_DURATION: getViteEnvInt('VITE_ANIMATION_INDICATOR_DURATION', 2000),
+  ANIMATION_POPOVER_DELAY: getViteEnvInt('VITE_ANIMATION_POPOVER_DELAY', 100),
+  ANIMATION_SHORT_DELAY: getViteEnvInt('VITE_ANIMATION_SHORT_DELAY', 200), // For quick UI transitions like hiding popups
+  ANIMATION_THEME_SWITCH: getViteEnvInt('VITE_ANIMATION_THEME_SWITCH', 400), // Theme toggle animation duration
+  
+  // Scroll listener delays
+  SCROLL_LISTENER_DELAY_MS: getViteEnvInt('VITE_SCROLL_LISTENER_DELAY_MS', 100),
 } as const
 
 // Variable constraints - environment configurable
@@ -289,6 +308,16 @@ export const SEMANTIC_COLORS = {
   THEME_CLASSIC: '#b08968',
 } as const
 
+// Theme icon colors - used in ThemeToggleUI component
+export const THEME_ICON_COLORS = {
+  LIGHT: '#eab308',    // yellow-500
+  DARK: '#60a5fa',     // blue-400
+  BLUE: '#2563eb',     // blue-600
+  GREEN: '#16a34a',    // green-600
+  PURPLE: '#9333ea',   // purple-600
+  CLASSIC: '#b08968',  // classic brown
+} as const
+
 // Icon sizes (in pixels) - for consistent icon sizing
 export const ICON_SIZES = {
   XS: 12,
@@ -325,6 +354,23 @@ export const LAYOUT_CONSTANTS = {
     MIN_LEFT_PCT: getViteEnvInt('VITE_SPLIT_PANEL_MIN_LEFT_PCT', 20),
     MAX_LEFT_PCT: getViteEnvInt('VITE_SPLIT_PANEL_MAX_LEFT_PCT', 80),
   },
+} as const
+
+// Calculation constants - for consistent math operations
+export const CALCULATION_CONSTANTS = {
+  // Percentage calculations
+  PERCENTAGE_FACTOR: 100, // Multiply to get percentage, divide to get decimal
+  
+  // Time calculations (in milliseconds)
+  MS_PER_SECOND: 1000,
+  MS_PER_MINUTE: 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
+  
+  // Bytes conversions
+  BYTES_PER_KB: 1024,
+  BYTES_PER_MB: 1024 * 1024,
+  BYTES_PER_GB: 1024 * 1024 * 1024,
 } as const
 
 // Component-specific constants - environment configurable where applicable
