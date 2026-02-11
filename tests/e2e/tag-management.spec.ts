@@ -123,7 +123,7 @@ test.describe('标签管理完整流程', () => {
       const saveButton = createDialog.getByRole('button', { name: /保存|save|确定|ok/i });
       if (await saveButton.count() > 0) {
         await saveButton.click();
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(TIMEOUTS.UI.TAG_OPERATION);
       }
     }
 

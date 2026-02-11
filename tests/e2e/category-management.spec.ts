@@ -396,7 +396,7 @@ test.describe('分类管理完整流程', () => {
       const saveFavButton = createFavDialog.getByRole('button', { name: /保存|save|确定|ok/i });
       if (await saveFavButton.count() > 0) {
         await saveFavButton.click();
-        await page.waitForTimeout(1000);
+        await page.waitForTimeout(TIMEOUTS.UI.TAG_OPERATION);
       }
     }
 
