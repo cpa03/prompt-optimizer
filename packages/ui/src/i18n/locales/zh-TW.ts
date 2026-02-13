@@ -565,6 +565,14 @@ export default {
         valueRequired: "變數值不能為空",
         valueTooLong: "變數值不能超過5000個字元",
       },
+      fixSuggestions: {
+        label: "建議修復",
+        removeSpaces: "用底線替換空格",
+        removeSpecialChars: "移除特殊字元",
+        addPrefix: "新增'var_'前綴",
+        toSnakeCase: "轉換為蛇形命名",
+      },
+      fixApplied: "已應用修復",
     },
     preview: {
       title: "變數預覽",
