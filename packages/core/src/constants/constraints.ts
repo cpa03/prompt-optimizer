@@ -43,6 +43,9 @@ export const STORAGE_CONSTRAINTS = {
 
   // Maximum file operations
   MAX_CONCURRENT_WRITES: getEnvInt('STORAGE_MAX_CONCURRENT_WRITES', 3),
+
+  // Maximum storage size for providers (in bytes, default 5MB for localStorage)
+  MAX_STORAGE_SIZE_BYTES: getEnvInt('STORAGE_MAX_SIZE_MB', 5) * 1024 * 1024,
 } as const
 
 // Prompt constraints - now environment-configurable
@@ -84,6 +87,12 @@ export const IMAGE_CONSTRAINTS = {
     }
     return ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
   })(),
+
+  // Image storage constraints
+  STORAGE_MAX_AGE_MS: getEnvInt('IMAGE_STORAGE_MAX_AGE_DAYS', 7) * 24 * 60 * 60 * 1000,
+  STORAGE_MAX_COUNT: getEnvInt('IMAGE_STORAGE_MAX_COUNT', 100),
+  STORAGE_CLEANUP_THRESHOLD: getEnvInt('IMAGE_STORAGE_CLEANUP_THRESHOLD_PERCENT', 80) / 100,
+  STORAGE_MIGRATION_CHUNK_SIZE: getEnvInt('IMAGE_STORAGE_MIGRATION_CHUNK_SIZE', 25),
 } as const
 
 // Session constraints - now environment-configurable
@@ -112,6 +121,12 @@ export const API_CONSTRAINTS = {
   DEFAULT_PAGE_SIZE: getEnvInt('API_DEFAULT_PAGE_SIZE', 100),
 } as const
 
+// History constraints - now environment-configurable
+export const HISTORY_CONSTRAINTS = {
+  // Maximum number of records to keep
+  MAX_RECORDS: getEnvInt('HISTORY_MAX_RECORDS', 50),
+} as const
+
 // Export all constraints
 export const CORE_CONSTRAINTS = {
   VALIDATION: VALIDATION_CONSTRAINTS,
@@ -121,6 +136,7 @@ export const CORE_CONSTRAINTS = {
   IMAGE: IMAGE_CONSTRAINTS,
   SESSION: SESSION_CONSTRAINTS,
   API: API_CONSTRAINTS,
+  HISTORY: HISTORY_CONSTRAINTS,
 } as const
 
 // Re-export env helpers for convenience

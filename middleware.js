@@ -1,3 +1,5 @@
+import { COOKIE_CONFIG } from './scripts/config/constants.js';
+
 export const config = {
   matcher: [
     /*
@@ -29,7 +31,7 @@ export default function middleware(request) {
   if (cookieHeader) {
     const cookies = cookieHeader.split(';');
     const accessTokenCookie = cookies.find(cookie => 
-      cookie.trim().startsWith('vercel_access_token=')
+      cookie.trim().startsWith(`${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=`)
     );
     
     if (accessTokenCookie) {
@@ -52,7 +54,7 @@ export default function middleware(request) {
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cache-Control': COOKIE_CONFIG.CACHE_CONTROL,
     },
   });
 }

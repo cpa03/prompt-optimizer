@@ -3,7 +3,7 @@
  */
 import { STORAGE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 
-type StorageOperation = 'read' | 'write' | 'delete' | 'clear' | 'config'
+type StorageOperation = 'read' | 'write' | 'delete' | 'clear' | 'config' | 'lock'
 
 const STORAGE_OPERATION_TO_CODE: Record<
   StorageOperation,
@@ -14,6 +14,7 @@ const STORAGE_OPERATION_TO_CODE: Record<
   delete: STORAGE_ERROR_CODES.DELETE_ERROR,
   clear: STORAGE_ERROR_CODES.CLEAR_ERROR,
   config: STORAGE_ERROR_CODES.CONFIG_ERROR,
+  lock: STORAGE_ERROR_CODES.LOCK_ERROR,
 }
 
 export class StorageError extends Error {

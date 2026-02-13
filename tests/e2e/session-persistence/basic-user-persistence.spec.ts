@@ -64,7 +64,7 @@ test.describe('Basic User - Session Persistence', () => {
     // 5. 刷新页面
     await page.reload()
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000) // 等待恢复完成
+    await page.waitForTimeout(TIMEOUTS.UI.SESSION_RESTORE) // 等待恢复完成
 
     // 6. 验证刷新后下拉框是否显示之前选择的值（这就是持久化的意义）
     const afterRefresh = await getSelectedModel()
@@ -87,7 +87,7 @@ test.describe('Basic User - Session Persistence', () => {
     await page.waitForLoadState('networkidle')
     await page.goto('/#/basic/user')
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(TIMEOUTS.UI.SESSION_RESTORE)
 
     // 2. 找到模板下拉框并记录初始值
     const templateLabel = page.getByText(/优化提示词模板|Optimization Template/i).first()
@@ -133,7 +133,7 @@ test.describe('Basic User - Session Persistence', () => {
     // 5. 刷新页面
     await page.reload()
     await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(2000)
+    await page.waitForTimeout(TIMEOUTS.UI.SESSION_RESTORE)
 
     // 6. 验证刷新后下拉框是否显示之前选择的值
     const afterRefresh = await getSelectedTemplate()

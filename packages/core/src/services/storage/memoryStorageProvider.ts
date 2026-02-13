@@ -49,7 +49,18 @@ export class MemoryStorageProvider implements IStorageProvider {
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
     const currentValue = await this.getItem(key);
-    const parsedValue = currentValue ? JSON.parse(currentValue) : null;
+    let parsedValue: T | null = null;
+    
+    if (currentValue) {
+      try {
+        parsedValue = JSON.parse(currentValue) as T;
+      } catch (parseError) {
+        throw new Error(
+          `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`
+        );
+      }
+    }
+    
     const newValue = modifier(parsedValue);
     await this.setItem(key, JSON.stringify(newValue));
   }

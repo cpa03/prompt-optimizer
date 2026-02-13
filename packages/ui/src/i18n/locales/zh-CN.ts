@@ -1903,6 +1903,7 @@ export default {
       downloadFailed: "下载失败",
       copyBase64: "复制Base64",
       copyText: "复制文本",
+      copied: "已复制!",
       copySuccess: "复制成功",
       copyError: "复制失败",
       textOutput: "文本输出",

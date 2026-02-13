@@ -10,6 +10,7 @@ import { IMAGE_ERROR_CODES, IMPORT_EXPORT_ERROR_CODES, type ErrorParams } from '
 import { BaseError } from '../llm/errors'
 import { getDefaultImageModels, getBuiltinImageConfigIds } from './defaults'
 import { SERVICE_KEYS } from '../../config/core-config'
+import { PROVIDER_OLLAMA } from '../../constants'
 
 class ImageModelManagerError extends BaseError {
   constructor(code: string, message?: string, params?: ErrorParams) {
@@ -356,7 +357,7 @@ export class ImageModelManager implements IImageModelManager {
 
       // Historical metadata might incorrectly mark Ollama as CORS-restricted.
       // Ollama can be configured (CORS/reverse-proxy), so we force-disable the tag.
-      if (providerId === 'ollama' && config.provider.corsRestricted !== false) {
+      if (providerId === PROVIDER_OLLAMA && config.provider.corsRestricted !== false) {
         return {
           ...config,
           provider: {

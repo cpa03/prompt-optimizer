@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_ZHIPU } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -36,7 +37,7 @@ const ZHIPU_STATIC_MODELS: ModelOverride[] = [
 export class ZhipuAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'zhipu',
+      id: PROVIDER_ZHIPU,
       name: 'Zhipu AI',
       description: 'Zhipu GLM OpenAI-compatible models',
       requiresApiKey: true,

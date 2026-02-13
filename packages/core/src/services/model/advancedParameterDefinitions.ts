@@ -14,6 +14,16 @@
  * 该文件将在 v3.0 中标记为 deprecated，在 v4.0 移除。
  */
 
+// Flexy hates hardcoded! Import provider constants
+import {
+  PROVIDER_OPENAI,
+  PROVIDER_GEMINI,
+  PROVIDER_DEEPSEEK,
+  PROVIDER_CUSTOM,
+  PROVIDER_ZHIPU,
+  PROVIDER_SILICONFLOW,
+} from '../../constants/provider-ids'
+
 export interface AdvancedParameterDefinition {
   id: string; // Unique ID across all definitions, e.g., "openai_temperature"
   name: string; // Actual parameter name used by the SDK, e.g., "temperature"
@@ -32,7 +42,7 @@ export interface AdvancedParameterDefinition {
   unit?: string; // e.g., "ms"
   unitKey?: string; // i18n key for the unit, e.g., "params.tokens.unit"
   
-  appliesToProviders: string[]; // e.g., ["openai", "deepseek"] or ["gemini"]
+  appliesToProviders: string[]; // e.g., [PROVIDER_OPENAI, PROVIDER_DEEPSEEK] or [PROVIDER_GEMINI]
   
   // Optional: For string types with predefined choices
   // allowedValues?: string[]; 
@@ -51,7 +61,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 0.0,
     maxValue: 2.0, // Max for OpenAI; Gemini is often 0-1. UI might need to adjust range based on provider.
     step: 0.1,
-    appliesToProviders: ["openai", "gemini", "deepseek", "custom", "zhipu", "siliconflow"] 
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_GEMINI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW] 
   },
   {
     id: "common_top_p",
@@ -63,7 +73,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 0.0,
     maxValue: 1.0,
     step: 0.01,
-    appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"]
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
   },
   // OpenAI / OpenAI-Compatible Specific
   {
@@ -76,7 +86,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 1,
     step: 1,
     unitKey: "params.tokens.unit",
-    appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"]
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
   },
   {
     id: "openai_presence_penalty",
@@ -88,7 +98,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: -2.0,
     maxValue: 2.0,
     step: 0.1,
-    appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"]
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
   },
   {
     id: "openai_frequency_penalty",
@@ -100,7 +110,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: -2.0,
     maxValue: 2.0,
     step: 0.1,
-    appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"]
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
   },
   {
     id: "openai_timeout", // This is a client configuration for OpenAI
@@ -112,7 +122,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 1000,
     step: 1000,
     unit: "ms",
-    appliesToProviders: ["openai", "deepseek", "custom", "zhipu", "siliconflow"] 
+    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW] 
   },
   // Gemini Specific
   {
@@ -125,7 +135,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 1,
     step: 1,
     unitKey: "params.tokens.unit",
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   {
     id: "gemini_topP", // Gemini uses "topP" (capital P)
@@ -137,7 +147,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 0.0,
     maxValue: 1.0,
     step: 0.01,
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   {
     id: "gemini_topK",
@@ -148,7 +158,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     defaultValue: 1, // Gemini default, but often user wants to adjust
     minValue: 1,
     step: 1,
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   {
     id: "gemini_candidateCount",
@@ -160,7 +170,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     minValue: 1,
     maxValue: 8, // Check Gemini docs for actual max
     step: 1,
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   {
     id: "gemini_stopSequences",
@@ -169,7 +179,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     descriptionKey: "params.stopSequences.description",
     type: "string", // Special handling: array of strings but UI input as comma-separated string
     defaultValue: [], // Array of strings
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   {
   id: "gemini_thinkingBudget",
@@ -190,7 +200,7 @@ export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
     descriptionKey: "params.includeThoughts.description",
     type: "boolean",
     defaultValue: false,
-    appliesToProviders: ["gemini"]
+    appliesToProviders: [PROVIDER_GEMINI]
   },
   // Add more definitions as needed for other parameters and providers.
   // For example, Zhipu specific parameters, Groq, Anthropic etc.

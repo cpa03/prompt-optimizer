@@ -1,67 +1,69 @@
 <template>
-  <!-- 🎨 Palette: Enhanced theme toggle with keyboard shortcut support and tooltip -->
-  <NTooltip
-    :placement="tooltipPlacement"
-    :delay="300"
-    :disabled="isDropdownOpen"
-  >
-    <template #trigger>
-      <NDropdown
-        :options="dropdownOptions"
-        @select="handleThemeSelect"
-        placement="bottom-end"
-        trigger="click"
-        @update:show="(show: boolean) => isDropdownOpen = show"
+  <!-- Palette: Enhanced theme toggle with keyboard shortcut support and tooltip -->
+  <!-- Wrapping in single div to avoid non-element root node issues -->
+  <div class="theme-toggle-wrapper">
+    <NDropdown
+      :options="dropdownOptions"
+      @select="handleThemeSelect"
+      placement="bottom-end"
+      trigger="click"
+      @update:show="(show: boolean) => isDropdownOpen = show"
+    >
+      <NTooltip
+        :placement="tooltipPlacement"
+        :delay="TIME_CONSTANTS.TOOLTIP_DELAY_MEDIUM"
+        :disabled="isDropdownOpen"
       >
-        <NButton 
-          quaternary 
-          size="small"
-          class="flex items-center justify-center gap-1 theme-toggle-btn"
-          :aria-label="ariaLabel"
-          :title="buttonTitle"
-          @mouseenter="isHovered = true"
-          @mouseleave="isHovered = false"
-          @focus="isFocused = true"
-          @blur="isFocused = false"
-        >
-          <template #icon>
-            <!-- 🎨 Palette: Icon wrapper with enhanced animation states -->
-            <div 
-              class="theme-icon-wrapper" 
-              :class="{ 
-                'is-animating': isAnimating,
-                'is-hovered': isHovered,
-                'is-focused': isFocused
-              }"
-            >
-              <component :is="currentThemeIcon" />
-            </div>
-          </template>
-          <span class="text-sm max-md:hidden truncate">{{ currentThemeLabel }}</span>
-          <!-- 🎨 Palette: Keyboard shortcut hint badge (visible on hover/focus) -->
-          <span 
-            v-if="showShortcutHint" 
-            class="shortcut-hint"
-            aria-hidden="true"
+        <template #trigger>
+          <NButton 
+            quaternary 
+            size="small"
+            class="flex items-center justify-center gap-1 theme-toggle-btn"
+            :aria-label="ariaLabel"
+            :title="buttonTitle"
+            @mouseenter="isHovered = true"
+            @mouseleave="isHovered = false"
+            @focus="isFocused = true"
+            @blur="isFocused = false"
           >
-            {{ shortcutDisplay }}
-          </span>
-        </NButton>
-      </NDropdown>
-    </template>
-    <!-- 🎨 Palette: Informative tooltip content -->
-    <div class="theme-tooltip">
-      <div class="theme-tooltip-title">{{ currentThemeLabel }}</div>
-      <div class="theme-tooltip-hint">
-        {{ t('theme.tooltip.hint', 'Click to change theme') }}
-      </div>
-      <div class="theme-tooltip-shortcut">
-        <kbd>{{ modifierKey }}</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
-      </div>
-    </div>
-  </NTooltip>
+            <template #icon>
+              <!-- Palette: Icon wrapper with enhanced animation states -->
+              <div 
+                class="theme-icon-wrapper" 
+                :class="{ 
+                  'is-animating': isAnimating,
+                  'is-hovered': isHovered,
+                  'is-focused': isFocused
+                }"
+              >
+                <component :is="currentThemeIcon" />
+              </div>
+            </template>
+            <span class="text-sm max-md:hidden truncate">{{ currentThemeLabel }}</span>
+            <!-- Palette: Keyboard shortcut hint badge (visible on hover/focus) -->
+            <span 
+              v-if="showShortcutHint" 
+              class="shortcut-hint"
+              aria-hidden="true"
+            >
+              {{ shortcutDisplay }}
+            </span>
+          </NButton>
+        </template>
+        <!-- Palette: Informative tooltip content -->
+        <div class="theme-tooltip">
+          <div class="theme-tooltip-title">{{ currentThemeLabel }}</div>
+          <div class="theme-tooltip-hint">
+            {{ t('theme.tooltip.hint', 'Click to change theme') }}
+          </div>
+          <div class="theme-tooltip-shortcut">
+            <kbd>{{ modifierKey }}</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>
+          </div>
+        </div>
+      </NTooltip>
+    </NDropdown>
+  </div>
 </template>
-  
 <script setup lang="ts">
 import { computed, h, ref, watch, onMounted, onUnmounted } from 'vue'
 
@@ -71,6 +73,7 @@ import { NButton, NDropdown, NTooltip, type DropdownOption } from 'naive-ui'
 // Tooltip placement type
 type Placement = 'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
+import { TIME_CONSTANTS, THEME_ICON_COLORS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -109,7 +112,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'light':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #eab308;' : undefined, // yellow-500
+        style: isColored ? `color: ${THEME_ICON_COLORS.LIGHT};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -121,7 +124,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'dark':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #60a5fa;' : undefined, // blue-400
+        style: isColored ? `color: ${THEME_ICON_COLORS.DARK};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -135,7 +138,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'blue':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #2563eb;' : undefined, // blue-600
+        style: isColored ? `color: ${THEME_ICON_COLORS.BLUE};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -147,7 +150,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'classic':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #b08968;' : undefined,
+        style: isColored ? `color: ${THEME_ICON_COLORS.CLASSIC};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -159,7 +162,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'green':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #16a34a;' : undefined, // green-600
+        style: isColored ? `color: ${THEME_ICON_COLORS.GREEN};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -171,7 +174,7 @@ const createThemeIcon = (themeId: string, isColored: boolean = false) => {
     case 'purple':
       return h('svg', {
         class: `${baseClass}`,
-        style: isColored ? 'color: #9333ea;' : undefined, // purple-600
+        style: isColored ? `color: ${THEME_ICON_COLORS.PURPLE};` : undefined,
         viewBox: '0 0 24 24',
         fill: 'currentColor'
       }, [
@@ -211,7 +214,7 @@ const handleThemeSelect = (key: string) => {
     // Reset animation state after animation completes
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, TIME_CONSTANTS.ANIMATION_THEME_SWITCH)
   }
 }
 
@@ -222,7 +225,7 @@ watch(themeId, (newId, oldId) => {
     isAnimating.value = true
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, TIME_CONSTANTS.ANIMATION_THEME_SWITCH)
   }
 })
 
@@ -238,7 +241,7 @@ const cycleToNextTheme = () => {
     changeTheme(nextTheme.id)
     setTimeout(() => {
       isAnimating.value = false
-    }, 400)
+    }, TIME_CONSTANTS.ANIMATION_THEME_SWITCH)
   }
 }
 

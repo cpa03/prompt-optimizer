@@ -1884,6 +1884,7 @@ export default {
       downloadFailed: "下載失敗",
       copyBase64: "複製Base64",
       copyText: "複製文字",
+      copied: "已複製!",
       copySuccess: "複製成功",
       copyError: "複製失敗",
       textOutput: "文字輸出",

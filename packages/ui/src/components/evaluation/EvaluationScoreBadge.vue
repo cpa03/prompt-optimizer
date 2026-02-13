@@ -4,8 +4,8 @@
     trigger="manual"
     placement="bottom"
     :disabled="loading"
-    :delay="200"
-    :duration="150"
+    :delay="TIME_CONSTANTS.TOOLTIP_DELAY_SHORT"
+    :duration="TIME_CONSTANTS.TOOLTIP_DURATION_SHORT"
   >
     <template #trigger>
       <div
@@ -51,7 +51,7 @@
 import { computed, ref, watch } from 'vue'
 import { NSpin, NPopover } from 'naive-ui'
 import EvaluationHoverCard from './EvaluationHoverCard.vue'
-import { COMPONENT_CONSTANTS } from '../../config/constants'
+import { COMPONENT_CONSTANTS, TIME_CONSTANTS } from '../../config/constants'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import type { ScoreLevel } from './types'
 
@@ -102,7 +102,7 @@ const emit = defineEmits<{
 
 // 🎨 Palette: Score animation utilities
 const animateScoreChange = (from: number, to: number) => {
-  const duration = 800 // ms
+  const duration = TIME_CONSTANTS.ANIMATION_DURATION_SCORE // ms
   const startTime = performance.now()
   const diff = to - from
   
@@ -118,7 +118,7 @@ const animateScoreChange = (from: number, to: number) => {
     showScoreChangeIndicator.value = true
     setTimeout(() => {
       showScoreChangeIndicator.value = false
-    }, 2000)
+    }, TIME_CONSTANTS.ANIMATION_INDICATOR_DURATION)
   }
   
   // Start update animation
@@ -144,7 +144,7 @@ const animateScoreChange = (from: number, to: number) => {
       isScoreUpdating.value = false
       setTimeout(() => {
         showScorePop.value = false
-      }, 200)
+      }, TIME_CONSTANTS.ANIMATION_SHORT_DELAY)
     }
   }
   
@@ -216,7 +216,7 @@ const handleMouseLeave = () => {
     if (!isHoveringBadge.value && !isHoveringPopover.value) {
       popoverVisible.value = false
     }
-  }, 100)
+  }, TIME_CONSTANTS.ANIMATION_POPOVER_DELAY)
 }
 
 // 鼠标进入 popover
@@ -232,7 +232,7 @@ const handlePopoverMouseLeave = () => {
     if (!isHoveringBadge.value && !isHoveringPopover.value) {
       popoverVisible.value = false
     }
-  }, 100)
+  }, TIME_CONSTANTS.ANIMATION_POPOVER_DELAY)
 }
 
 // 查看详情处理 - 关闭悬浮预览并打开详情面板

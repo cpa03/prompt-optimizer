@@ -6,6 +6,7 @@ import type {
   ImageStorageConfig
 } from './types'
 import { CONSTRAINTS } from '../../config'
+import { IMAGE_CONSTRAINTS } from '../../constants/constraints'
 
 /**
  * 图像存储数据库（IndexedDB）
@@ -42,7 +43,7 @@ class ImageDB extends Dexie {
         const newData = tx.table<DataRecord>('imageData')
 
         let lastId: string | undefined
-        const CHUNK_SIZE = 25
+        const CHUNK_SIZE = IMAGE_CONSTRAINTS.STORAGE_MIGRATION_CHUNK_SIZE
 
         while (true) {
           const chunk: ImageRecordV1[] = lastId
@@ -111,9 +112,9 @@ interface DataRecord {
  */
 const DEFAULT_CONFIG: ImageStorageConfig = {
   maxCacheSize: CONSTRAINTS.image.maxCacheSizeBytes,
-  maxAge: 7 * 24 * 60 * 60 * 1000,     // 7 天
-  maxCount: 100,                       // 最多 100 张
-  autoCleanupThreshold: 0.8            // 达到 80% 时触发清理
+  maxAge: IMAGE_CONSTRAINTS.STORAGE_MAX_AGE_MS,
+  maxCount: IMAGE_CONSTRAINTS.STORAGE_MAX_COUNT,
+  autoCleanupThreshold: IMAGE_CONSTRAINTS.STORAGE_CLEANUP_THRESHOLD
 }
 
 /**
