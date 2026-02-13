@@ -49,11 +49,16 @@ const localStorageMock = {
 global.localStorage = localStorageMock;
 
 // 全局注入 navigator mock (用于浏览器API测试)
-global.navigator = {
-  language: 'en-US',
-  userAgent: 'node.js',
-  platform: 'node'
-};
+// 使用 Object.defineProperty 以兼容 Node.js 22+ (navigator 是只读属性)
+Object.defineProperty(global, 'navigator', {
+  value: {
+    language: 'en-US',
+    userAgent: 'node.js',
+    platform: 'node'
+  },
+  writable: true,
+  configurable: true
+});
 
 // 在每个测试之前重置 mock 状态
 beforeEach(() => {

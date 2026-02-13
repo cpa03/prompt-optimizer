@@ -68,7 +68,7 @@
                         >
                             <template #icon>
                                 <NIcon :size="14">
-                                    <Sparkles />
+                                    <Star />
                                 </NIcon>
                             </template>
                             {{ suggestion.label }}
@@ -221,7 +221,7 @@ import {
     type FormInst,
     type FormRules,
 } from "naive-ui";
-import { Check, AlertCircle, Sparkles, Copy } from '@vicons/tabler'
+import { Check, AlertCircle, Star, Copy } from '@vicons/tabler'
 import { UI_DIMENSIONS, FONT_SIZES } from "../../config/constants";
 import { useToast } from '../../composables/ui/useToast'
 
