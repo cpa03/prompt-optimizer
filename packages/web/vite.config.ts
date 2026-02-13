@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import { compression } from 'vite-plugin-compression2'
 import { resolve } from 'path'
 import path from 'path'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -30,6 +31,12 @@ export default defineConfig(({ mode }) => {
         algorithm: 'brotliCompress',
         exclude: [/\.(br)$/, /\.(gz)$/],
         threshold: 1024
+      }),
+      mode === 'analyze' && visualizer({
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+        filename: 'dist/stats.html'
       })
     ],
     server: {
@@ -47,14 +54,22 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       minify: 'terser',
+      target: 'esnext',
+      cssTarget: 'chrome80',
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace'],
+          pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.trace', 'console.warn', 'console.error'],
+          passes: 2,
+          dead_code: true,
+          unused: true,
         },
         mangle: {
           safari10: true,
+          properties: {
+            regex: /^_/
+          }
         },
       },
       rollupOptions: {
@@ -65,6 +80,10 @@ export default defineConfig(({ mode }) => {
           // Suppress dynamic import warnings - core is intentionally imported both ways
           if (warning.code === 'DYNAMIC_IMPORT_VARIABLE' || 
               (warning.message && warning.message.includes('dynamic import'))) {
+            return;
+          }
+          // Suppress currentInstance warning - it's a false positive from Vue internals
+          if (warning.message && warning.message.includes('currentInstance')) {
             return;
           }
           warn(warning);
@@ -193,7 +212,12 @@ export default defineConfig(({ mode }) => {
           acc[key] = env[key];
           return acc;
         }, {} as Record<string, string>)
-      }
+      },
+      // Fix vue-i18n devtools error in production
+      '__INTLIFY_PROD_DEVTOOLS__': JSON.stringify(false),
+      '__INTLIFY_DROP_MESSAGE_COMPILER__': JSON.stringify(false),
+      '__VUE_I18N_FULL_INSTALL__': JSON.stringify(true),
+      '__VUE_I18N_LEGACY_API__': JSON.stringify(false)
     }
   }
 })

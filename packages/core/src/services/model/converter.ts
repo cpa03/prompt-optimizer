@@ -4,6 +4,8 @@ import { splitOverridesBySchema } from './parameter-utils';
 import { ModelError } from './errors';
 import { MODEL_ERROR_CODES } from '../../constants/error-codes';
 import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config';
+import { MODEL_CONTEXT_LIMITS } from '../../constants/templates';
+import { getProviderIdFromLegacy, PROVIDER_IDS, DEFAULT_PROVIDER_ID } from '../../constants/provider-ids';
 
 /**
  * 将传统 ModelConfig 转换为 TextModelConfig（使用 Registry 获取元数据）
@@ -20,30 +22,8 @@ export async function convertLegacyToTextModelConfigWithRegistry(
   legacy: ModelConfig,
   registry: ITextAdapterRegistry
 ): Promise<TextModelConfig> {
-  // 根据 provider 确定 providerId
-  let providerId: string;
-  switch (legacy.provider) {
-    case 'gemini':
-      providerId = 'gemini';
-      break;
-    case 'anthropic':
-      providerId = 'anthropic';
-      break;
-    case 'deepseek':
-      providerId = 'deepseek';
-      break;
-    case 'siliconflow':
-      providerId = 'siliconflow';
-      break;
-    case 'zhipu':
-      providerId = 'zhipu';
-      break;
-    case 'openai':
-    case 'custom':
-    default:
-      providerId = 'openai';
-      break;
-  }
+  // 根据 provider 确定 providerId (使用常量映射，Flexy hates hardcoded!)
+  const providerId = getProviderIdFromLegacy(legacy.provider);
 
   try {
     // 通过 Registry 获取 Adapter
@@ -124,30 +104,8 @@ export function convertLegacyToTextModelConfig(
   key: string,
   legacy: ModelConfig
 ): TextModelConfig {
-  // 根据 provider 确定 providerId
-  let providerId: string;
-  switch (legacy.provider) {
-    case 'gemini':
-      providerId = 'gemini';
-      break;
-    case 'anthropic':
-      providerId = 'anthropic';
-      break;
-    case 'deepseek':
-      providerId = 'deepseek';
-      break;
-    case 'siliconflow':
-      providerId = 'siliconflow';
-      break;
-    case 'zhipu':
-      providerId = 'zhipu';
-      break;
-    case 'openai':
-    case 'custom':
-    default:
-      providerId = 'openai';
-      break;
-  }
+  // 根据 provider 确定 providerId (使用常量映射，Flexy hates hardcoded!)
+  const providerId = getProviderIdFromLegacy(legacy.provider);
 
   // 构建 Provider 元数据
   const providerMeta: TextProvider = createProviderMeta(providerId, legacy);
@@ -181,9 +139,10 @@ export function convertLegacyToTextModelConfig(
  * 创建 Provider 元数据
  */
 function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvider {
-  if (providerId === 'gemini') {
+  // Flexy hates hardcoded! Using provider ID constants
+  if (providerId === PROVIDER_IDS.GEMINI) {
     return {
-      id: 'gemini',
+      id: PROVIDER_IDS.GEMINI,
       name: 'Google Gemini',
       description: 'Google Generative AI models',
       requiresApiKey: true,
@@ -199,9 +158,9 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         }
       }
     };
-  } else if (providerId === 'deepseek') {
+  } else if (providerId === PROVIDER_IDS.DEEPSEEK) {
     return {
-      id: 'deepseek',
+      id: PROVIDER_IDS.DEEPSEEK,
       name: 'DeepSeek',
       description: 'DeepSeek OpenAI-compatible models',
       requiresApiKey: true,
@@ -217,9 +176,9 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         }
       }
     };
-  } else if (providerId === 'siliconflow') {
+  } else if (providerId === PROVIDER_IDS.SILICONFLOW) {
     return {
-      id: 'siliconflow',
+      id: PROVIDER_IDS.SILICONFLOW,
       name: 'SiliconFlow',
       description: 'SiliconFlow OpenAI-compatible models',
       requiresApiKey: true,
@@ -235,9 +194,9 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         }
       }
     };
-  } else if (providerId === 'zhipu') {
+  } else if (providerId === PROVIDER_IDS.ZHIPU) {
     return {
-      id: 'zhipu',
+      id: PROVIDER_IDS.ZHIPU,
       name: 'Zhipu AI',
       description: 'Zhipu GLM OpenAI-compatible models',
       requiresApiKey: true,
@@ -253,9 +212,9 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         }
       }
     };
-  } else if (providerId === 'anthropic') {
+  } else if (providerId === PROVIDER_IDS.ANTHROPIC) {
     return {
-      id: 'anthropic',
+      id: PROVIDER_IDS.ANTHROPIC,
       name: 'Anthropic',
       description: 'Anthropic Claude models',
       requiresApiKey: true,
@@ -274,7 +233,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
   } else {
     // OpenAI 及兼容 API - 始终使用 'OpenAI' 作为 Provider 名称
     return {
-      id: 'openai',
+      id: PROVIDER_IDS.OPENAI,
       name: 'OpenAI',
       description: 'OpenAI GPT models and OpenAI-compatible APIs',
       requiresApiKey: true,
@@ -298,30 +257,30 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
  * 创建 Model 元数据
  */
 function createModelMeta(modelId: string, providerId: string, legacy: ModelConfig): TextModel {
-  // 默认的 capabilities
+  // 默认的 capabilities (Flexy uses provider ID constants!)
   const defaultCapabilities = {
-        supportsTools: providerId !== 'gemini', // Gemini 工具支持可能不同
+        supportsTools: providerId !== PROVIDER_IDS.GEMINI, // Gemini 工具支持可能不同
     supportsReasoning: modelId.includes('o1') || modelId.includes('reasoner') || modelId.includes('thinking'),
-    maxContextLength: 4096
+    maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT
   };
 
   // 根据模型 ID 调整 capabilities
   if (modelId.includes('gpt-4o')) {
-    defaultCapabilities.maxContextLength = 128000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GPT4O;
   } else if (modelId.includes('gemini')) {
-    defaultCapabilities.maxContextLength = 1000000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GEMINI;
     defaultCapabilities.supportsTools = true;
   } else if (modelId.includes('claude')) {
-    defaultCapabilities.maxContextLength = 200000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.CLAUDE;
   } else if (modelId.includes('deepseek')) {
-    defaultCapabilities.maxContextLength = 64000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.DEEPSEEK;
   }
 
-  if (providerId === 'siliconflow') {
+  if (providerId === PROVIDER_IDS.SILICONFLOW) {
     defaultCapabilities.supportsTools = false;
-    defaultCapabilities.maxContextLength = 8192;
-  } else if (providerId === 'zhipu') {
-    defaultCapabilities.maxContextLength = 128000;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.SMALL;
+  } else if (providerId === PROVIDER_IDS.ZHIPU) {
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.ZHIPU;
   }
 
   if (modelId.includes('glm-4-air')) {
@@ -346,7 +305,7 @@ function createModelMeta(modelId: string, providerId: string, legacy: ModelConfi
  * 创建参数定义
  */
 function createParameterDefinitions(providerId: string): readonly any[] {
-  if (providerId === 'gemini') {
+  if (providerId === PROVIDER_IDS.GEMINI) {
     return [
       {
         name: 'temperature',

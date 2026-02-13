@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures'
+import { TIMEOUTS } from '../constants/timeouts';
 import { navigateToMode } from '../helpers/common'
 import { fillOriginalPrompt, clickOptimizeButton, expectOptimizedResultNotEmpty } from '../helpers/optimize'
 import * as path from 'path'
@@ -20,7 +21,7 @@ async function openSelectAndWaitForVisibleOptions(page: any, select: any) {
     await ensureOpen()
   } catch {
     await page.keyboard.press('Escape').catch(() => {})
-    await page.waitForTimeout(200)
+    await page.waitForTimeout(TIMEOUTS.UI.MICRO_WAIT)
     await ensureOpen()
   }
 
@@ -50,7 +51,7 @@ async function selectOption(page: any, select: any, matcher?: RegExp) {
       return
     } catch {
       await page.keyboard.press('Escape').catch(() => {})
-      await page.waitForTimeout(200)
+      await page.waitForTimeout(TIMEOUTS.UI.MICRO_WAIT)
     }
   }
 }

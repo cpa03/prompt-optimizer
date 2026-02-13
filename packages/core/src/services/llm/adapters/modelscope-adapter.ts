@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_MODELSCOPE } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -42,7 +43,7 @@ const MODELSCOPE_STATIC_MODELS: ModelOverride[] = [
 export class ModelScopeAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'modelscope',
+      id: PROVIDER_MODELSCOPE,
       name: 'ModelScope',
       description: '阿里云魔搭社区 API 推理服务，每天免费 2000 次调用',
       corsRestricted: true,

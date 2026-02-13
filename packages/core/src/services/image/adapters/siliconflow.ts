@@ -9,8 +9,17 @@ import type {
   ImageParameterDefinition
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { PROVIDER_URLS } from '../../../config/providers'
-import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
+import { 
+  PROVIDER_URLS,
+  PROVIDER_API_KEY_URLS,
+  IMAGE_SIZE_PRESETS,
+  IMAGE_DEFAULTS,
+  MIME_TYPES,
+  getTestPrompt,
+  getSiliconFlowKolorsParameterDefinitions,
+  getSiliconFlowQwenParameterDefinitions,
+  getSiliconFlowDefaultParameterValues
+} from '../../../config'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -25,6 +34,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.siliconflow,
       supportsDynamicModels: false,
+      apiKeyUrl: PROVIDER_API_KEY_URLS.siliconflow,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -37,9 +47,6 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
-    const sizes = IMAGE_SIZE_PRESETS.siliconflow
-    const defaults = IMAGE_DEFAULTS.siliconflow
-    
     // 返回静态的基础模型列表（离线可用）
     return [
       {
@@ -52,54 +59,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
           image2image: true,
           multiImage: false
         },
-        parameterDefinitions: [
-          {
-            name: 'image_size',
-            labelKey: 'params.imageSize.label',
-            descriptionKey: 'params.imageSize.description',
-            type: 'string',
-            defaultValue: sizes.default,
-            allowedValues: sizes.available
-          },
-          {
-            name: 'num_inference_steps',
-            labelKey: 'params.steps.label',
-            descriptionKey: 'params.steps.description',
-            type: 'integer',
-            defaultValue: defaults.steps,
-            minValue: 1,
-            maxValue: 100
-          },
-          {
-            name: 'guidance_scale',
-            labelKey: 'params.guidance.label',
-            descriptionKey: 'params.guidance.description',
-            type: 'number',
-            defaultValue: defaults.guidanceScale,
-            minValue: 1.0,
-            maxValue: 20.0,
-            step: 0.5
-          },
-          {
-            name: 'seed',
-            labelKey: 'params.seed.label',
-            descriptionKey: 'params.seed.description',
-            type: 'integer',
-            minValue: 0,
-            maxValue: 9999999999
-          },
-          {
-            name: 'negative_prompt',
-            labelKey: 'params.negativePrompt.label',
-            descriptionKey: 'params.negativePrompt.description',
-            type: 'string'
-          }
-        ],
-        defaultParameterValues: {
-          image_size: sizes.default,
-          num_inference_steps: defaults.steps,
-          guidance_scale: defaults.guidanceScale
-        }
+        parameterDefinitions: getSiliconFlowKolorsParameterDefinitions(),
+        defaultParameterValues: getSiliconFlowDefaultParameterValues('Kwai-Kolors/Kolors')
       },
       {
         id: 'Qwen/Qwen-Image',
@@ -111,40 +72,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
           image2image: false,
           multiImage: false
         },
-        parameterDefinitions: [
-          {
-            name: 'image_size',
-            labelKey: 'params.imageSize.label',
-            descriptionKey: 'params.imageSize.description',
-            type: 'string',
-            defaultValue: '1328x1328',
-            allowedValues: ['1328x1328', '1664x928', '928x1664', '1472x1140', '1140x1472', '1584x1056', '1056x1584']
-          },
-          {
-            name: 'num_inference_steps',
-            labelKey: 'params.steps.label',
-            descriptionKey: 'params.steps.description',
-            type: 'integer',
-            defaultValue: defaults.numInferenceSteps,
-            minValue: 1,
-            maxValue: 100
-          },
-          {
-            name: 'cfg',
-            labelKey: 'params.cfg.label',
-            descriptionKey: 'params.cfg.description',
-            type: 'number',
-            defaultValue: defaults.strength,
-            minValue: 0.1,
-            maxValue: 20.0,
-            step: 0.1
-          }
-        ],
-        defaultParameterValues: {
-          image_size: '1328x1328',
-          num_inference_steps: defaults.numInferenceSteps,
-          cfg: defaults.strength
-        }
+        parameterDefinitions: getSiliconFlowQwenParameterDefinitions(),
+        defaultParameterValues: getSiliconFlowDefaultParameterValues('Qwen/Qwen-Image')
       }
     ]
   }
@@ -250,18 +179,18 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a flower',
+        prompt: getTestPrompt('siliconflow', 'text2image'),
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make it red',
+        prompt: getTestPrompt('siliconflow', 'image2image'),
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         }
       }
     }
@@ -293,7 +222,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         batch_size: 1,
         // 处理输入图像（如果有）
         ...(request.inputImage?.b64 && {
-          image: `data:${request.inputImage.mimeType || 'image/png'};base64,${request.inputImage.b64}`
+          image: `data:${request.inputImage.mimeType || MIME_TYPES.PNG};base64,${request.inputImage.b64}`
         })
       })
     })
@@ -302,7 +231,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       images: response.images?.map((img: any) => ({
         url: img.url,
         b64: img.b64,
-        mimeType: img.mimeType || 'image/png'
+        mimeType: img.mimeType || MIME_TYPES.PNG
       })) || [],
       metadata: {
         providerId: 'siliconflow',
@@ -348,122 +277,17 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
   protected getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[] {
     const modelName = modelId.toLowerCase()
-    const sizes = IMAGE_SIZE_PRESETS.siliconflow
-    const defaults = IMAGE_DEFAULTS.siliconflow
-
-    // 基础参数
-    const baseParams: ImageParameterDefinition[] = [
-      {
-        name: 'image_size',
-        labelKey: 'params.imageSize.label',
-        descriptionKey: 'params.imageSize.description',
-        type: 'string',
-        defaultValue: sizes.default,
-        allowedValues: sizes.available.slice(0, 3) // Use first 3 sizes as base
-      },
-      {
-        name: 'num_inference_steps',
-        labelKey: 'params.steps.label',
-        descriptionKey: 'params.steps.description',
-        type: 'integer',
-        defaultValue: defaults.steps,
-        minValue: 1,
-        maxValue: 100
-      }
-    ]
-
-    // Qwen-Image 模型特定参数
+    
+    // Use modular parameter definitions based on model type
     if (modelName.includes('qwen')) {
-      baseParams[0] = {
-        name: 'image_size',
-        labelKey: 'params.imageSize.label',
-        descriptionKey: 'params.imageSize.description',
-        type: 'string',
-        defaultValue: '1328x1328',
-        allowedValues: ['1328x1328', '1664x928', '928x1664', '1472x1140', '1140x1472', '1584x1056', '1056x1584']
-      }
-      baseParams[1] = {
-        name: 'num_inference_steps',
-        labelKey: 'params.steps.label',
-        descriptionKey: 'params.steps.description',
-        type: 'integer',
-        defaultValue: defaults.numInferenceSteps,
-        minValue: 1,
-        maxValue: 100
-      }
-      baseParams.push({
-        name: 'cfg',
-        labelKey: 'params.cfg.label',
-        descriptionKey: 'params.cfg.description',
-        type: 'number',
-        defaultValue: defaults.strength,
-        minValue: 0.1,
-        maxValue: 20.0,
-        step: 0.1
-      })
+      return getSiliconFlowQwenParameterDefinitions()
     }
-
-    // Kolors 模型特定参数
-    if (modelName.includes('kolors')) {
-      baseParams[0] = {
-        name: 'image_size',
-        labelKey: 'params.imageSize.label',
-        descriptionKey: 'params.imageSize.description',
-        type: 'string',
-        defaultValue: sizes.default,
-        allowedValues: sizes.available
-      }
-      baseParams.push(
-        {
-          name: 'guidance_scale',
-          labelKey: 'params.guidance.label',
-          descriptionKey: 'params.guidance.description',
-          type: 'number',
-          defaultValue: defaults.guidanceScale,
-          minValue: 1.0,
-          maxValue: 20.0,
-          step: 0.5
-        },
-        {
-          name: 'negative_prompt',
-          labelKey: 'params.negativePrompt.label',
-          descriptionKey: 'params.negativePrompt.description',
-          type: 'string'
-        }
-      )
-    }
-
-    return baseParams
+    
+    // Default to Kolors parameters for all other models
+    return getSiliconFlowKolorsParameterDefinitions()
   }
 
   protected getDefaultParameterValues(modelId: string): Record<string, unknown> {
-    const modelName = modelId.toLowerCase()
-    const sizes = IMAGE_SIZE_PRESETS.siliconflow
-    const defaults = IMAGE_DEFAULTS.siliconflow
-
-    const baseDefaults = {
-      image_size: sizes.default,
-      num_inference_steps: defaults.steps
-    }
-
-    // Qwen-Image 模型默认值
-    if (modelName.includes('qwen')) {
-      return {
-        image_size: '1328x1328',
-        num_inference_steps: defaults.numInferenceSteps,
-        cfg: defaults.strength
-      }
-    }
-
-    // Kolors 模型默认值
-    if (modelName.includes('kolors')) {
-      return {
-        ...baseDefaults,
-        guidance_scale: defaults.guidanceScale
-      }
-    }
-
-    // 其他模型使用基础默认值
-    return baseDefaults
+    return getSiliconFlowDefaultParameterValues(modelId)
   }
 }

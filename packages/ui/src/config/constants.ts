@@ -1,83 +1,105 @@
 /**
  * Application constants configuration
  * Centralizes all hardcoded values for easy maintenance and customization
+ * Flexy loves modularity - all values are now environment-configurable!
  */
 
-// Time constants (in milliseconds)
+import { getEnvInt as getViteEnvInt } from '@prompt-optimizer/core';
+
+// Time constants (in milliseconds) - now environment-configurable
 export const TIME_CONSTANTS = {
   // Toast notifications
-  TOAST_DURATION: 3000,
+  TOAST_DURATION: getViteEnvInt('VITE_TOAST_DURATION', 3000),
+  TOAST_DURATION_LONG: getViteEnvInt('VITE_TOAST_DURATION_LONG', 8000), // For important messages that need user attention
   
   // Cache expiration
-  CACHE_EXPIRY_MS: 5 * 60 * 1000, // 5 minutes
+  CACHE_EXPIRY_MS: getViteEnvInt('VITE_CACHE_EXPIRY_MINUTES', 5) * 60 * 1000,
   
   // Session timeouts
-  SESSION_TIMEOUT_MS: 5000, // 5 seconds
-  SESSION_RETRY_DELAY_MS: 50,
-  SESSION_INIT_DELAY_MS: 0,
+  SESSION_TIMEOUT_MS: getViteEnvInt('VITE_SESSION_TIMEOUT_MS', 5000),
+  SESSION_RETRY_DELAY_MS: getViteEnvInt('VITE_SESSION_RETRY_DELAY_MS', 50),
+  SESSION_INIT_DELAY_MS: getViteEnvInt('VITE_SESSION_INIT_DELAY_MS', 0),
   
   // Debounce/Throttle defaults
-  DEFAULT_DEBOUNCE_MS: 150,
-  DEFAULT_THROTTLE_MS: 1000,
-  THROTTLE_RESET_MS: 10000,
+  DEFAULT_DEBOUNCE_MS: getViteEnvInt('VITE_DEFAULT_DEBOUNCE_MS', 150),
+  DEFAULT_THROTTLE_MS: getViteEnvInt('VITE_DEFAULT_THROTTLE_MS', 1000),
+  THROTTLE_RESET_MS: getViteEnvInt('VITE_THROTTLE_RESET_MS', 10000),
+  DEBOUNCE_INPUT_MS: getViteEnvInt('VITE_DEBOUNCE_INPUT_MS', 100), // For input field debouncing
+  THROTTLE_UI_MS: getViteEnvInt('VITE_THROTTLE_UI_MS', 300), // For UI updates like scrolling
   
   // GC and cleanup
-  GC_DELAY_MS: 0,
-  MEMORY_CHECK_INTERVAL_MS: 5000,
+  GC_DELAY_MS: getViteEnvInt('VITE_GC_DELAY_MS', 0),
+  MEMORY_CHECK_INTERVAL_MS: getViteEnvInt('VITE_MEMORY_CHECK_INTERVAL_MS', 5000),
   
   // Data persistence
-  PERSISTENCE_DEBOUNCE_MS: 1000,
+  PERSISTENCE_DEBOUNCE_MS: getViteEnvInt('VITE_PERSISTENCE_DEBOUNCE_MS', 1000),
   
   // Input history
-  INPUT_HISTORY_MERGE_THRESHOLD_MS: 1000,
+  INPUT_HISTORY_MERGE_THRESHOLD_MS: getViteEnvInt('VITE_INPUT_HISTORY_MERGE_THRESHOLD_MS', 1000),
   
   // Update check
-  UPDATE_CHECK_DELAY_MS: 3000,
+  UPDATE_CHECK_DELAY_MS: getViteEnvInt('VITE_UPDATE_CHECK_DELAY_MS', 3000),
   
   // Cache max age (7 days)
-  CACHE_MAX_AGE_MS: 7 * 24 * 60 * 60 * 1000,
+  CACHE_MAX_AGE_MS: getViteEnvInt('VITE_CACHE_MAX_AGE_DAYS', 7) * 24 * 60 * 60 * 1000,
+  
+  // Tooltip delays
+  TOOLTIP_DELAY_SHORT: getViteEnvInt('VITE_TOOLTIP_DELAY_SHORT', 200),
+  TOOLTIP_DELAY_MEDIUM: getViteEnvInt('VITE_TOOLTIP_DELAY_MEDIUM', 300),
+  TOOLTIP_DELAY_LONG: getViteEnvInt('VITE_TOOLTIP_DELAY_LONG', 500),
+  TOOLTIP_DURATION_SHORT: getViteEnvInt('VITE_TOOLTIP_DURATION_SHORT', 150),
+  
+  // Animation durations
+  ANIMATION_DURATION_SCORE: getViteEnvInt('VITE_ANIMATION_DURATION_SCORE', 800),
+  ANIMATION_INDICATOR_DURATION: getViteEnvInt('VITE_ANIMATION_INDICATOR_DURATION', 2000),
+  ANIMATION_POPOVER_DELAY: getViteEnvInt('VITE_ANIMATION_POPOVER_DELAY', 100),
+  ANIMATION_SHORT_DELAY: getViteEnvInt('VITE_ANIMATION_SHORT_DELAY', 200), // For quick UI transitions like hiding popups
+  ANIMATION_THEME_SWITCH: getViteEnvInt('VITE_ANIMATION_THEME_SWITCH', 400), // Theme toggle animation duration
+  
+  // Scroll listener delays
+  SCROLL_LISTENER_DELAY_MS: getViteEnvInt('VITE_SCROLL_LISTENER_DELAY_MS', 100),
 } as const
 
-// Variable constraints
+// Variable constraints - environment configurable
 export const VARIABLE_CONSTRAINTS = {
-  MAX_NAME_LENGTH: 50,
-  MAX_VALUE_LENGTH: 10000,
-  MAX_DISPLAY_LENGTH: 5000,
-  MAX_HISTORY_ITEMS: 50,
+  MAX_NAME_LENGTH: getViteEnvInt('VITE_VARIABLE_MAX_NAME_LENGTH', 50),
+  MAX_VALUE_LENGTH: getViteEnvInt('VITE_VARIABLE_MAX_VALUE_LENGTH', 10000),
+  MAX_DISPLAY_LENGTH: getViteEnvInt('VITE_VARIABLE_MAX_DISPLAY_LENGTH', 5000),
+  MAX_HISTORY_ITEMS: getViteEnvInt('VITE_VARIABLE_MAX_HISTORY_ITEMS', 50),
 } as const
 
-// UI constants
+// UI constants - environment configurable
 export const UI_CONSTANTS = {
   // Animation durations
-  ANIMATION_DURATION_MS: 300,
-  FEEDBACK_DURATION_MS: 1000,
+  ANIMATION_DURATION_MS: getViteEnvInt('VITE_ANIMATION_DURATION_MS', 300),
+  FEEDBACK_DURATION_MS: getViteEnvInt('VITE_FEEDBACK_DURATION_MS', 1000),
   
   // Layout
-  MAX_DESCRIPTION_LENGTH: 100,
-  DEFAULT_ROWS: 3,
-  MAX_ROWS: 20,
+  MAX_DESCRIPTION_LENGTH: getViteEnvInt('VITE_MAX_DESCRIPTION_LENGTH', 100),
+  DEFAULT_ROWS: getViteEnvInt('VITE_DEFAULT_ROWS', 3),
+  MAX_ROWS: getViteEnvInt('VITE_MAX_ROWS', 20),
   
   // Responsive breakpoints
-  MOBILE_BREAKPOINT_PX: 768,
-  TABLET_BREAKPOINT_PX: 1024,
+  MOBILE_BREAKPOINT_PX: getViteEnvInt('VITE_MOBILE_BREAKPOINT_PX', 768),
+  TABLET_BREAKPOINT_PX: getViteEnvInt('VITE_TABLET_BREAKPOINT_PX', 1024),
 } as const
 
-// Template processing
+// Template processing - environment configurable
 export const TEMPLATE_CONSTANTS = {
-  HIGH_COMPLEXITY_THRESHOLD: 0.8,
-  HIGH_LENGTH_THRESHOLD: 1000,
+  HIGH_COMPLEXITY_THRESHOLD: getViteEnvInt('VITE_HIGH_COMPLEXITY_THRESHOLD', 80) / 100,
+  HIGH_LENGTH_THRESHOLD: getViteEnvInt('VITE_HIGH_LENGTH_THRESHOLD', 1000),
 } as const
 
-// Z-index scale
+// Z-index scale - environment configurable for theme flexibility
 export const Z_INDEX = {
-  BASE: 1,
-  DROPDOWN: 100,
-  STICKY: 200,
-  MODAL: 1000,
-  POPOVER: 2000,
-  TOOLTIP: 3000,
-  TOAST: 4000,
-  FOCUS_OVERLAY: 10000,
+  BASE: getViteEnvInt('VITE_Z_INDEX_BASE', 1),
+  DROPDOWN: getViteEnvInt('VITE_Z_INDEX_DROPDOWN', 100),
+  STICKY: getViteEnvInt('VITE_Z_INDEX_STICKY', 200),
+  MODAL: getViteEnvInt('VITE_Z_INDEX_MODAL', 1000),
+  POPOVER: getViteEnvInt('VITE_Z_INDEX_POPOVER', 2000),
+  TOOLTIP: getViteEnvInt('VITE_Z_INDEX_TOOLTIP', 3000),
+  TOAST: getViteEnvInt('VITE_Z_INDEX_TOAST', 4000),
+  FOCUS_OVERLAY: getViteEnvInt('VITE_Z_INDEX_FOCUS_OVERLAY', 10000),
 } as const
 
 // UI Dimensions (widths, heights, in pixels or CSS values)
@@ -135,32 +157,32 @@ export const ANIMATION_CONSTANTS = {
   BORDER_RADIUS_ROUND: '50%',
 } as const
 
-// Performance thresholds
+// Performance thresholds - environment configurable
 export const PERFORMANCE_THRESHOLDS = {
   // Frame timing (60fps = 16.67ms)
-  TARGET_FPS_MS: 16,
-  MAX_RENDER_TIME_MS: 32,
+  TARGET_FPS_MS: getViteEnvInt('VITE_TARGET_FPS_MS', 16),
+  MAX_RENDER_TIME_MS: getViteEnvInt('VITE_MAX_RENDER_TIME_MS', 32),
 
-  // Memory thresholds (in bytes)
-  MEMORY_WARNING_BYTES: 50 * 1024 * 1024, // 50MB
-  MEMORY_CRITICAL_BYTES: 100 * 1024 * 1024, // 100MB
+  // Memory thresholds (in MB, converted to bytes)
+  MEMORY_WARNING_BYTES: getViteEnvInt('VITE_MEMORY_WARNING_MB', 50) * 1024 * 1024,
+  MEMORY_CRITICAL_BYTES: getViteEnvInt('VITE_MEMORY_CRITICAL_MB', 100) * 1024 * 1024,
 
   // Update frequency
-  UPDATE_COUNT_WARNING: 50,
-  UPDATE_COUNT_CRITICAL: 100,
-  UPDATE_RENDER_RATIO_WARNING: 10,
+  UPDATE_COUNT_WARNING: getViteEnvInt('VITE_UPDATE_COUNT_WARNING', 50),
+  UPDATE_COUNT_CRITICAL: getViteEnvInt('VITE_UPDATE_COUNT_CRITICAL', 100),
+  UPDATE_RENDER_RATIO_WARNING: getViteEnvInt('VITE_UPDATE_RENDER_RATIO_WARNING', 10),
 
   // Timeouts
-  API_TIMEOUT_MS: 5000,
-  LONG_OPERATION_TIMEOUT_MS: 10000,
+  API_TIMEOUT_MS: getViteEnvInt('VITE_API_TIMEOUT_MS', 5000),
+  LONG_OPERATION_TIMEOUT_MS: getViteEnvInt('VITE_LONG_OPERATION_TIMEOUT_MS', 10000),
 } as const
 
-// Responsive breakpoints (in pixels)
+// Responsive breakpoints (in pixels) - environment configurable
 export const BREAKPOINTS = {
-  MOBILE: 640,
-  TABLET: 768,
-  DESKTOP: 1024,
-  LARGE: 1200,
+  MOBILE: getViteEnvInt('VITE_BREAKPOINT_MOBILE', 640),
+  TABLET: getViteEnvInt('VITE_BREAKPOINT_TABLET', 768),
+  DESKTOP: getViteEnvInt('VITE_BREAKPOINT_DESKTOP', 1024),
+  LARGE: getViteEnvInt('VITE_BREAKPOINT_LARGE', 1200),
 } as const
 
 // Spacing system (in pixels) - for consistent margins, paddings, and gaps
@@ -286,6 +308,16 @@ export const SEMANTIC_COLORS = {
   THEME_CLASSIC: '#b08968',
 } as const
 
+// Theme icon colors - used in ThemeToggleUI component
+export const THEME_ICON_COLORS = {
+  LIGHT: '#eab308',    // yellow-500
+  DARK: '#60a5fa',     // blue-400
+  BLUE: '#2563eb',     // blue-600
+  GREEN: '#16a34a',    // green-600
+  PURPLE: '#9333ea',   // purple-600
+  CLASSIC: '#b08968',  // classic brown
+} as const
+
 // Icon sizes (in pixels) - for consistent icon sizing
 export const ICON_SIZES = {
   XS: 12,
@@ -296,76 +328,122 @@ export const ICON_SIZES = {
   XXL: 48,
 } as const
 
-// Component-specific constants
+// File size limits (in MB, converted to bytes) - environment configurable
+export const FILE_SIZE_LIMITS = {
+  // Maximum upload size for variable files
+  MAX_VARIABLE_FILE_SIZE_BYTES: getViteEnvInt('VITE_MAX_VARIABLE_FILE_SIZE_MB', 10) * 1024 * 1024,
+  // Maximum upload size for images
+  MAX_IMAGE_FILE_SIZE_BYTES: getViteEnvInt('VITE_MAX_IMAGE_FILE_SIZE_MB', 10) * 1024 * 1024,
+  // Maximum cache size
+  MAX_CACHE_SIZE_BYTES: getViteEnvInt('VITE_MAX_CACHE_SIZE_MB', 50) * 1024 * 1024,
+} as const
+
+// Layout constants - environment configurable
+export const LAYOUT_CONSTANTS = {
+  // Test column configuration
+  TEST_COLUMN: {
+    DEFAULT_COUNT: getViteEnvInt('VITE_TEST_COLUMN_DEFAULT_COUNT', 2),
+    MIN_COUNT: getViteEnvInt('VITE_TEST_COLUMN_MIN_COUNT', 2),
+    MAX_COUNT: getViteEnvInt('VITE_TEST_COLUMN_MAX_COUNT', 4),
+    VALID_COUNTS: [2, 3, 4] as const,
+  },
+  
+  // Split panel configuration
+  SPLIT_PANEL: {
+    DEFAULT_LEFT_PCT: getViteEnvInt('VITE_SPLIT_PANEL_DEFAULT_LEFT_PCT', 50),
+    MIN_LEFT_PCT: getViteEnvInt('VITE_SPLIT_PANEL_MIN_LEFT_PCT', 20),
+    MAX_LEFT_PCT: getViteEnvInt('VITE_SPLIT_PANEL_MAX_LEFT_PCT', 80),
+  },
+} as const
+
+// Calculation constants - for consistent math operations
+export const CALCULATION_CONSTANTS = {
+  // Percentage calculations
+  PERCENTAGE_FACTOR: 100, // Multiply to get percentage, divide to get decimal
+  
+  // Time calculations (in milliseconds)
+  MS_PER_SECOND: 1000,
+  MS_PER_MINUTE: 60 * 1000,
+  MS_PER_HOUR: 60 * 60 * 1000,
+  MS_PER_DAY: 24 * 60 * 60 * 1000,
+  
+  // Bytes conversions
+  BYTES_PER_KB: 1024,
+  BYTES_PER_MB: 1024 * 1024,
+  BYTES_PER_GB: 1024 * 1024 * 1024,
+} as const
+
+// Component-specific constants - environment configurable where applicable
 export const COMPONENT_CONSTANTS = {
   // VariableImporter
   VARIABLE_IMPORTER: {
-    UPLOAD_AREA_PADDING: 24,
-    UPLOAD_ICON_SIZE: 48,
-    UPLOAD_ICON_MARGIN_BOTTOM: 12,
-    MONOSPACE_FONT_SIZE: 13,
-    HELP_TEXT_FONT_SIZE: 12,
-    PREVIEW_MAX_HEIGHT: 240,
+    UPLOAD_AREA_PADDING: getViteEnvInt('VITE_UPLOAD_AREA_PADDING', 24),
+    UPLOAD_ICON_SIZE: getViteEnvInt('VITE_UPLOAD_ICON_SIZE', 48),
+    UPLOAD_ICON_MARGIN_BOTTOM: getViteEnvInt('VITE_UPLOAD_ICON_MARGIN_BOTTOM', 12),
+    MONOSPACE_FONT_SIZE: getViteEnvInt('VITE_MONOSPACE_FONT_SIZE', 13),
+    HELP_TEXT_FONT_SIZE: getViteEnvInt('VITE_HELP_TEXT_FONT_SIZE', 12),
+    PREVIEW_MAX_HEIGHT: getViteEnvInt('VITE_PREVIEW_MAX_HEIGHT', 240),
     MODAL_MAX_WIDTH: '90vw',
+    MAX_FILE_SIZE_BYTES: FILE_SIZE_LIMITS.MAX_VARIABLE_FILE_SIZE_BYTES,
   },
   
   // TextModelEditModal
   TEXT_MODEL_EDIT_MODAL: {
     WIDTH: '90vw',
-    MAX_WIDTH: 1000,
+    MAX_WIDTH: getViteEnvInt('VITE_TEXT_MODEL_EDIT_MODAL_MAX_WIDTH', 1000),
     DIVIDER_MARGIN: '12px 0',
-    SECTION_TITLE_FONT_SIZE: 14,
+    SECTION_TITLE_FONT_SIZE: getViteEnvInt('VITE_SECTION_TITLE_FONT_SIZE', 14),
     INPUT_PADDING: '0 4px',
   },
   
   // General modal content
   MODAL_CONTENT: {
-    PADDING_SMALL: 12,
-    PADDING_MEDIUM: 16,
-    PADDING_LARGE: 24,
-    GAP_SMALL: 8,
-    GAP_MEDIUM: 12,
-    GAP_LARGE: 16,
+    PADDING_SMALL: getViteEnvInt('VITE_MODAL_PADDING_SMALL', 12),
+    PADDING_MEDIUM: getViteEnvInt('VITE_MODAL_PADDING_MEDIUM', 16),
+    PADDING_LARGE: getViteEnvInt('VITE_MODAL_PADDING_LARGE', 24),
+    GAP_SMALL: getViteEnvInt('VITE_MODAL_GAP_SMALL', 8),
+    GAP_MEDIUM: getViteEnvInt('VITE_MODAL_GAP_MEDIUM', 12),
+    GAP_LARGE: getViteEnvInt('VITE_MODAL_GAP_LARGE', 16),
   },
   
   // Workspace panels
   WORKSPACE: {
-    PANEL_MIN_HEIGHT: 200,
-    FONT_SIZE_HEADER: 18,
-    FONT_SIZE_LABEL: 12,
-    BUTTON_WIDTH: 92,
+    PANEL_MIN_HEIGHT: getViteEnvInt('VITE_WORKSPACE_PANEL_MIN_HEIGHT', 200),
+    FONT_SIZE_HEADER: getViteEnvInt('VITE_WORKSPACE_FONT_SIZE_HEADER', 18),
+    FONT_SIZE_LABEL: getViteEnvInt('VITE_WORKSPACE_FONT_SIZE_LABEL', 12),
+    BUTTON_WIDTH: getViteEnvInt('VITE_WORKSPACE_BUTTON_WIDTH', 92),
   },
   
   // CategoryManager
   CATEGORY_MANAGER: {
     MODAL_WIDTH: 'min(520px, 90vw)',
-    SEARCH_INPUT_WIDTH: 200,
+    SEARCH_INPUT_WIDTH: getViteEnvInt('VITE_CATEGORY_MANAGER_SEARCH_WIDTH', 200),
   },
 
   // EvaluationScoreBadge
   EVALUATION_SCORE_BADGE: {
     SMALL: {
-      MIN_WIDTH: 32,
-      HEIGHT: 22,
-      PADDING_HORIZONTAL: 6,
-      FONT_SIZE: 12,
+      MIN_WIDTH: getViteEnvInt('VITE_SCORE_BADGE_SMALL_MIN_WIDTH', 32),
+      HEIGHT: getViteEnvInt('VITE_SCORE_BADGE_SMALL_HEIGHT', 22),
+      PADDING_HORIZONTAL: getViteEnvInt('VITE_SCORE_BADGE_SMALL_PADDING', 6),
+      FONT_SIZE: getViteEnvInt('VITE_SCORE_BADGE_SMALL_FONT_SIZE', 12),
     },
     MEDIUM: {
-      MIN_WIDTH: 40,
-      HEIGHT: 28,
-      PADDING_HORIZONTAL: 8,
-      FONT_SIZE: 14,
+      MIN_WIDTH: getViteEnvInt('VITE_SCORE_BADGE_MEDIUM_MIN_WIDTH', 40),
+      HEIGHT: getViteEnvInt('VITE_SCORE_BADGE_MEDIUM_HEIGHT', 28),
+      PADDING_HORIZONTAL: getViteEnvInt('VITE_SCORE_BADGE_MEDIUM_PADDING', 8),
+      FONT_SIZE: getViteEnvInt('VITE_SCORE_BADGE_MEDIUM_FONT_SIZE', 14),
     },
   },
 
   // CodeMirror extensions
   CODEMIRROR: {
-    TOOLTIP_MAX_WIDTH: 420,
+    TOOLTIP_MAX_WIDTH: getViteEnvInt('VITE_CODEMIRROR_TOOLTIP_MAX_WIDTH', 420),
   },
 
   // Layout minimum heights
   LAYOUT: {
-    PANEL_MIN_HEIGHT_PX: 200,
-    BUTTON_MIN_WIDTH_PX: 48,
+    PANEL_MIN_HEIGHT_PX: getViteEnvInt('VITE_LAYOUT_PANEL_MIN_HEIGHT', 200),
+    BUTTON_MIN_WIDTH_PX: getViteEnvInt('VITE_LAYOUT_BUTTON_MIN_WIDTH', 48),
   },
 } as const

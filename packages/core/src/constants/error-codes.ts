@@ -55,6 +55,7 @@ export const STORAGE_ERROR_CODES = {
   DELETE_ERROR: 'error.storage.delete',
   CLEAR_ERROR: 'error.storage.clear',
   CONFIG_ERROR: 'error.storage.config',
+  LOCK_ERROR: 'error.storage.lock',
 } as const;
 
 // Model errors | 模型错误

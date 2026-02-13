@@ -1,5 +1,6 @@
 import { IStorageProvider } from './types';
 import { StorageError } from './errors';
+import { STORAGE_CONSTRAINTS } from '../../constants/constraints';
 
 /**
  * 简单的异步锁实现
@@ -8,12 +9,23 @@ class AsyncLock {
   private locks: Map<string, Promise<void>> = new Map();
 
   async acquire(key: string): Promise<() => void> {
-    // 等待现有锁完成
+    // 等待现有锁完成，带最大重试限制防止无限循环
+    let attempts = 0;
+    const maxAttempts = 100; // 防止无限循环的安全限制
+    
     while (this.locks.has(key)) {
+      attempts++;
+      if (attempts > maxAttempts) {
+        throw new StorageError(`Failed to acquire lock for key "${key}" after ${maxAttempts} attempts`, 'lock');
+      }
+      
       try {
         await this.locks.get(key);
-      } catch {
-        // 忽略锁中的错误，继续尝试获取锁
+      } catch (lockError) {
+        // 锁操作失败，记录但继续尝试
+        console.warn(`[AsyncLock] Lock operation failed for key "${key}" (attempt ${attempts}):`, lockError);
+        // 短暂延迟后重试，避免CPU忙等
+        await new Promise(resolve => setTimeout(resolve, 10));
       }
     }
 
@@ -99,7 +111,18 @@ export class LocalStorageProvider implements IStorageProvider {
     try {
       // 读取当前值
       const currentData = localStorage.getItem(key);
-      const currentValue: T | null = currentData ? JSON.parse(currentData) : null;
+      let currentValue: T | null = null;
+      
+      if (currentData) {
+        try {
+          currentValue = JSON.parse(currentData) as T;
+        } catch (parseError) {
+          throw new StorageError(
+            `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`,
+            'read'
+          );
+        }
+      }
       
       // 应用修改 - 允许业务逻辑错误透传
       const newValue = modifier(currentValue);
@@ -107,6 +130,11 @@ export class LocalStorageProvider implements IStorageProvider {
       // 写入新值
       localStorage.setItem(key, JSON.stringify(newValue));
     } catch (error) {
+      // 如果已经是StorageError，直接抛出
+      if (error instanceof StorageError) {
+        throw error;
+      }
+      
       // 业务逻辑错误直接透传，保持错误类型
       if (error instanceof Error &&
           (error.name.includes('Error') ||
@@ -130,7 +158,7 @@ export class LocalStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true, // 通过手动锁实现
       supportsBatch: true,
-      maxStorageSize: 5 * 1024 * 1024 // 约5MB
+      maxStorageSize: STORAGE_CONSTRAINTS.MAX_STORAGE_SIZE_BYTES
     };
   }
 

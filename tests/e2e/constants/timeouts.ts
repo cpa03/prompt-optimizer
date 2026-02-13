@@ -71,6 +71,25 @@ export const WAIT_TIMEOUTS = {
   EXTENDED_WAIT: 30000,
 } as const
 
+// Animation and UI transition timeouts
+export const UI_TIMEOUTS = {
+  // Micro animations (< 300ms)
+  MICRO_WAIT: 200,
+  
+  // Small transitions (300-500ms)
+  SMALL_WAIT: 300,
+  UI_TRANSITION: 500,
+  
+  // Session restore operations
+  SESSION_RESTORE: 2000,
+  
+  // Tag/Category operations
+  TAG_OPERATION: 1000,
+  
+  // Favorite operations
+  FAVORITE_ANIMATION: 800,
+} as const
+
 // Test-specific timeouts
 export const TEST_TIMEOUTS = {
   // Default test timeout
@@ -108,6 +127,7 @@ export const TIMEOUTS = {
   API: API_TIMEOUTS,
   WAIT: WAIT_TIMEOUTS,
   TEST: TEST_TIMEOUTS,
+  UI: UI_TIMEOUTS,
 } as const
 
 // Convenience exports for direct import
@@ -138,3 +158,13 @@ export const {
   IMAGE_GENERATION: IMAGE_GENERATION_TEST_TIMEOUT,
   IMAGE_GENERATION_WITH_UPLOAD: IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT,
 } = TEST_TIMEOUTS
+
+// UI transition timeout exports
+export const {
+  MICRO_WAIT,
+  SMALL_WAIT,
+  UI_TRANSITION,
+  SESSION_RESTORE,
+  TAG_OPERATION,
+  FAVORITE_ANIMATION,
+} = UI_TIMEOUTS

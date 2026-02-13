@@ -17,6 +17,18 @@ import { OpenRouterAdapter } from './openrouter-adapter';
 import { ModelScopeAdapter } from './modelscope-adapter';
 import { OllamaAdapter } from './ollama-adapter';
 import { RequestConfigError } from '../errors';
+import {
+  PROVIDER_OPENAI,
+  PROVIDER_ANTHROPIC,
+  PROVIDER_GEMINI,
+  PROVIDER_DEEPSEEK,
+  PROVIDER_SILICONFLOW,
+  PROVIDER_ZHIPU,
+  PROVIDER_DASHSCOPE,
+  PROVIDER_OPENROUTER,
+  PROVIDER_MODELSCOPE,
+  PROVIDER_OLLAMA,
+} from '../../../constants';
 
 /**
  * 文本模型适配器注册表实现
@@ -59,16 +71,16 @@ export class TextAdapterRegistry
     const modelscopeAdapter = new ModelScopeAdapter();
     const ollamaAdapter = new OllamaAdapter();
 
-    this.adapters.set('openai', openaiAdapter);
-    this.adapters.set('deepseek', deepseekAdapter);
-    this.adapters.set('siliconflow', siliconflowAdapter);
-    this.adapters.set('zhipu', zhipuAdapter);
-    this.adapters.set('anthropic', anthropicAdapter);
-    this.adapters.set('gemini', geminiAdapter);
-    this.adapters.set('dashscope', dashscopeAdapter);
-    this.adapters.set('openrouter', openrouterAdapter);
-    this.adapters.set('modelscope', modelscopeAdapter);
-    this.adapters.set('ollama', ollamaAdapter);
+    this.adapters.set(PROVIDER_OPENAI, openaiAdapter);
+    this.adapters.set(PROVIDER_DEEPSEEK, deepseekAdapter);
+    this.adapters.set(PROVIDER_SILICONFLOW, siliconflowAdapter);
+    this.adapters.set(PROVIDER_ZHIPU, zhipuAdapter);
+    this.adapters.set(PROVIDER_ANTHROPIC, anthropicAdapter);
+    this.adapters.set(PROVIDER_GEMINI, geminiAdapter);
+    this.adapters.set(PROVIDER_DASHSCOPE, dashscopeAdapter);
+    this.adapters.set(PROVIDER_OPENROUTER, openrouterAdapter);
+    this.adapters.set(PROVIDER_MODELSCOPE, modelscopeAdapter);
+    this.adapters.set(PROVIDER_OLLAMA, ollamaAdapter);
 
     // 预加载静态模型缓存
     this.preloadStaticModels();

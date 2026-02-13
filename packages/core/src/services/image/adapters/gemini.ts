@@ -9,7 +9,14 @@ import type {
   ImageModelConfig
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { PROVIDER_URLS } from '../../../config/providers'
+import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
+import {
+  PROVIDER_URLS,
+  PROVIDER_API_KEY_URLS,
+  MIME_TYPES,
+  getTestPrompt,
+  getGeminiDefaultParameterValues
+} from '../../../config'
 
 export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   getProvider(): ImageProvider {
@@ -20,7 +27,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: false,
-      apiKeyUrl: 'https://aistudio.google.com/apikey',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.gemini,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -33,10 +40,12 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   }
 
   getModels(): ImageModel[] {
+    const defaultParams = getGeminiDefaultParameterValues()
+
     return [
       {
-        id: 'gemini-2.5-flash-image',
-        name: 'Gemini 2.5 Flash Image',
+        id: GEMINI_MODELS.GEMINI_25_FLASH_IMAGE,
+        name: getModelDisplayName(GEMINI_MODELS.GEMINI_25_FLASH_IMAGE),
         description: 'Google Gemini 2.5 Flash 图像生成模型（Nano Banana），支持文生图、图生图和多图输入',
         providerId: 'gemini',
         capabilities: {
@@ -45,13 +54,11 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           multiImage: true
         },
         parameterDefinitions: [],  // Gemini 不需要用户配置参数
-        defaultParameterValues: {
-          outputMimeType: 'image/png'
-        }
+        defaultParameterValues: defaultParams
       },
       {
-        id: 'gemini-3-pro-image-preview',
-        name: 'Gemini 3 Pro Image',
+        id: GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW,
+        name: getModelDisplayName(GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW),
         description: 'Google Gemini 3 Pro 高级图像生成模型（Nano Banana Pro），支持高分辨率输出和高级文本渲染',
         providerId: 'gemini',
         capabilities: {
@@ -60,9 +67,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           multiImage: true
         },
         parameterDefinitions: [],
-        defaultParameterValues: {
-          outputMimeType: 'image/png'
-        }
+        defaultParameterValues: defaultParams
       }
     ]
   }
@@ -70,17 +75,17 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a simple red flower',
+        prompt: getTestPrompt('gemini', 'text2image'),
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make this image more colorful',
+        prompt: getTestPrompt('gemini', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         },
         count: 1
       }
@@ -95,9 +100,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
-    return {
-      outputMimeType: 'image/png'
-    }
+    return getGeminiDefaultParameterValues()
   }
 
   protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
@@ -121,7 +124,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         { text: request.prompt },
         {
           inlineData: {
-            mimeType: request.inputImage.mimeType || 'image/png',
+            mimeType: request.inputImage.mimeType || MIME_TYPES.PNG,
             data: request.inputImage.b64
           }
         }
@@ -154,7 +157,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           responseText = part.text
         } else if (part.inlineData) {
           const imageData = part.inlineData.data
-          const mimeType = part.inlineData.mimeType || 'image/png'
+          const mimeType = part.inlineData.mimeType || MIME_TYPES.PNG
 
           // 构建 data URL
           const dataUrl = `data:${mimeType};base64,${imageData}`

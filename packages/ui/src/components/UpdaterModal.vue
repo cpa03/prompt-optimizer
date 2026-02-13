@@ -238,6 +238,12 @@
 </template>
 
 <script setup lang="ts">
+// 🎨 Palette: Micro-UX improvements for UpdaterModal
+// - Card hover effects with subtle lift
+// - Button micro-interactions with ripple
+// - Enhanced progress bar with animated gradient
+// - Smooth transitions for state changes
+// - Reduced motion support for accessibility
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NAlert, NButton, NCard, NProgress, NSpace, NSpin, NTag, NText } from 'naive-ui'
@@ -357,3 +363,170 @@ const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 </script>
+
+<style scoped>
+/* 🎨 Palette: Card hover effects with subtle lift and shadow */
+:deep(.n-card) {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-card:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+:deep(.n-card:active) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 🎨 Palette: Enhanced button micro-interactions */
+:deep(.n-button) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary button hover glow effect */
+:deep(.n-button--primary-type:not(:disabled):hover) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.35);
+}
+
+:deep(.n-button--primary-type:not(:disabled):active) {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 6px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* Tertiary button hover */
+:deep(.n-button--tertiary-type:not(:disabled):hover) {
+  transform: translateY(-1px);
+}
+
+:deep(.n-button--tertiary-type:not(:disabled):active) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Button loading shimmer effect */
+:deep(.n-button--loading::after) {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  animation: button-loading-shimmer 1.5s infinite;
+  pointer-events: none;
+}
+
+@keyframes button-loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* 🎨 Palette: Enhanced progress bar with animated gradient */
+:deep(.n-progress .n-progress-graph .n-progress-graph-fill) {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(
+    90deg,
+    var(--n-progress-fill-color, #18a058) 0%,
+    #36d17a 50%,
+    var(--n-progress-fill-color, #18a058) 100%
+  );
+  background-size: 200% 100%;
+  animation: progress-gradient-flow 2s linear infinite;
+}
+
+@keyframes progress-gradient-flow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* 🎨 Palette: Alert entrance animations */
+:deep(.n-alert) {
+  animation: alert-entrance 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes alert-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🎨 Palette: Tag hover effects */
+:deep(.n-tag) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-tag:hover) {
+  transform: scale(1.05);
+}
+
+/* 🎨 Palette: Focus-visible rings for keyboard accessibility */
+:deep(.n-button):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* 🎨 Palette: Dark mode adjustments */
+.dark :deep(.n-card:hover) {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.dark :deep(.n-button--primary-type:not(:disabled):hover) {
+  box-shadow: 0 4px 16px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4);
+}
+
+/* 🎨 Palette: Respect reduced motion preference for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  :deep(.n-card),
+  :deep(.n-button),
+  :deep(.n-tag) {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  :deep(.n-card:hover) {
+    transform: none;
+    box-shadow: none;
+  }
+
+  :deep(.n-button--loading::after) {
+    animation: none;
+  }
+
+  :deep(.n-progress .n-progress-graph .n-progress-graph-fill) {
+    animation: none;
+    background: var(--n-progress-fill-color, #18a058);
+  }
+
+  :deep(.n-alert) {
+    animation: none;
+  }
+
+  :deep(.n-button--primary-type:not(:disabled):hover),
+  :deep(.n-button--primary-type:not(:disabled):active) {
+    transform: none;
+    box-shadow: none;
+  }
+}
+</style>

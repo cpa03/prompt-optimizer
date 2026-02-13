@@ -84,6 +84,7 @@
                                 ? t('common.collapse')
                                 : t('common.expand')
                         "
+                        :aria-expanded="isPredefinedExpanded"
                     >
                         <template #icon>
                             <NIcon>

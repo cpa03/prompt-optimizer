@@ -9,7 +9,15 @@ import type {
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { PROVIDER_URLS, IMAGE_SIZE_PRESETS, MIME_TYPES } from '../../../config'
+import { 
+  PROVIDER_URLS, 
+  IMAGE_SIZE_PRESETS, 
+  MIME_TYPES,
+  PROVIDER_API_KEY_URLS,
+  getTestPrompt,
+  getOpenAIParameterDefinitions,
+  getOpenAIDefaultParameterValues
+} from '../../../config'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -24,7 +32,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.openai,
       supportsDynamicModels: false,
-      apiKeyUrl: 'https://platform.openai.com/api-keys',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.openai,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -48,37 +56,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
           image2image: true,
           multiImage: false
         },
-        parameterDefinitions: [
-          {
-            name: 'size',
-            labelKey: 'image.params.size.label',
-            descriptionKey: 'image.params.size.description',
-            type: 'string',
-            defaultValue: IMAGE_SIZE_PRESETS.openai.default,
-            allowedValues: [...IMAGE_SIZE_PRESETS.openai.available]
-          },
-          {
-            name: 'quality',
-            labelKey: 'image.params.quality.label',
-            descriptionKey: 'image.params.quality.description',
-            type: 'string',
-            defaultValue: 'auto',
-            allowedValues: ['auto', 'high', 'medium', 'low']
-          },
-          {
-            name: 'background',
-            labelKey: 'image.params.background.label',
-            descriptionKey: 'image.params.background.description',
-            type: 'string',
-            defaultValue: 'auto',
-            allowedValues: ['auto', 'transparent', 'opaque']
-          }
-        ],
-        defaultParameterValues: {
-          size: IMAGE_SIZE_PRESETS.openai.default,
-          quality: 'auto',
-          background: 'auto'
-        }
+        parameterDefinitions: getOpenAIParameterDefinitions(),
+        defaultParameterValues: getOpenAIDefaultParameterValues()
       }
     ]
   }
@@ -86,14 +65,14 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: 'a simple red flower',
+        prompt: getTestPrompt('openai', 'text2image'),
         count: 1
       }
     }
 
     if (testType === 'image2image') {
       return {
-        prompt: 'make this image more colorful',
+        prompt: getTestPrompt('openai', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
           mimeType: MIME_TYPES.image.png
@@ -107,40 +86,11 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
 
   protected getParameterDefinitions(_modelId: string): readonly ImageParameterDefinition[] {
     // GPT Image 1 使用统一的参数定义，n参数固定为1不暴露给用户
-    return [
-      {
-        name: 'size',
-        labelKey: 'image.params.size.label',
-        descriptionKey: 'image.params.size.description',
-        type: 'string',
-        defaultValue: IMAGE_SIZE_PRESETS.openai.default,
-        allowedValues: [...IMAGE_SIZE_PRESETS.openai.available]
-      },
-      {
-        name: 'quality',
-        labelKey: 'image.params.quality.label',
-        descriptionKey: 'image.params.quality.description',
-        type: 'string',
-        defaultValue: 'auto',
-        allowedValues: ['auto', 'high', 'medium', 'low']
-      },
-      {
-        name: 'background',
-        labelKey: 'image.params.background.label',
-        descriptionKey: 'image.params.background.description',
-        type: 'string',
-        defaultValue: 'auto',
-        allowedValues: ['auto', 'transparent', 'opaque']
-      }
-    ]
+    return getOpenAIParameterDefinitions()
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
-    return {
-      size: IMAGE_SIZE_PRESETS.openai.default,
-      quality: 'auto',
-      background: 'auto'
-    }
+    return getOpenAIDefaultParameterValues()
   }
 
   protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
@@ -211,7 +161,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     // 转换base64图像为Blob
     const imageBlob = this.base64ToBlob(
       request.inputImage.b64 || '',
-      request.inputImage.mimeType || 'image/png'
+      request.inputImage.mimeType || MIME_TYPES.PNG
     )
     formData.append('image', imageBlob, 'input.png')
 
@@ -242,7 +192,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
 
       return {
         b64: item.b64_json,
-        mimeType: 'image/png',
+        mimeType: MIME_TYPES.PNG,
         url: dataUrl
       }
     })

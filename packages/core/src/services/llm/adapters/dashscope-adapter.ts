@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_DASHSCOPE } from '../../../constants'
 
 interface ModelOverride {
   id: string
@@ -66,7 +67,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
 export class DashScopeAdapter extends OpenAIAdapter {
   public getProvider(): TextProvider {
     return {
-      id: 'dashscope',
+      id: PROVIDER_DASHSCOPE,
       name: '阿里百炼',
       description: '阿里云百炼大模型服务平台，提供通义千问系列模型',
       requiresApiKey: true,

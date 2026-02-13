@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.5.3] - 2026-02-10
+
+### ✨ UI/UX Enhancements (Palette Micro-Interactions)
+
+#### 🎨 TestResultSection Improvements (#111)
+- **Card Hover Effects**: Added subtle lift (translateY -2px) and shadow transitions
+- **Evaluation Button Animation**: Smooth fade and scale transitions
+- **Header Text Feedback**: Color transition on header text hover
+- **Accessibility**: Added focus-visible rings and reduced motion support
+- **Dark Mode**: Proper hover shadow adjustments for dark theme
+
+#### 🗂️ History Drawer Enhancements (#113)
+- **Smooth Deletion Animation**: Added slide-out animation for deleted items
+- **Staggered Transitions**: Items animate sequentially for better visual flow
+- **Accessibility**: Respects `prefers-reduced-motion` media query
+
 ## [2.1.0] - 2025-01-19
 
 ### 🎉 Added - 收藏管理重构 (Favorite Management Refactor)

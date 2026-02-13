@@ -8,8 +8,9 @@
 import { chromium } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
+import { SERVER_CONFIG, VIEWPORT_CONFIG, APP_ROUTES } from './config/constants.js';
 
-const E2E_PORT = process.env.E2E_PORT || 18181;
+const E2E_PORT = process.env.E2E_PORT || SERVER_CONFIG.DEFAULT_PORT;
 const BASE_URL = `http://localhost:${E2E_PORT}`;
 
 class ConsoleErrorMonitor {
@@ -24,7 +25,10 @@ class ConsoleErrorMonitor {
     
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
-      viewport: { width: 1280, height: 720 }
+      viewport: { 
+        width: VIEWPORT_CONFIG.DEFAULT_WIDTH, 
+        height: VIEWPORT_CONFIG.DEFAULT_HEIGHT 
+      }
     });
     
     const page = await context.newPage();
@@ -84,7 +88,7 @@ class ConsoleErrorMonitor {
     await page.goto(BASE_URL, { waitUntil: 'networkidle' });
     
     // Wait for app to fully load and settle
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(SERVER_CONFIG.CONSOLE_MONITOR_WAIT_MS);
     
     // Interact with key pages to trigger more console activity
     await this.exerciseApp(page);
@@ -101,12 +105,10 @@ class ConsoleErrorMonitor {
   async exerciseApp(page) {
     console.log('🏃 Exercising app routes...');
     
-    const routes = ['/', '/optimize', '/history', '/settings'];
-    
-    for (const route of routes) {
+    for (const route of APP_ROUTES.ALL) {
       try {
         await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle' });
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(SERVER_CONFIG.ROUTE_CHECK_WAIT_MS);
         console.log(`✅ Route ${route} checked`);
       } catch (e) {
         console.warn(`⚠️  Could not navigate to ${route}: ${e.message}`);

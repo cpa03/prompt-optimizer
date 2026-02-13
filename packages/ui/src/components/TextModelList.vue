@@ -203,3 +203,101 @@ const { t } = useI18n()
 
 const isElectronEnv = isRunningInElectron()
 </script>
+
+<style scoped>
+/* 🎨 Palette: Micro-UX improvements for TextModelList */
+
+/* Card hover effects */
+.n-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Button micro-interactions */
+.n-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.n-button:not(:disabled):active {
+  transform: scale(0.96) translateY(0);
+}
+
+/* Test connection button - blue accent */
+.n-button[quaternary]:not(.n-button--error-type):not(.n-button--success-type):not(.n-button--warning-type):hover {
+  color: #2080f0;
+  background-color: rgba(32, 128, 240, 0.1);
+}
+
+/* Enable button - green accent */
+.n-button--success-type:hover {
+  box-shadow: 0 4px 12px rgba(24, 160, 88, 0.3);
+}
+
+/* Disable button - yellow accent */
+.n-button--warning-type:hover {
+  box-shadow: 0 4px 12px rgba(240, 160, 32, 0.3);
+}
+
+/* Delete button - red accent */
+.n-button--error-type:hover {
+  box-shadow: 0 4px 12px rgba(208, 48, 80, 0.3);
+}
+
+/* Icon animations within buttons */
+.n-button svg {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-button:not(:disabled):hover svg {
+  transform: scale(1.15);
+}
+
+.n-button:not(:disabled):active svg {
+  transform: scale(0.95);
+}
+
+/* Focus visible rings for accessibility */
+.n-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
+/* Tag hover effects */
+.n-tag {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-tag:hover {
+  transform: scale(1.05);
+}
+
+/* Reduced motion support for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .n-card,
+  .n-button,
+  .n-tag,
+  .n-button svg {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .n-card:hover,
+  .n-button:not(:disabled):hover,
+  .n-tag:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .n-button:not(:disabled):hover svg {
+    transform: none !important;
+  }
+}
+</style>

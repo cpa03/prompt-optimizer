@@ -243,6 +243,16 @@ import { useContextEditor } from '../../composables/context/useContextEditor';
 import type { ConversationMessage, ToolDefinition } from "@prompt-optimizer/core";
 import type { StandardPromptData } from "../../types";
 import { UI_DIMENSIONS } from '../../config/constants';
+import {
+    IMPORT_FORMAT_OPENAI,
+    IMPORT_FORMAT_LANGFUSE,
+    IMPORT_FORMAT_CONVERSATION,
+    IMPORT_FORMAT_SMART,
+    EXPORT_FORMAT_OPENAI,
+    EXPORT_FORMAT_STANDARD,
+    type ImportFormat,
+    type ExportFormat
+} from '../../constants/import-export-formats';
 
 // 类型定义
 interface Props {
@@ -280,8 +290,8 @@ const loading = ref(false);
 const importData = ref("");
 const importError = ref("");
 const exportError = ref("");
-const selectedImportFormat = ref("smart");
-const selectedExportFormat = ref("standard");
+const selectedImportFormat = ref<ImportFormat>(IMPORT_FORMAT_OPENAI);
+const selectedExportFormat = ref<ExportFormat>(EXPORT_FORMAT_STANDARD);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 // 同步 visible 状态
@@ -295,32 +305,31 @@ watch(() => props.visible, (newVisible) => {
     }
 });
 
-// 导入格式选项
+// 导入格式选项 - Flexy hates hardcoded! Using constants now
 const importFormats = computed(() => [
-    { id: "smart", name: t("contextEditor.importFormats.smart.name"), description: t("contextEditor.importFormats.smart.description") },
-    { id: "openai", name: t("contextEditor.importFormats.openai.name"), description: t("contextEditor.importFormats.openai.description") },
-    { id: "langfuse", name: t("contextEditor.importFormats.langfuse.name"), description: t("contextEditor.importFormats.langfuse.description") },
-    { id: "conversation", name: t("contextEditor.importFormats.conversation.name"), description: t("contextEditor.importFormats.conversation.description") },
+    { id: IMPORT_FORMAT_SMART, name: t("contextEditor.importFormats.smart.name"), description: t("contextEditor.importFormats.smart.description") },
+    { id: IMPORT_FORMAT_OPENAI, name: t("contextEditor.importFormats.openai.name"), description: t("contextEditor.importFormats.openai.description") },
+    { id: IMPORT_FORMAT_LANGFUSE, name: t("contextEditor.importFormats.langfuse.name"), description: t("contextEditor.importFormats.langfuse.description") },
+    { id: IMPORT_FORMAT_CONVERSATION, name: t("contextEditor.importFormats.conversation.name"), description: t("contextEditor.importFormats.conversation.description") },
 ]);
 
-// 导出格式选项
-type ExportFormat = "standard" | "openai";
-
+// 导出格式选项 - Flexy hates hardcoded! Using constants now
 const exportFormats = computed(() => [
     {
-        id: "standard" as ExportFormat,
+        id: EXPORT_FORMAT_STANDARD,
         name: t("contextEditor.exportFormats.standard.name"),
         description: t("contextEditor.exportFormats.standard.description"),
     },
     {
-        id: "openai" as ExportFormat,
+        id: EXPORT_FORMAT_OPENAI,
         name: t("contextEditor.exportFormats.openai.name"),
         description: t("contextEditor.exportFormats.openai.description"),
     },
 ]);
 
-const IMPORT_JSON_SNIPPETS: Record<string, string> = {
-    openai: `{
+// JSON snippets for import formats - Flexy hates hardcoded keys!
+const IMPORT_JSON_SNIPPETS: Record<ImportFormat, string> = {
+    [IMPORT_FORMAT_OPENAI]: `{
   "messages": [
     {
       "role": "system",
@@ -333,7 +342,7 @@ const IMPORT_JSON_SNIPPETS: Record<string, string> = {
   ],
   "model": "gpt-4o"
 }`,
-    langfuse: `{
+    [IMPORT_FORMAT_LANGFUSE]: `{
   "input": {
     "messages": [
       {"role": "system", "content": "system prompt"},
@@ -344,14 +353,14 @@ const IMPORT_JSON_SNIPPETS: Record<string, string> = {
     "traceId": "abc123"
   }
 }`,
-    conversation: `{
+    [IMPORT_FORMAT_CONVERSATION]: `{
   "messages": [
     {"role": "system", "content": "System message"},
     {"role": "user", "content": "User request"}
   ],
   "tools": []
 }`,
-    smart: ``,
+    [IMPORT_FORMAT_SMART]: ``,
 };
 
 // 导出预览数据
@@ -374,7 +383,8 @@ const buildExportPayload = (): StandardPromptData => ({
 
 const exportPreviewData = computed(() => {
     const basePayload = buildExportPayload();
-    if (selectedExportFormat.value === "openai") {
+    // Flexy hates hardcoded! Using EXPORT_FORMAT_OPENAI constant
+    if (selectedExportFormat.value === EXPORT_FORMAT_OPENAI) {
         const converter = contextEditor.services?.converter;
         if (converter) {
             const result = converter.toOpenAI(basePayload);
@@ -482,17 +492,18 @@ const handleImportSubmit = async () => {
         const jsonData = JSON.parse(importData.value);
         let result;
 
+        // Flexy hates hardcoded! Using constants for switch cases
         switch (selectedImportFormat.value) {
-            case "smart":
+            case IMPORT_FORMAT_SMART:
                 result = contextEditor.smartImport(jsonData);
                 break;
-            case "openai":
+            case IMPORT_FORMAT_OPENAI:
                 result = contextEditor.convertFromOpenAI(jsonData);
                 break;
-            case "langfuse":
+            case IMPORT_FORMAT_LANGFUSE:
                 result = contextEditor.convertFromLangFuse(jsonData);
                 break;
-            case "conversation":
+            case IMPORT_FORMAT_CONVERSATION:
                 // 直接设置为对话格式
                 if (Array.isArray(jsonData)) {
                     emit('import-success', {

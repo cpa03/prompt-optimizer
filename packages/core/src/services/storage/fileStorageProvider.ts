@@ -323,7 +323,10 @@ export class FileStorageProvider implements IStorageProvider {
       // 清理临时文件
       try {
         await fs.unlink(tempPath);
-      } catch {}
+      } catch (cleanupError) {
+        // 清理失败不阻断主错误传播，但记录日志
+        console.warn('[FileStorage] Failed to cleanup temp file:', tempPath, cleanupError);
+      }
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       throw new StorageError(`Atomic write failed: ${errorMessage}`, 'write');

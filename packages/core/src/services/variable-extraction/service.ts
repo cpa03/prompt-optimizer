@@ -23,6 +23,7 @@ import {
 } from './errors';
 import { jsonrepair } from 'jsonrepair';
 import { toErrorWithCode } from '../../utils/error';
+import { TEMPLATE_IDS } from '../../constants/template-ids';
 
 /**
  * 变量提取服务实现类
@@ -118,7 +119,7 @@ export class VariableExtractionService implements IVariableExtractionService {
    * 获取提示词模板 (统一模板)
    */
   private async getExtractionTemplate(): Promise<Template> {
-    const templateId = 'variable-extraction';
+    const templateId = TEMPLATE_IDS.VARIABLE_EXTRACTION;
 
     try {
       const template = await this.templateManager.getTemplate(templateId);

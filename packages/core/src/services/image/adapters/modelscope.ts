@@ -13,6 +13,8 @@ import { IMAGE_CONSTRAINTS } from '../../../constants/constraints'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
+import { RETRY_CONFIG } from '../../../constants/templates'
+import { MIME_TYPES } from '../../../config'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -185,7 +187,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     }
 
     // 轮询任务状态
-    return await this.pollTaskResult(taskId, config, 120, IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS)
+    return await this.pollTaskResult(taskId, config, RETRY_CONFIG.DEFAULT_POLL_ATTEMPTS, IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS)
   }
 
   /**
@@ -194,7 +196,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
   private async pollTaskResult(
     taskId: string,
     config: ImageModelConfig,
-    maxAttempts: number = 60,
+    maxAttempts: number = RETRY_CONFIG.MAX_POLL_ATTEMPTS,
     intervalMs: number = IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS
   ): Promise<ImageResult> {
     const taskUrl = this.resolveEndpointUrl(config, `/tasks/${taskId}`)
@@ -236,7 +238,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
 
         const images = outputImages.map((imageUrl: string) => ({
           url: imageUrl,
-          mimeType: 'image/png'
+          mimeType: MIME_TYPES.PNG
         }))
 
         return {

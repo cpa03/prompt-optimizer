@@ -9,7 +9,15 @@ import type {
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { PROVIDER_URLS } from '../../../config/providers'
+import {
+  PROVIDER_URLS,
+  PROVIDER_API_KEY_URLS,
+  MIME_TYPES,
+  getTestPrompt,
+  getDashScopeParameterDefinitions,
+  getDashScopeEditParameterDefinitions,
+  getDashScopeDefaultParameterValues
+} from '../../../config'
 
 /**
  * 阿里百炼图像适配器
@@ -41,7 +49,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.dashscope,
       supportsDynamicModels: false,
-      apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.dashscope,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
@@ -66,12 +74,8 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
           image2image: false,
           multiImage: false
         },
-        parameterDefinitions: this.getQwenImageParameterDefinitions(),
-        defaultParameterValues: {
-          size: '1328*1328',
-          prompt_extend: true,
-          watermark: false
-        }
+        parameterDefinitions: getDashScopeParameterDefinitions(),
+        defaultParameterValues: getDashScopeDefaultParameterValues(false)
       },
       // Qwen-Image-Edit 图生图模型
       {
@@ -84,90 +88,8 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
           image2image: true,
           multiImage: true
         },
-        parameterDefinitions: this.getQwenImageEditParameterDefinitions(),
-        defaultParameterValues: {
-          prompt_extend: true,
-          watermark: false
-        }
-      }
-    ]
-  }
-
-  private getQwenImageParameterDefinitions(): ImageParameterDefinition[] {
-    return [
-      {
-        name: 'size',
-        labelKey: 'image.params.size.label',
-        descriptionKey: 'image.params.size.description',
-        type: 'string',
-        defaultValue: '1328*1328',
-        allowedValues: ['1664*928', '1472*1140', '1328*1328', '1140*1472', '928*1664']
-      },
-      {
-        name: 'negative_prompt',
-        labelKey: 'image.params.negativePrompt.label',
-        descriptionKey: 'image.params.negativePrompt.description',
-        type: 'string',
-        defaultValue: ''
-      },
-      {
-        name: 'prompt_extend',
-        labelKey: 'image.params.promptExtend.label',
-        descriptionKey: 'image.params.promptExtend.description',
-        type: 'boolean',
-        defaultValue: true
-      },
-      {
-        name: 'watermark',
-        labelKey: 'image.params.watermark.label',
-        descriptionKey: 'image.params.watermark.description',
-        type: 'boolean',
-        defaultValue: false
-      },
-      {
-        name: 'seed',
-        labelKey: 'image.params.seed.label',
-        descriptionKey: 'image.params.seed.description',
-        type: 'integer',
-        minValue: 0,
-        maxValue: 2147483647
-      }
-    ]
-  }
-
-  /**
-   * 获取 Qwen-Image-Edit 图生图参数定义
-   */
-  private getQwenImageEditParameterDefinitions(): ImageParameterDefinition[] {
-    return [
-      {
-        name: 'negative_prompt',
-        labelKey: 'image.params.negativePrompt.label',
-        descriptionKey: 'image.params.negativePrompt.description',
-        type: 'string',
-        defaultValue: ''
-      },
-      {
-        name: 'prompt_extend',
-        labelKey: 'image.params.promptExtend.label',
-        descriptionKey: 'image.params.promptExtend.description',
-        type: 'boolean',
-        defaultValue: true
-      },
-      {
-        name: 'watermark',
-        labelKey: 'image.params.watermark.label',
-        descriptionKey: 'image.params.watermark.description',
-        type: 'boolean',
-        defaultValue: false
-      },
-      {
-        name: 'seed',
-        labelKey: 'image.params.seed.label',
-        descriptionKey: 'image.params.seed.description',
-        type: 'integer',
-        minValue: 0,
-        maxValue: 2147483647
+        parameterDefinitions: getDashScopeEditParameterDefinitions(),
+        defaultParameterValues: getDashScopeDefaultParameterValues(true)
       }
     ]
   }
@@ -175,10 +97,9 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
   protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
-        prompt: '一朵简单的红色花朵',
+        prompt: getTestPrompt('dashscope', 'text2image'),
         count: 1,
-        paramOverrides: {
-        }
+        paramOverrides: {}
       }
     }
 
@@ -187,23 +108,13 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
 
   protected getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[] {
     if (this.isQwenImageEditModel(modelId)) {
-      return this.getQwenImageEditParameterDefinitions()
+      return getDashScopeEditParameterDefinitions()
     }
-    return this.getQwenImageParameterDefinitions()
+    return getDashScopeParameterDefinitions()
   }
 
   protected getDefaultParameterValues(modelId: string): Record<string, unknown> {
-    if (this.isQwenImageEditModel(modelId)) {
-      return {
-        prompt_extend: true,
-        watermark: false
-      }
-    }
-    return {
-      size: '1328*1328',
-      prompt_extend: true,
-      watermark: false
-    }
+    return getDashScopeDefaultParameterValues(this.isQwenImageEditModel(modelId))
   }
 
   private isQwenImageEditModel(modelId: string): boolean {
@@ -300,7 +211,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     return {
       images: [{
         url: imageContent.image,
-        mimeType: 'image/png'
+        mimeType: MIME_TYPES.PNG
       }],
       metadata: {
         providerId: 'dashscope',
@@ -330,7 +241,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     if (request.inputImage) {
       // DashScope 的 image 字段要求：公网 URL 或 data:{mime};base64,{data}。
       // 本项目只支持本地 base64，因此这里统一拼成 data URL。
-      const mimeType = request.inputImage.mimeType || 'image/png'
+      const mimeType = request.inputImage.mimeType || MIME_TYPES.PNG
       const b64 = request.inputImage.b64 || ''
       const dataUrl = b64.startsWith('data:') ? b64 : `data:${mimeType};base64,${b64}`
       content.push({ image: dataUrl })
@@ -400,7 +311,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
           return {
             images: [{
               url: item.image,
-              mimeType: 'image/png'
+              mimeType: MIME_TYPES.PNG
             }],
             metadata: {
               providerId: 'dashscope',

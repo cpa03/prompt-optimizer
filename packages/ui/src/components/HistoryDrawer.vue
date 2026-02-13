@@ -33,12 +33,14 @@
       </NSpace>
     </template>
 
-    <NScrollbar style="max-height: 65vh;">
-      <NSpace vertical :size="16" v-if="sortedHistory && sortedHistory.length > 0">
+    <div class="history-scrollbar-wrapper">
+      <NScrollbar ref="historyScrollbarRef" style="max-height: 65vh;" class="history-scrollbar">
+          <TransitionGroup name="history-item" tag="div" class="history-list" v-if="sortedHistory && sortedHistory.length > 0">
         <NCard
           v-for="chain in filteredHistory"
           :key="chain.chainId"
           hoverable
+          :class="{ 'history-item-removing': removingChainId === chain.chainId }"
         >
           <template #header>
             <NSpace justify="space-between" align="center">
@@ -187,8 +189,13 @@
                       size="small"
                       type="primary"
                       quaternary
+                      :class="{ 'use-btn--used': usedVersionId === record.id }"
+                      class="use-btn"
                     >
-                      {{ $t('history.useThisVersion') }}
+                      <template #icon v-if="usedVersionId === record.id">
+                        <span class="check-icon">✓</span>
+                      </template>
+                      {{ usedVersionId === record.id ? $t('common.applied') : $t('history.useThisVersion') }}
                     </NButton>
                   </div>
                 </NSpace>
@@ -196,7 +203,7 @@
             </NCollapse>
           </NSpace>
         </NCard>
-      </NSpace>
+      </TransitionGroup>
       
       <NEmpty v-else :description="$t('history.noHistory')">
         <template #icon>
@@ -211,7 +218,15 @@
           </NText>
         </template>
       </NEmpty>
-    </NScrollbar>
+      </NScrollbar>
+      <!-- 🎨 Palette: Scroll-to-top button for long history lists -->
+      <ScrollToTop
+        v-if="sortedHistory && sortedHistory.length > 3"
+        container=".history-scrollbar .n-scrollbar-container"
+        :threshold="300"
+        :teleport="false"
+      />
+    </div>
   </NModal>
 </template>
 
@@ -220,12 +235,13 @@ import { ref, watch, computed, type PropType } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import {
-  NModal, NScrollbar, NSpace, NCard, NText, NTag, NButton, 
+  NModal, NScrollbar, NSpace, NCard, NText, NTag, NButton,
   NDivider, NCollapse, NCollapseItem, NEmpty, NInput
 } from 'naive-ui'
 import type { PromptRecord, PromptRecordChain } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { formatDate } from '../utils/date'
+import ScrollToTop from './ScrollToTop.vue'
 import { truncateText } from '../utils/text'
 
 const props = defineProps({
@@ -253,7 +269,15 @@ const emit = defineEmits<{
 // Toast functionality reserved for future use
 void useToast
 const expandedVersions = ref<Record<string, boolean>>({})
+const historyScrollbarRef = ref<InstanceType<typeof NScrollbar> | null>(null)
 const searchQuery = ref('')
+
+// 🎨 Palette: Track which history item is being removed for animation
+const removingChainId = ref<string | null>(null)
+
+// 🎨 Palette: Track which version was just used for visual feedback
+const usedVersionId = ref<string | null>(null)
+const useVersionTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // --- Close Logic ---
 const close = () => {
@@ -313,7 +337,18 @@ watch(() => props.show, (newShow) => {
 
 
 
-const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
+const reuse = async (record: PromptRecord, chain: PromptRecordChain) => {
+  // 🎨 Palette: Show visual feedback before closing
+  usedVersionId.value = record.id
+  
+  // Clear any existing timeout
+  if (useVersionTimeout.value) {
+    clearTimeout(useVersionTimeout.value)
+  }
+  
+  // Wait for visual feedback animation
+  await new Promise(resolve => setTimeout(resolve, 400))
+  
   emit('reuse', {
     record,
     chainId: chain.chainId,
@@ -321,6 +356,11 @@ const reuse = (record: PromptRecord, chain: PromptRecordChain) => {
     chain
   })
   emit('update:show', false)
+  
+  // Reset after modal closes
+  useVersionTimeout.value = setTimeout(() => {
+    usedVersionId.value = null
+  }, 500)
 }
 
 const isMessageOptimizationType = (recordType: string) => {
@@ -354,12 +394,18 @@ const getFunctionModeLabel = (recordType: string) => {
   }
 }
 
-// 添加删除单条记录的方法
-const deleteChain = (chainId: string) => {
-  if (confirm(t('history.confirmDeleteChain'))) {
-    emit('deleteChain', chainId)
-    // 不需要强制刷新，因为现在使用props.history
-  }
+// 🎨 Palette: Delete with smooth removal animation
+const deleteChain = async (chainId: string) => {
+  if (!confirm(t('history.confirmDeleteChain'))) return
+  
+  // Start removal animation
+  removingChainId.value = chainId
+  
+  // Wait for animation to complete before actual deletion
+  await new Promise(resolve => setTimeout(resolve, 300))
+  
+  emit('deleteChain', chainId)
+  removingChainId.value = null
 }
 </script>
 
@@ -405,5 +451,155 @@ const deleteChain = (chainId: string) => {
     opacity: 1;
     transform: scale(1.1);
   }
+}
+
+/* 🎨 Palette: History item removal animations */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Transition group animations */
+.history-item-enter-active,
+.history-item-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history-item-enter-from {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.history-item-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* Removal animation class */
+.history-item-removing {
+  opacity: 0;
+  transform: translateX(-30px) scale(0.95);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Visual feedback for deletion */
+.history-item-removing :deep(.n-card) {
+  background-color: rgba(var(--n-color-error-rgb, 255, 77, 79), 0.05);
+  border-color: rgba(var(--n-color-error-rgb, 255, 77, 79), 0.3);
+}
+
+/* Card hover enhancement */
+:deep(.n-card) {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:deep(.n-card:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode adjustments */
+.dark :deep(.n-card:hover) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 🎨 Palette: Use button micro-interactions */
+.use-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.use-btn:hover {
+  transform: translateY(-1px);
+}
+
+.use-btn:active {
+  transform: scale(0.95);
+}
+
+.use-btn--used {
+  color: #18a058 !important;
+  font-weight: 600;
+  animation: use-btn-success 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes use-btn-success {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.9);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.check-icon {
+  display: inline-block;
+  animation: check-icon-appear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes check-icon-appear {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-45deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .history-item-enter-active,
+  .history-item-leave-active,
+  .history-item-removing {
+    transition: opacity 0.1s ease;
+    transform: none;
+  }
+  
+  .history-item-enter-from,
+  .history-item-leave-to {
+    transform: none;
+  }
+  
+  :deep(.n-card) {
+    transition: none;
+  }
+  
+  :deep(.n-card:hover) {
+    transform: none;
+  }
+  
+  .use-btn,
+  .use-btn--used,
+  .check-icon {
+    transition: none;
+    animation: none;
+  }
+  
+  .check-icon {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 🎨 Palette: Scrollbar wrapper for scroll-to-top positioning */
+.history-scrollbar-wrapper {
+  position: relative;
+}
+
+.history-scrollbar :deep(.n-scrollbar-container) {
+  position: relative;
 }
 </style> 

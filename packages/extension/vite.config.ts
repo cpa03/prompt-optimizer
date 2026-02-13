@@ -38,6 +38,10 @@ export default defineConfig({
             (warning.message && warning.message.includes('dynamic import'))) {
           return;
         }
+        // Suppress currentInstance warning - it's a false positive from Vue internals
+        if (warning.message && warning.message.includes('currentInstance')) {
+          return;
+        }
         warn(warning);
       },
       output: {
@@ -107,5 +111,12 @@ export default defineConfig({
   server: {
     port: 5174,
     https: {}
+  },
+  define: {
+    // Fix vue-i18n devtools error in production
+    '__INTLIFY_PROD_DEVTOOLS__': JSON.stringify(false),
+    '__INTLIFY_DROP_MESSAGE_COMPILER__': JSON.stringify(false),
+    '__VUE_I18N_FULL_INSTALL__': JSON.stringify(true),
+    '__VUE_I18N_LEGACY_API__': JSON.stringify(false)
   }
 }) 

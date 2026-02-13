@@ -303,7 +303,7 @@
 
             <!-- 优化结果区域 - 使用与基础模式一致的卡片容器 -->
             <NCard
-                :style="{ flex: 1, minHeight: '200px', overflow: 'hidden' }"
+                :style="{ flex: 1, minHeight: `${COMPONENT_CONSTANTS.WORKSPACE.PANEL_MIN_HEIGHT}px`, overflow: 'hidden' }"
                 content-style="height: 100%; max-height: 100%; overflow: hidden;"
             >
                 <PromptPanelUI
@@ -526,23 +526,50 @@
                                                         v-if="getVariantResult(id)?.text"
                                                         size="small"
                                                         secondary
-                                                        @click="copyImageText(String(getVariantResult(id)?.text || ''))"
+                                                        :type="isCopySuccess(id) ? 'success' : 'default'"
+                                                        @click="copyImageText(String(getVariantResult(id)?.text || ''), id)"
+                                                        :aria-label="isCopySuccess(id) ? t('imageWorkspace.results.copied') : t('imageWorkspace.results.copyText')"
+                                                        :aria-live="isCopySuccess(id) ? 'polite' : undefined"
+                                                        class="copy-feedback-btn"
+                                                        :class="{ 'copy-success': isCopySuccess(id) }"
                                                     >
                                                         <template #icon>
-                                                            <NIcon>
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    stroke-width="2"
-                                                                >
-                                                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                                                                </svg>
+                                                            <NIcon class="copy-icon-wrapper">
+                                                                <Transition name="icon-morph" mode="out-in">
+                                                                    <!-- Checkmark icon when copied -->
+                                                                    <svg
+                                                                        v-if="isCopySuccess(id)"
+                                                                        key="check"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="2"
+                                                                        class="copy-success-icon"
+                                                                    >
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                                    </svg>
+                                                                    <!-- Copy icon default -->
+                                                                    <svg
+                                                                        v-else
+                                                                        key="copy"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        stroke-width="2"
+                                                                        class="copy-default-icon"
+                                                                    >
+                                                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                                                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                                                                    </svg>
+                                                                </Transition>
                                                             </NIcon>
                                                         </template>
-                                                        {{ t('imageWorkspace.results.copyText') }}
+                                                        <Transition name="text-fade" mode="out-in">
+                                                            <span v-if="isCopySuccess(id)" key="success">{{ t('imageWorkspace.results.copied') }}</span>
+                                                            <span v-else key="copy">{{ t('imageWorkspace.results.copyText') }}</span>
+                                                        </Transition>
                                                     </NButton>
                                                 </NSpace>
                                             </NSpace>
@@ -689,6 +716,7 @@ import {
     type Template,
 } from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
+import { COMPONENT_CONSTANTS } from '../../config/constants'
 
 // 国际化
 const { t } = useI18n();
@@ -1597,15 +1625,31 @@ const handleSaveFavorite = (data: {
     }
 };
 
-// 复制图像文本输出
-const copyImageText = async (text: string) => {
+// ==================== Copy Button Feedback State ====================
+// Track copy success states for each variant to show visual feedback
+const copySuccessStates = ref<Set<string>>(new Set());
+
+const copyImageText = async (text: string, variantId?: string) => {
     try {
         await navigator.clipboard.writeText(text);
         toast.success(t("imageWorkspace.results.copySuccess"));
+
+        // Show visual feedback on the button if variant ID is provided
+        if (variantId) {
+            copySuccessStates.value.add(variantId);
+            // Auto-revert after 2 seconds
+            setTimeout(() => {
+                copySuccessStates.value.delete(variantId);
+            }, 2000);
+        }
     } catch (error) {
         console.error("Failed to copy text:", error);
         toast.error(t("imageWorkspace.results.copyError"));
     }
+};
+
+const isCopySuccess = (variantId: string): boolean => {
+    return copySuccessStates.value.has(variantId);
 };
 
 // 处理收藏回填 - 从收藏夹恢复提示词到图像工作区
@@ -2211,5 +2255,79 @@ onUnmounted(() => {
     flex: 1;
     min-height: 0;
     overflow: auto;
+}
+
+/* ==================== Copy Button Feedback Animations ==================== */
+/* 🎨 Palette: Copy button micro-UX enhancement with visual feedback */
+
+/* Icon morph transition - smooth scale and fade */
+.icon-morph-enter-active,
+.icon-morph-leave-active {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-morph-enter-from,
+.icon-morph-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Text fade transition */
+.text-fade-enter-active,
+.text-fade-leave-active {
+    transition: all 0.15s ease-out;
+}
+
+.text-fade-enter-from,
+.text-fade-leave-to {
+    opacity: 0;
+}
+
+/* Success state animation for the button */
+.copy-feedback-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.copy-feedback-btn.copy-success {
+    animation: copyButtonPulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes copyButtonPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Success icon styling */
+.copy-success-icon {
+    color: var(--n-success-color, #18a058);
+}
+
+/* Icon wrapper for consistent sizing */
+.copy-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Reduced motion support - respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+    .icon-morph-enter-active,
+    .icon-morph-leave-active,
+    .text-fade-enter-active,
+    .text-fade-leave-active,
+    .copy-feedback-btn {
+        transition: none;
+    }
+
+    .copy-feedback-btn.copy-success {
+        animation: none;
+    }
 }
 </style>

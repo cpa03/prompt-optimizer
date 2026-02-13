@@ -7,13 +7,14 @@ import { IModelManager } from '../model/types';
 import { CORE_SERVICE_KEYS } from '../../constants/storage-keys';
 import { HISTORY_ERROR_CODES, IMPORT_EXPORT_ERROR_CODES } from '../../constants/error-codes';
 import { ImportExportError } from '../../interfaces/import-export';
+import { HISTORY_CONSTRAINTS } from '../../constants/constraints';
 
 /**
  * History Manager implementation
  */
 export class HistoryManager implements IHistoryManager {
   private readonly storageKey = CORE_SERVICE_KEYS.PROMPT_HISTORY;
-  private readonly maxRecords = 50; // Maximum 50 records
+  private readonly maxRecords = HISTORY_CONSTRAINTS.MAX_RECORDS;
   private readonly storage: StorageAdapter;
   private readonly modelManager: IModelManager;
 

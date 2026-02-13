@@ -1,3 +1,5 @@
+import { COOKIE_CONFIG } from '../scripts/config/constants.js';
+
 export default function handler(req, res) {
   // 设置CORS头
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,9 +27,10 @@ export default function handler(req, res) {
     if (action === 'verify') {
       if (password === accessPassword) {
         // 设置Cookie以记住用户身份验证状态
-        const maxAge = 60 * 60 * 24 * 7; // 7天
+        const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE;
+        const secureFlag = process.env.NODE_ENV === 'production' ? '; Secure' : '';
         res.setHeader('Set-Cookie', [
-          `vercel_access_token=${accessPassword}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`
+          `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=${accessPassword}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}${secureFlag}`
         ]);
         
         return res.status(200).json({ 
@@ -49,7 +52,7 @@ export default function handler(req, res) {
     if (action === 'logout') {
       // 清除Cookie
       res.setHeader('Set-Cookie', [
-        'vercel_access_token=; HttpOnly; Path=/; Max-Age=0; SameSite=Strict'
+        `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`
       ]);
       
       return res.status(200).json({ 

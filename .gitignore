@@ -199,3 +199,11 @@ CLAUDE.md
 .kiro
 # BMAD (local only)
 .ace-tool/
+
+# ==========================================
+# Audit dan Report Sementara
+# ==========================================
+brocula-health-report.json
+console-error-report.json
+lighthouse-report.json
+BROCULA_AUDIT_REPORT.md

@@ -36,6 +36,16 @@ const DEFAULT_CONFIG = {
   timeout: 30000 // 30秒
 };
 
+// 端口配置 (与packages/core/src/config/ports.ts保持一致)
+// 从环境变量读取，提供默认值
+const WEB_DEV_PORT = parseInt(process.env.VITE_WEB_PORT, 10) || 18181;
+
+const PORTS = {
+  web: {
+    dev: WEB_DEV_PORT,
+  }
+};
+
 // 超时配置 (与packages/core/src/config/timeouts.ts保持一致)
 const TIMEOUTS = {
   // 默认超时
@@ -43,7 +53,7 @@ const TIMEOUTS = {
   short: 5000,
   medium: 10000,
   long: 60000,
-  
+
   // 服务特定超时
   service: {
     saveOperation: 5000,
@@ -59,6 +69,7 @@ module.exports = {
   IPC_EVENTS,
   PREFERENCE_KEYS,
   DEFAULT_CONFIG,
+  PORTS,
   TIMEOUTS,
   MAX_SAVE_TIME,
   EMERGENCY_EXIT_TIME

@@ -85,16 +85,52 @@
       <!-- 收藏列表（固定区域，无滚动） -->
       <div class="content">
       <template v-if="filteredFavorites.length === 0">
-        <n-empty
-          :description="searchKeyword ? t('favorites.manager.emptySearchResult') : t('favorites.manager.emptyDescription')"
-          size="large"
-        >
-          <template #extra>
-            <n-button @click="$emit('optimize-prompt')">
-              {{ t('favorites.manager.startOptimize') }}
-            </n-button>
-          </template>
-        </n-empty>
+        <!-- 🎨 Palette: Enhanced empty state with micro-animations -->
+        <div class="favorites-empty-state">
+          <n-empty
+            :description="searchKeyword ? t('favorites.manager.emptySearchResult') : t('favorites.manager.emptyDescription')"
+            size="large"
+          >
+            <template #icon>
+              <div class="favorites-empty-icon-wrapper">
+                <span v-if="searchKeyword" class="favorites-empty-icon search-icon">🔍</span>
+                <span v-else class="favorites-empty-icon star-icon">⭐</span>
+                <span class="favorites-empty-sparkle sparkle-1">✨</span>
+                <span v-if="!searchKeyword" class="favorites-empty-sparkle sparkle-2">💫</span>
+              </div>
+            </template>
+            <template #extra>
+              <div class="favorites-empty-actions">
+                <n-button
+                  v-if="!searchKeyword"
+                  type="primary"
+                  size="large"
+                  class="favorites-empty-cta"
+                  @click="$emit('optimize-prompt')"
+                >
+                  <template #icon>
+                    <span class="cta-icon">🚀</span>
+                  </template>
+                  {{ t('favorites.manager.startOptimize') }}
+                </n-button>
+                <n-button
+                  v-else
+                  type="default"
+                  class="favorites-empty-clear"
+                  @click="searchKeyword = ''; handleSearch()"
+                >
+                  <template #icon>
+                    <span>🔄</span>
+                  </template>
+                  {{ t('common.clearSearch', '清除搜索') }}
+                </n-button>
+                <n-text depth="3" class="favorites-empty-hint" v-if="!searchKeyword">
+                  {{ t('favorites.manager.emptyHint', '保存您优化的提示词以便日后快速使用') }}
+                </n-text>
+              </div>
+            </template>
+          </n-empty>
+        </div>
       </template>
 
       <template v-else>
@@ -990,5 +1026,175 @@ defineExpose({
   @apply p-4 border-t border-gray-200 dark:border-gray-700;
   background: var(--n-color);
   flex-shrink: 0;
+}
+
+/* 🎨 Palette: Enhanced empty state with micro-animations */
+.favorites-empty-state {
+  @apply flex items-center justify-center;
+  height: 100%;
+  min-height: 400px;
+}
+
+.favorites-empty-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.favorites-empty-icon {
+  font-size: 64px;
+  display: inline-block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.star-icon {
+  animation: favorite-star-float 3s ease-in-out infinite;
+}
+
+.search-icon {
+  animation: favorite-search-pulse 2s ease-in-out infinite;
+}
+
+.favorites-empty-sparkle {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sparkle-1 {
+  top: -8px;
+  right: -8px;
+  animation: favorite-sparkle-twinkle 2s ease-in-out infinite;
+}
+
+.sparkle-2 {
+  bottom: -4px;
+  left: -8px;
+  animation: favorite-sparkle-twinkle 2s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.favorites-empty-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.favorites-empty-cta {
+  animation: favorite-cta-pulse 2s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.favorites-empty-cta:hover {
+  animation: none;
+  transform: translateY(-2px);
+}
+
+.cta-icon {
+  display: inline-block;
+  animation: favorite-rocket-bounce 1.5s ease-in-out infinite;
+}
+
+.favorites-empty-hint {
+  font-size: 13px;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.favorites-empty-clear:hover {
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes favorite-star-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-6px) rotate(-3deg) scale(1.05);
+  }
+  50% {
+    transform: translateY(-2px) rotate(0deg) scale(1);
+  }
+  75% {
+    transform: translateY(-8px) rotate(3deg) scale(1.05);
+  }
+}
+
+@keyframes favorite-search-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+@keyframes favorite-sparkle-twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(15deg);
+  }
+}
+
+@keyframes favorite-cta-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(24, 160, 88, 0);
+  }
+}
+
+@keyframes favorite-rocket-bounce {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-2px) translateX(1px);
+  }
+  50% {
+    transform: translateY(0) translateX(0);
+  }
+  75% {
+    transform: translateY(-1px) translateX(-1px);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .star-icon,
+  .search-icon,
+  .favorites-empty-sparkle,
+  .favorites-empty-cta,
+  .cta-icon {
+    animation: none !important;
+  }
+  
+  .favorites-empty-cta {
+    box-shadow: none;
+  }
+  
+  .favorites-empty-icon {
+    filter: none;
+  }
+}
+
+/* Dark mode adjustments */
+.dark .favorites-empty-icon {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 </style>

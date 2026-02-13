@@ -7,6 +7,7 @@
  * - useProSubMode: 上下文模式子模式管理
  * - useImageSubMode: 图像模式子模式管理
  * - useCurrentMode: 只读模式访问（无需 services）
+ * - useWorkspaceMode: 统一的 workspace 模式管理（Phase 2 hardening）
  */
 
 export * from './useCurrentMode'
@@ -14,3 +15,4 @@ export * from './useFunctionMode'
 export * from './useBasicSubMode'
 export * from './useProSubMode'
 export * from './useImageSubMode'
+export * from './useWorkspaceMode'

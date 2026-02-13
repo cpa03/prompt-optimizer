@@ -1,6 +1,10 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
+import { API_CONSTRAINTS } from '../../../constants/constraints'
+import { MESSAGE_ROLES } from '../../../constants/message-roles'
+import { PROVIDER_GEMINI } from '../../../constants'
 import type {
   TextProvider,
   TextModel,
@@ -30,11 +34,12 @@ interface ModelOverride {
 
 /**
  * Gemini 静态模型定义
+ * Uses centralized model registry to eliminate hardcoded IDs
  */
 const GEMINI_STATIC_MODELS: ModelOverride[] = [
   {
-    id: 'gemini-2.5-flash',
-    name: 'Gemini 2.5 Flash',
+    id: GEMINI_MODELS.GEMINI_25_FLASH,
+    name: getModelDisplayName(GEMINI_MODELS.GEMINI_25_FLASH),
     description: 'Latest Gemini 2.5 Flash model, fast and efficient',
     capabilities: {
       supportsTools: true,
@@ -43,8 +48,8 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     }
   },
   {
-    id: 'gemini-2.5-pro',
-    name: 'Gemini 2.5 Pro',
+    id: GEMINI_MODELS.GEMINI_25_PRO,
+    name: getModelDisplayName(GEMINI_MODELS.GEMINI_25_PRO),
     description: 'Gemini 2.5 Pro model with enhanced reasoning capabilities',
     capabilities: {
       supportsTools: true,
@@ -53,8 +58,8 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     }
   },
   {
-    id: 'gemini-3-pro-preview',
-    name: 'Gemini 3 Pro Preview',
+    id: GEMINI_MODELS.GEMINI_3_PRO_PREVIEW,
+    name: getModelDisplayName(GEMINI_MODELS.GEMINI_3_PRO_PREVIEW),
     description: 'Preview version of Gemini 3 Pro with cutting-edge capabilities',
     capabilities: {
       supportsTools: true,
@@ -86,7 +91,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
    */
   public getProvider(): TextProvider {
     return {
-      id: 'gemini',
+      id: PROVIDER_GEMINI,
       name: 'Google Gemini',
       description: 'Google Generative AI models',
       requiresApiKey: true,
@@ -150,12 +155,12 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
 
       const modelsPager = await genAI.models.list({
         config: {
-          pageSize: 100 // 获取更多模型
+          pageSize: API_CONSTRAINTS.DEFAULT_PAGE_SIZE // Use centralized constant
         }
       })
 
       const dynamicModels: TextModel[] = []
-      const providerId = 'gemini'
+      const providerId = PROVIDER_GEMINI
 
       for await (const model of modelsPager) {
         // 只包含支持 generateContent 的模型
@@ -482,12 +487,12 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
    */
   protected async doSendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse> {
     // 提取系统消息
-    const systemMessages = messages.filter((msg) => msg.role === 'system')
+    const systemMessages = messages.filter((msg) => msg.role === MESSAGE_ROLES.SYSTEM)
     const systemInstruction =
       systemMessages.length > 0 ? systemMessages.map((msg) => msg.content).join('\n') : ''
 
     // 过滤出用户和助手消息
-    const conversationMessages = messages.filter((msg) => msg.role !== 'system')
+    const conversationMessages = messages.filter((msg) => msg.role !== MESSAGE_ROLES.SYSTEM)
 
     // 如果没有对话消息，返回空响应
     if (conversationMessages.length === 0) {
@@ -586,12 +591,12 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     callbacks: StreamHandlers
   ): Promise<void> {
     // 提取系统消息
-    const systemMessages = messages.filter((msg) => msg.role === 'system')
+    const systemMessages = messages.filter((msg) => msg.role === MESSAGE_ROLES.SYSTEM)
     const systemInstruction =
       systemMessages.length > 0 ? systemMessages.map((msg) => msg.content).join('\n') : ''
 
     // 过滤出用户和助手消息
-    const conversationMessages = messages.filter((msg) => msg.role !== 'system')
+    const conversationMessages = messages.filter((msg) => msg.role !== MESSAGE_ROLES.SYSTEM)
 
     // 如果没有对话消息，发送空响应
     if (conversationMessages.length === 0) {
@@ -697,12 +702,12 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     callbacks: StreamHandlers
   ): Promise<void> {
     // 提取系统消息
-    const systemMessages = messages.filter((msg) => msg.role === 'system')
+    const systemMessages = messages.filter((msg) => msg.role === MESSAGE_ROLES.SYSTEM)
     const systemInstruction =
       systemMessages.length > 0 ? systemMessages.map((msg) => msg.content).join('\n') : ''
 
     // 过滤出用户和助手消息
-    const conversationMessages = messages.filter((msg) => msg.role !== 'system')
+    const conversationMessages = messages.filter((msg) => msg.role !== MESSAGE_ROLES.SYSTEM)
 
     if (conversationMessages.length === 0) {
       const response: LLMResponse = {

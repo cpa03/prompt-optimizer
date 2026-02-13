@@ -2,6 +2,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { LLM_CONSTRAINTS } from '../../../constants/constraints'
+import { MESSAGE_ROLES } from '../../../constants/message-roles'
+import { PROVIDER_ANTHROPIC } from '../../../constants'
 import type {
   TextProvider,
   TextModel,
@@ -13,10 +16,8 @@ import type {
   ToolDefinition
 } from '../types'
 
-// Anthropic 建议对于非流式请求使用较小的 max_tokens 值
-// 过大的值可能触发 "Streaming is required for operations that may take longer than 10 minutes" 错误
-// 参考: https://github.com/anthropics/anthropic-sdk-typescript#long-requests
-const DEFAULT_MAX_TOKENS = 8192
+// Use centralized LLM constraints instead of hardcoded values
+const DEFAULT_MAX_TOKENS = LLM_CONSTRAINTS.DEFAULT_MAX_TOKENS
 
 /**
  * Anthropic 官方 SDK 适配器实现
@@ -38,7 +39,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    */
   public getProvider(): TextProvider {
     return {
-      id: 'anthropic',
+      id: PROVIDER_ANTHROPIC,
       name: 'Anthropic',
       description: 'Anthropic Claude models (Official SDK)',
       requiresApiKey: true,
@@ -61,7 +62,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 从service.ts的fetchAnthropicModelsInfo迁移 (L1115-1120)
    */
   public getModels(): TextModel[] {
-    const providerId = 'anthropic'
+    const providerId = PROVIDER_ANTHROPIC
 
     return [
       // Claude 4.0 系列
@@ -207,10 +208,10 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         name: 'thinking_budget_tokens',
         labelKey: 'params.thinkingBudget.label',
         descriptionKey: 'params.thinkingBudget.description',
-        description: 'Extended thinking budget in tokens (requires ≥1024)',
+        description: `Extended thinking budget in tokens (requires ≥${LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS})`,
         type: 'integer',
-        minValue: 1024,
-        min: 1024,
+        minValue: LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS,
+        min: LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS,
         unitKey: 'params.tokens.unit',
         step: 1,
         tags: ['advanced']
@@ -274,7 +275,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= 1024) {
+      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
         requestParams.thinking = {
           type: 'enabled',
           budget_tokens: thinking_budget_tokens
@@ -349,7 +350,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= 1024) {
+      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
         requestParams.thinking = {
           type: 'enabled',
           budget_tokens: thinking_budget_tokens
@@ -451,7 +452,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= 1024) {
+      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
         requestParams.thinking = {
           type: 'enabled',
           budget_tokens: thinking_budget_tokens
@@ -586,7 +587,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 提取系统消息
    */
   private extractSystemMessage(messages: Message[]): string | undefined {
-    const systemMessages = messages.filter(msg => msg.role === 'system')
+    const systemMessages = messages.filter(msg => msg.role === MESSAGE_ROLES.SYSTEM)
     return systemMessages.length > 0
       ? systemMessages.map(msg => msg.content).join('\n')
       : undefined

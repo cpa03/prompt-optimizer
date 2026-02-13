@@ -15,6 +15,12 @@ export const MIME_TYPES = {
     svg: 'image/svg+xml',
   },
   
+  // Convenience exports for backward compatibility
+  PNG: 'image/png',
+  JPEG: 'image/jpeg',
+  GIF: 'image/gif',
+  WEBP: 'image/webp',
+  
   // Application types
   application: {
     json: 'application/json',

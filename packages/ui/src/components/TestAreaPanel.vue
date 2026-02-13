@@ -139,15 +139,16 @@ import {
     NFlex,
     NCard,
 } from "naive-ui";
-import type {
-    OptimizationMode,
-    AdvancedTestResult,
-    ToolCallResult,
-    ConversationMessage,
-    EvaluationResponse,
-    EvaluationType,
-    PatchOperation,
-} from "@prompt-optimizer/core";
+import {
+    TIMEOUTS,
+    type OptimizationMode,
+    type AdvancedTestResult,
+    type ToolCallResult,
+    type ConversationMessage,
+    type EvaluationResponse,
+    type EvaluationType,
+    type PatchOperation,
+} from "@prompt-optimizer/core"
 import type { ScoreLevel } from './evaluation/types';
 import { useResponsive } from '../composables/ui/useResponsive';
 import { usePerformanceMonitor } from "../composables/performance/usePerformanceMonitor";
@@ -443,13 +444,13 @@ if (import.meta.env.DEV) {
                 console.warn("TestAreaPanel 性能较差:", report);
             }
         },
-        5000,
+        TIMEOUTS.network.short, // 使用配置的短网络超时
         false,
         "performanceLog",
     );
 
     // 定期检查性能
-    const timer = setInterval(logPerformance, 10000);
+    const timer = setInterval(logPerformance, TIMEOUTS.medium); // 使用配置的中等超时
     onUnmounted(() => clearInterval(timer));
 }
 

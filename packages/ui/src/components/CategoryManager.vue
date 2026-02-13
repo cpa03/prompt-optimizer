@@ -35,6 +35,7 @@
         :render-label="renderLabel"
         :render-prefix="renderPrefix"
         :render-suffix="renderSuffix"
+        :node-props="getNodeProps"
         @update:expanded-keys="handleUpdateExpandedKeys"
       />
     </div>
@@ -187,6 +188,9 @@ const deleteDialogVisible = ref(false);
 const deletingCategory = ref<FavoriteCategory | null>(null);
 const deletingCategoryUsageCount = ref(0);
 
+// 🎨 Palette: Category removal animation state
+const removingCategoryId = ref<string | null>(null);
+
 // 表单验证规则
 const formRules = computed<FormRules>(() => ({
   name: [
@@ -252,6 +256,15 @@ const deletingCategoryChildCount = computed(() => {
 const renderLabel = ({ option }: { option: TreeOption }): VNodeChild => {
   const cat = option.category as FavoriteCategory;
   return h('span', { class: 'tree-label' }, cat.name);
+};
+
+// 🎨 Palette: Apply removing class to nodes being deleted
+const getNodeProps = (option: TreeOption) => {
+  return {
+    class: {
+      'removing': removingCategoryId.value === option.key
+    }
+  };
 };
 
 // 渲染树节点前缀图标
@@ -392,7 +405,16 @@ const handleConfirmDelete = async () => {
     return;
   }
 
+  // 🎨 Palette: Start removal animation before actual deletion
+  removingCategoryId.value = deletingCategory.value.id;
+  
+  // Close dialog immediately for better UX
+  deleteDialogVisible.value = false;
+
   try {
+    // Wait for animation to complete before actual deletion
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
     // 递归删除所有子分类
     const deleteWithChildren = async (categoryId: string) => {
       const children = categories.value.filter(cat => cat.parentId === categoryId);
@@ -410,8 +432,8 @@ const handleConfirmDelete = async () => {
     const errorMessage = error instanceof Error ? error.message : '未知错误';
     message.error(`${t('favorites.categoryManager.deleteFailed')}: ${errorMessage}`);
   } finally {
-    deleteDialogVisible.value = false;
     deletingCategory.value = null;
+    removingCategoryId.value = null;
   }
 };
 
@@ -559,9 +581,47 @@ watch(() => services?.value?.favoriteManager, (favoriteManager) => {
 
 :deep(.n-tree-node-content) {
   @apply py-1;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :deep(.n-tree-node-content:hover) {
   @apply bg-gray-50 dark:bg-gray-800;
+}
+
+/* 🎨 Palette: Category removal micro-UX animation */
+:deep(.n-tree-node.removing) {
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+:deep(.n-tree-node.removing .n-tree-node-content) {
+  background-color: rgba(var(--n-color-error-rgb, 255, 77, 79), 0.1);
+}
+
+/* Tree node hover enhancement */
+:deep(.n-tree-node-content__text) {
+  transition: transform 0.15s ease;
+}
+
+:deep(.n-tree-node-content:hover .n-tree-node-content__text) {
+  transform: translateX(2px);
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  :deep(.n-tree-node.removing) {
+    opacity: 0;
+    transform: none;
+    transition: opacity 0.1s ease;
+  }
+  
+  :deep(.n-tree-node-content) {
+    transition: none;
+  }
+  
+  :deep(.n-tree-node-content__text) {
+    transition: none;
+  }
 }
 </style>

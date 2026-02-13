@@ -24,6 +24,7 @@ import {
 } from './errors';
 import { jsonrepair } from 'jsonrepair';
 import { toErrorWithCode } from '../../utils/error';
+import { TEMPLATE_IDS } from '../../constants/template-ids';
 
 /**
  * 变量值生成服务实现类
@@ -108,7 +109,7 @@ export class VariableValueGenerationService implements IVariableValueGenerationS
    * 获取变量值生成模板
    */
   private async getGenerationTemplate(): Promise<Template> {
-    const templateId = 'variable-value-generation';
+    const templateId = TEMPLATE_IDS.VARIABLE_VALUE_GENERATION;
 
     try {
       const template = await this.templateManager.getTemplate(templateId);

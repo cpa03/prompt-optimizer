@@ -36,7 +36,8 @@ describe('OpenRouterImageAdapter', () => {
 
       expect(models.length).toBeGreaterThan(0)
       expect(models[0].id).toBe('google/gemini-2.5-flash-image')
-      expect(models[0].name).toBe('Gemini 2.5 Flash Image (Nano Banana)')
+      // Model name now comes from centralized MODEL_DISPLAY_NAMES registry
+      expect(models[0].name).toBe('Gemini 2.5 Flash Image (via OpenRouter)')
       expect(models[0].providerId).toBe('openrouter')
     })
 
