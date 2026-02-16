@@ -58,7 +58,6 @@ describe('HistoryManager', () => {
   beforeEach(() => {
     mockStorage = new MemoryStorageProvider()
     historyManager = createHistoryManager(mockStorage)
-
     ;(uuidv4 as any).mockClear()
     mockModelManager.getModel.mockClear()
 

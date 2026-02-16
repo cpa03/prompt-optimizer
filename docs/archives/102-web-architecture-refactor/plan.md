@@ -56,6 +56,7 @@
             const optimizerState = usePromptOptimizer(services)
             // ... 其他 Composable
             ```
+
       4.  **[x] 更新模板 (`<template>`)**:
           - 模板中的所有数据绑定和事件处理，现在都链接到 Composable 返回的 `reactive` 对象的属性上 (e.g., `optimizerState.isIterating`)。
           - 这解决了之前因传递 `ref` 对象而导致的 prop 类型验证失败问题。

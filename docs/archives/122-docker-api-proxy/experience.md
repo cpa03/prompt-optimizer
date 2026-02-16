@@ -35,6 +35,7 @@
    - `X-Accel-Buffering no`是关键配置
 
 2. **Node.js流处理**
+
    ```javascript
    const stream = Readable.fromWeb(upstreamRes.body)
    stream.pipe(res)

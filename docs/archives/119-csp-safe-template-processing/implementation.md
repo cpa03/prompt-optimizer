@@ -122,7 +122,6 @@ it('should return true for valid browser extension', () => {
   // 模拟浏览器环境
   ;(global as any).window = {}
   ;(global as any).navigator = { userAgent: 'Chrome' }
-
   ;(global as any).chrome = {
     runtime: {
       getManifest: vi.fn(() => ({ manifest_version: 3, name: 'Test Extension' })),

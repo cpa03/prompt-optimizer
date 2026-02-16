@@ -60,9 +60,9 @@
 ### 已完成
 
 - [x] Vitest：捕获 `console.error/warn` + `window error/unhandledrejection` 并 fail 测试  
-      文件：`packages/ui/tests/utils/error-detection.ts`、`packages/ui/tests/setup.ts`
+       文件：`packages/ui/tests/utils/error-detection.ts`、`packages/ui/tests/setup.ts`
 - [x] Playwright：捕获 `pageerror` + `console error/warn` 并 fail 测试  
-      文件：`tests/e2e/fixtures.ts`（各 spec 引用 `./fixtures`）
+       文件：`tests/e2e/fixtures.ts`（各 spec 引用 `./fixtures`）
 - [x] 修复门禁暴露出的噪音/误报
   - 避免重复注册 i18n 插件导致 Vue warn（多处测试修复）
   - 避免预期错误路径使用 `console.error`（`ImportExportDialog.vue` 调整为 dev-only debug）
@@ -77,20 +77,20 @@
 ## 2026-01-09 - Phase 4 进展：P0 工作流用例（最小集合）
 
 - [x] UI 集成：Basic 工作区逻辑（optimize/test/iterate）冒烟  
-      文件：`packages/ui/tests/integration/basic-workspace-logic.spec.ts`
+       文件：`packages/ui/tests/integration/basic-workspace-logic.spec.ts`
 - [x] UI 集成：Context-User 优化/测试逻辑冒烟  
-      文件：`packages/ui/tests/integration/context-user-optimization.spec.ts`、`packages/ui/tests/integration/context-user-tester.spec.ts`
+       文件：`packages/ui/tests/integration/context-user-optimization.spec.ts`、`packages/ui/tests/integration/context-user-tester.spec.ts`
 - [x] UI 集成：Context-System 测试逻辑冒烟（V0 对比/变量合并）  
-      文件：`packages/ui/tests/integration/conversation-tester.spec.ts`
+       文件：`packages/ui/tests/integration/conversation-tester.spec.ts`
 - [x] UI 集成：Context-System 消息优化逻辑冒烟（优化→应用→链映射写入 session）  
-      文件：`packages/ui/tests/integration/conversation-optimization.spec.ts`
+       文件：`packages/ui/tests/integration/conversation-optimization.spec.ts`
 - [x] UI 集成：Image 生成逻辑冒烟（load models + generate）  
-      文件：`packages/ui/tests/integration/image-generation.spec.ts`
+       文件：`packages/ui/tests/integration/image-generation.spec.ts`
 - [x] E2E：P0 路由冒烟（basic/pro/image 子路由可进入）  
-      文件：`tests/e2e/workflows/p0-route-smoke.spec.ts`
+       文件：`tests/e2e/workflows/p0-route-smoke.spec.ts`
 
 - [x] Store 单元：6 个 Session Store 的持久化/迁移要点覆盖  
-      文件：`packages/ui/tests/unit/stores/session/basic-session-persistence.spec.ts`、`packages/ui/tests/unit/stores/session/pro-session-persistence.spec.ts`、`packages/ui/tests/unit/stores/session/image-session-persistence.spec.ts`
+       文件：`packages/ui/tests/unit/stores/session/basic-session-persistence.spec.ts`、`packages/ui/tests/unit/stores/session/pro-session-persistence.spec.ts`、`packages/ui/tests/unit/stores/session/image-session-persistence.spec.ts`
 
 ---
 
