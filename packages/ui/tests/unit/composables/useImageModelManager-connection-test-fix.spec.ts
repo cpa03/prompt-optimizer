@@ -6,7 +6,7 @@ import type {
   ImageProvider,
   ImageModel,
   ImageModelConfig,
-  IImageProviderAdapter
+  IImageProviderAdapter,
 } from '@prompt-optimizer/core'
 
 // Mock the useImageModelManager composable logic
@@ -18,13 +18,16 @@ describe('Image Model Manager Connection Test Fix', () => {
   beforeEach(() => {
     // Mock adapter with buildDefaultModel capability
     mockAdapter = {
-      getProvider: vi.fn(() => ({
-        id: 'openrouter',
-        name: 'OpenRouter',
-        requiresApiKey: true,
-        defaultBaseURL: 'https://openrouter.ai/api/v1',
-        supportsDynamicModels: false
-      } as ImageProvider)),
+      getProvider: vi.fn(
+        () =>
+          ({
+            id: 'openrouter',
+            name: 'OpenRouter',
+            requiresApiKey: true,
+            defaultBaseURL: 'https://openrouter.ai/api/v1',
+            supportsDynamicModels: false,
+          }) as ImageProvider
+      ),
 
       getModels: vi.fn(() => [
         {
@@ -33,22 +36,25 @@ describe('Image Model Manager Connection Test Fix', () => {
           providerId: 'openrouter',
           capabilities: { text2image: true, image2image: true, multiImage: true },
           parameterDefinitions: [],
-          defaultParameterValues: {}
-        } as ImageModel
+          defaultParameterValues: {},
+        } as ImageModel,
       ]),
 
-      buildDefaultModel: vi.fn((modelId: string) => ({
-        id: modelId,
-        name: modelId,
-        providerId: 'openrouter',
-        capabilities: { text2image: true, image2image: true, multiImage: true },
-        parameterDefinitions: [],
-        defaultParameterValues: {}
-      } as ImageModel)),
+      buildDefaultModel: vi.fn(
+        (modelId: string) =>
+          ({
+            id: modelId,
+            name: modelId,
+            providerId: 'openrouter',
+            capabilities: { text2image: true, image2image: true, multiImage: true },
+            parameterDefinitions: [],
+            defaultParameterValues: {},
+          }) as ImageModel
+      ),
 
       getModelsAsync: vi.fn(),
       validateConnection: vi.fn(),
-      generate: vi.fn()
+      generate: vi.fn(),
     }
 
     // Mock registry
@@ -57,20 +63,20 @@ describe('Image Model Manager Connection Test Fix', () => {
       getAllProviders: vi.fn(),
       getStaticModels: vi.fn(() => [
         {
-           id: 'google/gemini-2.5-flash-image',
+          id: 'google/gemini-2.5-flash-image',
           name: 'Gemini 2.5 Flash Image Preview',
           providerId: 'openrouter',
           capabilities: { text2image: true, image2image: true, multiImage: true },
           parameterDefinitions: [],
-          defaultParameterValues: {}
-        } as ImageModel
+          defaultParameterValues: {},
+        } as ImageModel,
       ]),
       getDynamicModels: vi.fn(),
       getModels: vi.fn(),
       getAllStaticModels: vi.fn(),
       supportsDynamicModels: vi.fn(),
       validateProviderConnection: vi.fn(),
-      validateProviderModel: vi.fn()
+      validateProviderModel: vi.fn(),
     }
   })
 
@@ -78,25 +84,25 @@ describe('Image Model Manager Connection Test Fix', () => {
     // 模拟静态模型列表
     const models = ref([
       {
-           id: 'google/gemini-2.5-flash-image',
+        id: 'google/gemini-2.5-flash-image',
         name: 'Gemini 2.5 Flash Image Preview',
         providerId: 'openrouter',
         capabilities: { text2image: true, image2image: true, multiImage: true },
         parameterDefinitions: [],
-        defaultParameterValues: {}
-      } as ImageModel
+        defaultParameterValues: {},
+      } as ImageModel,
     ])
 
     const configForm = ref({
-       modelId: 'google/gemini-2.5-flash-image',
-      providerId: 'openrouter'
+      modelId: 'google/gemini-2.5-flash-image',
+      providerId: 'openrouter',
     })
 
     // 测试在静态模型列表中查找
-    let selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+    let selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
 
     expect(selectedModel).toBeDefined()
-     expect(selectedModel!.id).toBe('google/gemini-2.5-flash-image')
+    expect(selectedModel!.id).toBe('google/gemini-2.5-flash-image')
     expect(selectedModel!.name).toBe('Gemini 2.5 Flash Image Preview')
   })
 
@@ -104,22 +110,22 @@ describe('Image Model Manager Connection Test Fix', () => {
     // 模拟静态模型列表（不包含自定义模型）
     const models = ref([
       {
-         id: 'google/gemini-2.5-flash-image',
+        id: 'google/gemini-2.5-flash-image',
         name: 'Gemini 2.5 Flash Image Preview',
         providerId: 'openrouter',
         capabilities: { text2image: true, image2image: true, multiImage: true },
         parameterDefinitions: [],
-        defaultParameterValues: {}
-      } as ImageModel
+        defaultParameterValues: {},
+      } as ImageModel,
     ])
 
     const configForm = ref({
-      modelId: 'custom/my-random-model',  // 用户随意填写的模型ID
-      providerId: 'openrouter'
+      modelId: 'custom/my-random-model', // 用户随意填写的模型ID
+      providerId: 'openrouter',
     })
 
     // 测试连接测试逻辑
-    let selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+    let selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
 
     // 应该未在静态列表中找到
     expect(selectedModel).toBeUndefined()
@@ -145,7 +151,7 @@ describe('Image Model Manager Connection Test Fix', () => {
     const models = ref<ImageModel[]>([])
     const configForm = ref({
       modelId: 'invalid/model',
-      providerId: 'openrouter'
+      providerId: 'openrouter',
     })
 
     // Mock buildDefaultModel to throw error
@@ -155,7 +161,7 @@ describe('Image Model Manager Connection Test Fix', () => {
 
     mockRegistry.getAdapter = vi.fn(() => mockAdapter)
 
-    let selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+    let selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
 
     expect(selectedModel).toBeUndefined()
 
@@ -166,7 +172,9 @@ describe('Image Model Manager Connection Test Fix', () => {
           const adapter = mockRegistry.getAdapter('openrouter')
           selectedModel = adapter.buildDefaultModel(configForm.value.modelId)
         } catch (error) {
-          throw new Error(`无法构建模型 ${configForm.value.modelId}: ${error instanceof Error ? error.message : String(error)}`)
+          throw new Error(
+            `无法构建模型 ${configForm.value.modelId}: ${error instanceof Error ? error.message : String(error)}`
+          )
         }
       }
     }).toThrow('无法构建模型 invalid/model: Invalid model ID format')
@@ -179,21 +187,21 @@ describe('Connection Test Behavior Comparison', () => {
     const models = ref<ImageModel[]>([])
     const configForm = ref({
       modelId: 'user-custom-model-123',
-      providerId: 'openrouter'
+      providerId: 'openrouter',
     })
 
     // 旧逻辑（修复前）：直接查找，找不到就报错
     const oldLogic = () => {
-      const selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+      const selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
       if (!selectedModel) {
-        throw new Error('选中的模型未找到')  // 这里会报错
+        throw new Error('选中的模型未找到') // 这里会报错
       }
       return selectedModel
     }
 
     // 新逻辑（修复后）：查找 + buildDefaultModel后备
     const newLogic = () => {
-      let selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+      let selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
       if (!selectedModel) {
         // 使用buildDefaultModel构建
         selectedModel = {
@@ -202,7 +210,7 @@ describe('Connection Test Behavior Comparison', () => {
           providerId: configForm.value.providerId,
           capabilities: { text2image: true, image2image: true, multiImage: true },
           parameterDefinitions: [],
-          defaultParameterValues: {}
+          defaultParameterValues: {},
         } as ImageModel
       }
       return selectedModel

@@ -4,7 +4,7 @@ import {
   fillOriginalPrompt,
   clickAnalyzeButton,
   getEvaluationScore,
-  verifyAnalyzeButtonDisabledWhenEmpty
+  verifyAnalyzeButtonDisabledWhenEmpty,
 } from '../helpers/analysis'
 import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 
@@ -42,7 +42,8 @@ test.describe('Image Text2Image - 提示词分析', () => {
     // 2. 等待服务和组件完全初始化
 
     // 3. 填写图像生成提示词（使用 data-testid 定位）
-    const testPrompt = 'A beautiful sunset over the ocean with palm trees, golden hour lighting, photorealistic'
+    const testPrompt =
+      'A beautiful sunset over the ocean with palm trees, golden hour lighting, photorealistic'
     await fillOriginalPrompt(page, MODE, testPrompt)
 
     // 4. 点击分析按钮（使用 data-testid 定位）

@@ -4,7 +4,7 @@
  * 对比原始和优化后的带变量用户提示词效果差异
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-compare',
@@ -99,7 +99,7 @@ improvements 应该是**具体可操作**的改进建议：
 - ✓ 指出如何进一步优化变量利用
 - ✓ 建议改善变量与静态文本的配合
 - ✓ 建议补充对变量值的处理逻辑
-- ✓ 指出仍可改进的结构或表达问题`
+- ✓ 指出仍可改进的结构或表达问题`,
     },
     {
       role: 'user',
@@ -134,8 +134,8 @@ improvements 应该是**具体可操作**的改进建议：
 
 ---
 
-请对比评估原始和优化后提示词的效果差异，判断优化是否带来实质性提升，并给出进一步改进的具体建议，特别关注变量利用方面。`
-    }
+请对比评估原始和优化后提示词的效果差异，判断优化是否带来实质性提升，并给出进一步改进的具体建议，特别关注变量利用方面。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -144,7 +144,7 @@ improvements 应该是**具体可操作**的改进建议：
     description: '对比评估原始和优化后带变量用户提示词的效果差异',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'compare', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'compare', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

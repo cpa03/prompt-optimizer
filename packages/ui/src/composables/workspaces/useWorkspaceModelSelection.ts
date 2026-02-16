@@ -34,7 +34,7 @@ export function useWorkspaceModelSelection<T extends WorkspaceModelSessionStore>
     get: () => sessionStore.selectedOptimizeModelKey ?? '',
     set: (value: string) => {
       sessionStore.updateOptimizeModel(value || '')
-    }
+    },
   })
 
   // 测试模型（双向绑定）
@@ -42,26 +42,26 @@ export function useWorkspaceModelSelection<T extends WorkspaceModelSessionStore>
     get: () => sessionStore.selectedTestModelKey ?? '',
     set: (value: string) => {
       sessionStore.updateTestModel(value || '')
-    }
+    },
   })
 
   // 优化模型信息（派生）
   const selectedOptimizeModelInfo = computed(() => {
     const key = selectedOptimizeModelKey.value
-    const option = textModelOptions.value.find(opt => opt.value === key)
+    const option = textModelOptions.value.find((opt) => opt.value === key)
     return {
       provider: option?.raw?.providerMeta?.name || null,
-      model: option?.raw?.modelMeta?.name || null
+      model: option?.raw?.modelMeta?.name || null,
     }
   })
 
   // 测试模型信息（派生）
   const selectedTestModelInfo = computed(() => {
     const key = selectedTestModelKey.value
-    const option = textModelOptions.value.find(opt => opt.value === key)
+    const option = textModelOptions.value.find((opt) => opt.value === key)
     return {
       provider: option?.raw?.providerMeta?.name || null,
-      model: option?.raw?.modelMeta?.name || null
+      model: option?.raw?.modelMeta?.name || null,
     }
   })
 
@@ -93,27 +93,30 @@ export function useWorkspaceModelSelection<T extends WorkspaceModelSessionStore>
 
       // 自动 fallback：如果当前选中模型不在列表中，使用第一个
       const fallback = textModelOptions.value[0]?.value || ''
-      const modelKeys = new Set(textModelOptions.value.map(opt => opt.value))
+      const modelKeys = new Set(textModelOptions.value.map((opt) => opt.value))
 
-       // 优化模型
-       if (selectedOptimizeModelKey.value && !modelKeys.has(selectedOptimizeModelKey.value)) {
+      // 优化模型
+      if (selectedOptimizeModelKey.value && !modelKeys.has(selectedOptimizeModelKey.value)) {
         selectedOptimizeModelKey.value = fallback
-       }
-       // 测试模型
-       if (selectedTestModelKey.value && !modelKeys.has(selectedTestModelKey.value)) {
+      }
+      // 测试模型
+      if (selectedTestModelKey.value && !modelKeys.has(selectedTestModelKey.value)) {
         selectedTestModelKey.value = fallback
-       }
- 
-       // 只在完全没有选中模型时设置默认值
+      }
+
+      // 只在完全没有选中模型时设置默认值
       if (!selectedOptimizeModelKey.value && fallback) {
         selectedOptimizeModelKey.value = fallback
-       }
+      }
       if (!selectedTestModelKey.value && fallback) {
         selectedTestModelKey.value = fallback
-       }
-
+      }
     } catch (error) {
-      console.error('[useWorkspaceModelSelection] refreshTextModels failed:', error instanceof Error ? error.message : String(error), error)
+      console.error(
+        '[useWorkspaceModelSelection] refreshTextModels failed:',
+        error instanceof Error ? error.message : String(error),
+        error
+      )
       textModelOptions.value = []
     }
   }
@@ -133,6 +136,6 @@ export function useWorkspaceModelSelection<T extends WorkspaceModelSessionStore>
     selectedTestModelKey,
     selectedOptimizeModelInfo,
     selectedTestModelInfo,
-    refreshTextModels
+    refreshTextModels,
   }
 }

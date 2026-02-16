@@ -9,7 +9,7 @@ import type {
   ImageModelConfig,
   IImageAdapterRegistry,
   IImageModelManager,
-  IImageService
+  IImageService,
 } from '@prompt-optimizer/core'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
 import { computeConnectionConfig, normalizeProviderChangeOptions } from './useConnectionConfig'
@@ -54,7 +54,7 @@ export function useImageModelManager() {
     modelId: '',
     enabled: true,
     connectionConfig: {},
-    paramOverrides: {}
+    paramOverrides: {},
   })
 
   // 连接和模型加载状态
@@ -85,12 +85,10 @@ export function useImageModelManager() {
   const isLoadingModels = computed(() => isLoadingDynamicModels.value)
 
   const selectedProvider = computed(() =>
-    providers.value.find(p => p.id === selectedProviderId.value)
+    providers.value.find((p) => p.id === selectedProviderId.value)
   )
 
-  const selectedModel = computed(() =>
-    models.value.find(m => m.id === selectedModelId.value)
-  )
+  const selectedModel = computed(() => models.value.find((m) => m.id === selectedModelId.value))
 
   // 简化后的接口:直接传入必要的参数
   const advancedParameters = useModelAdvancedParameters({
@@ -100,7 +98,7 @@ export function useImageModelManager() {
     modelId: selectedModelId,
     savedModelMeta: computed(() => {
       if (configForm.value.id) {
-        const existing = configs.value.find(config => config.id === configForm.value.id)
+        const existing = configs.value.find((config) => config.id === configForm.value.id)
         if (existing?.model && existing.model.id === selectedModelId.value) {
           return existing.model
         }
@@ -111,9 +109,9 @@ export function useImageModelManager() {
       return selectedModel.value
     }),
     getParamOverrides: () => configForm.value.paramOverrides ?? {},
-    setParamOverrides: value => {
+    setParamOverrides: (value) => {
       configForm.value.paramOverrides = { ...value }
-    }
+    },
   })
 
   const {
@@ -121,7 +119,7 @@ export function useImageModelManager() {
     currentParamOverrides,
     availableParameterCount,
     updateParamOverrides,
-    applyDefaultsFromModel
+    applyDefaultsFromModel,
   } = advancedParameters
 
   // 额外的状态计算属性（提升用户体验）
@@ -136,8 +134,8 @@ export function useImageModelManager() {
 
   const hasDynamicModels = computed(() => dynamicModels.value.length > 0)
 
-  const supportsDynamicModels = computed(() =>
-    selectedProvider.value?.supportsDynamicModels || false
+  const supportsDynamicModels = computed(
+    () => selectedProvider.value?.supportsDynamicModels || false
   )
 
   const isConnectionConfigured = computed(() => {
@@ -145,8 +143,9 @@ export function useImageModelManager() {
     return hasValidConnectionConfig(configForm.value.connectionConfig || {})
   })
 
-  const canRefreshModels = computed(() =>
-    supportsDynamicModels.value && isConnectionConfigured.value && !isLoadingDynamicModels.value
+  const canRefreshModels = computed(
+    () =>
+      supportsDynamicModels.value && isConnectionConfigured.value && !isLoadingDynamicModels.value
   )
 
   const canTestConnection = computed(() => {
@@ -209,7 +208,13 @@ export function useImageModelManager() {
   // 提供商变更处理（按spec设计的渐进式体验）
   const onProviderChange = async (
     providerId: string,
-    options: boolean | { autoSelectFirstModel?: boolean; resetOverrides?: boolean; resetConnectionConfig?: boolean } = true
+    options:
+      | boolean
+      | {
+          autoSelectFirstModel?: boolean
+          resetOverrides?: boolean
+          resetConnectionConfig?: boolean
+        } = true
   ) => {
     const normalized = normalizeProviderChangeOptions(options)
 
@@ -238,7 +243,7 @@ export function useImageModelManager() {
     }
 
     // 使用共享函数处理连接配置
-    const providerMeta = providers.value.find(p => p.id === providerId)
+    const providerMeta = providers.value.find((p) => p.id === providerId)
     configForm.value.connectionConfig = computeConnectionConfig(
       configForm.value.connectionConfig,
       providerMeta,
@@ -263,19 +268,19 @@ export function useImageModelManager() {
         modelLoadingStatus.value = {
           type: 'success',
           messageKey: 'image.model.staticLoaded',
-          count: staticModels.length
+          count: staticModels.length,
         }
       } else if (staticModels.length > 0) {
         // 编辑模式：不自动选择，但仍显示成功加载的状态
         modelLoadingStatus.value = {
           type: 'success',
           messageKey: 'image.model.staticLoaded',
-          count: staticModels.length
+          count: staticModels.length,
         }
       } else {
         modelLoadingStatus.value = {
           type: 'info',
-          messageKey: 'image.model.noStaticModels'
+          messageKey: 'image.model.noStaticModels',
         }
       }
     } catch (error) {
@@ -283,7 +288,7 @@ export function useImageModelManager() {
       models.value = []
       modelLoadingStatus.value = {
         type: 'error',
-        messageKey: 'image.model.staticLoadFailed'
+        messageKey: 'image.model.staticLoadFailed',
       }
     }
 
@@ -292,14 +297,14 @@ export function useImageModelManager() {
       const connectionConfig = getConnectionConfig()
       if (connectionConfig && hasValidConnectionConfig(connectionConfig)) {
         // 异步加载动态模型，不阻塞UI
-        refreshDynamicModels().catch(error => {
+        refreshDynamicModels().catch((error) => {
           console.warn('Dynamic model loading failed after provider change:', error)
         })
       } else {
         // 提示用户需要配置连接信息
         modelLoadingStatus.value = {
           type: 'warning',
-          messageKey: 'image.model.connectionRequired'
+          messageKey: 'image.model.connectionRequired',
         }
       }
     }
@@ -315,7 +320,7 @@ export function useImageModelManager() {
     const provider = selectedProvider.value
     if (!provider?.connectionSchema) return true
 
-    return provider.connectionSchema.required.every(field => connectionConfig[field])
+    return provider.connectionSchema.required.every((field) => connectionConfig[field])
   }
 
   // 详细校验：返回缺失字段与类型不符列表
@@ -327,7 +332,11 @@ export function useImageModelManager() {
     const schema = provider.connectionSchema
 
     for (const field of schema.required) {
-      if (!(field in (connectionConfig || {})) || connectionConfig[field] === '' || connectionConfig[field] === undefined) {
+      if (
+        !(field in (connectionConfig || {})) ||
+        connectionConfig[field] === '' ||
+        connectionConfig[field] === undefined
+      ) {
         missing.push(field)
       }
     }
@@ -351,11 +360,11 @@ export function useImageModelManager() {
       const connectionConfig = configForm.value.connectionConfig || {}
       if (hasValidConnectionConfig(connectionConfig)) {
         // 配置有效时，异步刷新动态模型
-        refreshDynamicModels().catch(error => {
+        refreshDynamicModels().catch((error) => {
           console.warn('Failed to refresh models after connection config change:', error)
           modelLoadingStatus.value = {
             type: 'warning',
-            messageKey: 'image.model.refreshFailed'
+            messageKey: 'image.model.refreshFailed',
           }
         })
       } else {
@@ -367,7 +376,7 @@ export function useImageModelManager() {
 
           modelLoadingStatus.value = {
             type: 'warning',
-            messageKey: 'image.model.connectionRequired'
+            messageKey: 'image.model.connectionRequired',
           }
         } catch (error) {
           console.error('Failed to load static models:', error)
@@ -385,7 +394,7 @@ export function useImageModelManager() {
     const image2image = capabilities?.image2image
 
     if (text2image && !image2image) {
-      return 'text2image'  // 只支持文生图
+      return 'text2image' // 只支持文生图
     }
 
     if (!text2image && image2image) {
@@ -393,14 +402,17 @@ export function useImageModelManager() {
     }
 
     if (text2image && image2image) {
-      return 'text2image'  // 两种都支持，优先文生图
+      return 'text2image' // 两种都支持，优先文生图
     }
 
     throw new Error('模型不支持任何图像生成功能')
   }
 
   const testConnection = async () => {
-    if (!selectedProvider.value || !hasValidConnectionConfig(configForm.value.connectionConfig || {})) {
+    if (
+      !selectedProvider.value ||
+      !hasValidConnectionConfig(configForm.value.connectionConfig || {})
+    ) {
       return
     }
 
@@ -418,24 +430,35 @@ export function useImageModelManager() {
       const detail = validateConnectionConfigDetailed(configForm.value.connectionConfig || {})
       if (!detail.ok) {
         const parts: string[] = []
-        if (detail.missing.length) parts.push(t('image.connection.validation.missing', { fields: detail.missing.join(', ') }))
+        if (detail.missing.length)
+          parts.push(
+            t('image.connection.validation.missing', { fields: detail.missing.join(', ') })
+          )
         if (detail.typeErrors.length) {
-          parts.push(detail.typeErrors.map(e => t('image.connection.validation.invalidType', e)).join('; '))
+          parts.push(
+            detail.typeErrors.map((e) => t('image.connection.validation.invalidType', e)).join('; ')
+          )
         }
-        connectionStatus.value = { type: 'error', messageKey: 'image.connection.testFailed', detail: parts.join('；') }
+        connectionStatus.value = {
+          type: 'error',
+          messageKey: 'image.connection.testFailed',
+          detail: parts.join('；'),
+        }
         toast.error(parts.join('；'))
         return
       }
 
       // 获取选中的模型信息：优先使用缓存，不存在时通过registry构建
-      let selectedModel = models.value.find(m => m.id === configForm.value.modelId)
+      let selectedModel = models.value.find((m) => m.id === configForm.value.modelId)
       if (!selectedModel) {
         // 对于自定义模型ID，使用adapter的buildDefaultModel方法构建
         try {
           const adapter = registry.getAdapter(selectedProviderId.value)
           selectedModel = adapter.buildDefaultModel(configForm.value.modelId)
         } catch (error) {
-          throw new Error(`无法构建模型 ${configForm.value.modelId}: ${error instanceof Error ? error.message : String(error)}`)
+          throw new Error(
+            `无法构建模型 ${configForm.value.modelId}: ${error instanceof Error ? error.message : String(error)}`
+          )
         }
       }
 
@@ -453,7 +476,7 @@ export function useImageModelManager() {
         paramOverrides: configForm.value.paramOverrides || {},
         // 测试时使用简化的provider和model对象
         provider: selectedProvider.value!,
-        model: selectedModel!
+        model: selectedModel!,
       }
 
       // 无感 IPC：通过 imageService 统一执行连接测试
@@ -462,27 +485,26 @@ export function useImageModelManager() {
       // 测试成功
       connectionStatus.value = {
         type: 'success',
-        messageKey: 'image.connection.testSuccess'
+        messageKey: 'image.connection.testSuccess',
       }
 
       // 保存测试结果图片用于显示
       testResult.value = {
         success: true,
         image: result.images[0],
-        testType
+        testType,
       }
 
       // 连接成功后自动刷新模型（如果支持动态获取）
       await refreshDynamicModels()
       toast.success(t('image.connection.testSuccess'))
-
     } catch (error) {
       const message = toErrorMessage(error)
       console.error('Connection test failed:', error)
       connectionStatus.value = {
         type: 'error',
         messageKey: 'image.connection.testError',
-        detail: message
+        detail: message,
       }
       toast.error(`${t('image.connection.testError')}: ${message}`)
     } finally {
@@ -500,21 +522,32 @@ export function useImageModelManager() {
     if (!connectionConfig || !hasValidConnectionConfig(connectionConfig)) {
       const detail = validateConnectionConfigDetailed(connectionConfig || {})
       const parts: string[] = []
-      if (detail.missing.length) parts.push(t('image.connection.validation.missing', { fields: detail.missing.join(', ') }))
-      if (detail.typeErrors.length) parts.push(detail.typeErrors.map(e => t('image.connection.validation.invalidType', e)).join('; '))
-      modelLoadingStatus.value = { type: 'warning', messageKey: 'image.model.connectionRequired', detail: parts.join('；') }
+      if (detail.missing.length)
+        parts.push(t('image.connection.validation.missing', { fields: detail.missing.join(', ') }))
+      if (detail.typeErrors.length)
+        parts.push(
+          detail.typeErrors.map((e) => t('image.connection.validation.invalidType', e)).join('; ')
+        )
+      modelLoadingStatus.value = {
+        type: 'warning',
+        messageKey: 'image.model.connectionRequired',
+        detail: parts.join('；'),
+      }
       return
     }
 
     isLoadingDynamicModels.value = true
     modelLoadingStatus.value = {
       type: 'info',
-      messageKey: 'image.model.loading'
+      messageKey: 'image.model.loading',
     }
 
     try {
       // 无感 IPC：通过 imageService 统一拉取动态模型
-      const fetchedDynamicModels = await imageService.getDynamicModels(selectedProviderId.value, connectionConfig)
+      const fetchedDynamicModels = await imageService.getDynamicModels(
+        selectedProviderId.value,
+        connectionConfig
+      )
       dynamicModels.value = fetchedDynamicModels
 
       // 合并静态和动态模型，动态模型优先（按spec设计）
@@ -524,9 +557,8 @@ export function useImageModelManager() {
       modelLoadingStatus.value = {
         type: 'success',
         messageKey: 'image.model.dynamicLoaded',
-        count: fetchedDynamicModels.length
+        count: fetchedDynamicModels.length,
       }
-
     } catch (error) {
       console.warn('Failed to load dynamic models, using static list:', error)
 
@@ -539,7 +571,7 @@ export function useImageModelManager() {
         type: 'warning',
         messageKey: 'image.model.dynamicFailed',
         count: staticModels.length,
-        detail: toErrorMessage(error)
+        detail: toErrorMessage(error),
       }
     } finally {
       isLoadingDynamicModels.value = false
@@ -547,9 +579,12 @@ export function useImageModelManager() {
   }
 
   // 合并动态模型的辅助方法（按spec设计）
-  const mergeDynamicModels = (staticModels: ImageModel[], dynamicModels: ImageModel[]): ImageModel[] => {
-    const dynamicIds = new Set(dynamicModels.map(m => m.id))
-    return [...dynamicModels, ...staticModels.filter(m => !dynamicIds.has(m.id))]
+  const mergeDynamicModels = (
+    staticModels: ImageModel[],
+    dynamicModels: ImageModel[]
+  ): ImageModel[] => {
+    const dynamicIds = new Set(dynamicModels.map((m) => m.id))
+    return [...dynamicModels, ...staticModels.filter((m) => !dynamicIds.has(m.id))]
   }
 
   // 手动刷新模型
@@ -568,7 +603,7 @@ export function useImageModelManager() {
     isLoadingDynamicModels.value = true
     modelLoadingStatus.value = {
       type: 'info',
-      messageKey: 'image.model.refreshing'
+      messageKey: 'image.model.refreshing',
     }
 
     try {
@@ -605,21 +640,23 @@ export function useImageModelManager() {
 
     try {
       // 从缓存中获取provider信息
-      const cachedProvider = providers.value.find(p => p.id === selectedProviderId.value)
+      const cachedProvider = providers.value.find((p) => p.id === selectedProviderId.value)
 
       if (!cachedProvider) {
         throw new Error(`提供商不存在: ${selectedProviderId.value}`)
       }
 
       // 获取模型信息：优先使用缓存，不存在时通过registry构建
-      let cachedModel = models.value.find(m => m.id === selectedModelId.value)
+      let cachedModel = models.value.find((m) => m.id === selectedModelId.value)
       if (!cachedModel) {
         // 对于自定义模型ID，使用adapter的buildDefaultModel方法构建
         try {
           const adapter = registry.getAdapter(selectedProviderId.value)
           cachedModel = adapter.buildDefaultModel(selectedModelId.value)
         } catch (error) {
-          throw new Error(`无法构建模型 ${selectedModelId.value}: ${error instanceof Error ? error.message : String(error)}`)
+          throw new Error(
+            `无法构建模型 ${selectedModelId.value}: ${error instanceof Error ? error.message : String(error)}`
+          )
         }
       }
 
@@ -628,7 +665,7 @@ export function useImageModelManager() {
         ...configForm.value,
         // 嵌入完整的provider和model信息
         provider: cachedProvider,
-        model: cachedModel
+        model: cachedModel,
       }
 
       if (configForm.value.id) {
@@ -645,10 +682,11 @@ export function useImageModelManager() {
 
       // 重置表单
       resetForm()
-
     } catch (error) {
       console.error('Failed to save config:', error)
-      toast.error(`${t('image.config.saveFailed')}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      toast.error(
+        `${t('image.config.saveFailed')}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     } finally {
       isSaving.value = false
     }
@@ -665,7 +703,7 @@ export function useImageModelManager() {
       modelId: '',
       enabled: true,
       connectionConfig: {},
-      paramOverrides: {}
+      paramOverrides: {},
       // 注意：不设置provider和model字段，它们由saveConfig时从缓存填充
     }
     models.value = []
@@ -681,10 +719,7 @@ export function useImageModelManager() {
 
   // 初始化
   const initialize = async () => {
-    await Promise.all([
-      loadProviders(),
-      loadConfigs()
-    ])
+    await Promise.all([loadProviders(), loadConfigs()])
   }
 
   return {
@@ -732,6 +767,6 @@ export function useImageModelManager() {
     loadConfigs,
     loadProviders,
     updateConfig,
-    deleteConfig
+    deleteConfig,
   }
 }

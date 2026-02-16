@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-output-format-optimize',
@@ -171,7 +171,7 @@ export const template: Template = {
 6. 保持与原消息相同的语言
 7. 保持与对话上下文一致的风格
 8. 双花括号变量占位符必须原样保留
-9. 简单消息不要添加复杂格式定义`
+9. 简单消息不要添加复杂格式定义`,
     },
     {
       role: 'user',
@@ -195,8 +195,8 @@ export const template: Template = {
 内容：{{#contentTooLong}}{{contentPreview}}...（完整内容见上文第{{index}}条）{{/contentTooLong}}{{^contentTooLong}}{{content}}{{/contentTooLong}}
 {{/selectedMessage}}
 
-请根据格式化优化原则和示例，直接输出优化后的消息内容：`
-    }
+请根据格式化优化原则和示例，直接输出优化后的消息内容：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -206,7 +206,7 @@ export const template: Template = {
     templateType: 'conversationMessageOptimize',
     language: 'zh',
     variant: 'context',
-    tags: ['context', 'message', 'optimize', 'format']
+    tags: ['context', 'message', 'optimize', 'format'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

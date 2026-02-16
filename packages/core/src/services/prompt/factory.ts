@@ -1,8 +1,8 @@
-import { PromptService } from './service';
-import type { IModelManager } from '../model/types';
-import type { ITemplateManager } from '../template/types';
-import type { IHistoryManager } from '../history/types';
-import type { ILLMService } from '../llm/types';
+import { PromptService } from './service'
+import type { IModelManager } from '../model/types'
+import type { ITemplateManager } from '../template/types'
+import type { IHistoryManager } from '../history/types'
+import type { ILLMService } from '../llm/types'
 
 /**
  * 创建PromptService实例
@@ -18,5 +18,5 @@ export function createPromptService(
   templateManager: ITemplateManager,
   historyManager: IHistoryManager
 ): PromptService {
-  return new PromptService(modelManager, llmService, templateManager, historyManager);
+  return new PromptService(modelManager, llmService, templateManager, historyManager)
 }

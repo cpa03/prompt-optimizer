@@ -441,5 +441,5 @@ Using variables: \`{{originalPrompt}}\`, \`{{lastOptimizedPrompt}}\`, \`{{iterat
 - 🔸 **Avoid Excessive Length**: Message content should not be too long, affecting processing speed
 - 🔸 **Clear Structure**: Keep template structure clear and understandable
 - 🔸 **Avoid Nesting**: Don't over-complicate nested structures
-`
-} 
+`,
+}

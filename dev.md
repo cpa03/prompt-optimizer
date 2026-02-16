@@ -12,12 +12,14 @@
 ## 本地开发环境配置
 
 ### 基础环境要求
+
 - Node.js >= 18
 - pnpm >= 8
 - Git >= 2.0
 - VSCode (推荐)
 
 ### 开发环境设置
+
 ```bash
 # 1. 克隆项目
 git clone https://github.com/linshenkx/prompt-optimizer.git
@@ -36,11 +38,13 @@ pnpm dev:desktop:fresh # Desktop开发（完整重置）：清理+重装+启动
 ## Docker开发和部署
 
 ### 环境要求
+
 - Docker >= 20.10.0
 
 ### Docker构建和运行
 
 #### 基础构建
+
 ```bash
 # 获取package.json中的版本号
 $VERSION=$(node -p "require('./package.json').version")
@@ -62,13 +66,13 @@ docker push linshen/prompt-optimizer:latest
 ```
 
 docker本地构建测试
+
 ```shell
 docker build -t linshen/prompt-optimizer:test .
 docker rm -f prompt-optimizer
 docker run -d -p 80:80 --restart unless-stopped --name prompt-optimizer -e VITE_GEMINI_API_KEY=111 linshen/prompt-optimizer:test
 
 ```
-
 
 ### 多阶段构建说明
 
@@ -81,6 +85,7 @@ Dockerfile使用了多阶段构建优化镜像大小：
 ## 环境变量配置
 
 ### 本地开发环境变量
+
 在项目根目录创建 `.env.local` 文件：
 
 ```env
@@ -100,6 +105,7 @@ VITE_CUSTOM_API_MODEL=your_custom_model_name
 ```
 
 ### Docker环境变量
+
 通过 `-e` 参数设置容器环境变量：
 
 ```bash
@@ -112,6 +118,7 @@ docker run -d -p 80:80 \
 ## 开发工作流程
 
 ### 代码提交规范
+
 ```bash
 # 提交格式
 <type>(<scope>): <subject>
@@ -122,6 +129,7 @@ fix(core): 修复API调用超时问题
 ```
 
 ### 测试流程
+
 ```bash
 # 运行所有包的测试
 pnpm test
@@ -137,11 +145,13 @@ pnpm -F @prompt-optimizer/web test
 ### 分支管理策略
 
 #### 🌿 分支结构
+
 - **`main`**: 生产分支，触发 Vercel 自动部署
 - **`develop`**: 开发分支，不触发 Vercel 部署
 - **`feature/*`**: 功能分支，从 develop 分出
 
 #### 🔄 开发工作流
+
 ```bash
 # 1. 从 develop 分支开始开发
 git checkout develop
@@ -169,6 +179,7 @@ git push origin main
 ### 版本发布流程
 
 #### 📋 版本号管理
+
 使用语义化版本控制，通过 pnpm 命令管理版本号：
 
 ```bash
@@ -182,9 +193,11 @@ git commit -m "chore: bump version to $(node -p \"require('./package.json').vers
 ```
 
 #### 🚀 Desktop 应用发布
+
 项目配置了基于 Git Tag 的自动化发布流程，支持多平台构建和自动生成 Release Notes。
 
 **发布正式版本**：
+
 ```bash
 # 1. 在 develop 分支准备版本
 git checkout develop
@@ -203,6 +216,7 @@ pnpm run version:publish
 ```
 
 **发布预览版本**：
+
 ```bash
 # 在 develop 分支创建预览版本标签
 git checkout develop
@@ -217,20 +231,25 @@ git push origin v1.2.0-beta.1
 ```
 
 #### 📦 自动化构建特性
+
 - **多平台构建**：自动在 Windows、macOS、Linux 上构建对应的安装包
 - **智能 Release Notes**：自动提取两个版本间的 commit 信息
 - **版本类型识别**：自动区分正式版本和预览版本
 - **Commit 优化**：自动截断过长的 commit（80字符），限制显示数量（20个）
 
 #### 🎯 发布结果
+
 推送标签后，GitHub Actions 会自动：
+
 1. 在三个平台上并行构建 Desktop 应用
 2. 生成包含 commit 历史的 Release Notes
 3. 创建 GitHub Release 并上传所有构建文件
 4. 正式版本标记为 Release，预览版本标记为 Pre-release
 
 ### 构建说明
+
 项目采用 monorepo 架构，包含以下子包：
+
 - `@prompt-optimizer/core`: 核心逻辑包
 - `@prompt-optimizer/ui`: UI组件包
 - `@prompt-optimizer/web`: Web应用
@@ -240,6 +259,7 @@ git push origin v1.2.0-beta.1
 构建顺序：core → ui → (web/extension/desktop 并行)
 
 ### 本地构建
+
 ```bash
 # 构建所有包（按依赖顺序：core → ui → web/ext/desktop并行）
 pnpm build
@@ -256,6 +276,7 @@ pnpm build:desktop             # 完整构建：core→ui→web→desktop打包
 ```
 
 ### 手动发布（本地构建）
+
 如果需要本地构建和测试：
 
 ```bash
@@ -269,6 +290,7 @@ ls packages/desktop/dist/
 ### 版本管理最佳实践
 
 #### 📋 版本号规范
+
 - **正式版本**：`v1.0.0`, `v2.1.3` - 遵循语义化版本控制
 - **预览版本**：`v1.0.0-beta.1`, `v1.0.0-rc.1`, `v1.0.0-alpha.1`
 
@@ -277,6 +299,7 @@ ls packages/desktop/dist/
 **重要**：electron-updater 对预发布版本的处理有特殊限制，必须使用正确的版本号格式。
 
 **✅ 推荐格式（符合 SemVer 2.0.0 标准）**：
+
 ```bash
 v1.2.6-alpha.1, v1.2.6-alpha.2, v1.2.6-alpha.3
 v1.2.6-beta.1, v1.2.6-beta.2, v1.2.6-beta.3
@@ -284,6 +307,7 @@ v1.2.6-rc.1, v1.2.6-rc.2, v1.2.6-rc.3
 ```
 
 **❌ 避免格式（可能导致 electron-updater 检测问题）**：
+
 ```bash
 v1.2.6-alpha1, v1.2.6-alpha2, v1.2.6-alpha3
 v1.2.6-beta1, v1.2.6-beta2, v1.2.6-beta3
@@ -291,17 +315,20 @@ v1.2.6-rc1, v1.2.6-rc2, v1.2.6-rc3
 ```
 
 **问题说明**：
+
 - electron-updater 将预发布版本的第一部分（如 `beta2` 中的 `beta`）视为**频道标识符**
 - 使用 `beta1`, `beta2`, `beta3` 格式时，可能出现版本检测异常
 - 从 `v1.2.6-beta2` 无法正确检测到 `v1.2.6-beta3` 的更新
 - 使用点分隔格式 `beta.1`, `beta.2`, `beta.3` 可以避免此问题
 
 **最佳实践**：
+
 1. 始终使用点分隔的预发布版本号格式
 2. 遵循 `<version>-<stage>.<number>` 的命名规范
 3. 如果遇到版本检测问题，考虑跳过问题版本或重新发布
 
 #### 🔄 完整发布流程
+
 1. **开发阶段**：在 `develop` 分支开发新功能
 2. **版本准备**：在 `develop` 分支使用 `pnpm version:prepare` 更新版本号
 3. **预览测试**：在 `develop` 分支创建 `beta` 标签进行测试
@@ -313,6 +340,7 @@ v1.2.6-rc1, v1.2.6-rc2, v1.2.6-rc3
 **发现 bug 后的处理方案**：
 
 **方案一：覆盖现有版本（不推荐用于正式版本）**
+
 ```bash
 # 1. 修复 bug 并提交
 git add .
@@ -331,6 +359,7 @@ pnpm run version:publish  # 重新推送 tag（触发新的构建）
 ```
 
 **方案二：发布补丁版本（推荐）**
+
 ```bash
 # 1. 修复 bug
 git add .
@@ -344,6 +373,7 @@ pnpm run version:publish
 ```
 
 **预览版本覆盖（相对安全）**
+
 ```bash
 # 预览版本可以安全覆盖
 git tag -d v1.2.0-beta.1
@@ -355,6 +385,7 @@ git push origin v1.2.0-beta.1
 ```
 
 #### ⚠️ 重要说明
+
 - **避免直接使用 `pnpm version`**：会自动创建 tag，可能导致意外发布
 - **使用 `pnpm version:prepare`**：只更新版本号，不创建 tag
 - **手动控制 tag 创建时机**：使用 `pnpm run version:tag` 和 `pnpm run version:publish`
@@ -364,7 +395,9 @@ git push origin v1.2.0-beta.1
 - **Desktop 发布**：推送 Git Tag 会触发 Desktop 应用构建
 
 #### 📝 Commit 规范
+
 为了生成更好的 Release Notes，建议使用规范的 commit 格式：
+
 ```bash
 # 功能添加
 git commit -m "feat(ui): 添加新的提示词编辑器"
@@ -382,15 +415,18 @@ git commit -m "perf(web): 优化页面加载速度"
 ### Vercel 部署控制
 
 #### 🎯 分支控制策略
+
 项目配置了基于分支的 Vercel 部署控制，简单有效。
 
 **部署规则**：
+
 - ✅ **`main/master` 分支**：自动触发 Vercel 部署
 - ❌ **其他分支**：不会触发 Vercel 部署
 
 #### 📝 手动控制构建
 
 **跳过 Vercel 构建**：
+
 ```bash
 # 使用 Git 标准的跳过标记
 git commit -m "docs: 更新文档 [skip ci]"
@@ -398,6 +434,7 @@ git commit -m "fix(desktop): 修复桌面应用问题 [skip ci]"
 ```
 
 **正常 Vercel 构建**：
+
 ```bash
 # 推送到 main 分支会自动触发构建
 git checkout main
@@ -406,6 +443,7 @@ git push origin main
 ```
 
 #### 🔧 最佳实践
+
 - **开发阶段**：在 `develop` 分支工作，不会触发 Vercel 部署
 - **测试阶段**：在 `develop` 分支发布预览版本测试 Desktop 应用
 - **生产部署**：合并到 `main` 分支时才触发 Vercel 部署
@@ -434,6 +472,7 @@ docker rmi prompt-optimizer
 ### 🚨 紧急修复流程
 
 #### 场景一：正式版本有严重 bug
+
 ```bash
 # 1. 立即修复 bug
 git checkout main
@@ -455,6 +494,7 @@ pnpm run version:publish
 ```
 
 #### 场景二：预览版本需要快速迭代
+
 ```bash
 # 删除现有预览版本
 git tag -d v1.2.0-beta.1
@@ -466,6 +506,7 @@ git push origin v1.2.0-beta.1
 ```
 
 #### 场景三：构建失败需要重新触发
+
 ```bash
 # 删除 tag 重新触发构建
 git push origin :refs/tags/v1.2.0
@@ -480,6 +521,7 @@ pnpm run version:publish
 ### 📋 GitHub Release 管理
 
 #### 删除 Release
+
 1. 访问 GitHub 项目页面
 2. 点击 "Releases" 标签
 3. 找到要删除的版本
@@ -487,6 +529,7 @@ pnpm run version:publish
 5. 确认删除
 
 #### 编辑 Release
+
 1. 在 Release 页面点击 "Edit"
 2. 可以修改标题、描述、标记为预发布
 3. 可以删除或重新上传构建文件
@@ -518,6 +561,7 @@ git push origin v1.2.0
 ## 常见问题解决
 
 ### 依赖安装问题
+
 ```bash
 # 清理依赖缓存
 pnpm clean
@@ -527,6 +571,7 @@ pnpm install --force
 ```
 
 ### 开发环境问题
+
 ```bash
 # 完全重置Web开发环境
 pnpm dev:fresh
@@ -541,12 +586,14 @@ pnpm install
 ```
 
 ### 构建失败处理
+
 1. 检查Node.js版本是否符合要求
 2. 清理构建缓存：`pnpm clean`
 3. 重新安装依赖：`pnpm install`
 4. 查看详细构建日志：`pnpm build --debug`
 
 ### 容器运行问题
+
 1. 检查端口占用：`netstat -ano | findstr :80`
 2. 检查容器日志：`docker logs prompt-optimizer`
 3. 检查容器状态：`docker ps -a`

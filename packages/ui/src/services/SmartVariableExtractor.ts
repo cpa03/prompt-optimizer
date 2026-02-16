@@ -7,39 +7,77 @@ import type { VariableExtractor } from '../types'
 // 内置常见变量名库
 const COMMON_VARIABLES = {
   database: [
-    'table_schema', 'database_structure', 'table_info', 'sql_context', 
-    'schema_definition', 'table_structure', 'db_schema', 'database_context'
+    'table_schema',
+    'database_structure',
+    'table_info',
+    'sql_context',
+    'schema_definition',
+    'table_structure',
+    'db_schema',
+    'database_context',
   ],
   examples: [
-    'example_data', 'sample_input', 'demo_case', 'reference_examples',
-    'sample_data', 'example_queries', 'demo_input', 'use_cases'
+    'example_data',
+    'sample_input',
+    'demo_case',
+    'reference_examples',
+    'sample_data',
+    'example_queries',
+    'demo_input',
+    'use_cases',
   ],
   rules: [
-    'business_rules', 'constraints', 'requirements', 'guidelines',
-    'validation_rules', 'business_logic', 'policy_rules', 'restrictions'
+    'business_rules',
+    'constraints',
+    'requirements',
+    'guidelines',
+    'validation_rules',
+    'business_logic',
+    'policy_rules',
+    'restrictions',
   ],
   context: [
-    'background_info', 'system_context', 'domain_knowledge', 'context_info',
-    'background_context', 'system_info', 'domain_context', 'additional_context'
+    'background_info',
+    'system_context',
+    'domain_knowledge',
+    'context_info',
+    'background_context',
+    'system_info',
+    'domain_context',
+    'additional_context',
   ],
   input: [
-    'user_question', 'query_text', 'user_input', 'current_request',
-    'user_query', 'input_text', 'question', 'request_content'
+    'user_question',
+    'query_text',
+    'user_input',
+    'current_request',
+    'user_query',
+    'input_text',
+    'question',
+    'request_content',
   ],
   output: [
-    'expected_format', 'output_template', 'response_format', 'result_format',
-    'output_structure', 'response_template', 'expected_output', 'format_specification'
-  ]
+    'expected_format',
+    'output_template',
+    'response_format',
+    'result_format',
+    'output_structure',
+    'response_template',
+    'expected_output',
+    'format_specification',
+  ],
 } as const
 
 // 关键词匹配模式
 const KEYWORD_PATTERNS = {
-  database: /(?:table|schema|database|sql|create\s+table|alter\s+table|column|field|index|primary\s+key|foreign\s+key)/i,
+  database:
+    /(?:table|schema|database|sql|create\s+table|alter\s+table|column|field|index|primary\s+key|foreign\s+key)/i,
   examples: /(?:example|sample|demo|case|instance|illustration|for\s+example|such\s+as)/i,
-  rules: /(?:rule|constraint|requirement|must|should|policy|guideline|restriction|validation|business\s+logic)/i,
+  rules:
+    /(?:rule|constraint|requirement|must|should|policy|guideline|restriction|validation|business\s+logic)/i,
   context: /(?:context|background|information|about|regarding|concerning|domain|system)/i,
   input: /(?:input|question|query|request|ask|problem|task|what|how|when|where|why)/i,
-  output: /(?:output|result|response|format|structure|return|produce|generate)/i
+  output: /(?:output|result|response|format|structure|return|produce|generate)/i,
 } as const
 
 export class SmartVariableExtractor implements VariableExtractor {
@@ -79,9 +117,8 @@ export class SmartVariableExtractor implements VariableExtractor {
 
     // 替换选中文本为变量占位符
     const placeholder = `{{${variableName}}}`
-    const updatedContent = messageContent.substring(0, startIndex) + 
-                          placeholder + 
-                          messageContent.substring(endIndex)
+    const updatedContent =
+      messageContent.substring(0, startIndex) + placeholder + messageContent.substring(endIndex)
 
     return {
       updatedContent,
@@ -89,8 +126,8 @@ export class SmartVariableExtractor implements VariableExtractor {
         name: variableName,
         value: selectedText,
         startIndex,
-        endIndex
-      }
+        endIndex,
+      },
     }
   }
 
@@ -115,14 +152,14 @@ export class SmartVariableExtractor implements VariableExtractor {
       if (pattern.test(selectedText)) {
         const categoryVariables = COMMON_VARIABLES[category as keyof typeof COMMON_VARIABLES]
         const confidence = this.calculatePatternConfidence(selectedText, pattern)
-        
+
         // 添加该类别的变量建议
         categoryVariables.slice(0, 3).forEach((name, index) => {
           suggestions.push({
             name,
-            confidence: confidence - (index * 0.1), // 按优先级递减
+            confidence: confidence - index * 0.1, // 按优先级递减
             category,
-            reason: `Detected ${category}-related content`
+            reason: `Detected ${category}-related content`,
           })
         })
       }
@@ -134,7 +171,7 @@ export class SmartVariableExtractor implements VariableExtractor {
         name: 'long_context',
         confidence: 0.6,
         category: 'context',
-        reason: 'Long text content detected'
+        reason: 'Long text content detected',
       })
     }
 
@@ -143,7 +180,7 @@ export class SmartVariableExtractor implements VariableExtractor {
         name: 'multiline_content',
         confidence: 0.7,
         category: 'context',
-        reason: 'Multi-line structured content'
+        reason: 'Multi-line structured content',
       })
     }
 
@@ -153,7 +190,7 @@ export class SmartVariableExtractor implements VariableExtractor {
         name: 'json_data',
         confidence: 0.8,
         category: 'input',
-        reason: 'JSON format detected'
+        reason: 'JSON format detected',
       })
     }
 
@@ -167,7 +204,7 @@ export class SmartVariableExtractor implements VariableExtractor {
    */
   replaceVariables(content: string, variables: Record<string, string>): string {
     let result = content
-    
+
     for (const [name, value] of Object.entries(variables)) {
       // 匹配 {{variableName}} 格式，允许空格
       const pattern = new RegExp(`\\{\\{\\s*${this.escapeRegExp(name)}\\s*\\}\\}`, 'g')
@@ -183,12 +220,15 @@ export class SmartVariableExtractor implements VariableExtractor {
   scanVariables(content: string): Array<{
     name: string
     placeholder: string
-    positions: Array<{start: number, end: number}>
+    positions: Array<{ start: number; end: number }>
   }> {
-    const variables = new Map<string, {
-      placeholder: string
-      positions: Array<{start: number, end: number}>
-    }>()
+    const variables = new Map<
+      string,
+      {
+        placeholder: string
+        positions: Array<{ start: number; end: number }>
+      }
+    >()
 
     // 匹配所有 {{variableName}} 格式
     const pattern = /\{\{\s*([^}]+)\s*\}\}/g
@@ -203,7 +243,7 @@ export class SmartVariableExtractor implements VariableExtractor {
       if (!variables.has(variableName)) {
         variables.set(variableName, {
           placeholder: fullMatch,
-          positions: []
+          positions: [],
         })
       }
 
@@ -214,7 +254,7 @@ export class SmartVariableExtractor implements VariableExtractor {
     return Array.from(variables.entries()).map(([name, data]) => ({
       name,
       placeholder: data.placeholder,
-      positions: data.positions
+      positions: data.positions,
     }))
   }
 
@@ -239,8 +279,10 @@ export class SmartVariableExtractor implements VariableExtractor {
   // 私有方法：检测是否像JSON
   private looksLikeJSON(text: string): boolean {
     const trimmed = text.trim()
-    if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-        (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+    if (
+      (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+      (trimmed.startsWith('[') && trimmed.endsWith(']'))
+    ) {
       try {
         JSON.parse(trimmed)
         return true
@@ -252,19 +294,21 @@ export class SmartVariableExtractor implements VariableExtractor {
   }
 
   // 私有方法：去重建议
-  private deduplicateSuggestions(suggestions: Array<{
-    name: string
-    confidence: number
-    category: string
-    reason: string
-  }>): Array<{
+  private deduplicateSuggestions(
+    suggestions: Array<{
+      name: string
+      confidence: number
+      category: string
+      reason: string
+    }>
+  ): Array<{
     name: string
     confidence: number
     category: string
     reason: string
   }> {
     const seen = new Set<string>()
-    return suggestions.filter(suggestion => {
+    return suggestions.filter((suggestion) => {
       if (seen.has(suggestion.name)) {
         return false
       }

@@ -17,9 +17,9 @@
 ```typescript
 // 旧模式
 function usePromptOptimizer() {
-  const isIterating = ref(false);
-  const someOtherState = ref('');
-  return { isIterating, someOtherState }; 
+  const isIterating = ref(false)
+  const someOtherState = ref('')
+  return { isIterating, someOtherState }
 }
 ```
 
@@ -28,7 +28,7 @@ function usePromptOptimizer() {
 ```html
 <!-- App.vue -->
 <script setup>
-const optimizer = usePromptOptimizer();
+  const optimizer = usePromptOptimizer()
 </script>
 
 <template>
@@ -52,11 +52,11 @@ function usePromptOptimizer() {
   const state = reactive({
     isIterating: false,
     someOtherState: '',
-  });
-  
+  })
+
   // ... 逻辑代码修改 state ...
 
-  return state; // 返回一个响应式对象
+  return state // 返回一个响应式对象
 }
 ```
 
@@ -65,7 +65,7 @@ function usePromptOptimizer() {
 ```html
 <!-- App.vue (修改后) -->
 <script setup>
-const optimizerState = usePromptOptimizer();
+  const optimizerState = usePromptOptimizer()
 </script>
 
 <template>
@@ -84,6 +84,7 @@ const optimizerState = usePromptOptimizer();
 本次重构已**圆满完成**。
 
 **核心重构**:
+
 - [x] **`usePromptOptimizer`**: 已重构为返回 `reactive` 对象。
 - [x] **`useModelManager`**: 已重构为返回 `reactive` 对象。
 - [x] **`useHistoryManager`**: 已重构为返回 `reactive` 对象。
@@ -92,11 +93,13 @@ const optimizerState = usePromptOptimizer();
 - [x] **`useModals`**: 已重构为返回 `reactive` 对象。
 
 **辅助修复**:
+
 - [x] **修复 `useStorage`**: `ThemeToggleUI` 和 `LanguageSwitch` 组件被修改为通过 `inject` 获取 `services` 实例，并将其传递给 `useStorage`，解决了依赖过早初始化的问题。
 - [x] **适配 `App.vue`**: 调整了 `App.vue` 中的模板绑定和 `computed` 属性，以适应新的 `reactive` 状态结构，并修复了因此产生的类型错误。
 - [x] **依赖注入**: 在 `ModelSelect` 和 `DataManager` 等组件中，推广了使用 `inject` 直接从 `services` 中获取依赖的模式，简化了 `App.vue` 的模板。
 
 **最终成果**:
+
 - 彻底解决了启动时的所有 Vue `warn` 和 `error`。
 - 建立了一套更健壮、更可预测、更符合 Vue 最佳实践的状态管理范式。
 - 应用代码，特别是 `App.vue`，变得更加简洁和易于维护。

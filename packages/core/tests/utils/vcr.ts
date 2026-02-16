@@ -121,9 +121,7 @@ export class VCR {
     this.fixtureDir = options.fixtureDir || join(__dirname, '..', 'fixtures')
 
     // 是否启用真实 LLM
-    const envEnableReal =
-      process.env.ENABLE_REAL_LLM === 'true' ||
-      process.env.RUN_REAL_API === '1'
+    const envEnableReal = process.env.ENABLE_REAL_LLM === 'true' || process.env.RUN_REAL_API === '1'
     this.enableRealLLM = options.enableRealLLM ?? envEnableReal
 
     // 从环境变量读取模式
@@ -171,7 +169,7 @@ export class VCR {
       if (!existsSync(fixturePath)) {
         throw new Error(
           `Fixture not found: ${fixturePath}\n` +
-          `Run with VCR_MODE=record to create it, or VCR_MODE=auto to auto-record.`
+            `Run with VCR_MODE=record to create it, or VCR_MODE=auto to auto-record.`
         )
       }
       return this.replayFixture(fixturePath) as T
@@ -204,14 +202,14 @@ export class VCR {
     if (!('response' in raw)) {
       throw new Error(
         `[VCR] Invalid fixture (missing { request, response, metadata }): ${fixturePath}\n` +
-        `Re-record this fixture with VCR_MODE=record and ENABLE_REAL_LLM=true.`
+          `Re-record this fixture with VCR_MODE=record and ENABLE_REAL_LLM=true.`
       )
     }
     if (!raw.response) {
       throw new Error(
         `[VCR] Invalid fixture (missing response). This usually happens when recording a void-return call.\n` +
-        `Fixture: ${fixturePath}\n` +
-        `Delete it and re-record with VCR_MODE=record, or fix the test to return a value.`
+          `Fixture: ${fixturePath}\n` +
+          `Delete it and re-record with VCR_MODE=record, or fix the test to return a value.`
       )
     }
 
@@ -238,8 +236,8 @@ export class VCR {
     if (!this.enableRealLLM) {
       throw new Error(
         `Real LLM is disabled. Cannot record fixture.\n` +
-        `Set ENABLE_REAL_LLM=true to enable real API calls.\n` +
-        `Or ensure fixture exists: ${fixturePath}`
+          `Set ENABLE_REAL_LLM=true to enable real API calls.\n` +
+          `Or ensure fixture exists: ${fixturePath}`
       )
     }
 
@@ -250,8 +248,8 @@ export class VCR {
     if (result === undefined) {
       throw new Error(
         `[VCR] Cannot record fixture because the intercepted function returned undefined.\n` +
-        `Scenario: ${scenarioName}\n` +
-        `Fix: make the function return a serializable response value, or don’t wrap void-return calls with VCR.`
+          `Scenario: ${scenarioName}\n` +
+          `Fix: make the function return a serializable response value, or don’t wrap void-return calls with VCR.`
       )
     }
 
@@ -265,8 +263,8 @@ export class VCR {
         recordedAt: new Date().toISOString(),
         scenarioName,
         duration,
-        recordedBy: 'auto'
-      }
+        recordedBy: 'auto',
+      },
     }
 
     // 确保目录存在

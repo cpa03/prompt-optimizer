@@ -10,31 +10,31 @@ export const TIME = {
   SECOND: 1000,
   MINUTE: 60 * 1000,
   TWO_MINUTES: 2 * 60 * 1000,
-} as const;
+} as const
 
 // Timeout constants for different test scenarios
 export const TIMEOUTS = {
   // Ultra-short delays for micro-animations
   MICRO: 100,
-  
+
   // Short delays for quick UI updates
   SHORT: 200,
-  
+
   // Medium delays for standard animations
   MEDIUM: 300,
-  
+
   // Standard delays for most operations
   STANDARD: 500,
-  
+
   // Long delays for complex operations
   LONG: 1000,
-  
+
   // Extended delays for heavy operations
   EXTENDED: 1500,
-  
+
   // Maximum delays for page loads
   PAGE_LOAD: 2000,
-  
+
   // Playwright-specific timeouts
   playwright: {
     ELEMENT_APPEAR: 15000,
@@ -43,20 +43,20 @@ export const TIMEOUTS = {
     ANALYSIS_COMPLETE: 60000,
     EVALUATION_COMPLETE: 90000,
   },
-  
+
   // Integration test timeouts
   integration: {
     API_DELAY: 60000,
     TEST_TIMEOUT: 120000,
   },
-} as const;
+} as const
 
 // Retry and polling constants
 export const RETRY = {
   MAX_ATTEMPTS: 5,
   BASE_DELAY_MS: 100,
   MAX_DELAY_MS: 1000,
-} as const;
+} as const
 
 // Test data size constants
 export const TEST_DATA = {
@@ -69,7 +69,7 @@ export const TEST_DATA = {
   MAX_FAVORITES: 1000,
   SMALL_IMAGE_MB: 1,
   LARGE_IMAGE_MB: 10,
-} as const;
+} as const
 
 // Score constants
 export const SCORES = {
@@ -77,7 +77,7 @@ export const SCORES = {
   MAX: 100,
   PASS_THRESHOLD: 60,
   EXCELLENT_THRESHOLD: 85,
-} as const;
+} as const
 
 // E2E Test route definitions - centralized to avoid string duplication
 export const E2E_ROUTES = {
@@ -85,7 +85,7 @@ export const E2E_ROUTES = {
   BASIC_USER: '/#/basic/user',
   PRO_MULTI: '/#/pro/multi',
   PRO_VARIABLE: '/#/pro/variable',
-} as const;
+} as const
 
 // Workspace mode identifiers
 export const WORKSPACE_MODES = {
@@ -93,7 +93,7 @@ export const WORKSPACE_MODES = {
   BASIC_USER: 'basic-user',
   PRO_MULTI: 'pro-multi',
   PRO_VARIABLE: 'pro-variable',
-} as const;
+} as const
 
 // Test IDs - centralized to avoid typos
 export const TEST_IDS = {
@@ -101,7 +101,7 @@ export const TEST_IDS = {
   FUNCTION_MODE_SELECTOR: 'function-mode-selector',
   OPTIMIZATION_MODE_SELECTOR: 'optimization-mode-selector',
   CORE_NAV: 'core-nav',
-} as const;
+} as const
 
 // Color codes for test data (not for UI)
 export const TEST_COLORS = {
@@ -110,4 +110,4 @@ export const TEST_COLORS = {
   BLUE: '#0000ff',
   ORANGE: '#FF5722',
   GREEN_ALT: '#4CAF50',
-} as const;
+} as const

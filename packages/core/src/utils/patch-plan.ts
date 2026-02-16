@@ -21,11 +21,7 @@ export interface ApplyPatchResult {
  * @param occurrence 第几次出现（从 1 开始）
  * @returns 找到的索引，未找到返回 -1
  */
-function findNthOccurrence(
-  haystack: string,
-  needle: string,
-  occurrence: number,
-): number {
+function findNthOccurrence(haystack: string, needle: string, occurrence: number): number {
   if (!needle) return -1
 
   let fromIndex = 0
@@ -65,7 +61,7 @@ function countOccurrences(haystack: string, needle: string): number {
  */
 export function applyPatchOperationsToText(
   input: string,
-  operation: PatchOperation,
+  operation: PatchOperation
 ): ApplyPatchResult {
   const { oldText, newText, occurrence = 1, op } = operation
 
@@ -107,7 +103,8 @@ export function applyPatchOperationsToText(
     }
   }
 
-  const text = input.slice(0, targetIndex) + (newText ?? '') + input.slice(targetIndex + oldText.length)
+  const text =
+    input.slice(0, targetIndex) + (newText ?? '') + input.slice(targetIndex + oldText.length)
 
   return {
     text,

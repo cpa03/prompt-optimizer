@@ -5,10 +5,7 @@ import type { ComposerTranslation } from 'vue-i18n'
  * ContextEditor UI 状态管理 Composable
  * 统一管理编辑器的显示模式、标题和状态
  */
-export function useContextEditorUIState(
-  showContextEditor: Ref<boolean>,
-  t: ComposerTranslation
-) {
+export function useContextEditorUIState(showContextEditor: Ref<boolean>, t: ComposerTranslation) {
   // 仅显示指定标签页模式（隐藏其他标签页和标签栏）
   const onlyShowTab = ref<'messages' | 'variables' | 'tools' | undefined>(undefined)
 

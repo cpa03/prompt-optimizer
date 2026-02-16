@@ -1,4 +1,4 @@
-import { Template } from '../../types';
+import { Template } from '../../types'
 
 export const template: Template = {
   id: 'analytical-optimize',
@@ -113,9 +113,10 @@ export const template: Template = {
     version: '2.1.0',
     lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (fixed value, built-in templates are immutable)
     author: 'System',
-    description: 'In-depth analytical optimization for critical business and complex application scenarios',
+    description:
+      'In-depth analytical optimization for critical business and complex application scenarios',
     templateType: 'optimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

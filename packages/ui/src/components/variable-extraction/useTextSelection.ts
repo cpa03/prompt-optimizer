@@ -27,7 +27,7 @@ export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaEl
     text: '',
     start: 0,
     end: 0,
-    isValid: false
+    isValid: false,
   })
 
   /**
@@ -41,7 +41,7 @@ export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaEl
         start: 0,
         end: 0,
         isValid: false,
-        invalidReason: '输入框未就绪'
+        invalidReason: '输入框未就绪',
       }
     }
 
@@ -57,7 +57,7 @@ export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaEl
       start,
       end,
       isValid: validation.isValid,
-      invalidReason: validation.reason
+      invalidReason: validation.reason,
     }
 
     return selection.value
@@ -169,9 +169,7 @@ export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaEl
       // 如果不在变量内部,则替换
       if (openBraces === closeBraces) {
         result =
-          result.substring(0, index) +
-          replaceWith +
-          result.substring(index + trimmedSearch.length)
+          result.substring(0, index) + replaceWith + result.substring(index + trimmedSearch.length)
         position = index + replaceWith.length
       } else {
         position = index + 1
@@ -186,6 +184,6 @@ export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaEl
     getSelection,
     validateSelection,
     countOccurrences,
-    replaceAllOccurrences
+    replaceAllOccurrences,
   }
 }

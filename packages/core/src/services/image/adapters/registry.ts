@@ -1,9 +1,4 @@
-import {
-  IImageAdapterRegistry,
-  IImageProviderAdapter,
-  ImageProvider,
-  ImageModel
-} from '../types'
+import { IImageAdapterRegistry, IImageProviderAdapter, ImageProvider, ImageModel } from '../types'
 import { AbstractAdapterRegistry } from '../../adapters/abstract-registry'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
@@ -34,7 +29,9 @@ export class ImageAdapterRegistry
   }
 
   protected createDynamicModelUnsupportedError(provider: ImageProvider): Error {
-    return new ImageError(IMAGE_ERROR_CODES.DYNAMIC_MODELS_NOT_SUPPORTED, undefined, { providerName: provider.name })
+    return new ImageError(IMAGE_ERROR_CODES.DYNAMIC_MODELS_NOT_SUPPORTED, undefined, {
+      providerName: provider.name,
+    })
   }
 
   /**

@@ -4,14 +4,14 @@
       <template #header>
         <NSpace vertical :size="4" class="advanced-header">
           <NSpace align="center" :size="8">
-            <NH4 style="margin: 0; font-size: 14px;">
+            <NH4 style="margin: 0; font-size: 14px">
               {{ t('modelManager.advancedParameters.title') }}
             </NH4>
             <NTag type="default" size="small" :bordered="false">
               {{ providerDisplay }}
             </NTag>
           </NSpace>
-          <NText depth="3" style="font-size: 12px;">
+          <NText depth="3" style="font-size: 12px">
             <span>{{ t('modelManager.advancedParameters.currentProvider') }}:</span>
             <NText strong>
               {{ providerDisplay }}
@@ -36,7 +36,17 @@
           >
             <NButton size="small" type="primary" quaternary>
               <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
                   <line x1="8" y1="3" x2="8" y2="13" />
                   <line x1="3" y1="8" x2="13" y2="8" />
                 </svg>
@@ -44,12 +54,7 @@
               {{ t('modelManager.advancedParameters.add') }}
             </NButton>
           </NDropdown>
-          <NButton
-            v-else
-            size="small"
-            quaternary
-            disabled
-          >
+          <NButton v-else size="small" quaternary disabled>
             {{ t('modelManager.advancedParameters.noAvailableParams') }}
           </NButton>
         </div>
@@ -79,7 +84,11 @@
   >
     <NSpace vertical :size="12">
       <NFormItem :label="t('modelManager.advancedParameters.customKeyPlaceholder')">
-        <NInput v-model:value="customForm.key" size="small" :placeholder="t('modelManager.advancedParameters.customKeyPlaceholder')" />
+        <NInput
+          v-model:value="customForm.key"
+          size="small"
+          :placeholder="t('modelManager.advancedParameters.customKeyPlaceholder')"
+        />
       </NFormItem>
       <NFormItem :label="t('modelManager.advancedParameters.customValuePlaceholder')">
         <NInput
@@ -111,32 +120,36 @@ import {
   NFormItem,
   NInput,
   useMessage,
-  createDiscreteApi
+  createDiscreteApi,
 } from 'naive-ui'
-import { isSafeCustomKey, parseCustomValue, type UnifiedParameterDefinition } from '@prompt-optimizer/core'
+import {
+  isSafeCustomKey,
+  parseCustomValue,
+  type UnifiedParameterDefinition,
+} from '@prompt-optimizer/core'
 import ModelParameterEditor from './ModelParameterEditor.vue'
 
 const props = defineProps({
   mode: {
     type: String as () => 'text' | 'image',
-    default: 'text'
+    default: 'text',
   },
   providerType: {
     type: String,
-    default: 'custom'
+    default: 'custom',
   },
   parameterDefinitions: {
     type: Array as () => readonly UnifiedParameterDefinition[],
-    default: () => []
+    default: () => [],
   },
   paramOverrides: {
     type: Object as () => Record<string, unknown>,
-    default: () => ({})
+    default: () => ({}),
   },
   allowCustom: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 })
 
 const emit = defineEmits<{
@@ -150,7 +163,7 @@ const expandedNames = ref<string[]>([])
 const showCustomModal = ref(false)
 const customForm = reactive({
   key: '',
-  value: ''
+  value: '',
 })
 const editorRef = ref<InstanceType<typeof ModelParameterEditor>>()
 
@@ -165,13 +178,13 @@ const availableCount = computed(() => availableDefinitions.value.length)
 const dropdownOptions = computed(() => {
   const base = availableDefinitions.value.map((def) => ({
     label: def.labelKey ? t(def.labelKey) : def.name,
-    key: def.name
+    key: def.name,
   }))
 
   if (props.allowCustom) {
     base.push({
       label: t('modelManager.advancedParameters.custom'),
-      key: '__custom__'
+      key: '__custom__',
     })
   }
 
@@ -201,13 +214,15 @@ const handleAddOption = (value: string | number) => {
 
   const definition = props.parameterDefinitions.find((def) => def.name === value)
   if (!definition) {
-    message.error(withFallback('modelManager.advancedParameters.validation.unknownParam', '参数定义不存在'))
+    message.error(
+      withFallback('modelManager.advancedParameters.validation.unknownParam', '参数定义不存在')
+    )
     return
   }
 
   const next = {
     ...props.paramOverrides,
-    [definition.name]: cloneDefaultValue(definition)
+    [definition.name]: cloneDefaultValue(definition),
   }
   emitParamOverrides(next)
   ensureExpanded()
@@ -216,26 +231,43 @@ const handleAddOption = (value: string | number) => {
 const handleConfirmCustom = () => {
   const trimmedKey = customForm.key.trim()
   if (!trimmedKey) {
-    message.error(withFallback('modelManager.advancedParameters.validation.customKeyRequired', '参数名称不能为空'))
+    message.error(
+      withFallback(
+        'modelManager.advancedParameters.validation.customKeyRequired',
+        '参数名称不能为空'
+      )
+    )
     return false
   }
   if (!isSafeCustomKey(trimmedKey)) {
-    message.error(withFallback('modelManager.advancedParameters.validation.dangerousParam', '存在危险的参数名称'))
+    message.error(
+      withFallback(
+        'modelManager.advancedParameters.validation.dangerousParam',
+        '存在危险的参数名称'
+      )
+    )
     return false
   }
   if (Object.prototype.hasOwnProperty.call(props.paramOverrides, trimmedKey)) {
-    message.error(withFallback('modelManager.advancedParameters.validation.duplicateParam', '参数已存在'))
+    message.error(
+      withFallback('modelManager.advancedParameters.validation.duplicateParam', '参数已存在')
+    )
     return false
   }
   const trimmedValue = customForm.value.trim()
   if (!trimmedValue) {
-    message.error(withFallback('modelManager.advancedParameters.validation.customValueRequired', '参数值不能为空'))
+    message.error(
+      withFallback(
+        'modelManager.advancedParameters.validation.customValueRequired',
+        '参数值不能为空'
+      )
+    )
     return false
   }
 
   const next = {
     ...props.paramOverrides,
-    [trimmedKey]: parseCustomValue(trimmedValue)
+    [trimmedKey]: parseCustomValue(trimmedValue),
   }
   emitParamOverrides(next)
 

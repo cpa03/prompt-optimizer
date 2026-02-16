@@ -24,6 +24,7 @@
 ## 模板管理器分类
 
 模板管理器独立于功能模式，提供 6 类模板的全量管理：
+
 - `optimize` / `userOptimize` / `iterate`
 - `contextSystemOptimize` / `contextUserOptimize` / `contextIterate`
 
@@ -59,6 +60,7 @@
 ## 回退策略
 
 当请求 `context*` 类型但没有可用模板时：
+
 - 下拉列表为空并引导用户在模板管理器添加模板；
 - 服务层默认模板查找会从 `context*` 回退到对应基础类型，保证流程不中断。
 
@@ -66,4 +68,3 @@
 
 - 默认 `function-mode` 为 `'basic'`，向后兼容旧版本；
 - 如存在历史布尔“高级模式”，可一次性迁移为 `function-mode`：`true → 'pro'`、`false → 'basic'`（实现层可选）。
-

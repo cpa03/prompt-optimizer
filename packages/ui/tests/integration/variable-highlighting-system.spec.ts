@@ -82,8 +82,8 @@ describe('variable-highlighting-system 集成测试', () => {
         props: {
           modelValue: 'Hello John, you are 25 years old',
           existingGlobalVariables: [],
-          existingTemporaryVariables: []
-        }
+          existingTemporaryVariables: [],
+        },
       })
 
       // 1. 初始文本不包含变量
@@ -93,7 +93,7 @@ describe('variable-highlighting-system 集成测试', () => {
       await wrapper.vm.$emit('variable-extracted', {
         variableName: 'name',
         variableValue: 'John',
-        variableType: 'temporary'
+        variableType: 'temporary',
       })
 
       // 3. 验证事件被触发
@@ -106,7 +106,7 @@ describe('variable-highlighting-system 集成测试', () => {
       await wrapper.setProps({
         modelValue: 'Hello {{name}}, you are 25 years old',
         existingTemporaryVariables: ['name'],
-        temporaryVariableValues: { name: 'John' }
+        temporaryVariableValues: { name: 'John' },
       })
 
       // 5. 验证变量被正确识别
@@ -147,7 +147,7 @@ describe('variable-highlighting-system 集成测试', () => {
 
       const variables = extractVariables(newText)
       expect(variables).toHaveLength(3)
-      expect(variables.every(v => v.source === 'temporary')).toBe(true)
+      expect(variables.every((v) => v.source === 'temporary')).toBe(true)
     })
 
     it('应该保护现有变量不被破坏', () => {
@@ -157,13 +157,15 @@ describe('variable-highlighting-system 集成测试', () => {
       const replaceOutsideVariables = (text: string, search: string, replace: string) => {
         // 简化版实现
         const parts = text.split(/(\{\{[^}]+\}\})/g)
-        return parts.map((part, index) => {
-          if (index % 2 === 0) {
-            // 非变量部分
-            return part.replace(new RegExp(search, 'g'), replace)
-          }
-          return part // 变量部分保持不变
-        }).join('')
+        return parts
+          .map((part, index) => {
+            if (index % 2 === 0) {
+              // 非变量部分
+              return part.replace(new RegExp(search, 'g'), replace)
+            }
+            return part // 变量部分保持不变
+          })
+          .join('')
       }
 
       const newText = replaceOutsideVariables(text, 'customer', '{{user}}')
@@ -182,9 +184,13 @@ describe('variable-highlighting-system 集成测试', () => {
 
       // 模拟补全选项生成
       const completionOptions = [
-        ...Object.keys(predefinedVariables).map(name => ({ name, source: 'predefined', boost: 3 })),
-        ...Object.keys(globalVariables).map(name => ({ name, source: 'global', boost: 2 })),
-        ...Object.keys(temporaryVariables).map(name => ({ name, source: 'temporary', boost: 1 }))
+        ...Object.keys(predefinedVariables).map((name) => ({
+          name,
+          source: 'predefined',
+          boost: 3,
+        })),
+        ...Object.keys(globalVariables).map((name) => ({ name, source: 'global', boost: 2 })),
+        ...Object.keys(temporaryVariables).map((name) => ({ name, source: 'temporary', boost: 1 })),
       ]
 
       expect(completionOptions).toHaveLength(4)
@@ -207,13 +213,13 @@ describe('variable-highlighting-system 集成测试', () => {
     it('应该显示变量值预览', () => {
       const variables = {
         shortVar: 'short',
-        longVar: 'a'.repeat(100)
+        longVar: 'a'.repeat(100),
       }
 
       // 模拟值预览生成
       const previews = Object.entries(variables).map(([name, value]) => ({
         name,
-        preview: value.length > 50 ? value.substring(0, 50) + '...' : value
+        preview: value.length > 50 ? value.substring(0, 50) + '...' : value,
       }))
 
       expect(previews[0].preview).toBe('short')
@@ -256,7 +262,7 @@ describe('variable-highlighting-system 集成测试', () => {
       const temporaryVariables = ref({
         var1: 'value1',
         var2: 'value2',
-        var3: 'value3'
+        var3: 'value3',
       })
 
       // 记录被清空的变量名
@@ -268,7 +274,7 @@ describe('variable-highlighting-system 集成测试', () => {
       expect(Object.keys(temporaryVariables.value)).toHaveLength(0)
 
       // 验证所有变量都被移除
-      removedNames.forEach(name => {
+      removedNames.forEach((name) => {
         expect(temporaryVariables.value).not.toHaveProperty(name)
       })
     })
@@ -278,7 +284,12 @@ describe('variable-highlighting-system 集成测试', () => {
     it('应该按优先级显示变量 (预定义 > 全局 > 临时)', () => {
       const globalVariables = ref({ var1: 'global', var2: 'global' })
       const temporaryVariables = ref({ var1: 'temp', var2: 'temp', var3: 'temp' })
-      const predefinedVariables = ref({ var1: 'predef', var2: 'predef', var3: 'predef', var4: 'predef' })
+      const predefinedVariables = ref({
+        var1: 'predef',
+        var2: 'predef',
+        var3: 'predef',
+        var4: 'predef',
+      })
 
       const { extractVariables } = useVariableDetection(
         globalVariables,
@@ -293,7 +304,7 @@ describe('variable-highlighting-system 集成测试', () => {
       expect(variables[1].source).toBe('predefined') // var2: 预定义优先
       expect(variables[2].source).toBe('predefined') // var3: 预定义优先
       expect(variables[3].source).toBe('predefined') // var4: 仅预定义
-      expect(variables[4].source).toBe('missing')    // var5: 缺失
+      expect(variables[4].source).toBe('missing') // var5: 缺失
     })
 
     it('应该在变量升级时更新优先级', () => {
@@ -356,8 +367,8 @@ describe('variable-highlighting-system 集成测试', () => {
       const globalVariables = ref({
         'user-name': 'John',
         'user.email': 'john@example.com',
-        'user_id': '123',
-        '用户名': '张三'
+        user_id: '123',
+        用户名: '张三',
       })
       const temporaryVariables = ref<Record<string, string>>({})
       const predefinedVariables = ref<Record<string, string>>({})
@@ -372,7 +383,7 @@ describe('variable-highlighting-system 集成测试', () => {
       const variables = extractVariables(text)
 
       expect(variables).toHaveLength(4)
-      expect(variables.every(v => v.source === 'global')).toBe(true)
+      expect(variables.every((v) => v.source === 'global')).toBe(true)
     })
 
     it('应该处理大量变量的性能场景', () => {
@@ -393,13 +404,13 @@ describe('variable-highlighting-system 集成测试', () => {
 
       // 创建包含所有变量的文本
       const text = Object.keys(globalVariables.value)
-        .map(name => `{{${name}}}`)
+        .map((name) => `{{${name}}}`)
         .join(' ')
 
       const variables = extractVariables(text)
 
       expect(variables).toHaveLength(100)
-      expect(variables.every(variable => variable.source === 'global')).toBe(true)
+      expect(variables.every((variable) => variable.source === 'global')).toBe(true)
     })
   })
 

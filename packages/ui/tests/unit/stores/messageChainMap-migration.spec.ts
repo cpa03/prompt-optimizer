@@ -11,15 +11,15 @@ import type { AppServices } from '../../../src/types/services'
 
 // Mock dependencies
 vi.mock('../../../src/stores/session/useProMultiMessageSession', () => ({
-  useProMultiMessageSession: vi.fn()
+  useProMultiMessageSession: vi.fn(),
 }))
 
 vi.mock('../../../src/composables/ui/useToast', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
-    warning: vi.fn()
-  })
+    warning: vi.fn(),
+  }),
 }))
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -27,8 +27,8 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
@@ -47,7 +47,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
       selectedMessageId: '',
       messageChainMap: {},
       selectMessage: vi.fn(),
-      setMessageChainMap: vi.fn()
+      setMessageChainMap: vi.fn(),
     }
 
     vi.mocked(useProMultiMessageSession).mockReturnValue(mockSession)
@@ -57,9 +57,9 @@ describe('messageChainMap 迁移逻辑测试', () => {
       historyManager: {
         getChain: vi.fn(),
         createNewChain: vi.fn(),
-        addIteration: vi.fn()
+        addIteration: vi.fn(),
       },
-      promptService: {}
+      promptService: {},
     } as any)
 
     conversationMessages = ref([])
@@ -74,7 +74,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
     mockSession.messageChainMap = {
       'system:msg-123': 'chain-abc',
       'system:msg-456': 'chain-def',
-      'user:msg-789': 'chain-ghi'
+      'user:msg-789': 'chain-ghi',
     }
 
     // 创建 composable
@@ -104,7 +104,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
     expect(mockSession.setMessageChainMap).toHaveBeenCalledWith({
       'msg-123': 'chain-abc',
       'msg-456': 'chain-def',
-      'msg-789': 'chain-ghi'
+      'msg-789': 'chain-ghi',
     })
   })
 
@@ -112,7 +112,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
     // 准备新格式数据
     mockSession.messageChainMap = {
       'msg-123': 'chain-abc',
-      'msg-456': 'chain-def'
+      'msg-456': 'chain-def',
     }
 
     const composable = useConversationOptimization(
@@ -140,7 +140,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
       'system:msg-old-1': 'chain-old-1',
       'msg-new-1': 'chain-new-1',
       'user:msg-old-2': 'chain-old-2',
-      'msg-new-2': 'chain-new-2'
+      'msg-new-2': 'chain-new-2',
     }
 
     const composable = useConversationOptimization(
@@ -165,7 +165,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
       'msg-old-1': 'chain-old-1',
       'msg-new-1': 'chain-new-1',
       'msg-old-2': 'chain-old-2',
-      'msg-new-2': 'chain-new-2'
+      'msg-new-2': 'chain-new-2',
     })
   })
 
@@ -192,7 +192,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
 
   it('应该忽略非 system 模式的迁移（只在 Pro-system 模式触发）', () => {
     mockSession.messageChainMap = {
-      'system:msg-123': 'chain-abc'
+      'system:msg-123': 'chain-abc',
     }
 
     // 切换到 user 模式
@@ -219,10 +219,10 @@ describe('messageChainMap 迁移逻辑测试', () => {
   it('应该使用严格前缀匹配，不误迁移包含 : 的 messageId', () => {
     // 准备混合数据：包含旧格式、新格式、以及包含 : 但不是旧格式的 messageId
     mockSession.messageChainMap = {
-      'system:msg-123': 'chain-abc',         // 旧格式，应迁移
-      'msg-with:colon': 'chain-def',         // 新格式但包含 :，不应迁移
-      'random:prefix:msg': 'chain-ghi',      // 新格式但包含多个 :，不应迁移
-      'user:msg-456': 'chain-jkl'            // 旧格式，应迁移
+      'system:msg-123': 'chain-abc', // 旧格式，应迁移
+      'msg-with:colon': 'chain-def', // 新格式但包含 :，不应迁移
+      'random:prefix:msg': 'chain-ghi', // 新格式但包含多个 :，不应迁移
+      'user:msg-456': 'chain-jkl', // 旧格式，应迁移
     }
 
     const composable = useConversationOptimization(
@@ -253,7 +253,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
       'msg-123': 'chain-abc',
       'msg-with:colon': 'chain-def',
       'random:prefix:msg': 'chain-ghi',
-      'msg-456': 'chain-jkl'
+      'msg-456': 'chain-jkl',
     })
   })
 
@@ -264,7 +264,7 @@ describe('messageChainMap 迁移逻辑测试', () => {
       'user:msg-2': 'chain-2',
       'basic:msg-3': 'chain-3',
       'pro:msg-4': 'chain-4',
-      'image:msg-5': 'chain-5'
+      'image:msg-5': 'chain-5',
     }
 
     const composable = useConversationOptimization(

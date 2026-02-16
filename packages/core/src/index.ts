@@ -23,8 +23,14 @@ export * from './config'
 // 导出模板相关
 export { TemplateManager, createTemplateManager } from './services/template/manager'
 export { TemplateProcessor } from './services/template/processor'
-export { TemplateLanguageService, createTemplateLanguageService } from './services/template/languageService'
-export type { BuiltinTemplateLanguage, ITemplateLanguageService } from './services/template/languageService'
+export {
+  TemplateLanguageService,
+  createTemplateLanguageService,
+} from './services/template/languageService'
+export type {
+  BuiltinTemplateLanguage,
+  ITemplateLanguageService,
+} from './services/template/languageService'
 export * from './services/template/types'
 export { StaticLoader } from './services/template/static-loader'
 export * from './services/template/errors'
@@ -51,7 +57,7 @@ export type {
   TextProvider,
   TextModel,
   TextModelConfig,
-  ConnectionSchema
+  ConnectionSchema,
 } from './services/llm/types'
 export { LLMService, createLLMService } from './services/llm/service'
 export { TextAdapterRegistry, createTextAdapterRegistry } from './services/llm/adapters/registry'
@@ -71,8 +77,14 @@ export { ElectronConfigManager, isElectronRenderer } from './services/model/elec
 // 导出图像模型管理与服务
 export { ImageModelManager, createImageModelManager } from './services/image-model/manager'
 export { ImageService, createImageService } from './services/image/service'
-export { ImageAdapterRegistry as _ImageAdapterRegistry, createImageAdapterRegistry } from './services/image/adapters/registry'
-export { ElectronImageServiceProxy, ElectronImageModelManagerProxy } from './services/image/electron-proxy'
+export {
+  ImageAdapterRegistry as _ImageAdapterRegistry,
+  createImageAdapterRegistry,
+} from './services/image/adapters/registry'
+export {
+  ElectronImageServiceProxy,
+  ElectronImageModelManagerProxy,
+} from './services/image/electron-proxy'
 // 导出图像服务类型,将 ConnectionSchema 重命名为 ImageConnectionSchema 避免与 model/types 中的 ConnectionSchema 冲突
 export type {
   ImageProvider,
@@ -94,7 +106,7 @@ export type {
   ImageRef,
   FullImageData,
   ImageStorageConfig,
-  IImageStorageService
+  IImageStorageService,
 } from './services/image/types'
 // 导出图像存储相关函数和类型
 export { isImageRef, createImageRef } from './services/image/types'
@@ -143,14 +155,26 @@ export {
   clearCustomModelEnvCache,
   CUSTOM_API_PATTERN,
   SUFFIX_PATTERN,
-  MAX_SUFFIX_LENGTH
+  MAX_SUFFIX_LENGTH,
 } from './utils/environment'
-export type { CustomModelEnvConfig, ValidatedCustomModelEnvConfig, ValidationResult } from './utils/environment'
-export type { LLMValidationResult, ValidationError, ValidationWarning } from './services/model/validation'
+export type {
+  CustomModelEnvConfig,
+  ValidatedCustomModelEnvConfig,
+  ValidationResult,
+} from './utils/environment'
+export type {
+  LLMValidationResult,
+  ValidationError,
+  ValidationWarning,
+} from './services/model/validation'
 export { validateCustomModelConfig } from './utils/environment'
 
 // 导出IPC序列化工具
-export { safeSerializeForIPC, debugIPCSerializability, safeSerializeArgs } from './utils/ipc-serialization'
+export {
+  safeSerializeForIPC,
+  debugIPCSerializability,
+  safeSerializeArgs,
+} from './utils/ipc-serialization'
 export { applyPatchOperationsToText } from './utils/patch-plan'
 export type { ApplyPatchResult, ApplyPatchReportItem, ApplyPatchStatus } from './utils/patch-plan'
 
@@ -163,7 +187,7 @@ export {
   FUNCTION_MODEL_KEYS,
   getModeModelKey,
   ALL_STORAGE_KEYS,
-  ALL_STORAGE_KEYS_ARRAY
+  ALL_STORAGE_KEYS_ARRAY,
 } from './constants/storage-keys'
 
 // 导出约束常量
@@ -175,7 +199,7 @@ export {
   IMAGE_CONSTRAINTS,
   SESSION_CONSTRAINTS,
   API_CONSTRAINTS,
-  CORE_CONSTRAINTS
+  CORE_CONSTRAINTS,
 } from './constants/constraints'
 export type {
   CoreServiceKey,
@@ -183,14 +207,14 @@ export type {
   TemplateSelectionKey,
   ImageModeKey,
   FunctionModelKey,
-  StorageKey
+  StorageKey,
 } from './constants/storage-keys'
 
 // 导出模板常量 - Flexy loves modularity!
 export {
   BUILTIN_TEMPLATE_TIMESTAMP,
   IMAGE_TEMPLATE_TIMESTAMP,
-  DJB2_HASH_SEED
+  DJB2_HASH_SEED,
 } from './constants/templates'
 
 // UI function-mode types are defined alongside prompt service types.
@@ -280,9 +304,15 @@ export { EvaluationService, createEvaluationService } from './services/evaluatio
 // 🆕 导出变量提取服务相关
 export * from './services/variable-extraction/types'
 export * from './services/variable-extraction/errors'
-export { VariableExtractionService, createVariableExtractionService } from './services/variable-extraction/service'
+export {
+  VariableExtractionService,
+  createVariableExtractionService,
+} from './services/variable-extraction/service'
 
 // 🆕 导出变量值生成服务相关
 export * from './services/variable-value-generation/types'
 export * from './services/variable-value-generation/errors'
-export { VariableValueGenerationService, createVariableValueGenerationService } from './services/variable-value-generation/service'
+export {
+  VariableValueGenerationService,
+  createVariableValueGenerationService,
+} from './services/variable-value-generation/service'

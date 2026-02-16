@@ -11,7 +11,7 @@ import type {
   ContextBundle,
   ImportMode,
   ImportResult,
-  ContextMode
+  ContextMode,
 } from '@prompt-optimizer/core'
 
 // 基础响应类型
@@ -87,13 +87,22 @@ interface ShellAPI {
 
 // 事件监听API
 interface EventAPI {
-  on<K extends keyof ElectronEventMap>(channel: K, listener: (...args: ElectronEventMap[K]) => void): void
+  on<K extends keyof ElectronEventMap>(
+    channel: K,
+    listener: (...args: ElectronEventMap[K]) => void
+  ): void
   on(channel: string, listener: (...args: unknown[]) => void): void
 
-  off<K extends keyof ElectronEventMap>(channel: K, listener: (...args: ElectronEventMap[K]) => void): void
+  off<K extends keyof ElectronEventMap>(
+    channel: K,
+    listener: (...args: ElectronEventMap[K]) => void
+  ): void
   off(channel: string, listener: (...args: unknown[]) => void): void
 
-  once<K extends keyof ElectronEventMap>(channel: K, listener: (...args: ElectronEventMap[K]) => void): void
+  once<K extends keyof ElectronEventMap>(
+    channel: K,
+    listener: (...args: ElectronEventMap[K]) => void
+  ): void
   once(channel: string, listener: (...args: unknown[]) => void): void
 }
 
@@ -118,9 +127,21 @@ interface LlmAPI {
   testConnection(provider: string): Promise<void>
   sendMessage(messages: unknown[], provider: string): Promise<string>
   sendMessageStructured(messages: unknown[], provider: string): Promise<unknown>
-  sendMessageStream(messages: unknown[], provider: string, callbacks: LlmStreamCallbacks): Promise<void>
-  sendMessageStreamWithTools(messages: unknown[], provider: string, tools: unknown[], callbacks: LlmStreamCallbacks): Promise<void>
-  fetchModelList(provider: string, customConfig?: unknown): Promise<Array<{ value: string; label: string }>>
+  sendMessageStream(
+    messages: unknown[],
+    provider: string,
+    callbacks: LlmStreamCallbacks
+  ): Promise<void>
+  sendMessageStreamWithTools(
+    messages: unknown[],
+    provider: string,
+    tools: unknown[],
+    callbacks: LlmStreamCallbacks
+  ): Promise<void>
+  fetchModelList(
+    provider: string,
+    customConfig?: unknown
+  ): Promise<Array<{ value: string; label: string }>>
 }
 
 // 图像生成API
@@ -271,5 +292,5 @@ export type {
   DownloadProgress,
   UpdateInfo,
   VersionCheckResult,
-  DownloadResult
+  DownloadResult,
 }

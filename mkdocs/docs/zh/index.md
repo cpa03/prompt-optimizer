@@ -25,16 +25,19 @@
 ## 🎬 功能演示
 
 ### 1. 角色扮演对话：激发小模型潜力
+
 在追求成本效益的生产或注重隐私的本地化场景中，结构化的提示词能让小模型稳定地进入角色，提供沉浸式、高一致性的角色扮演体验。
 
 ![角色扮演演示](../assets/images/demo/cat-maid-roleplay.png)
 
-### 2. 知识图谱提取：保障生产环境的稳定性  
+### 2. 知识图谱提取：保障生产环境的稳定性
+
 在需要程序化处理的生产环境中，高质量的提示词能显著降低对模型智能程度的要求，使得更经济的小模型也能稳定输出可靠的指定格式。
 
 ![知识图谱提取演示](../assets/images/demo/knowledge-graph-extractor.png)
 
 ### 3. 诗歌写作：辅助创意探索与需求定制
+
 帮助用户将模糊的灵感细化为具体需求，辅助探索、发掘并精确表达创意，与AI共创独一无二的作品。
 
 ![诗歌创作演示](../assets/images/demo/poetry-writing.png)
@@ -42,11 +45,13 @@
 ## 🚀 快速开始
 
 ### 在线版本（推荐）
+
 直接访问：[https://prompt.always200.com](https://prompt.always200.com)
 
 项目是纯前端应用，所有数据只存储在浏览器本地，不会上传至任何服务器，因此直接使用在线版本也是安全可靠的。
 
 ### 其他使用方式
+
 - **🌐 [Web版部署](deployment/web.md)** - Vercel一键部署或Docker部署
 - **🖥️ [桌面应用](deployment/desktop.md)** - 下载安装包，无跨域限制
 - **🐳 [Docker部署](deployment/docker-basic.md)** - 容器化部署，支持MCP服务
@@ -55,10 +60,12 @@
 ## 📚 文档导航
 
 ### 👤 用户指南
+
 - **[🚀 快速开始](user/quick-start.md)** - 5分钟快速上手指南
 - **[❓ 帮助支持](help/common-questions.md)** - 问题解决和故障排除
 
-### 🚀 部署指南  
+### 🚀 部署指南
+
 - **[🌐 Web版部署](deployment/web.md)** - 在线版使用和Vercel部署
 - **[🖥️ 桌面应用](deployment/desktop.md)** - 桌面应用安装和使用
 - **[🐳 Docker部署](deployment/docker-basic.md)** - Docker运行和环境配置
@@ -67,13 +74,15 @@
 ### ⚙️ 高级配置
 
 ### 💡 使用案例
+
 - **[🎭 演示案例](guide/media.md)** - 功能演示和媒体资源
 
 ## 🤝 参与贡献
 
 我们欢迎各种形式的贡献：
+
 - 🐛 报告问题
-- 💡 提出功能建议  
+- 💡 提出功能建议
 - 📝 改进文档
 - 🔧 提交代码
 

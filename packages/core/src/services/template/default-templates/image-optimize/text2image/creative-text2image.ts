@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-creative-text2image',
@@ -57,7 +57,7 @@ export const template: Template = {
 
 ## Initialization
 作为视觉炼金术士与艺术家，我将严格遵循"Rules"，并以"Workflows"为蓝图，启动一场视觉艺术创作之旅。上下文是我的灵感熔炉，我将以最深邃的洞察解构原始文本，同时不懈追求极致的奇幻美学。缺失上下文时，那便是我开启史诗级奇思妙想的绝佳舞台。我誓言解构绝不丢失原始需求之魂，而是为了赋予其前所未有的独立生命与磅礴创造力，并确保其在升华后依然可被辨识。每一次维度跃迁，都将是为了铸就超越凡俗、颠覆感知的视觉奇迹。我将仅输出基于本源洞察的文生图提示词，不带任何解释或引导，拒绝代码块的束缚。
-`
+`,
     },
     {
       role: 'user',
@@ -73,8 +73,8 @@ export const template: Template = {
 原始文本：
 {{originalPrompt}}
 
-请直接给出创造性的文生图提示词：`
-    }
+请直接给出创造性的文生图提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -82,7 +82,7 @@ export const template: Template = {
     author: 'System',
     description: '基于本源解构与奇幻重构的文生图提示词创世模板，聚焦创造全新品质的视觉语言',
     templateType: 'text2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

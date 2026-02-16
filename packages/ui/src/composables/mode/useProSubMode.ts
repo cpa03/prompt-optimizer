@@ -39,7 +39,7 @@ export function useProSubMode(services: Ref<AppServices | null>): UseProSubModeA
     singleton = {
       mode: ref<ProSubMode>(DEFAULT_PRO_SUB_MODE),
       initialized: false,
-      initializing: null
+      initializing: null,
     }
   }
 
@@ -54,7 +54,10 @@ export function useProSubMode(services: Ref<AppServices | null>): UseProSubModeA
     singleton!.initializing = (async () => {
       try {
         // 读取 pro-sub-mode；若不存在，返回默认值
-        const saved = await getPreference<ProSubMode>(UI_SETTINGS_KEYS.PRO_SUB_MODE, DEFAULT_PRO_SUB_MODE)
+        const saved = await getPreference<ProSubMode>(
+          UI_SETTINGS_KEYS.PRO_SUB_MODE,
+          DEFAULT_PRO_SUB_MODE
+        )
 
         const normalized = normalizeLegacyProSubMode(saved)
         singleton!.mode.value = normalized
@@ -93,6 +96,6 @@ export function useProSubMode(services: Ref<AppServices | null>): UseProSubModeA
     setProSubMode,
     switchToMulti,
     switchToVariable,
-    ensureInitialized
+    ensureInitialized,
   }
 }

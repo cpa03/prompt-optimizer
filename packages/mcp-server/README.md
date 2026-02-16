@@ -64,6 +64,7 @@ pnpm mcp:test
 开发时需要在项目根目录配置 `.env.local` 文件。详细的配置说明请参考 [用户指南](../../docs/user/mcp-server.md#环境变量配置)。
 
 开发环境最小配置示例：
+
 ```bash
 # 至少配置一个 API 密钥
 VITE_OPENAI_API_KEY=your-openai-key
@@ -95,8 +96,6 @@ MCP_LOG_LEVEL=error pnpm start
 - `info` - 一般信息（服务启动、配置等）
 - `warn` - 警告信息（非致命问题）
 - `error` - 错误信息（需要关注的问题）
-
-
 
 ## 开发
 
@@ -131,6 +130,7 @@ npx @modelcontextprotocol/inspector
 ```
 
 然后在 Inspector Web UI 中：
+
 1. 选择传输方式：`Streamable HTTP`
 2. 服务器 URL：`http://localhost:3000/mcp`
 3. 点击 "Connect" 连接服务器
@@ -141,11 +141,13 @@ npx @modelcontextprotocol/inspector
 **重要提示**：MCP 协议不是简单的 REST API，不能直接用 curl 测试。
 
 **推荐的测试方式**：
+
 1. **MCP Inspector**（官方工具）- 最佳选择
 2. **Claude Desktop** - 实际使用场景
 3. **自定义 MCP 客户端** - 使用 `@modelcontextprotocol/sdk`
 
 **为什么不能用 curl**：
+
 - MCP 使用 JSON-RPC 2.0 协议
 - 需要特殊的握手和初始化过程
 - HTTP 传输使用流式连接，不是简单的请求-响应
@@ -159,6 +161,7 @@ npx @modelcontextprotocol/inspector
 ## 架构设计
 
 此 MCP 服务器遵循零侵入设计原则：
+
 - 仅使用现有 Core 模块 API，无需修改
 - 采用内存存储实现无状态操作
 - 提供 MCP 和 Core 格式之间的参数适配

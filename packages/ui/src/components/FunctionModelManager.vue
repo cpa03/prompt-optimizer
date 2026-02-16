@@ -62,14 +62,14 @@ if (!services) {
 }
 
 // 注入 App 层统一的 openModelManager 接口（如果存在）
-const appOpenModelManager = inject<
-  ((tab?: 'text' | 'image' | 'function') => void) | null
->('openModelManager', null)
+const appOpenModelManager = inject<((tab?: 'text' | 'image' | 'function') => void) | null>(
+  'openModelManager',
+  null
+)
 
 // 统一转为 Ref 格式
-const servicesRef: Ref<AppServices | null> = 'value' in services
-  ? (services as Ref<AppServices | null>)
-  : ref(services as AppServices)
+const servicesRef: Ref<AppServices | null> =
+  'value' in services ? (services as Ref<AppServices | null>) : ref(services as AppServices)
 
 // 使用功能模型管理器（单例）
 const functionModelManager = useFunctionModelManager(servicesRef)
@@ -81,7 +81,7 @@ const modelOptions = ref<ModelSelectOption[]>([])
 // 获取选中模型的详细信息（用于显示标签）
 const selectedModelInfo = computed(() => {
   if (!evaluationModel.value) return null
-  const option = modelOptions.value.find(opt => opt.value === evaluationModel.value)
+  const option = modelOptions.value.find((opt) => opt.value === evaluationModel.value)
   if (!option?.raw) return null
   return {
     provider: option.raw.providerMeta?.name || null,
@@ -116,16 +116,15 @@ const refreshModels = async () => {
 }
 
 // 处理模型变化
-const handleModelChange = async (
-  newValue: string | number | (string | number)[] | null
-) => {
-  const nextValue = typeof newValue === 'string'
-    ? newValue
-    : Array.isArray(newValue)
-      ? String(newValue[0] ?? '')
-      : newValue === null
-        ? ''
-        : String(newValue)
+const handleModelChange = async (newValue: string | number | (string | number)[] | null) => {
+  const nextValue =
+    typeof newValue === 'string'
+      ? newValue
+      : Array.isArray(newValue)
+        ? String(newValue[0] ?? '')
+        : newValue === null
+          ? ''
+          : String(newValue)
 
   await setEvaluationModel(nextValue)
 }

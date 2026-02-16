@@ -21,30 +21,30 @@ const IPC_EVENTS = {
   UPDATE_NOT_AVAILABLE: 'update-not-available',
   UPDATE_DOWNLOAD_PROGRESS: 'update-download-progress',
   UPDATE_DOWNLOADED: 'update-downloaded',
-  UPDATE_ERROR: 'update-error'
-};
+  UPDATE_ERROR: 'update-error',
+}
 
 // 偏好设置键名常量
 const PREFERENCE_KEYS = {
-  IGNORED_VERSIONS: 'updater.ignoredVersions' // 多版本忽略存储
-};
+  IGNORED_VERSIONS: 'updater.ignoredVersions', // 多版本忽略存储
+}
 
 // 默认配置
 const DEFAULT_CONFIG = {
   autoDownload: false,
   checkInterval: 24 * 60 * 60 * 1000, // 24小时
-  timeout: 30000 // 30秒
-};
+  timeout: 30000, // 30秒
+}
 
 // 端口配置 (与packages/core/src/config/ports.ts保持一致)
 // 从环境变量读取，提供默认值
-const WEB_DEV_PORT = parseInt(process.env.VITE_WEB_PORT, 10) || 18181;
+const WEB_DEV_PORT = parseInt(process.env.VITE_WEB_PORT, 10) || 18181
 
 const PORTS = {
   web: {
     dev: WEB_DEV_PORT,
-  }
-};
+  },
+}
 
 // 超时配置 (与packages/core/src/config/timeouts.ts保持一致)
 const TIMEOUTS = {
@@ -58,12 +58,12 @@ const TIMEOUTS = {
   service: {
     saveOperation: 5000,
     emergencyExit: 10000,
-  }
-};
+  },
+}
 
 // 最大保存时间和应急退出时间
-const MAX_SAVE_TIME = TIMEOUTS.service.saveOperation;
-const EMERGENCY_EXIT_TIME = TIMEOUTS.service.emergencyExit;
+const MAX_SAVE_TIME = TIMEOUTS.service.saveOperation
+const EMERGENCY_EXIT_TIME = TIMEOUTS.service.emergencyExit
 
 module.exports = {
   IPC_EVENTS,
@@ -72,5 +72,5 @@ module.exports = {
   PORTS,
   TIMEOUTS,
   MAX_SAVE_TIME,
-  EMERGENCY_EXIT_TIME
-};
+  EMERGENCY_EXIT_TIME,
+}

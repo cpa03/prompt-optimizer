@@ -65,11 +65,7 @@ describe('EvaluationService', () => {
       }),
     }
 
-    evaluationService = new EvaluationService(
-      mockLLMService,
-      mockModelManager,
-      mockTemplateManager
-    )
+    evaluationService = new EvaluationService(mockLLMService, mockModelManager, mockTemplateManager)
   })
 
   afterEach(() => {
@@ -99,9 +95,7 @@ describe('EvaluationService', () => {
           mode: defaultModeConfig,
         }
 
-        await expect(evaluationService.evaluate(request)).rejects.toThrow(
-          EvaluationValidationError
-        )
+        await expect(evaluationService.evaluate(request)).rejects.toThrow(EvaluationValidationError)
       })
 
       it('should NOT require testResult for prompt-only type', async () => {
@@ -142,9 +136,7 @@ describe('EvaluationService', () => {
           mode: defaultModeConfig,
         }
 
-        await expect(evaluationService.evaluate(request)).rejects.toThrow(
-          EvaluationValidationError
-        )
+        await expect(evaluationService.evaluate(request)).rejects.toThrow(EvaluationValidationError)
       })
 
       it('should throw error when iterateRequirement is empty for prompt-iterate', async () => {
@@ -307,9 +299,7 @@ describe('EvaluationService', () => {
         mode: defaultModeConfig,
       }
 
-      await expect(evaluationService.evaluate(request)).rejects.toThrow(
-        EvaluationModelError
-      )
+      await expect(evaluationService.evaluate(request)).rejects.toThrow(EvaluationModelError)
     })
   })
 
@@ -325,9 +315,7 @@ describe('EvaluationService', () => {
         mode: defaultModeConfig,
       }
 
-      await expect(evaluationService.evaluate(request)).rejects.toThrow(
-        EvaluationTemplateError
-      )
+      await expect(evaluationService.evaluate(request)).rejects.toThrow(EvaluationTemplateError)
     })
   })
 
@@ -340,7 +328,9 @@ describe('EvaluationService', () => {
       mockLLMService.sendMessageStream.mockImplementation(
         async (_messages: any, _model: any, handlers: any) => {
           handlers.onToken('{"score":')
-          handlers.onToken('{"overall":85,"dimensions":[{"key":"test","label":"Test","score":85}]}}')
+          handlers.onToken(
+            '{"overall":85,"dimensions":[{"key":"test","label":"Test","score":85}]}}'
+          )
           handlers.onComplete()
         }
       )

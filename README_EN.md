@@ -56,6 +56,7 @@ Prompt Optimizer is a powerful AI prompt optimization tool that helps you write 
 ## 🚀 Advanced Features
 
 ### Image Generation Mode
+
 - 🖼️ **Text-to-Image (T2I)**: Generate images from text prompts
 - 🎨 **Image-to-Image (I2I)**: Transform and optimize images based on local files
 - 🔌 **Multi-model Support**: Integrated with mainstream image generation models like Gemini, Seedream
@@ -63,6 +64,7 @@ Prompt Optimizer is a powerful AI prompt optimization tool that helps you write 
 - 📥 **Preview & Download**: Real-time preview of generated results with download support
 
 ### Advanced Testing Mode
+
 - 📊 **Context Variable Management**: Custom variables, batch replacement, variable preview
 - 💬 **Multi-turn Conversation Testing**: Simulate real conversation scenarios to test prompt performance in multi-turn interactions
 - 🛠️ **Function Calling Support**: Function Calling integration with support for OpenAI and Gemini tool calling
@@ -79,36 +81,43 @@ Direct access: [https://prompt.always200.com](https://prompt.always200.com)
 This is a pure frontend project with all data stored locally in your browser and never uploaded to any server, making the online version both safe and reliable to use.
 
 ### 2. Vercel Deployment
+
 Method 1: One-click deployment to your own Vercel:
-   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flinshenkx%2Fprompt-optimizer)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Flinshenkx%2Fprompt-optimizer)
 
 Method 2: Fork the project and import to Vercel (Recommended):
-   - First fork the project to your GitHub account
-   - Then import the project to Vercel
-   - This allows tracking of source project updates for easy syncing of new features and fixes
+
+- First fork the project to your GitHub account
+- Then import the project to Vercel
+- This allows tracking of source project updates for easy syncing of new features and fixes
 - Configure environment variables:
   - `ACCESS_PASSWORD`: Set access password to enable access restriction
   - `VITE_OPENAI_API_KEY` etc.: Configure API keys for various AI service providers
-  
+
 For more detailed deployment steps and important notes, please check:
+
 - [Vercel Deployment Guide](docs/user/deployment/vercel_en.md)
 
 ### 3. Download Desktop Application
+
 Download the latest version from [GitHub Releases](https://github.com/linshenkx/prompt-optimizer/releases). We provide both **installer** and **archive** formats for each platform.
 
 - **Installer (Recommended)**: Such as `*.exe`, `*.dmg`, `*.AppImage`, etc. **Strongly recommended as it supports automatic updates**.
 - **Archive**: Such as `*.zip`. Extract and use, but cannot auto-update.
 
 **Core Advantages of Desktop Application**:
+
 - ✅ **No CORS Limitations**: As a native desktop application, it completely eliminates browser Cross-Origin Resource Sharing (CORS) issues. This means you can directly connect to any AI service provider's API, including locally deployed Ollama or commercial APIs with strict security policies, for the most complete and stable functional experience.
 - ✅ **Automatic Updates**: Versions installed through installers (like `.exe`, `.dmg`) can automatically check and update to the latest version.
 - ✅ **Independent Operation**: No browser dependency, providing faster response and better performance.
 
 ### 4. Install Chrome Extension
+
 1. Install from Chrome Web Store (may not be the latest version due to approval delays): [Chrome Web Store](https://chromewebstore.google.com/detail/prompt-optimizer/cakkkhboolfnadechdlgdcnjammejlna)
 2. Click the icon to open the Prompt Optimizer
 
 ### 5. Docker Deployment
+
 <details>
 <summary>Click to view Docker deployment commands</summary>
 ```bash
@@ -116,14 +125,16 @@ Download the latest version from [GitHub Releases](https://github.com/linshenkx/
 docker run -d -p 8081:80 --restart unless-stopped --name prompt-optimizer linshen/prompt-optimizer
 
 # Run container (with API key configuration and password protection)
+
 docker run -d -p 8081:80 \
-  -e VITE_OPENAI_API_KEY=your_key \
-  -e ACCESS_USERNAME=your_username \  # Optional, defaults to "admin"
-  -e ACCESS_PASSWORD=your_password \  # Set access password
-  --restart unless-stopped \
-  --name prompt-optimizer \
-  linshen/prompt-optimizer
-```
+ -e VITE_OPENAI_API_KEY=your_key \
+ -e ACCESS_USERNAME=your_username \ # Optional, defaults to "admin"
+-e ACCESS_PASSWORD=your_password \ # Set access password
+--restart unless-stopped \
+ --name prompt-optimizer \
+ linshen/prompt-optimizer
+
+````
 </details>
 
 ### 6. Docker Compose Deployment
@@ -157,10 +168,12 @@ docker compose logs -f
 # 5. Access the service
 Web Interface: http://localhost:8081
 MCP Server: http://localhost:8081/mcp
-```
+````
+
 </details>
 
 You can also directly edit the docker-compose.yml file to customize your configuration:
+
 <details>
 <summary>Click to view docker-compose.yml example</summary>
 
@@ -172,7 +185,7 @@ services:
     container_name: prompt-optimizer
     restart: unless-stopped
     ports:
-      - "8081:80"  # Web application port (MCP server accessible via /mcp path)
+      - '8081:80' # Web application port (MCP server accessible via /mcp path)
     environment:
       - VITE_OPENAI_API_KEY=your_openai_key
       - VITE_GEMINI_API_KEY=your_gemini_key
@@ -180,9 +193,11 @@ services:
       - ACCESS_USERNAME=admin
       - ACCESS_PASSWORD=your_password
 ```
+
 </details>
 
 ### 7. MCP Server Usage Instructions
+
 <details>
 <summary>Click to view MCP Server usage instructions</summary>
 
@@ -205,6 +220,7 @@ MCP_LOG_LEVEL=info                 # Log level
 In a Docker environment, the MCP Server runs alongside the web application. You can access the MCP service through the same port as the web application at the `/mcp` path.
 
 For example, if you map the container's port 80 to port 8081 on the host:
+
 ```bash
 docker run -d -p 8081:80 \
   -e VITE_OPENAI_API_KEY=your-openai-key \
@@ -246,6 +262,7 @@ Make sure to replace `localhost:8081` with the actual address and port where you
 - **iterate-prompt**: Iteratively improve mature prompts based on specific requirements
 
 For more detailed information, please refer to the [MCP Server User Guide](docs/user/mcp-server_en.md).
+
 </details>
 
 ## ⚙️ API Key Configuration
@@ -254,6 +271,7 @@ For more detailed information, please refer to the [MCP Server User Guide](docs/
 <summary>Click to view API key configuration methods</summary>
 
 ### Method 1: Via Interface (Recommended)
+
 1. Click the "⚙️Settings" button in the upper right corner
 2. Select the "Model Management" tab
 3. Click on the model you need to configure (such as OpenAI, Gemini, DeepSeek, etc.)
@@ -265,6 +283,7 @@ Supported models: OpenAI, Gemini, DeepSeek, Zhipu AI, SiliconFlow, Custom API (O
 In addition to API keys, you can configure advanced LLM parameters for each model individually. These parameters are configured through a field called `llmParams`, which allows you to specify any parameters supported by the LLM SDK in key-value pairs for fine-grained control over model behavior.
 
 **Advanced LLM Parameter Configuration Examples:**
+
 - **OpenAI/Compatible APIs**: `{"temperature": 0.7, "max_tokens": 4096, "timeout": 60000}`
 - **Gemini**: `{"temperature": 0.8, "maxOutputTokens": 2048, "topP": 0.95}`
 - **DeepSeek**: `{"temperature": 0.5, "top_p": 0.9, "frequency_penalty": 0.1}`
@@ -272,6 +291,7 @@ In addition to API keys, you can configure advanced LLM parameters for each mode
 For more detailed information about `llmParams` configuration, please refer to the [LLM Parameters Configuration Guide](docs/developer/llm-params-guide.md).
 
 ### Method 2: Via Environment Variables
+
 Configure environment variables through the `-e` parameter when deploying with Docker:
 
 ```bash
@@ -292,6 +312,7 @@ Configure environment variables through the `-e` parameter when deploying with D
 </details>
 
 ## Local Development
+
 For detailed documentation, see [Development Documentation](dev.md)
 
 <details>
@@ -310,6 +331,7 @@ pnpm dev               # Main development command: build core/ui and run web app
 pnpm dev:web          # Run web app only
 pnpm dev:fresh        # Complete reset and restart development environment
 ```
+
 </details>
 
 ## 🗺️ Roadmap
@@ -356,14 +378,18 @@ For detailed project status, see [Project Status Document](docs/project-status.m
 ### API Connection Issues
 
 #### Q1: Why can't I connect to the model service after configuring the API key?
+
 **A**: Most connection failures are caused by **Cross-Origin Resource Sharing (CORS)** issues. As this project is a pure frontend application, browsers block direct access to API services from different origins for security reasons. Model services will reject direct requests from browsers if CORS policies are not correctly configured.
 
 #### Q2: How to solve Ollama connection issues?
+
 **A**: Ollama fully supports the OpenAI standard interface, just configure the correct CORS policy:
+
 1. Set environment variable `OLLAMA_ORIGINS=*` to allow requests from any origin
 2. If issues persist, set `OLLAMA_HOST=0.0.0.0:11434` to listen on any IP address
 
 #### Q3: How to solve CORS issues with commercial APIs (such as Nvidia's DS API, ByteDance's Volcano API)?
+
 **A**: These platforms typically have strict CORS restrictions. Recommended solutions:
 
 1. **Use Desktop Application** (Most Recommended)
@@ -381,10 +407,12 @@ For detailed project status, see [Project Status Document](docs/project-status.m
 **Note**: All web versions (including online version, Vercel deployment, Docker deployment) are pure frontend applications and subject to browser CORS restrictions. Only the desktop version or using an API proxy service can solve CORS issues.
 
 #### Q4: I have correctly configured CORS policies for my local model (like Ollama), why can't I still connect using the online version?
+
 **A**: This is caused by the browser's **Mixed Content security policy**. For security reasons, browsers block secure HTTPS pages (like the online version) from sending requests to insecure HTTP addresses (like your local Ollama service).
 
 **Solutions**:
 To bypass this limitation, you need to have the application and API under the same protocol (e.g., both HTTP). We recommend the following approaches:
+
 1. **Use the desktop version**: Desktop applications have no browser restrictions and are the most stable and reliable way to connect to local models
 2. **Use Docker deployment (HTTP)**: Access via `http://localhost:8081`, both the app and local Ollama use HTTP
 3. **Use Chrome extension**: Extensions can bypass some security restrictions in certain situations
@@ -392,6 +420,7 @@ To bypass this limitation, you need to have the application and API under the sa
 ### macOS Desktop Application Issues
 
 #### Q5: macOS shows "damaged" or "unverified developer" when opening the app?
+
 **A**: This is because the application has not been signed with an Apple Developer certificate. Due to the high cost of Apple Developer accounts, the desktop application is currently unsigned.
 
 **Solution**:
@@ -409,7 +438,6 @@ After running the command, you can open the application normally.
 
 </details>
 
-
 ## 🤝 Contributing
 
 <details>
@@ -422,6 +450,7 @@ After running the command, you can open the application normally.
 5. Open a Pull Request
 
 Tip: When developing with Cursor tool, it is recommended to do the following before committing:
+
 1. Use the "CodeReview" rule for review
 2. Check according to the review report format:
    - Overall consistency of changes
@@ -450,12 +479,14 @@ This project is licensed under [AGPL-3.0](LICENSE).
 <summary>👉 Click for detailed explanation</summary>
 
 **What you can do:**
+
 - ✅ Personal use, learning, and research
 - ✅ Internal company use (not offering public services)
 - ✅ Modify code for commercial projects
 - ✅ Charge for products or services
 
 **What you must do:**
+
 - 📖 If distributing software or offering network services, disclose source code
 - 📝 Preserve original author's copyright notices
 
@@ -471,4 +502,4 @@ If this project is helpful to you, please consider giving it a Star ⭐️
 
 - Submit an Issue
 - Create a Pull Request
-- Join the discussion group 
+- Join the discussion group

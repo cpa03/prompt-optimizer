@@ -4,7 +4,7 @@
  * 对比原始提示词和优化后提示词的测试结果
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-system-compare',
@@ -97,7 +97,7 @@ improvements 应该是**通用性**改进，例如：
 - ✓ 增强输出格式约束
 - ✓ 明确角色定位和边界
 - ✓ 添加通用的质量要求
-- ✓ 优化指令的清晰度和完整性`
+- ✓ 优化指令的清晰度和完整性`,
     },
     {
       role: 'user',
@@ -124,8 +124,8 @@ improvements 应该是**通用性**改进，例如：
 
 ---
 
-请严格对比评估，判断优化是否有效，并给出针对系统提示词的通用性改进建议。`
-    }
+请严格对比评估，判断优化是否有效，并给出针对系统提示词的通用性改进建议。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -134,7 +134,7 @@ improvements 应该是**通用性**改进，例如：
     description: '对比原始提示词和优化后提示词的测试结果',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'compare', 'scoring', 'basic', 'system']
+    tags: ['evaluation', 'compare', 'scoring', 'basic', 'system'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

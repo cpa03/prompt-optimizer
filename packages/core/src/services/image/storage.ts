@@ -3,7 +3,7 @@ import type {
   FullImageData,
   ImageMetadata,
   IImageStorageService,
-  ImageStorageConfig
+  ImageStorageConfig,
 } from './types'
 import { CONSTRAINTS } from '../../config'
 import { IMAGE_CONSTRAINTS } from '../../constants/constraints'
@@ -26,7 +26,7 @@ class ImageDB extends Dexie {
     // Dexie 版本声明必须按升序（v1 -> v2），upgrade 回调挂在目标版本（v2）。
     // v1: 单表 images（metadata + base64 data）
     this.version(1).stores({
-      images: 'id, createdAt, accessedAt, sizeBytes, source'
+      images: 'id, createdAt, accessedAt, sizeBytes, source',
     })
 
     // v2: 拆分 metadata 和 data 表，提升统计性能；删除旧 images 表
@@ -34,9 +34,9 @@ class ImageDB extends Dexie {
       .stores({
         imageMetadata: 'id, createdAt, accessedAt, sizeBytes, source',
         imageData: 'id',
-        images: null
+        images: null,
       })
-      .upgrade(async tx => {
+      .upgrade(async (tx) => {
         // 迁移旧数据到新表结构（分批处理，避免一次性加载大量 base64 导致内存尖峰）
         const oldImages = tx.table<ImageRecordV1>('images')
         const newMetadata = tx.table<MetadataRecord>('imageMetadata')
@@ -58,13 +58,13 @@ class ImageDB extends Dexie {
               createdAt: record.createdAt,
               accessedAt: record.accessedAt,
               sizeBytes: record.sizeBytes,
-              source: record.source
+              source: record.source,
             }))
           )
           await newData.bulkPut(
             chunk.map((record: ImageRecordV1) => ({
               id: record.id,
-              data: record.data
+              data: record.data,
             }))
           )
 
@@ -92,7 +92,7 @@ interface ImageRecordV1 {
  */
 interface MetadataRecord {
   id: string
-  metadata: string          // JSON 序列化的 ImageMetadata
+  metadata: string // JSON 序列化的 ImageMetadata
   createdAt: number
   accessedAt: number
   sizeBytes: number
@@ -104,7 +104,7 @@ interface MetadataRecord {
  */
 interface DataRecord {
   id: string
-  data: string              // base64 编码的图像数据
+  data: string // base64 编码的图像数据
 }
 
 /**
@@ -114,7 +114,7 @@ const DEFAULT_CONFIG: ImageStorageConfig = {
   maxCacheSize: CONSTRAINTS.image.maxCacheSizeBytes,
   maxAge: IMAGE_CONSTRAINTS.STORAGE_MAX_AGE_MS,
   maxCount: IMAGE_CONSTRAINTS.STORAGE_MAX_COUNT,
-  autoCleanupThreshold: IMAGE_CONSTRAINTS.STORAGE_CLEANUP_THRESHOLD
+  autoCleanupThreshold: IMAGE_CONSTRAINTS.STORAGE_CLEANUP_THRESHOLD,
 }
 
 /**
@@ -148,15 +148,15 @@ export class ImageStorageService implements IImageStorageService {
       id: data.metadata.id,
       metadata: JSON.stringify(data.metadata),
       createdAt: data.metadata.createdAt,
-      accessedAt: now,  // 更新访问时间
+      accessedAt: now, // 更新访问时间
       sizeBytes: data.metadata.sizeBytes,
-      source: data.metadata.source
+      source: data.metadata.source,
     }
 
     // 准备数据记录
     const dataRecord: DataRecord = {
       id: data.metadata.id,
-      data: data.data
+      data: data.data,
     }
 
     // 同时保存到两个表（事务确保一致性）
@@ -180,7 +180,7 @@ export class ImageStorageService implements IImageStorageService {
     // 同时查询两个表
     const [metadataRecord, dataRecord] = await Promise.all([
       this.db.imageMetadata.get(id),
-      this.db.imageData.get(id)
+      this.db.imageData.get(id),
     ])
 
     if (!metadataRecord || !dataRecord) {
@@ -193,7 +193,7 @@ export class ImageStorageService implements IImageStorageService {
     // 反序列化
     return {
       metadata: JSON.parse(metadataRecord.metadata) as ImageMetadata,
-      data: dataRecord.data
+      data: dataRecord.data,
     }
   }
 
@@ -340,20 +340,20 @@ export class ImageStorageService implements IImageStorageService {
         count: 0,
         totalBytes: 0,
         oldestAt: null,
-        newestAt: null
+        newestAt: null,
       }
     }
 
     const count = allMetadata.length
     const totalBytes = allMetadata.reduce((sum, meta) => sum + meta.sizeBytes, 0)
-    const oldestAt = Math.min(...allMetadata.map(meta => meta.accessedAt))
-    const newestAt = Math.max(...allMetadata.map(meta => meta.accessedAt))
+    const oldestAt = Math.min(...allMetadata.map((meta) => meta.accessedAt))
+    const newestAt = Math.max(...allMetadata.map((meta) => meta.accessedAt))
 
     return {
       count,
       totalBytes,
       oldestAt,
-      newestAt
+      newestAt,
     }
   }
 
@@ -365,7 +365,7 @@ export class ImageStorageService implements IImageStorageService {
     // 只查询 metadata 表
     const allMetadata = await this.db.imageMetadata.toArray()
 
-    return allMetadata.map(record => JSON.parse(record.metadata) as ImageMetadata)
+    return allMetadata.map((record) => JSON.parse(record.metadata) as ImageMetadata)
   }
 
   /**
@@ -416,10 +416,7 @@ export class ImageStorageService implements IImageStorageService {
     const sizeThreshold = maxCacheSize * threshold
     const countThreshold = maxCount * threshold
 
-    if (
-      stats.totalBytes > sizeThreshold ||
-      stats.count > countThreshold
-    ) {
+    if (stats.totalBytes > sizeThreshold || stats.count > countThreshold) {
       await this.enforceQuota()
     }
   }
@@ -428,10 +425,7 @@ export class ImageStorageService implements IImageStorageService {
    * 获取最旧的 N 张图像 ID（按 accessedAt 排序）
    */
   private async getOldestImages(count: number): Promise<string[]> {
-    const images = await this.db.imageMetadata
-      .orderBy('accessedAt')
-      .limit(count)
-      .primaryKeys()
+    const images = await this.db.imageMetadata.orderBy('accessedAt').limit(count).primaryKeys()
 
     return images
   }
@@ -440,10 +434,7 @@ export class ImageStorageService implements IImageStorageService {
    * 获取最旧的一张图像元数据（完整记录）
    */
   private async getOldestMetadata(): Promise<MetadataRecord | null> {
-    const images = await this.db.imageMetadata
-      .orderBy('accessedAt')
-      .limit(1)
-      .toArray()
+    const images = await this.db.imageMetadata.orderBy('accessedAt').limit(1).toArray()
 
     return images[0] || null
   }

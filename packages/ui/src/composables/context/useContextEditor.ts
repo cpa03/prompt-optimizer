@@ -5,18 +5,18 @@
 
 import { ref, computed } from 'vue'
 
-import type { 
+import type {
   StandardPromptData,
   OpenAIRequest,
   ConversionResult,
   VariableSuggestion,
-  ConversationMessage
+  ConversationMessage,
 } from '../../types'
 import {
   PromptDataConverter,
   SmartVariableExtractor,
   DataImportExportManager,
-  EnhancedTemplateProcessor
+  EnhancedTemplateProcessor,
 } from '../../services'
 import { useToast } from '../ui/useToast'
 
@@ -30,7 +30,7 @@ export function useContextEditor() {
     if (!Array.isArray(record.messages)) return false
     return true
   }
-  
+
   // 服务实例
   const converter = new PromptDataConverter()
   const variableExtractor = new SmartVariableExtractor()
@@ -49,7 +49,7 @@ export function useContextEditor() {
         messageCount: 0,
         variableCount: 0,
         totalCharacters: 0,
-        avgMessageLength: 0
+        avgMessageLength: 0,
       }
     }
 
@@ -61,7 +61,7 @@ export function useContextEditor() {
       messageCount: messages.length,
       variableCount: Object.keys(variables).length,
       totalCharacters: totalChars,
-      avgMessageLength: messages.length > 0 ? Math.round(totalChars / messages.length) : 0
+      avgMessageLength: messages.length > 0 ? Math.round(totalChars / messages.length) : 0,
     }
   })
 
@@ -70,7 +70,7 @@ export function useContextEditor() {
     try {
       isLoading.value = true
       error.value = null
-      
+
       const result = converter.fromLangFuse(langfuseData)
       if (result.success && result.data) {
         currentData.value = result.data
@@ -79,7 +79,7 @@ export function useContextEditor() {
         error.value = result.error || '转换失败'
         toast.error(error.value)
       }
-      
+
       return result
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : '未知错误'
@@ -95,7 +95,7 @@ export function useContextEditor() {
     try {
       isLoading.value = true
       error.value = null
-      
+
       if (!isOpenAIRequest(openaiData)) {
         return { success: false, error: 'Invalid OpenAI request: missing model/messages' }
       }
@@ -108,7 +108,7 @@ export function useContextEditor() {
         error.value = result.error || '转换失败'
         toast.error(error.value)
       }
-      
+
       return result
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : '未知错误'
@@ -125,10 +125,10 @@ export function useContextEditor() {
     try {
       isLoading.value = true
       error.value = null
-      
+
       const format = importExportManager.detectFormat(data)
       let result: ConversionResult<StandardPromptData>
-      
+
       switch (format) {
         case 'langfuse':
           result = converter.fromLangFuse(data)
@@ -154,7 +154,7 @@ export function useContextEditor() {
         error.value = result.error || '导入失败'
         toast.error(error.value)
       }
-      
+
       return result
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : '未知错误'
@@ -200,7 +200,8 @@ export function useContextEditor() {
       if (!variables || typeof variables !== 'object' || Array.isArray(variables)) {
         metadataRecord.variables = {}
       }
-      (metadataRecord.variables as Record<string, string>)[variableName] = result.extractedVariable.value
+      ;(metadataRecord.variables as Record<string, string>)[variableName] =
+        result.extractedVariable.value
 
       toast.success(`变量 ${variableName} 提取成功`)
       return true
@@ -213,17 +214,27 @@ export function useContextEditor() {
 
   // 智能变量建议
   const coerceVariableCategory = (value: string): VariableSuggestion['category'] => {
-    const allowed: VariableSuggestion['category'][] = ['database', 'examples', 'rules', 'context', 'input', 'output', 'custom']
-    return allowed.includes(value as VariableSuggestion['category']) ? (value as VariableSuggestion['category']) : 'custom'
+    const allowed: VariableSuggestion['category'][] = [
+      'database',
+      'examples',
+      'rules',
+      'context',
+      'input',
+      'output',
+      'custom',
+    ]
+    return allowed.includes(value as VariableSuggestion['category'])
+      ? (value as VariableSuggestion['category'])
+      : 'custom'
   }
 
   const suggestVariableNames = (selectedText: string): VariableSuggestion[] => {
     try {
-      return variableExtractor.suggestVariableNames(selectedText).map(suggestion => ({
+      return variableExtractor.suggestVariableNames(selectedText).map((suggestion) => ({
         name: suggestion.name,
         confidence: suggestion.confidence,
         category: coerceVariableCategory(suggestion.category),
-        description: suggestion.reason
+        description: suggestion.reason,
       }))
     } catch (err) {
       console.error('变量建议生成失败:', err)
@@ -276,7 +287,7 @@ export function useContextEditor() {
       return {
         isValid: false,
         missingVariables: [],
-        unusedVariables: []
+        unusedVariables: [],
       }
     }
   }
@@ -286,7 +297,7 @@ export function useContextEditor() {
     try {
       isLoading.value = true
       const result = await importExportManager.importFromFile(file)
-      
+
       if (result.success && result.data) {
         currentData.value = result.data
         toast.success('文件导入成功')
@@ -309,7 +320,7 @@ export function useContextEditor() {
   const importFromClipboard = (jsonText: string) => {
     try {
       const result = importExportManager.importFromClipboard(jsonText)
-      
+
       if (result.success && result.data) {
         currentData.value = result.data
         toast.success('剪贴板数据导入成功')
@@ -368,7 +379,7 @@ export function useContextEditor() {
   // 优化建议
   const getOptimizationSuggestions = () => {
     if (!currentData.value) return []
-    
+
     try {
       return templateProcessor.suggestOptimizations(currentData.value)
     } catch (err) {
@@ -427,7 +438,7 @@ export function useContextEditor() {
       converter,
       variableExtractor,
       importExportManager,
-      templateProcessor
-    }
+      templateProcessor,
+    },
   }
 }

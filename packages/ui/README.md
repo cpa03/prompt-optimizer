@@ -9,7 +9,7 @@ Prompt Optimizer的Vue 3用户界面组件库，基于Naive UI设计系统构建
 ✅ **主题系统** - 支持亮色/暗色主题无缝切换  
 ✅ **响应式设计** - 自动适配不同屏幕尺寸  
 ✅ **国际化支持** - 多语言界面支持  
-✅ **模块化架构** - 可独立使用的组件  
+✅ **模块化架构** - 可独立使用的组件
 
 ## 安装
 
@@ -83,6 +83,7 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
 ```
 
 **包含组件：**
+
 - `TestAreaPanel` - 主容器组件
 - `TestInputSection` - 测试内容输入
 - `TestControlBar` - 测试控制栏
@@ -100,7 +101,7 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
     :getPrimary="(o) => o.label"
     :getValue="(o) => o.value"
   />
-  
+
   <!-- 模型管理器 -->
   <ModelManagerUI @model-updated="handleModelUpdate" />
 </template>
@@ -112,7 +113,7 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
 <template>
   <!-- 模板选择器 -->
   <TemplateSelectUI v-model="selectedTemplate" />
-  
+
   <!-- 模板管理器 -->
   <TemplateManagerUI @template-saved="handleTemplateSave" />
 </template>
@@ -123,22 +124,13 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
 ```vue
 <template>
   <!-- 输入面板 -->
-  <InputPanelUI 
-    v-model="inputContent"
-    :placeholder="placeholder"
-  />
-  
+  <InputPanelUI v-model="inputContent" :placeholder="placeholder" />
+
   <!-- 输出显示 -->
-  <OutputDisplay 
-    :content="outputContent"
-    :enable-fullscreen="true"
-  />
-  
+  <OutputDisplay :content="outputContent" :enable-fullscreen="true" />
+
   <!-- 全屏输出显示 -->
-  <OutputDisplayFullscreen 
-    v-model:visible="showFullscreen"
-    :content="content"
-  />
+  <OutputDisplayFullscreen v-model:visible="showFullscreen" :content="content" />
 </template>
 ```
 
@@ -156,7 +148,7 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
     </template>
     <YourContent />
   </MainLayoutUI>
-  
+
   <!-- 内容卡片 -->
   <ContentCardUI :title="cardTitle">
     <YourContent />
@@ -169,16 +161,10 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
 ```vue
 <template>
   <!-- 数据管理器 -->
-  <DataManagerUI 
-    @data-imported="handleImport"
-    @data-exported="handleExport"
-  />
-  
+  <DataManagerUI @data-imported="handleImport" @data-exported="handleExport" />
+
   <!-- 变量管理 -->
-  <VariableManager 
-    v-model="variables"
-    @variable-updated="handleVariableUpdate"
-  />
+  <VariableManager v-model="variables" @variable-updated="handleVariableUpdate" />
 </template>
 ```
 
@@ -190,11 +176,11 @@ const { naiveTheme, themeOverrides } = useNaiveTheme()
 import { useNaiveTheme } from '@prompt-optimizer/ui'
 
 const {
-  naiveTheme,       // Naive UI主题对象
-  themeOverrides,   // 主题覆盖配置
-  currentTheme,     // 当前主题ID
-  switchTheme,      // 切换主题
-  initTheme         // 初始化主题
+  naiveTheme, // Naive UI主题对象
+  themeOverrides, // 主题覆盖配置
+  currentTheme, // 当前主题ID
+  switchTheme, // 切换主题
+  initTheme, // 初始化主题
 } = useNaiveTheme()
 ```
 
@@ -204,13 +190,13 @@ const {
 import { useResponsiveTestLayout } from '@prompt-optimizer/ui'
 
 const {
-  isMobile,           // 是否为移动端
-  isTablet,           // 是否为平板
-  currentBreakpoint,  // 当前断点
-  inputMode,          // 推荐的输入模式
-  controlBarLayout,   // 推荐的控制栏布局
-  buttonSize,         // 推荐的按钮尺寸
-  responsiveHeights   // 响应式高度配置
+  isMobile, // 是否为移动端
+  isTablet, // 是否为平板
+  currentBreakpoint, // 当前断点
+  inputMode, // 推荐的输入模式
+  controlBarLayout, // 推荐的控制栏布局
+  buttonSize, // 推荐的按钮尺寸
+  responsiveHeights, // 响应式高度配置
 } = useResponsiveTestLayout()
 ```
 
@@ -220,12 +206,12 @@ const {
 import { useTestModeConfig } from '@prompt-optimizer/ui'
 
 const {
-  showTestInput,          // 是否显示测试输入
-  requiresTestContent,    // 是否需要测试内容
-  canStartTest,           // 是否可以开始测试
-  enableCompareMode,      // 是否启用对比模式
-  getDynamicButtonText,   // 获取动态按钮文本
-  validateTestSetup       // 验证测试配置
+  showTestInput, // 是否显示测试输入
+  requiresTestContent, // 是否需要测试内容
+  canStartTest, // 是否可以开始测试
+  enableCompareMode, // 是否启用对比模式
+  getDynamicButtonText, // 获取动态按钮文本
+  validateTestSetup, // 验证测试配置
 } = useTestModeConfig(optimizationMode)
 ```
 
@@ -295,14 +281,14 @@ export { useTestModeConfig } from './composables/useTestModeConfig'
 
 ```typescript
 // 主题配置
-export { 
+export {
   currentNaiveTheme as naiveTheme,
-  currentThemeOverrides as themeOverrides, 
-  currentThemeId, 
+  currentThemeOverrides as themeOverrides,
+  currentThemeId,
   currentThemeConfig,
   naiveThemeConfigs,
   switchTheme,
-  initializeNaiveTheme
+  initializeNaiveTheme,
 } from './config/naive-theme'
 ```
 
@@ -310,12 +296,12 @@ export {
 
 ```typescript
 // I18n系统
-export { 
-  installI18n, 
-  installI18nOnly, 
-  initializeI18nWithStorage, 
-  setI18nServices, 
-  i18n 
+export {
+  installI18n,
+  installI18nOnly,
+  initializeI18nWithStorage,
+  setI18nServices,
+  i18n,
 } from './plugins/i18n'
 ```
 
@@ -324,14 +310,14 @@ export {
 ### 核心类型
 
 ```typescript
-import type { 
+import type {
   OptimizationMode,
   ConversationMessage,
   Template,
   IModelManager,
   ITemplateManager,
   ILLMService,
-  IPromptService
+  IPromptService,
 } from '@prompt-optimizer/core'
 
 // TestArea组件类型
@@ -394,7 +380,7 @@ pnpm -F @prompt-optimizer/ui test -- TestAreaPanel
 # 运行集成测试
 pnpm -F @prompt-optimizer/ui test -- test-area-integration
 
-# 运行端到端测试  
+# 运行端到端测试
 pnpm -F @prompt-optimizer/ui test -- test-area-e2e
 ```
 

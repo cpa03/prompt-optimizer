@@ -4,7 +4,7 @@
  * 评估原始用户提示词的测试结果是否达成用户目的
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-user-original',
@@ -93,7 +93,7 @@ improvements 应该是**具体可操作**的改进建议：
 - ✓ 直接指出提示词中缺失的关键信息
 - ✓ 建议补充具体的约束条件或要求
 - ✓ 指出表达不清晰的地方并给出改写建议
-- ✓ 建议添加输出格式或质量要求`
+- ✓ 建议添加输出格式或质量要求`,
     },
     {
       role: 'user',
@@ -114,8 +114,8 @@ improvements 应该是**具体可操作**的改进建议：
 
 ---
 
-请严格评估上述测试结果，并给出针对用户提示词的具体改进建议。`
-    }
+请严格评估上述测试结果，并给出针对用户提示词的具体改进建议。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -124,7 +124,7 @@ improvements 应该是**具体可操作**的改进建议：
     description: '评估原始用户提示词的测试结果是否达成用户目的',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'original', 'scoring', 'basic', 'user']
+    tags: ['evaluation', 'original', 'scoring', 'basic', 'user'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

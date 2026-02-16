@@ -21,11 +21,11 @@ export class ModelError extends Error {
 export class ModelValidationError extends ModelError {
   constructor(
     details: string,
-    public errors: string[],
+    public errors: string[]
   ) {
     super(MODEL_ERROR_CODES.VALIDATION_ERROR, details, { details })
     this.name = 'ModelValidationError'
   }
 }
 
-// 注意: ModelConfigError 已移至 llm/errors.ts，避免重复定义 
+// 注意: ModelConfigError 已移至 llm/errors.ts，避免重复定义

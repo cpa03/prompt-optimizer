@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-user-prompt-basic',
@@ -39,14 +39,14 @@ export const template: Template = {
 - 保留原始目标与表述风格；仅在"明确范围、参数、格式、质量门槛"上做最小充分精炼。
 - 必须保留所有双花括号格式的变量占位符，不要替换或删除它们。
 - 仅输出用户提示词文本本身，不加解释，不使用代码块。
-`
+`,
     },
     {
       role: 'user',
       content: `原始用户提示词：
 {{originalPrompt}}
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -56,8 +56,7 @@ export const template: Template = {
     templateType: 'contextUserOptimize',
     language: 'zh',
     variant: 'context',
-    tags: ['context','user','optimize','basic']
+    tags: ['context', 'user', 'optimize', 'basic'],
   },
-  isBuiltin: true
-};
-
+  isBuiltin: true,
+}

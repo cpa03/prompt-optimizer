@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const template: Template = {
   id: 'iterate',
@@ -50,7 +50,7 @@ export const template: Template = {
 
 ## 输出要求
 直接输出优化后的提示词，保持原有格式，不添加解释。
-`
+`,
     },
     {
       role: 'user',
@@ -61,8 +61,8 @@ export const template: Template = {
 {{iterateInput}}
 
 请基于优化需求修改原始提示词（参考上述示例理解，将需求融入提示词中）：
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -71,7 +71,7 @@ export const template: Template = {
     description: '适合改进现有提示词，基于具体问题和需求对已有提示词进行针对性调整和完善',
     templateType: 'iterate',
     language: 'zh',
-    tags: ['iterate', 'optimize']
+    tags: ['iterate', 'optimize'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -19,9 +19,9 @@ const SILICONFLOW_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 128000
-    }
-  }
+      maxContextLength: 128000,
+    },
+  },
 ]
 
 export class SiliconflowAdapter extends OpenAIAdapter {
@@ -39,9 +39,9 @@ export class SiliconflowAdapter extends OpenAIAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -55,14 +55,14 @@ export class SiliconflowAdapter extends OpenAIAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }

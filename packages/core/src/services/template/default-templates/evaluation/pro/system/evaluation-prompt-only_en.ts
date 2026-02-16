@@ -4,7 +4,7 @@
  * Directly evaluate message quality in multi-message conversation without test results
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-multi-prompt-only',
@@ -81,7 +81,7 @@ You will receive a JSON format context \`proContext\` containing:
   - instruction: Brief description of issue and fix
 - **summary**: One-line evaluation conclusion
 
-Output JSON only, no additional explanation.`
+Output JSON only, no additional explanation.`,
     },
     {
       role: 'user',
@@ -105,17 +105,18 @@ Output JSON only, no additional explanation.`
 
 ---
 
-Please directly evaluate the improvement of the optimized message compared to the original in the conversation context.`
-    }
+Please directly evaluate the improvement of the optimized message compared to the original in the conversation context.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
     lastModified: Date.now(),
     author: 'System',
-    description: 'Directly evaluate message quality in multi-message conversation without test results',
+    description:
+      'Directly evaluate message quality in multi-message conversation without test results',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'system', 'multi-message']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'system', 'multi-message'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

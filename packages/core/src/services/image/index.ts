@@ -30,20 +30,14 @@ export type {
   ImageRef,
   FullImageData,
   ImageStorageConfig,
-  IImageStorageService
+  IImageStorageService,
 } from './types'
 
 // 辅助函数
-export {
-  isImageRef,
-  createImageRef
-} from './types'
+export { isImageRef, createImageRef } from './types'
 
 // 抽象基类
 export { AbstractImageProviderAdapter } from './adapters/abstract-adapter'
 
 // 图像存储服务
-export {
-  ImageStorageService,
-  createImageStorageService
-} from './storage'
+export { ImageStorageService, createImageStorageService } from './storage'

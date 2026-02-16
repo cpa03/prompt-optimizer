@@ -20,16 +20,12 @@ describe('prompt-variables', () => {
 
   it('replaceVariablesInContent replaces provided variables and keeps missing placeholders', () => {
     const vars = { foo: 'X' }
-    expect(replaceVariablesInContent('A {{foo}} B {{bar}}', vars)).toBe(
-      'A X B {{bar}}',
-    )
+    expect(replaceVariablesInContent('A {{foo}} B {{bar}}', vars)).toBe('A X B {{bar}}')
   })
 
   it('replaceVariablesInContent skips Mustache control tags', () => {
     const vars = { if: 'SHOULD_NOT_APPLY' }
-    expect(replaceVariablesInContent('{{#if}} ok {{/if}}', vars)).toBe(
-      '{{#if}} ok {{/if}}',
-    )
+    expect(replaceVariablesInContent('{{#if}} ok {{/if}}', vars)).toBe('{{#if}} ok {{/if}}')
   })
 
   it('buildPromptExecutionContext flags unescaped Mustache tags as forbidden', () => {
@@ -39,7 +35,7 @@ describe('prompt-variables', () => {
     })
 
     expect(ctx.forbiddenTemplateSyntax).toEqual(
-      expect.arrayContaining(['ampersand_unescaped', 'triple_braces']),
+      expect.arrayContaining(['ampersand_unescaped', 'triple_braces'])
     )
   })
 
@@ -49,9 +45,7 @@ describe('prompt-variables', () => {
       bar: 'Y',
     })
 
-    expect(ctx.forbiddenTemplateSyntax).toEqual(
-      expect.arrayContaining(['ampersand_unescaped']),
-    )
+    expect(ctx.forbiddenTemplateSyntax).toEqual(expect.arrayContaining(['ampersand_unescaped']))
   })
 
   it('ignores invalid variable names (digit-start, reserved keys)', () => {
@@ -61,9 +55,6 @@ describe('prompt-variables', () => {
 
   it('findMissingVariables treats undefined and empty as missing', () => {
     const vars = { foo: '', bar: 'Y' }
-    expect(findMissingVariables('{{foo}} {{bar}} {{baz}}', vars)).toEqual([
-      'foo',
-      'baz',
-    ])
+    expect(findMissingVariables('{{foo}} {{bar}} {{baz}}', vars)).toEqual(['foo', 'baz'])
   })
 })

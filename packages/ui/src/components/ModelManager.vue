@@ -11,12 +11,7 @@
       @update:show="(value) => !value && close()"
     >
       <template #header-extra>
-        <NButton
-          v-if="activeTab === 'text'"
-          type="primary"
-          @click="openAddForActiveTab"
-          ghost
-        >
+        <NButton v-if="activeTab === 'text'" type="primary" @click="openAddForActiveTab" ghost>
           <template #icon>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -63,8 +58,8 @@
         </NButton>
       </template>
 
-      <NScrollbar style="max-height: 75vh;">
-        <NTabs v-model:value="activeTab" type="line" size="small" style="margin-bottom: 12px;">
+      <NScrollbar style="max-height: 75vh">
+        <NTabs v-model:value="activeTab" type="line" size="small" style="margin-bottom: 12px">
           <NTabPane name="text" :tab="t('modelManager.textModels')">
             <TextModelManager ref="textManagerRef" @models-updated="handleTextModelsUpdated" />
           </NTabPane>
@@ -107,8 +102,8 @@ import { UI_DIMENSIONS } from '../config/constants'
 defineProps({
   show: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const emit = defineEmits(['modelsUpdated', 'close', 'select', 'update:show'])
@@ -166,8 +161,8 @@ const handleImageModelSaved = () => {
   try {
     imageListRef.value?.refresh?.()
   } catch {
-      // 静默处理错误
-    }
+    // 静默处理错误
+  }
 }
 
 if (typeof window !== 'undefined') {

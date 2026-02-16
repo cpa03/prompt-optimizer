@@ -24,7 +24,7 @@ export class StorageError extends Error {
   constructor(
     message: string,
     public readonly operation: StorageOperation,
-    params?: ErrorParams,
+    params?: ErrorParams
   ) {
     const code = STORAGE_OPERATION_TO_CODE[operation]
     super(message ? `[${code}] ${message}` : `[${code}]`)
@@ -32,4 +32,4 @@ export class StorageError extends Error {
     this.code = code
     this.params = params ?? (message ? { details: message } : undefined)
   }
-} 
+}

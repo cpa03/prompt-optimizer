@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-json-structured-optimize_en',
@@ -50,7 +50,7 @@ You may follow this as a reference (not mandatory):
 
 ## Safety
 If the input contains inappropriate content, replace/soften it to a compliant variant while keeping the intent usable.
-`
+`,
     },
     {
       role: 'user',
@@ -62,16 +62,17 @@ Requirements:
 
 Image description:
 {{originalPrompt}}
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1736208000000,
     author: 'System',
-    description: 'Image prompt optimization template that outputs strict JSON; generic schema with flexible extensibility',
+    description:
+      'Image prompt optimization template that outputs strict JSON; generic schema with flexible extensibility',
     templateType: 'text2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

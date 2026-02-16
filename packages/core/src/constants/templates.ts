@@ -4,7 +4,7 @@
  * Flexy loves modularity! All values are now environment-configurable.
  */
 
-import { getEnvInt, getEnvString } from '../config/env';
+import { getEnvInt, getEnvString } from '../config/env'
 
 /**
  * Timestamp for built-in templates (2024-01-01 00:00:00 UTC)

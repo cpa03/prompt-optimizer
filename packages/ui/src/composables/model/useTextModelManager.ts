@@ -8,7 +8,7 @@ import {
   type TextModelConfig,
   type TextProvider,
   getBuiltinModelIds,
-  CONSTRAINTS
+  CONSTRAINTS,
 } from '@prompt-optimizer/core'
 import { getI18nErrorMessage } from '../../utils/error'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
@@ -80,7 +80,7 @@ export function useTextModelManager() {
     modelId: '',
     connectionConfig: {},
     paramOverrides: {},
-    displayMaskedKey: false
+    displayMaskedKey: false,
   })
 
   const editingModelId = ref<string | null>(null)
@@ -98,16 +98,16 @@ export function useTextModelManager() {
   const currentProviderType = computed(() => form.value.providerId || 'custom')
 
   const providerOptions = computed(() =>
-    providers.value.map(provider => ({
+    providers.value.map((provider) => ({
       label: provider.name,
       value: provider.id,
-      disabled: false
+      disabled: false,
     }))
   )
 
   const selectedProvider = computed(() => {
     if (!form.value.providerId) return null
-    return providers.value.find(p => p.id === form.value.providerId) || null
+    return providers.value.find((p) => p.id === form.value.providerId) || null
   })
 
   // 简化后的接口:直接传入必要的参数
@@ -118,29 +118,27 @@ export function useTextModelManager() {
     modelId: computed(() => form.value.modelId || ''),
     savedModelMeta: computed(() => editingModelMeta.value || undefined),
     getParamOverrides: () => form.value.paramOverrides ?? {},
-    setParamOverrides: value => {
+    setParamOverrides: (value) => {
       form.value.paramOverrides = { ...value }
-    }
+    },
   })
 
-  const {
-    currentParameterDefinitions,
-    availableParameterCount,
-    updateParamOverrides
-  } = advancedParameters
+  const { currentParameterDefinitions, availableParameterCount, updateParamOverrides } =
+    advancedParameters
 
   const connectionFields = computed(() => {
     if (!selectedProvider.value?.connectionSchema) return []
 
     const schema = selectedProvider.value.connectionSchema
-    const fields: Array<{ name: string; required: boolean; type: string; placeholder?: string }> = []
+    const fields: Array<{ name: string; required: boolean; type: string; placeholder?: string }> =
+      []
 
     for (const fieldName of schema.required) {
       fields.push({
         name: fieldName,
         required: true,
         type: schema.fieldTypes[fieldName] || 'string',
-        placeholder: fieldName === 'baseURL' ? selectedProvider.value.defaultBaseURL : ''
+        placeholder: fieldName === 'baseURL' ? selectedProvider.value.defaultBaseURL : '',
       })
     }
 
@@ -149,7 +147,7 @@ export function useTextModelManager() {
         name: fieldName,
         required: false,
         type: schema.fieldTypes[fieldName] || 'string',
-        placeholder: fieldName === 'baseURL' ? selectedProvider.value.defaultBaseURL : ''
+        placeholder: fieldName === 'baseURL' ? selectedProvider.value.defaultBaseURL : '',
       })
     }
 
@@ -162,7 +160,7 @@ export function useTextModelManager() {
     const schema = selectedProvider.value.connectionSchema
     const config = form.value.connectionConfig || {}
 
-    return schema.required.every(field => !!config[field])
+    return schema.required.every((field) => !!config[field])
   })
 
   const canTestFormConnection = computed(() => {
@@ -178,10 +176,16 @@ export function useTextModelManager() {
     return true
   })
   const canRefreshModelOptions = computed(() => {
-    return selectedProvider.value?.supportsDynamicModels && isConnectionConfigured.value && !isLoadingModelOptions.value
+    return (
+      selectedProvider.value?.supportsDynamicModels &&
+      isConnectionConfigured.value &&
+      !isLoadingModelOptions.value
+    )
   })
 
-  const modalTitle = computed(() => (editingModelId.value ? t('modelManager.editModel') : t('modelManager.addModel')))
+  const modalTitle = computed(() =>
+    editingModelId.value ? t('modelManager.editModel') : t('modelManager.addModel')
+  )
 
   const isDefaultModel = (id: string) => {
     return getBuiltinModelIds().includes(id)
@@ -196,7 +200,7 @@ export function useTextModelManager() {
       modelId: '',
       connectionConfig: {},
       paramOverrides: {},
-      displayMaskedKey: false
+      displayMaskedKey: false,
     }
     editingModelId.value = null
     editingModelMeta.value = null
@@ -229,7 +233,7 @@ export function useTextModelManager() {
       const staticModels = textAdapterRegistry.getStaticModels(providerId)
       modelOptions.value = staticModels.map((model: TextModel) => ({
         value: model.id,
-        label: model.name || model.id
+        label: model.name || model.id,
       }))
     } catch (error) {
       console.error('加载 Provider 模型失败:', error)
@@ -277,10 +281,12 @@ export function useTextModelManager() {
       const model = await modelManager.getModel(id)
       const modelName = model?.name || id
       const errorMessage = getI18nErrorMessage(error, 'Unknown error')
-      toast.error(t('modelManager.testFailed', {
-        provider: modelName,
-        error: errorMessage
-      }))
+      toast.error(
+        t('modelManager.testFailed', {
+          provider: modelName,
+          error: errorMessage,
+        })
+      )
     } finally {
       delete testingConnections.value[id]
     }
@@ -340,7 +346,7 @@ export function useTextModelManager() {
     const {
       autoSelectFirstModel = true,
       resetOverrides = true,
-      resetConnectionConfig = true
+      resetConnectionConfig = true,
     } = options
 
     form.value.providerId = providerId
@@ -358,7 +364,7 @@ export function useTextModelManager() {
     loadStaticModelsForProvider(providerId)
 
     // 使用共享函数处理连接配置
-    const providerMeta = providers.value.find(p => p.id === providerId)
+    const providerMeta = providers.value.find((p) => p.id === providerId)
     form.value.connectionConfig = computeConnectionConfig(
       form.value.connectionConfig,
       providerMeta,
@@ -384,7 +390,7 @@ export function useTextModelManager() {
     if (providers.value.length > 0) {
       setProvider(providers.value[0].id, {
         autoSelectFirstModel: true,
-        resetOverrides: true
+        resetOverrides: true,
       })
       // 创建模式：自动应用第一个模型的默认参数
       if (form.value.modelId && form.value.providerId) {
@@ -397,11 +403,11 @@ export function useTextModelManager() {
 
   const prepareForEdit = async (id: string, forceReload = true) => {
     // 如果已经在编辑同一个模型且不强制重新加载，则跳过
-  if (!forceReload && editingModelId.value === id && formReady.value) {
-    return
-  }
+    if (!forceReload && editingModelId.value === id && formReady.value) {
+      return
+    }
 
-  resetFormState()
+    resetFormState()
     editingModelId.value = id
     await ensureProvidersLoaded()
     formReady.value = false
@@ -426,19 +432,24 @@ export function useTextModelManager() {
         providerId: model.providerMeta?.id ?? 'custom',
         modelId: model.modelMeta?.id ?? '',
         connectionConfig,
-        paramOverrides: model.paramOverrides ? JSON.parse(JSON.stringify(model.paramOverrides)) : {},
+        paramOverrides: model.paramOverrides
+          ? JSON.parse(JSON.stringify(model.paramOverrides))
+          : {},
         displayMaskedKey: !!rawApiKey,
         originalApiKey: String(rawApiKey) || undefined,
-        defaultModel: String(model.modelMeta?.id ?? '')
+        defaultModel: String(model.modelMeta?.id ?? ''),
       }
       editingModelMeta.value = model.modelMeta
 
       setProvider(form.value.providerId, {
         autoSelectFirstModel: false,
         resetOverrides: false,
-        resetConnectionConfig: false
+        resetConnectionConfig: false,
       })
-      if (!modelOptions.value.some(option => option.value === form.value.modelId) && form.value.modelId) {
+      if (
+        !modelOptions.value.some((option) => option.value === form.value.modelId) &&
+        form.value.modelId
+      ) {
         modelOptions.value.push({ value: form.value.modelId, label: form.value.modelId })
       }
 
@@ -470,14 +481,18 @@ export function useTextModelManager() {
       const connectionConfig: TextConnectionConfig = {
         baseURL,
         ...form.value.connectionConfig,
-        apiKey: form.value.displayMaskedKey && form.value.originalApiKey
-          ? form.value.originalApiKey
-          : form.value.connectionConfig.apiKey
+        apiKey:
+          form.value.displayMaskedKey && form.value.originalApiKey
+            ? form.value.originalApiKey
+            : form.value.connectionConfig.apiKey,
       }
 
-      const existingConfig = form.value.originalId ? await modelManager.getModel(form.value.originalId) : undefined
+      const existingConfig = form.value.originalId
+        ? await modelManager.getModel(form.value.originalId)
+        : undefined
 
-      let providerMeta = providers.value.find(p => p.id === providerTemplateId) || existingConfig?.providerMeta
+      let providerMeta =
+        providers.value.find((p) => p.id === providerTemplateId) || existingConfig?.providerMeta
       let modelMeta = existingConfig?.modelMeta
 
       if (textAdapterRegistry && providerTemplateId) {
@@ -488,7 +503,8 @@ export function useTextModelManager() {
           }
           const staticModels = adapter.getModels()
           if (form.value.modelId) {
-            modelMeta = staticModels.find((m: TextModel) => m.id === form.value.modelId) || modelMeta
+            modelMeta =
+              staticModels.find((m: TextModel) => m.id === form.value.modelId) || modelMeta
           }
           if (!modelMeta) {
             modelMeta = staticModels[0]
@@ -497,14 +513,17 @@ export function useTextModelManager() {
             modelMeta = adapter.buildDefaultModel(form.value.modelId)
           }
         } catch (error) {
-          console.warn(`[useTextModelManager] Failed to load metadata for provider ${providerTemplateId}`, error)
+          console.warn(
+            `[useTextModelManager] Failed to load metadata for provider ${providerTemplateId}`,
+            error
+          )
         }
       }
 
       const fetchedModels = await llmService.fetchModelList(providerTemplateId, {
         connectionConfig,
         providerMeta,
-        modelMeta: modelMeta ? { ...modelMeta, id: form.value.modelId || modelMeta.id } : undefined
+        modelMeta: modelMeta ? { ...modelMeta, id: form.value.modelId || modelMeta.id } : undefined,
       } as Partial<TextModelConfig>)
 
       modelOptions.value = fetchedModels
@@ -512,7 +531,10 @@ export function useTextModelManager() {
         toast.success(t('modelManager.fetchModelsSuccess', { count: fetchedModels.length }))
       }
 
-      if (fetchedModels.length > 0 && !fetchedModels.some((m: { value: string }) => m.value === form.value.modelId)) {
+      if (
+        fetchedModels.length > 0 &&
+        !fetchedModels.some((m: { value: string }) => m.value === form.value.modelId)
+      ) {
         form.value.modelId = fetchedModels[0].value
       }
     } catch (error: unknown) {
@@ -533,7 +555,9 @@ export function useTextModelManager() {
       loadStaticModelsForProvider(providerTemplateId)
 
       if (staticCount > 0) {
-        toast.warning(t('modelManager.fetchModelsFallback', { error: errorMessage, count: staticCount }))
+        toast.warning(
+          t('modelManager.fetchModelsFallback', { error: errorMessage, count: staticCount })
+        )
       } else {
         toast.error(t('modelManager.fetchModelsFailed', { error: errorMessage }))
       }
@@ -570,8 +594,10 @@ export function useTextModelManager() {
     }
 
     const connectionConfig: TextConnectionConfig = {
-      baseURL: (form.value.connectionConfig.baseURL as string)?.trim() || existingConfig.connectionConfig?.baseURL,
-      ...form.value.connectionConfig
+      baseURL:
+        (form.value.connectionConfig.baseURL as string)?.trim() ||
+        existingConfig.connectionConfig?.baseURL,
+      ...form.value.connectionConfig,
     }
 
     if (form.value.displayMaskedKey) {
@@ -587,7 +613,11 @@ export function useTextModelManager() {
     }
 
     const providerMeta = ensureProviderMeta(form.value.providerId, existingConfig.providerMeta)
-    const modelMeta = ensureModelMeta(form.value.providerId, form.value.modelId, existingConfig.modelMeta)
+    const modelMeta = ensureModelMeta(
+      form.value.providerId,
+      form.value.modelId,
+      existingConfig.modelMeta
+    )
 
     const updates = {
       name: form.value.name,
@@ -595,7 +625,7 @@ export function useTextModelManager() {
       providerMeta,
       modelMeta,
       connectionConfig,
-      paramOverrides: { ...(form.value.paramOverrides || {}) }
+      paramOverrides: { ...(form.value.paramOverrides || {}) },
     } as Partial<TextModelConfig>
 
     await modelManager.updateModel(form.value.originalId, updates)
@@ -622,7 +652,10 @@ export function useTextModelManager() {
     }
 
     const providerMeta = ensureProviderMeta(form.value.providerId)
-    const modelMeta = ensureModelMeta(form.value.providerId, form.value.defaultModel || form.value.modelId)
+    const modelMeta = ensureModelMeta(
+      form.value.providerId,
+      form.value.defaultModel || form.value.modelId
+    )
 
     const newConfig = {
       id: modelKey,
@@ -631,7 +664,7 @@ export function useTextModelManager() {
       providerMeta,
       modelMeta,
       connectionConfig: { ...form.value.connectionConfig },
-      paramOverrides: { ...(form.value.paramOverrides ?? {}) }
+      paramOverrides: { ...(form.value.paramOverrides ?? {}) },
     } as TextModelConfig
 
     await modelManager.addModel(modelKey, newConfig)
@@ -663,22 +696,30 @@ export function useTextModelManager() {
       }
 
       // 编辑模式下获取现有配置，新增模式下为 undefined
-      const existingConfig = editingModelId.value ? await modelManager.getModel(editingModelId.value) : undefined
+      const existingConfig = editingModelId.value
+        ? await modelManager.getModel(editingModelId.value)
+        : undefined
 
       const providerMeta = ensureProviderMeta(form.value.providerId, existingConfig?.providerMeta)
-      const modelMeta = ensureModelMeta(form.value.providerId, form.value.modelId, existingConfig?.modelMeta)
+      const modelMeta = ensureModelMeta(
+        form.value.providerId,
+        form.value.modelId,
+        existingConfig?.modelMeta
+      )
 
-      const baseURL = typeof form.value.connectionConfig?.baseURL === 'string'
-        ? form.value.connectionConfig.baseURL.trim()
-        : undefined
+      const baseURL =
+        typeof form.value.connectionConfig?.baseURL === 'string'
+          ? form.value.connectionConfig.baseURL.trim()
+          : undefined
 
       const connectionConfig: TextConnectionConfig = {
         baseURL: baseURL || existingConfig?.connectionConfig?.baseURL,
         ...existingConfig?.connectionConfig,
         ...form.value.connectionConfig,
-        apiKey: form.value.displayMaskedKey && form.value.originalApiKey
-          ? form.value.originalApiKey
-          : (form.value.connectionConfig.apiKey || existingConfig?.connectionConfig?.apiKey)
+        apiKey:
+          form.value.displayMaskedKey && form.value.originalApiKey
+            ? form.value.originalApiKey
+            : form.value.connectionConfig.apiKey || existingConfig?.connectionConfig?.apiKey,
       }
 
       const tempConfig = {
@@ -688,7 +729,7 @@ export function useTextModelManager() {
         providerMeta,
         modelMeta,
         connectionConfig,
-        paramOverrides: { ...(form.value.paramOverrides || {}) }
+        paramOverrides: { ...(form.value.paramOverrides || {}) },
       } as TextModelConfig
 
       await modelManager.addModel(tempConfig.id, tempConfig)
@@ -697,7 +738,10 @@ export function useTextModelManager() {
         // 测试临时模型
         await llmService.testConnection(tempConfig.id)
         const displayName = form.value.name || form.value.modelId
-        formConnectionStatus.value = { type: 'success', message: t('modelManager.testSuccess', { provider: displayName }) }
+        formConnectionStatus.value = {
+          type: 'success',
+          message: t('modelManager.testSuccess', { provider: displayName }),
+        }
         toast.success(t('modelManager.testSuccess', { provider: displayName }))
       } finally {
         // 清理临时模型
@@ -707,29 +751,39 @@ export function useTextModelManager() {
           console.warn('清理临时测试模型失败:', cleanupError)
         }
       }
-
     } catch (error) {
       console.error('连接测试失败:', error)
       const displayName = form.value.name || form.value.modelId
       formConnectionStatus.value = {
         type: 'error',
-        message: t('modelManager.testFailed', { provider: displayName, error: error instanceof Error ? error.message : 'Unknown error' })
+        message: t('modelManager.testFailed', {
+          provider: displayName,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        }),
       }
-      toast.error(t('modelManager.testFailed', { provider: displayName, error: error instanceof Error ? error.message : 'Unknown error' }))
+      toast.error(
+        t('modelManager.testFailed', {
+          provider: displayName,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        })
+      )
     } finally {
       isTestingFormConnection.value = false
     }
   }
 
-  watch(() => form.value.connectionConfig.apiKey, (newValue) => {
-    if (!editingModelId.value) return
-    const val = newValue ?? ''
-    const isMasked = typeof val === 'string' && val.includes('*')
-    form.value.displayMaskedKey = isMasked
-    if (!isMasked && typeof val === 'string') {
-      form.value.originalApiKey = val
+  watch(
+    () => form.value.connectionConfig.apiKey,
+    (newValue) => {
+      if (!editingModelId.value) return
+      const val = newValue ?? ''
+      const isMasked = typeof val === 'string' && val.includes('*')
+      form.value.displayMaskedKey = isMasked
+      if (!isMasked && typeof val === 'string') {
+        form.value.originalApiKey = val
+      }
     }
-  })
+  )
 
   const onModelChange = (modelId: string) => {
     form.value.modelId = modelId
@@ -787,7 +841,7 @@ export function useTextModelManager() {
     testFormConnection,
     isConnectionConfigured,
     canRefreshModelOptions,
-    formConnectionStatus
+    formConnectionStatus,
   }
 }
 

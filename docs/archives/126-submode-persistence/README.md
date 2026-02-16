@@ -13,12 +13,14 @@
 ## 🎯 核心目标
 
 ### 主要目标
+
 1. ✅ 实现三种功能模式的子模式独立持久化
 2. ✅ 将所有子模式选择器移至导航栏
 3. ✅ 确保状态完全隔离（基础和上下文模式虽然子模式名称相同，但独立存储）
 4. ✅ 修复图像模式初始化时imageMode未恢复的问题
 
 ### 次要目标
+
 1. ✅ 保持向后兼容（与旧变量同步）
 2. ✅ 完善的错误处理和日志
 3. ✅ 全面的测试验证
@@ -30,6 +32,7 @@
 ### 完成的工作
 
 #### Phase 1: 上下文模式子模式持久化
+
 - ✅ 添加 `PRO_SUB_MODE` 存储键
 - ✅ 定义 `ProSubMode` 类型
 - ✅ 创建 `useProSubMode` composable
@@ -37,6 +40,7 @@
 - ✅ 测试验证
 
 #### Phase 2: 基础模式子模式持久化
+
 - ✅ 添加 `BASIC_SUB_MODE` 存储键
 - ✅ 定义 `BasicSubMode` 类型
 - ✅ 创建 `useBasicSubMode` composable
@@ -44,6 +48,7 @@
 - ✅ 验证独立性
 
 #### Phase 3: 图像模式子模式持久化
+
 - ✅ 添加 `IMAGE_SUB_MODE` 存储键
 - ✅ 定义 `ImageSubMode` 类型
 - ✅ 创建 `useImageSubMode` composable
@@ -54,16 +59,19 @@
 ## 🐛 已解决的问题
 
 ### 问题1: 基础模式子模式选择器缺失
+
 **现象**: 只有上下文模式显示子模式选择器，基础模式的选择器不见了  
 **原因**: `v-if` 条件只判断了 `functionMode === 'pro'`  
 **解决**: 改为独立显示三个选择器
 
 ### 问题2: 状态共享导致混淆
+
 **现象**: 基础模式和上下文模式的子模式选择相互影响  
 **原因**: 使用同一个 `selectedOptimizationMode` 变量  
 **解决**: 完全独立的存储和状态管理
 
 ### 问题3: 图像模式刷新后文件上传区域不显示
+
 **现象**: 从文生图切换到图生图时正常，但刷新页面后文件上传按钮不显示  
 **原因**: `useImageWorkspace` 的 `restoreSelections` 方法未恢复 `imageMode`  
 **解决**: 在 `restoreSelections` 中添加从 `UI_SETTINGS_KEYS.IMAGE_SUB_MODE` 恢复的逻辑
@@ -81,18 +89,23 @@ docs/archives/126-submode-persistence/
 ## 🔑 核心设计原则
 
 ### 1. 状态完全隔离
+
 三种功能模式使用完全独立的存储键和Composable，即使子模式名称相同也不共享状态。
 
 **用户的关键洞察**:
+
 > "基础模式也应该有自己的存储，这个也应该分开...因为这两个功能模式本质上控制的是不同的，只是当前他们的子模式碰巧都叫 系统/用户提示词优化而已。"
 
 ### 2. 单例模式的全局状态
+
 每个Composable内部维护单例状态，确保全局唯一，避免多实例冲突。
 
 ### 3. 异步初始化
+
 不阻塞应用启动，通过 `ensureInitialized()` 延迟加载，并带有防抖机制。
 
 ### 4. 自动持久化
+
 每次子模式切换自动保存到localStorage，用户无感知。
 
 ## 📈 技术亮点
@@ -112,11 +125,13 @@ docs/archives/126-submode-persistence/
 ## 📝 使用说明
 
 ### 开发者参考
+
 1. 查看 [design.md](./design.md) 了解完整的设计思路和架构决策
 2. 查看 [implementation.md](./implementation.md) 了解具体实现细节
 3. 查看 [experience.md](./experience.md) 学习经验和最佳实践
 
 ### 问题排查
+
 如遇到子模式相关问题，参考 [experience.md](./experience.md) 的常见问题部分。
 
 ## ✨ 成功指标

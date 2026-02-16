@@ -5,7 +5,7 @@ import { withVCR } from '../utils/vcr'
 import {
   createRealLLMTestContext,
   hasAvailableProvider,
-  type RealLLMTestContext
+  type RealLLMTestContext,
 } from '../helpers/real-llm'
 
 /**
@@ -49,8 +49,8 @@ describe('LLM Service Integration', () => {
     const testMessage: Message[] = [
       {
         role: 'user',
-        content: 'Hello, please respond with just "test successful"'
-      }
+        content: 'Hello, please respond with just "test successful"',
+      },
     ]
 
     test('Provider works with VCR (non-streaming)', async () => {
@@ -61,13 +61,10 @@ describe('LLM Service Integration', () => {
         {
           provider: context.provider.providerId,
           messages: testMessage,
-          stream: false
+          stream: false,
         },
         async () => {
-          return await context.llmService.sendMessageStructured(
-            testMessage,
-            context.modelKey
-          )
+          return await context.llmService.sendMessageStructured(testMessage, context.modelKey)
         }
       )
 
@@ -85,13 +82,10 @@ describe('LLM Service Integration', () => {
         {
           provider: context.provider.providerId,
           messages: testMessage,
-          stream: false
+          stream: false,
         },
         async () => {
-          return await context.llmService.sendMessage(
-            testMessage,
-            context.modelKey
-          )
+          return await context.llmService.sendMessage(testMessage, context.modelKey)
         }
       )
 
@@ -108,8 +102,8 @@ describe('LLM Service Integration', () => {
       const messages: Message[] = [
         {
           role: 'user',
-          content: 'Count from 1 to 5, one number per line'
-        }
+          content: 'Count from 1 to 5, one number per line',
+        },
       ]
 
       let tokens: string[] = []
@@ -126,7 +120,7 @@ describe('LLM Service Integration', () => {
         },
         onError: (error) => {
           throw error
-        }
+        },
       })
 
       expect(tokens.length).toBeGreaterThan(0)
@@ -189,7 +183,7 @@ describe('LLM Service Integration', () => {
         {
           provider: context.provider.providerId,
           messages,
-          stream: false
+          stream: false,
         },
         async () => {
           return await context.llmService.sendMessageStructured(messages, context.modelKey)
@@ -210,7 +204,7 @@ describe('LLM Service Integration', () => {
       const conversation: Message[] = [
         { role: 'user', content: 'My name is Alice' },
         { role: 'assistant', content: 'Hello Alice! Nice to meet you.' },
-        { role: 'user', content: 'What is my name?' }
+        { role: 'user', content: 'What is my name?' },
       ]
 
       const response = await withVCR(
@@ -218,7 +212,7 @@ describe('LLM Service Integration', () => {
         {
           provider: context.provider.providerId,
           messages: conversation,
-          stream: false
+          stream: false,
         },
         async () => {
           return await context.llmService.sendMessageStructured(conversation, context.modelKey)

@@ -2,11 +2,11 @@
  * 数据格式转换器接口定义
  */
 
-import type { 
-  StandardPromptData, 
-  LangFuseTrace, 
-  OpenAIRequest, 
-  ConversionResult 
+import type {
+  StandardPromptData,
+  LangFuseTrace,
+  OpenAIRequest,
+  ConversionResult,
 } from './standard-prompt'
 import type { ConversationMessage } from './variable'
 
@@ -26,7 +26,7 @@ export interface DataConverter {
    * 从会话消息格式转换为标准格式
    */
   fromConversationMessages(
-    messages: ConversationMessage[], 
+    messages: ConversationMessage[],
     metadata?: unknown
   ): ConversionResult<StandardPromptData>
 
@@ -34,7 +34,7 @@ export interface DataConverter {
    * 从标准格式转换为OpenAI请求格式
    */
   toOpenAI(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     variables?: Record<string, string>
   ): ConversionResult<OpenAIRequest>
 
@@ -46,7 +46,10 @@ export interface DataConverter {
   /**
    * 验证数据格式是否有效
    */
-  validate(data: unknown, format: 'standard' | 'langfuse' | 'openai' | 'conversation'): ConversionResult<boolean>
+  validate(
+    data: unknown,
+    format: 'standard' | 'langfuse' | 'openai' | 'conversation'
+  ): ConversionResult<boolean>
 }
 
 // 变量提取器接口
@@ -55,8 +58,8 @@ export interface VariableExtractor {
    * 从选中文本提取变量
    */
   extractVariable(
-    messageContent: string, 
-    selectedText: string, 
+    messageContent: string,
+    selectedText: string,
     variableName: string,
     startIndex: number,
     endIndex: number
@@ -91,7 +94,7 @@ export interface VariableExtractor {
   scanVariables(content: string): Array<{
     name: string
     placeholder: string
-    positions: Array<{start: number, end: number}>
+    positions: Array<{ start: number; end: number }>
   }>
 }
 
@@ -111,7 +114,7 @@ export interface DataImportExport {
    * 导出为JSON文件
    */
   exportToFile(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     format: 'standard' | 'openai' | 'template',
     filename?: string
   ): void
@@ -120,7 +123,7 @@ export interface DataImportExport {
    * 导出到剪贴板
    */
   exportToClipboard(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     format: 'standard' | 'openai' | 'template'
   ): Promise<boolean>
 
@@ -150,16 +153,13 @@ export interface TemplateProcessor {
   /**
    * 从模板+变量生成完整的StandardPromptData
    */
-  fromTemplate(
-    template: StandardPromptData, 
-    variables: Record<string, string>
-  ): StandardPromptData
+  fromTemplate(template: StandardPromptData, variables: Record<string, string>): StandardPromptData
 
   /**
    * 验证变量完整性
    */
   validateVariables(
-    template: StandardPromptData, 
+    template: StandardPromptData,
     variables: Record<string, string>
   ): {
     isValid: boolean

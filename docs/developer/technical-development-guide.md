@@ -5,6 +5,7 @@
 ## 1. 项目技术架构
 
 ### 1.1 整体架构
+
 - Monorepo结构
   - packages/core - 核心功能包
   - packages/web - Web应用
@@ -22,6 +23,7 @@
 ### 1.2 技术栈概览
 
 #### 1.2.1 核心包 (@prompt-optimizer/core)
+
 - TypeScript 5.3.x
   - 类型系统
   - 接口定义
@@ -39,6 +41,7 @@
   - 类型定义
 
 #### 1.2.2 Web包 (@prompt-optimizer/web)
+
 - Vue 3.5.x
   - Composition API
   - Script Setup
@@ -51,6 +54,7 @@
   - HMR支持
 
 #### 1.2.3 UI框架和样式
+
 - TailwindCSS 3.4.x
   - 实用优先
   - 响应式设计
@@ -62,11 +66,12 @@
   - 列表动画
 - Naive UI 2.42.x
   - 企业级组件库
-  - 完整的TypeScript支持  
+  - 完整的TypeScript支持
   - 主题定制系统
   - 响应式组件设计
 
 #### 1.2.4 状态管理
+
 - Vue Reactivity
   - ref/reactive
   - computed
@@ -84,6 +89,7 @@
   - 加密存储
 
 #### 1.2.5 安全性
+
 - WebCrypto API
   - API密钥加密
   - 安全存储
@@ -98,6 +104,7 @@
   - CSP策略
 
 #### 1.2.6 开发工具
+
 - TypeScript 5.3.x
   - 类型检查
   - 代码提示
@@ -112,6 +119,7 @@
   - 编辑器集成
 
 #### 1.2.7 测试框架
+
 - Vitest 3.0.x
   - 单元测试
   - 集成测试
@@ -127,6 +135,7 @@
   - 视觉回归测试
 
 ### 1.3 代码组织
+
 - 模块化设计
   - 按功能划分模块
   - 单一职责原则
@@ -140,6 +149,7 @@
 ## 2. 核心包开发规范
 
 ### 2.1 服务实现规范
+
 - 接口一致性
   - 所有服务必须实现统一接口
   - 方法命名保持一致
@@ -153,6 +163,7 @@
   - 提供用户友好的错误信息
 
 ### 2.2 SDK集成规范
+
 - 原生SDK集成
   - 直接使用官方SDK
   - 避免不必要的抽象层
@@ -166,6 +177,7 @@
   - 提供降级方案
 
 ### 2.3 类型定义规范
+
 - 类型安全性
   - 使用精确的类型定义
   - 避免any类型
@@ -179,6 +191,7 @@
   - 提供类型文档注释
 
 ### 2.4 测试规范
+
 - 单元测试
   - 测试覆盖率目标>80%
   - 测试边界条件
@@ -194,7 +207,9 @@
 ## 3. 前端开发规范
 
 ### 3.1 项目架构
+
 - 推荐目录结构
+
   ```
   src/
   ├── components/    # UI组件
@@ -216,6 +231,7 @@
   - 组合式函数：useXxx.ts
 
 ### 3.2 服务使用规范
+
 - 核心服务集成
   - 使用统一的服务访问模式
   - 实现服务单例模式
@@ -229,6 +245,7 @@
   - 记录错误日志
 
 ### 3.3 组件开发规范
+
 - Vue组件模板
   - 使用<script setup>语法
   - 明确定义props和emits
@@ -242,6 +259,7 @@
   - 组件应该是可扩展的
 
 ### 3.4 类型系统
+
 - Vue组件类型
   - 为props定义明确类型
   - 为emits定义事件类型
@@ -255,6 +273,7 @@
   - 避免类型断言
 
 ### 3.5 状态管理
+
 - Composables模式
   - 按功能模块组织composables
   - 使用组合式API风格
@@ -272,6 +291,7 @@
 #### 3.6.1 TypeScript配置最佳实践
 
 **项目级tsconfig.json配置**
+
 ```json
 {
   "compilerOptions": {
@@ -294,15 +314,16 @@
 ```
 
 **Vue组件类型定义**
+
 ```typescript
 // 组件Props类型定义
 interface ComponentProps {
   title: string
-  items: Array<{ id: string, name: string }>
+  items: Array<{ id: string; name: string }>
   onSelect?: (item: any) => void
 }
 
-// 组件Emits类型定义  
+// 组件Emits类型定义
 const emit = defineEmits<{
   select: [item: any]
   update: [value: string]
@@ -314,11 +335,12 @@ const formData = ref<{
   modelConfig: ModelConfig | null
 }>({
   username: '',
-  modelConfig: null
+  modelConfig: null,
 })
 ```
 
 **服务接口类型安全**
+
 ```typescript
 // 服务依赖注入类型
 interface Services {
@@ -336,6 +358,7 @@ if (!services?.value) {
 #### 3.6.2 ESLint配置指导
 
 **基础ESLint配置**
+
 ```json
 {
   "root": true,
@@ -347,10 +370,7 @@ if (!services?.value) {
     "extraFileExtensions": [".vue"]
   },
   "plugins": ["@typescript-eslint", "vue"],
-  "extends": [
-    "eslint:recommended",
-    "@vue/eslint-config-typescript/recommended"
-  ],
+  "extends": ["eslint:recommended", "@vue/eslint-config-typescript/recommended"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
@@ -361,6 +381,7 @@ if (!services?.value) {
 ```
 
 **Vue文件特定规则**
+
 ```json
 {
   "rules": {
@@ -377,16 +398,13 @@ if (!services?.value) {
 #### 3.6.3 开发环境集成
 
 **VS Code配置 (.vscode/settings.json)**
+
 ```json
 {
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "vue"
-  ],
+  "eslint.validate": ["javascript", "typescript", "vue"],
   "vetur.validation.template": false,
   "vetur.validation.script": false,
   "vetur.validation.style": false
@@ -394,6 +412,7 @@ if (!services?.value) {
 ```
 
 ### 3.7 性能优化
+
 - 动态导入
   - 使用路由懒加载
   - 组件按需加载
@@ -409,6 +428,7 @@ if (!services?.value) {
 ### 3.8 Naive UI使用指南
 
 #### 3.8.1 组件库特性
+
 - **企业级设计**
   - 专业的视觉设计语言
   - 一致的交互体验
@@ -427,21 +447,23 @@ if (!services?.value) {
 #### 3.8.2 配置指南
 
 1. **基础配置**
+
    ```vue
    <template>
      <NConfigProvider :theme="naiveTheme" :theme-overrides="themeOverrides">
        <!-- 应用内容 -->
      </NConfigProvider>
    </template>
-   
+
    <script setup>
    import { useNaiveTheme } from '@prompt-optimizer/ui'
-   
+
    const { naiveTheme, themeOverrides } = useNaiveTheme()
    </script>
    ```
 
 2. **主题配置**
+
    ```typescript
    // config/naive-theme.ts
    export const themeConfig = {
@@ -449,21 +471,20 @@ if (!services?.value) {
      dark: darkTheme,
      blue: createCustomTheme(blueColors),
      green: createCustomTheme(greenColors),
-     purple: createCustomTheme(purpleColors)
+     purple: createCustomTheme(purpleColors),
    }
    ```
 
 3. **组件使用**
+
    ```vue
    <template>
-     <NButton type="primary" @click="handleClick">
-       按钮
-     </NButton>
+     <NButton type="primary" @click="handleClick"> 按钮 </NButton>
      <NCard title="卡片标题">
        <p>卡片内容</p>
      </NCard>
    </template>
-   
+
    <script setup>
    import { NButton, NCard } from 'naive-ui'
    </script>
@@ -474,28 +495,33 @@ if (!services?.value) {
 系统提供5种完整主题配置，每种主题都包含完整的颜色体系和组件样式定制：
 
 **1. 日间模式 (light)**
+
 - 基础主题：lightTheme
 - 主色调：#0ea5e9 (天蓝色)
 - 适用场景：默认日间使用，清晰简洁
 
 **2. 夜间模式 (dark)**
-- 基础主题：darkTheme  
+
+- 基础主题：darkTheme
 - 主色调：#64748b (石板灰)
 - 适用场景：低光环境，护眼模式
 
 **3. 蓝色模式 (blue)**
+
 - 基础主题：lightTheme + 自定义背景
 - 主色调：#0ea5e9 (天蓝色)
 - 特色：蓝色调背景色系 (#f0f9ff body, #e0f2fe card)
 - 适用场景：商务专业风格
 
 **4. 绿色模式 (green)**
+
 - 基础主题：darkTheme + 完整绿色配色
 - 主色调：#14b8a6 (青绿色)
 - 特色：深色基调配绿色主题 (#0f1e1a body, #1a2e25 card)
 - 完整配置：包含滚动条、图标、边框等所有UI元素
 
 **5. 暗紫模式 (purple)**
+
 - 基础主题：darkTheme + 紫色配色
 - 主色调：#a855f7 (紫色)
 - 特色：深色基调配紫色主题 (#1a0f2e body, #251a35 card)
@@ -504,6 +530,7 @@ if (!services?.value) {
 #### 3.8.4 常用组件使用模式
 
 **1. 表单组件**
+
 ```vue
 <template>
   <NForm ref="formRef" :model="formModel" :rules="formRules">
@@ -511,22 +538,17 @@ if (!services?.value) {
       <NInput v-model:value="formModel.username" placeholder="请输入用户名" />
     </NFormItem>
     <NFormItem label="模型选择" path="model">
-      <NSelect 
-        v-model:value="formModel.model" 
-        :options="modelOptions"
-        placeholder="请选择模型"
-      />
+      <NSelect v-model:value="formModel.model" :options="modelOptions" placeholder="请选择模型" />
     </NFormItem>
     <NFormItem>
-      <NButton type="primary" @click="handleSubmit">
-        提交
-      </NButton>
+      <NButton type="primary" @click="handleSubmit"> 提交 </NButton>
     </NFormItem>
   </NForm>
 </template>
 ```
 
 **2. 布局组件**
+
 ```vue
 <template>
   <!-- 弹性布局 - 推荐用于现代布局 -->
@@ -535,7 +557,7 @@ if (!services?.value) {
       <NH3>标题</NH3>
       <NButton type="primary">操作</NButton>
     </NFlex>
-    
+
     <!-- 卡片容器 -->
     <NCard title="内容卡片" hoverable>
       <NFlex :size="12">
@@ -563,6 +585,7 @@ if (!services?.value) {
 ```
 
 **3. 反馈组件**
+
 ```vue
 <script setup>
 import { useMessage, useNotification } from 'naive-ui'
@@ -578,13 +601,14 @@ const showNotification = () => {
   notification.info({
     title: '通知标题',
     content: '通知内容',
-    duration: 3000
+    duration: 3000,
   })
 }
 </script>
 ```
 
 **4. 变量管理组件使用模式**
+
 ```vue
 <script setup>
 import { useVariableManager } from '@prompt-optimizer/ui'
@@ -599,7 +623,7 @@ const {
   addVariable,
   updateVariable,
   deleteVariable,
-  replaceVariables
+  replaceVariables,
 } = useVariableManager(services, { autoSync: true })
 
 // 使用变量替换
@@ -619,6 +643,7 @@ const processedContent = computed(() => {
 - **主题切换**：通过switchTheme()方法实现动态主题切换
 
 ### 3.9 测试规范
+
 - 组件测试
   - 测试组件渲染
   - 测试用户交互
@@ -773,6 +798,7 @@ const processedContent = computed(() => {
 ## 5. 代码审查清单
 
 ### 5.1 通用审查项
+
 - 代码质量
   - [ ] 遵循约定的代码风格
   - [ ] 没有未使用的变量或导入
@@ -789,6 +815,7 @@ const processedContent = computed(() => {
   - [ ] 缓存计算结果
 
 ### 5.2 前端审查项
+
 - 组件设计
   - [ ] 组件职责单一
   - [ ] 属性和事件定义清晰
@@ -801,6 +828,7 @@ const processedContent = computed(() => {
   - [ ] 加载状态处理
 
 ### 5.3 核心包审查项
+
 - API设计
   - [ ] 接口一致性
   - [ ] 错误处理标准化
@@ -815,6 +843,7 @@ const processedContent = computed(() => {
 ## 6. 开发环境要求
 
 ### 6.1 开发环境
+
 - Node.js >= 18.0.0
 - pnpm >= 8.15.0
 - VS Code
@@ -826,6 +855,7 @@ const processedContent = computed(() => {
   - Tailwind CSS IntelliSense
 
 ### 6.2 浏览器支持
+
 - Chrome >= 90
 - Firefox >= 90
 - Safari >= 14

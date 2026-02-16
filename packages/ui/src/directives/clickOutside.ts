@@ -15,5 +15,5 @@ export const clickOutside = {
     if (el._clickOutside) {
       document.removeEventListener('click', el._clickOutside)
     }
-  }
-} 
+  },
+}

@@ -9,15 +9,15 @@ export const NAVIGATION_TIMEOUTS = {
   PAGE_LOAD: 15000,
   ROUTE_SWITCH: 20000,
   WORKSPACE_VISIBLE: 20000,
-  
+
   // Selector visibility
   ELEMENT_VISIBLE: 15000,
   ELEMENT_HIDDEN: 3000,
-  
+
   // Modal and dropdown
   MODAL_VISIBLE: 5000,
   DROPDOWN_VISIBLE: 3000,
-  
+
   // Workspace specific
   WORKSPACE_BOOTSTRAP: 45000,
 } as const
@@ -27,15 +27,15 @@ export const OPERATION_TIMEOUTS = {
   // Button interactions
   BUTTON_CLICK: 20000,
   BUTTON_ENABLED: 15000,
-  
+
   // Input interactions
   INPUT_VISIBLE: 15000,
   INPUT_READY: 10000,
-  
+
   // Selection
   SELECT_VISIBLE: 20000,
   OPTION_VISIBLE: 20000,
-  
+
   // File operations
   DOWNLOAD: 5000,
   UPLOAD: 30000,
@@ -45,14 +45,14 @@ export const OPERATION_TIMEOUTS = {
 export const API_TIMEOUTS = {
   // Short operations
   SHORT_OPERATION: 10000,
-  
+
   // Medium operations
   MEDIUM_OPERATION: 60000,
-  
+
   // Long operations
   LONG_OPERATION: 120000,
   VERY_LONG_OPERATION: 240000,
-  
+
   // Rate limiting
   RATE_LIMIT_DELAY: 60000,
 } as const
@@ -62,11 +62,11 @@ export const WAIT_TIMEOUTS = {
   // Quick checks
   QUICK_CHECK: 1000,
   SHORT_WAIT: 2000,
-  
+
   // Standard waits
   STANDARD_WAIT: 5000,
   MODERATE_WAIT: 10000,
-  
+
   // Long waits
   EXTENDED_WAIT: 30000,
 } as const
@@ -75,17 +75,17 @@ export const WAIT_TIMEOUTS = {
 export const UI_TIMEOUTS = {
   // Micro animations (< 300ms)
   MICRO_WAIT: 200,
-  
+
   // Small transitions (300-500ms)
   SMALL_WAIT: 300,
   UI_TRANSITION: 500,
-  
+
   // Session restore operations
   SESSION_RESTORE: 2000,
-  
+
   // Tag/Category operations
   TAG_OPERATION: 1000,
-  
+
   // Favorite operations
   FAVORITE_ANIMATION: 800,
 } as const
@@ -131,23 +131,11 @@ export const TIMEOUTS = {
 } as const
 
 // Convenience exports for direct import
-export const {
-  PAGE_LOAD,
-  ROUTE_SWITCH,
-  WORKSPACE_VISIBLE,
-  ELEMENT_VISIBLE,
-} = NAVIGATION_TIMEOUTS
+export const { PAGE_LOAD, ROUTE_SWITCH, WORKSPACE_VISIBLE, ELEMENT_VISIBLE } = NAVIGATION_TIMEOUTS
 
-export const {
-  BUTTON_CLICK,
-  BUTTON_ENABLED,
-  INPUT_VISIBLE,
-} = OPERATION_TIMEOUTS
+export const { BUTTON_CLICK, BUTTON_ENABLED, INPUT_VISIBLE } = OPERATION_TIMEOUTS
 
-export const {
-  LONG_OPERATION,
-  VERY_LONG_OPERATION,
-} = API_TIMEOUTS
+export const { LONG_OPERATION, VERY_LONG_OPERATION } = API_TIMEOUTS
 
 export const {
   DEFAULT: DEFAULT_TEST_TIMEOUT,

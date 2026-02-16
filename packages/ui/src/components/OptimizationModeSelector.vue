@@ -1,6 +1,7 @@
 <!-- 优化模式选择器组件 - 使用 Naive UI RadioGroup -->
 <template>
-  <NRadioGroup data-testid="optimization-mode-selector"
+  <NRadioGroup
+    data-testid="optimization-mode-selector"
     :value="modelValue"
     @update:value="updateOptimizationMode"
     size="small"
@@ -16,21 +17,13 @@
       >
         {{ systemLabel }}
       </NRadioButton>
-      <NRadioButton
-        data-testid="sub-mode-user"
-        value="user"
-        :title="userHelp"
-      >
+      <NRadioButton data-testid="sub-mode-user" value="user" :title="userHelp">
         {{ userLabel }}
       </NRadioButton>
     </template>
     <!-- Pro 模式：变量 | 多对话 -->
     <template v-else>
-      <NRadioButton
-        data-testid="sub-mode-variable"
-        value="variable"
-        :title="userHelp"
-      >
+      <NRadioButton data-testid="sub-mode-variable" value="variable" :title="userHelp">
         {{ userLabel }}
       </NRadioButton>
       <NRadioButton
@@ -148,7 +141,10 @@ const updateOptimizationMode = (mode: SubMode) => {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+  transition:
+    width 0.3s ease-out,
+    height 0.3s ease-out,
+    opacity 0.3s ease-out;
   opacity: 0;
   pointer-events: none;
 }
@@ -184,12 +180,12 @@ const updateOptimizationMode = (mode: SubMode) => {
     transition: none !important;
     animation: none !important;
   }
-  
+
   .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
     transform: none;
     box-shadow: none;
   }
-  
+
   .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
     transform: none;
   }

@@ -9,7 +9,11 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setPiniaServices, getPiniaServices } from '../../src/plugins/pinia'
 import { useTemporaryVariables } from '../../src/composables/variable/useTemporaryVariables'
-import { createTestPinia, withMockPiniaServices, createPreferenceServiceStub } from '../utils/pinia-test-helpers'
+import {
+  createTestPinia,
+  withMockPiniaServices,
+  createPreferenceServiceStub,
+} from '../utils/pinia-test-helpers'
 
 describe('Pinia 改进功能测试', () => {
   // 每个测试前清理全局服务
@@ -155,8 +159,8 @@ describe('Pinia 改进功能测试', () => {
       const customGet = vi.fn()
       const { services } = createTestPinia({
         preferenceService: createPreferenceServiceStub({
-          get: customGet
-        })
+          get: customGet,
+        }),
       })
 
       expect(services.preferenceService.get).toBe(customGet)

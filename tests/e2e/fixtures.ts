@@ -1,4 +1,10 @@
-import { test as base, expect, type ConsoleMessage, type Page, type BrowserContext } from '@playwright/test'
+import {
+  test as base,
+  expect,
+  type ConsoleMessage,
+  type Page,
+  type BrowserContext,
+} from '@playwright/test'
 import { setupVCRForTest } from './helpers/vcr'
 
 const IGNORE_CONSOLE_PATTERNS: RegExp[] = [
@@ -7,7 +13,7 @@ const IGNORE_CONSOLE_PATTERNS: RegExp[] = [
   /ResizeObserver loop completed with undelivered notifications/i,
   // Vue Router warnings during route migration (pro/user -> pro/variable, pro/system -> pro/multi)
   /Vue Router warn.*No match found for location with path "\/(pro\/user|pro\/system)"/i,
-  /Router.*非法 subMode.*重定向/i
+  /Router.*非法 subMode.*重定向/i,
 ]
 
 function shouldIgnoreConsoleMessage(message: string): boolean {
@@ -17,10 +23,11 @@ function shouldIgnoreConsoleMessage(message: string): boolean {
 function formatConsoleMessage(msg: ConsoleMessage): string {
   const type = msg.type()
   const location = msg.location()
-  const loc = location.url ? ` @ ${location.url}:${location.lineNumber}:${location.columnNumber}` : ''
+  const loc = location.url
+    ? ` @ ${location.url}:${location.lineNumber}:${location.columnNumber}`
+    : ''
   return `[console.${type}] ${msg.text()}${loc}`
 }
-
 
 /**
  * 自定义测试 fixture，扩展页面功能
@@ -102,14 +109,14 @@ export const test = base.extend<{ context: BrowserContext; page: Page }>({
 
     await testInfo.attach('console-and-page-errors', {
       body: problems.join('\n\n'),
-      contentType: 'text/plain'
+      contentType: 'text/plain',
     })
 
     throw new Error(
       `Browser console/page errors detected (${problems.length}). See attachment: console-and-page-errors\n\n` +
-      problems.join('\n\n')
+        problems.join('\n\n')
     )
-  }
+  },
 })
 
 export { expect }

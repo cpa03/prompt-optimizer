@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-analytical-optimize-en',
@@ -119,7 +119,7 @@ After completing optimization, please self-check:
 4. Do not use code blocks to surround the content
 5. Do not add explanations or comments
 6. Keep the same language as the original message
-7. Do not change the basic intent of the original message`
+7. Do not change the basic intent of the original message`,
     },
     {
       role: 'user',
@@ -143,8 +143,8 @@ Message #{{index}} ({{roleLabel}})
 Content: {{#contentTooLong}}{{contentPreview}}... (See message #{{index}} above for full content){{/contentTooLong}}{{^contentTooLong}}{{content}}{{/contentTooLong}}
 {{/selectedMessage}}
 
-Based on the analytical optimization principles and examples, please output the optimized message content directly:`
-    }
+Based on the analytical optimization principles and examples, please output the optimized message content directly:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -154,7 +154,7 @@ Based on the analytical optimization principles and examples, please output the 
     templateType: 'conversationMessageOptimize',
     language: 'en',
     variant: 'context',
-    tags: ['context', 'message', 'optimize', 'analytical', 'english']
+    tags: ['context', 'message', 'optimize', 'analytical', 'english'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

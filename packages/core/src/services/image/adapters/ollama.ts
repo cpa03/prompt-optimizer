@@ -6,7 +6,7 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, MIME_TYPES } from '../../../config'
@@ -32,9 +32,9 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL', 'apiKey'],
         fieldTypes: {
           baseURL: 'string',
-          apiKey: 'string'
-        }
-      }
+          apiKey: 'string',
+        },
+      },
     }
   }
 
@@ -56,10 +56,10 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       capabilities: {
         text2image: true,
         image2image: false,
-        multiImage: false
+        multiImage: false,
       },
       parameterDefinitions: this.getParameterDefinitions(modelId),
-      defaultParameterValues: this.getDefaultParameterValues(modelId)
+      defaultParameterValues: this.getDefaultParameterValues(modelId),
     }
   }
 
@@ -68,12 +68,14 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     this.validateConnectionConfig(connectionConfig)
 
     const baseURL = typeof connectionConfig.baseURL === 'string' ? connectionConfig.baseURL : ''
-    const normalizedBase = this.normalizeBaseUrl(baseURL.trim() ? baseURL : this.getProvider().defaultBaseURL)
+    const normalizedBase = this.normalizeBaseUrl(
+      baseURL.trim() ? baseURL : this.getProvider().defaultBaseURL
+    )
     const url = `${normalizedBase}/models`
 
     const rawApiKey = typeof connectionConfig.apiKey === 'string' ? connectionConfig.apiKey : ''
     const headers: Record<string, string> = {
-      ...HTTP_HEADERS.json
+      ...HTTP_HEADERS.json,
     }
     if (rawApiKey.trim()) {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
@@ -99,11 +101,13 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     }
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: 'a simple red flower',
-        count: 1
+        count: 1,
       }
     }
 
@@ -119,8 +123,8 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
         descriptionKey: 'image.params.size.description',
         type: 'string',
         defaultValue: IMAGE_SIZE_PRESETS.standard.default,
-        allowedValues: [...IMAGE_SIZE_PRESETS.standard.available]
-      }
+        allowedValues: [...IMAGE_SIZE_PRESETS.standard.available],
+      },
     ]
   }
 
@@ -128,31 +132,40 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     return { size: IMAGE_SIZE_PRESETS.standard.default }
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     // Ollama image API only supports text-to-image for now.
     if (request.inputImage) {
-      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, { modelName: config.modelId })
+      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, {
+        modelName: config.modelId,
+      })
     }
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
 
-    const size = typeof merged.size === 'string' && merged.size.trim() ? merged.size : IMAGE_SIZE_PRESETS.standard.default
+    const size =
+      typeof merged.size === 'string' && merged.size.trim()
+        ? merged.size
+        : IMAGE_SIZE_PRESETS.standard.default
 
     const payload = {
       model: config.modelId,
       prompt: request.prompt,
       size,
-      response_format: 'b64_json'
+      response_format: 'b64_json',
     }
 
     const url = this.resolveEndpointUrl(config, '/images/generations')
-    const rawApiKey = typeof config.connectionConfig?.apiKey === 'string' ? config.connectionConfig.apiKey : ''
+    const rawApiKey =
+      typeof config.connectionConfig?.apiKey === 'string' ? config.connectionConfig.apiKey : ''
 
     const headers: Record<string, string> = {
-      ...HTTP_HEADERS.json
+      ...HTTP_HEADERS.json,
     }
     if (rawApiKey.trim()) {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
@@ -161,7 +174,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     const response = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -194,7 +207,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       return {
         b64: item.b64_json,
         mimeType: MIME_TYPES.image.png,
-        url: dataUrl
+        url: dataUrl,
       }
     })
 
@@ -203,8 +216,8 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       metadata: {
         providerId: 'ollama',
         modelId: config.modelId,
-        configId: config.id
-      }
+        configId: config.id,
+      },
     }
   }
 }

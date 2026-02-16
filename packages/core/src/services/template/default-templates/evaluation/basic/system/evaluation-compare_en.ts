@@ -4,7 +4,7 @@
  * Compare test results of original and optimized prompts
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-system-compare',
@@ -90,7 +90,7 @@ improvements SHOULD be **generic** improvements, for example:
 - ✓ Enhance output format constraints
 - ✓ Clarify role positioning and boundaries
 - ✓ Add generic quality requirements
-- ✓ Improve instruction clarity and completeness`
+- ✓ Improve instruction clarity and completeness`,
     },
     {
       role: 'user',
@@ -117,8 +117,8 @@ improvements SHOULD be **generic** improvements, for example:
 
 ---
 
-Please strictly compare and evaluate, determine if the optimization is effective, and provide generic improvement suggestions for the system prompt.`
-    }
+Please strictly compare and evaluate, determine if the optimization is effective, and provide generic improvement suggestions for the system prompt.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -127,7 +127,7 @@ Please strictly compare and evaluate, determine if the optimization is effective
     description: 'Compare test results of original and optimized prompts',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'compare', 'scoring', 'basic', 'system']
+    tags: ['evaluation', 'compare', 'scoring', 'basic', 'system'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

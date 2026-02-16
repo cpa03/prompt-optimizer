@@ -3,6 +3,7 @@
 ## 概述
 
 现在Docker容器同时运行两个服务：
+
 1. **Web应用** (Nginx) - 端口80
 2. **MCP服务器** (Node.js) - 端口3000
 
@@ -27,6 +28,7 @@ Docker容器
 ## 环境变量配置
 
 ### Web应用配置
+
 ```bash
 VITE_OPENAI_API_KEY=sk-your-key
 VITE_GEMINI_API_KEY=your-key
@@ -34,6 +36,7 @@ VITE_GEMINI_API_KEY=your-key
 ```
 
 ### MCP服务器配置
+
 ```bash
 # 基础配置
 MCP_HTTP_PORT=3000
@@ -51,23 +54,27 @@ MCP_DEFAULT_MODEL_BASE_URL=
 ## 使用方法
 
 ### 1. 配置环境变量
+
 ```bash
 cp .env.docker.example .env
 # 编辑.env文件，填入实际的API密钥
 ```
 
 ### 2. 启动服务
+
 ```bash
 docker-compose up -d
 ```
 
 ### 3. 访问服务
+
 - **Web应用**: http://localhost:8081
-- **MCP服务器**: 
+- **MCP服务器**:
   - 直接访问: http://localhost:3000
   - 通过代理: http://localhost:8081/mcp
 
 ### 4. 健康检查
+
 ```bash
 # 检查容器状态
 docker-compose ps
@@ -82,6 +89,7 @@ docker-compose exec prompt-optimizer supervisorctl tail -f mcp-server
 ## MCP服务器API
 
 ### 获取工具列表
+
 ```bash
 curl -X POST http://localhost:8081/mcp \
   -H "Content-Type: application/json" \
@@ -89,6 +97,7 @@ curl -X POST http://localhost:8081/mcp \
 ```
 
 ### 调用工具
+
 ```bash
 curl -X POST http://localhost:8081/mcp \
   -H "Content-Type: application/json" \
@@ -109,16 +118,19 @@ curl -X POST http://localhost:8081/mcp \
 ## 故障排除
 
 ### 查看服务状态
+
 ```bash
 docker-compose exec prompt-optimizer supervisorctl status
 ```
 
 ### 重启MCP服务器
+
 ```bash
 docker-compose exec prompt-optimizer supervisorctl restart mcp-server
 ```
 
 ### 查看详细日志
+
 ```bash
 # Nginx日志
 docker-compose exec prompt-optimizer tail -f /var/log/nginx/error.log
@@ -141,6 +153,7 @@ services:
 ```
 
 然后重新构建：
+
 ```bash
 docker-compose up --build -d
 ```

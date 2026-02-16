@@ -11,6 +11,7 @@
 ### 模式 1: Basic 模式（使用 Logic 层）
 
 **架构图**:
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │              BasicSystemWorkspace.vue                        │
@@ -50,6 +51,7 @@
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const logic = useBasicWorkspaceLogic({
@@ -78,6 +80,7 @@ const unwrappedLogicProps = computed(() => ({
 ```
 
 **特点**:
+
 - ✅ 代码复用：BasicSystem 和 BasicUser 共享 Logic 层
 - ✅ 统一业务逻辑：优化、迭代、测试、版本管理
 - ❌ 需要 `.value` 解包对象属性
@@ -89,6 +92,7 @@ const unwrappedLogicProps = computed(() => ({
 ### 模式 2: Context 模式（使用 Tester Composable）
 
 **架构图**:
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │              ContextSystemWorkspace.vue                      │
@@ -128,6 +132,7 @@ const unwrappedLogicProps = computed(() => ({
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const conversationTester = useConversationTester(
@@ -155,6 +160,7 @@ const hasOriginalResult = computed(() =>
 ```
 
 **特点**:
+
 - ✅ 无需 `.value`，reactive 自动解包
 - ✅ 代码简洁清晰
 - ✅ TypeScript 类型检查更准确
@@ -167,6 +173,7 @@ const hasOriginalResult = computed(() =>
 ### 模式 3: Image 模式（直接使用 Store）
 
 **架构图**:
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │              ImageText2ImageWorkspace.vue                    │
@@ -203,6 +210,7 @@ const hasOriginalResult = computed(() =>
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const session = useImageText2ImageSession()
@@ -242,6 +250,7 @@ const {
 ```
 
 **特点**:
+
 - ✅ 直接使用 Store，数据流清晰
 - ✅ 业务逻辑分离到专门 composables
 - ❌ 组件内定义大量 computed 样板代码
@@ -254,14 +263,15 @@ const {
 
 ### 维度 1: 状态管理
 
-| 方面 | Basic 模式 | Context 模式 | Image 模式 |
-|------|-----------|-------------|-----------|
-| **持久化状态** | Session Store | Session Store | Session Store |
-| **过程态** | Logic 层 ref | Tester reactive | 组件内 ref |
-| **派生状态** | 组件内 computed | 组件内 computed | 组件内 computed |
-| **状态同步** | Logic 代理 Store | watch 双向同步 | 直接访问 Store |
+| 方面           | Basic 模式       | Context 模式    | Image 模式      |
+| -------------- | ---------------- | --------------- | --------------- |
+| **持久化状态** | Session Store    | Session Store   | Session Store   |
+| **过程态**     | Logic 层 ref     | Tester reactive | 组件内 ref      |
+| **派生状态**   | 组件内 computed  | 组件内 computed | 组件内 computed |
+| **状态同步**   | Logic 代理 Store | watch 双向同步  | 直接访问 Store  |
 
 **问题**:
+
 - ❌ 三种模式的状态管理策略完全不同
 - ❌ Context 模式需要手动 watch 同步，容易出错
 - ❌ Image 模式的复杂更新逻辑散落在组件内
@@ -270,13 +280,14 @@ const {
 
 ### 维度 2: 数据流清晰度
 
-| 方面 | Basic 模式 | Context 模式 | Image 模式 |
-|------|-----------|-------------|-----------|
-| **读取数据** | `logic.testResults.value` | `tester.testResults` | `session.xxx` |
+| 方面         | Basic 模式                      | Context 模式                   | Image 模式            |
+| ------------ | ------------------------------- | ------------------------------ | --------------------- |
+| **读取数据** | `logic.testResults.value`       | `tester.testResults`           | `session.xxx`         |
 | **更新数据** | `logic.testResults.value = ...` | `tester.testResults.xxx = ...` | `session.updateXxx()` |
-| **数据流向** | 双向 computed | 双向（Tester ↔️ Store） | 双向 computed |
+| **数据流向** | 双向 computed                   | 双向（Tester ↔️ Store）        | 双向 computed         |
 
 **问题**:
+
 - ❌ 三种模式都使用了双向绑定，违背 Vue 3 单向数据流原则
 - ❌ Context 模式的数据同步逻辑最复杂
 
@@ -284,13 +295,13 @@ const {
 
 ### 维度 3: 开发体验
 
-| 方面 | Basic 模式 | Context 模式 | Image 模式 |
-|------|-----------|-------------|-----------|
-| **是否需要 .value** | 是（对象属性） | 否（reactive） | 否（顶层 ref） |
-| **代码简洁度** | 中 | 高 | 低（大量 computed） |
-| **类型安全** | ⚠️ 运行时错误 | ✅ 编译时检查 | ✅ 编译时检查 |
-| **样板代码** | 中（解包逻辑） | 少 | 多（双向 computed） |
-| **可测试性** | 中 | 高 | 低（依赖组件） |
+| 方面                | Basic 模式     | Context 模式   | Image 模式          |
+| ------------------- | -------------- | -------------- | ------------------- |
+| **是否需要 .value** | 是（对象属性） | 否（reactive） | 否（顶层 ref）      |
+| **代码简洁度**      | 中             | 高             | 低（大量 computed） |
+| **类型安全**        | ⚠️ 运行时错误  | ✅ 编译时检查  | ✅ 编译时检查       |
+| **样板代码**        | 中（解包逻辑） | 少             | 多（双向 computed） |
+| **可测试性**        | 中             | 高             | 低（依赖组件）      |
 
 **结论**: Context 模式的开发体验最好
 
@@ -298,14 +309,15 @@ const {
 
 ### 维度 4: 架构一致性
 
-| 方面 | Basic 模式 | Context 模式 | Image 模式 |
-|------|-----------|-------------|-----------|
-| **中间层** | Logic 层 | Tester 层 | 无 |
-| **状态包装** | ComputedRef | Reactive | 直接 Ref |
+| 方面         | Basic 模式                | Context 模式              | Image 模式        |
+| ------------ | ------------------------- | ------------------------- | ----------------- |
+| **中间层**   | Logic 层                  | Tester 层                 | 无                |
+| **状态包装** | ComputedRef               | Reactive                  | 直接 Ref          |
 | **代码复用** | ✅ 高（System/User 共享） | ✅ 高（System/User 共享） | ❌ 低（各自独立） |
-| **学习曲线** | 陡峭（理解 Logic 层） | 平坦 | 平坦 |
+| **学习曲线** | 陡峭（理解 Logic 层）     | 平坦                      | 平坦              |
 
 **问题**:
+
 - ❌ Basic 模式的 Logic 层增加了理解成本
 - ❌ Image 模式缺少代码复用
 
@@ -318,6 +330,7 @@ const {
 **核心思路**: 所有模式都使用 `reactive` 对象，不使用 `computed` 双向绑定
 
 **架构设计**:
+
 ```typescript
 // ✅ 统一的 Workspace Composable
 export function useWorkspace(options: {
@@ -342,7 +355,7 @@ export function useWorkspace(options: {
     // 历史管理（不持久化）
     currentVersions: [],
     currentChainId: '',
-    currentVersionId: ''
+    currentVersionId: '',
   })
 
   // ✅ 业务逻辑方法
@@ -355,7 +368,7 @@ export function useWorkspace(options: {
       state.optimizedPrompt = newPrompt
 
       sessionStore.updateOptimizedResult({
-        optimizedPrompt: newPrompt
+        optimizedPrompt: newPrompt,
       })
     } finally {
       state.isOptimizing = false
@@ -380,6 +393,7 @@ export function useWorkspace(options: {
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const workspace = useWorkspace({ mode: 'basic-system' })
@@ -402,6 +416,7 @@ const handleOptimize = () => workspace.handleOptimize()
 ```
 
 **优点**:
+
 - ✅ 统一架构，所有模式一致
 - ✅ 无需 `.value`，开发体验最佳
 - ✅ 代码简洁清晰
@@ -409,6 +424,7 @@ const handleOptimize = () => workspace.handleOptimize()
 - ✅ 符合 Vue 3 单向数据流
 
 **缺点**:
+
 - ⚠️ 需要重构所有模式
 - ⚠️ 需要手动 watch 同步状态
 
@@ -419,6 +435,7 @@ const handleOptimize = () => workspace.handleOptimize()
 **核心思路**: 保留 Logic 层，但使用 `toRefs` 自动解包
 
 **架构设计**:
+
 ```typescript
 export function useWorkspaceLogic(options: { mode: string }) {
   const sessionStore = useSessionStore(options.mode)
@@ -430,7 +447,7 @@ export function useWorkspaceLogic(options: { mode: string }) {
   // 状态代理
   const testResults = computed({
     get: () => sessionStore.testResults,
-    set: (value) => sessionStore.updateTestResults(value)
+    set: (value) => sessionStore.updateTestResults(value),
   })
 
   // 业务逻辑
@@ -443,14 +460,15 @@ export function useWorkspaceLogic(options: { mode: string }) {
     ...toRefs({
       testResults,
       isOptimizing,
-      isTestingOriginal
+      isTestingOriginal,
     }),
-    handleTest
+    handleTest,
   }
 }
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const workspace = useWorkspaceLogic({ mode: 'basic-system' })
@@ -463,11 +481,13 @@ const hasOriginalResult = computed(() =>
 ```
 
 **优点**:
+
 - ✅ 最小改动
 - ✅ 保持现有架构
 - ✅ 无需 `.value`
 
 **缺点**:
+
 - ⚠️ 仍然使用双向 computed
 - ⚠️ Logic 层仍是间接层
 
@@ -478,6 +498,7 @@ const hasOriginalResult = computed(() =>
 **核心思路**: 所有模式都直接使用 Store，业务逻辑分离到 Operations Composable
 
 **架构设计**:
+
 ```typescript
 // ✅ Store: 只管理状态
 const sessionStore = useSessionStore('basic-system')
@@ -486,16 +507,15 @@ const { prompt, testResults } = storeToRefs(sessionStore)
 // ✅ Operations: 只包含业务逻辑
 const { handleOptimize, handleTest } = useWorkspaceOperations({
   sessionStore,
-  services
+  services,
 })
 
 // ✅ 派生状态：组件内定义
-const hasOriginalResult = computed(() =>
-  !!testResults.value?.originalResult
-)
+const hasOriginalResult = computed(() => !!testResults.value?.originalResult)
 ```
 
 **组件中使用**:
+
 ```typescript
 <script setup>
 const sessionStore = useSessionStore('basic-system')
@@ -521,12 +541,14 @@ const hasOriginalResult = computed(() =>
 ```
 
 **优点**:
+
 - ✅ 符合 Vue 3 最佳实践
 - ✅ 单向数据流
 - ✅ 职责清晰分离
 - ✅ 易于测试
 
 **缺点**:
+
 - ⚠️ 需要重构所有模式
 - ⚠️ 组件内需要定义 computed（但可以接受）
 
@@ -534,16 +556,16 @@ const hasOriginalResult = computed(() =>
 
 ## 📊 方案对比
 
-| 维度 | 方案 A (Reactive) | 方案 B (Logic + toRefs) | 方案 C (Store + Operations) |
-|------|------------------|------------------------|----------------------------|
-| **改动成本** | 大 | 中 | 大 |
-| **开发体验** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| **代码简洁度** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **类型安全** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **数据流清晰度** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **符合 Vue 3 规范** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **维护成本** | 低 | 中 | 低 |
-| **推荐指数** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 维度                | 方案 A (Reactive) | 方案 B (Logic + toRefs) | 方案 C (Store + Operations) |
+| ------------------- | ----------------- | ----------------------- | --------------------------- |
+| **改动成本**        | 大                | 中                      | 大                          |
+| **开发体验**        | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐                | ⭐⭐⭐⭐                    |
+| **代码简洁度**      | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐                | ⭐⭐⭐                      |
+| **类型安全**        | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐                | ⭐⭐⭐⭐⭐                  |
+| **数据流清晰度**    | ⭐⭐⭐⭐          | ⭐⭐⭐                  | ⭐⭐⭐⭐⭐                  |
+| **符合 Vue 3 规范** | ⭐⭐⭐⭐          | ⭐⭐⭐                  | ⭐⭐⭐⭐⭐                  |
+| **维护成本**        | 低                | 中                      | 低                          |
+| **推荐指数**        | ⭐⭐⭐⭐⭐        | ⭐⭐⭐                  | ⭐⭐⭐⭐⭐                  |
 
 ---
 
@@ -556,12 +578,14 @@ const hasOriginalResult = computed(() =>
 **实施方案**: **方案 B（Logic + toRefs）**
 
 **理由**:
+
 - ✅ 改动成本最小
 - ✅ 立即解决 `.value` 问题
 - ✅ 保持现有架构
 - ✅ 无需大规模重构
 
 **实施步骤**:
+
 1. 修改 `useBasicWorkspaceLogic.ts`，使用 `toRefs` 自动解包
 2. 修改 Context 和 Image 模式，创建统一的 Logic 层
 3. 更新所有组件，移除 `.value` 访问
@@ -576,12 +600,14 @@ const hasOriginalResult = computed(() =>
 **实施方案**: **方案 C（Store + Operations）**
 
 **理由**:
+
 - ✅ 符合 Vue 3 单向数据流原则
 - ✅ 职责清晰分离（状态 vs 业务逻辑）
 - ✅ 易于测试和维护
 - ✅ 长期来看是最佳实践
 
 **实施步骤**:
+
 1. 重构 Basic 模式，移除 Logic 层
 2. 创建 `useWorkspaceOperations` composable
 3. 组件直接使用 Store + Operations
@@ -593,10 +619,12 @@ const hasOriginalResult = computed(() =>
 ## 📝 行动计划
 
 ### Phase 1: 紧急修复（已完成 ✅）
+
 - [x] 修复 Basic 模式的 `.value` 缺失问题
 - [x] 验证所有模式功能正常
 
 ### Phase 2: 短期对齐（1-2周）
+
 - [ ] 修改 `useBasicWorkspaceLogic.ts` 使用 `toRefs`
 - [ ] 为 Context 和 Image 创建统一的 Logic 层
 - [ ] 更新所有组件移除 `.value`
@@ -604,6 +632,7 @@ const hasOriginalResult = computed(() =>
 - [ ] 更新文档
 
 ### Phase 3: 长期重构（1-2月）
+
 - [ ] 设计新的统一架构
 - [ ] 创建 `useWorkspaceOperations` composable
 - [ ] 重构 Basic 模式

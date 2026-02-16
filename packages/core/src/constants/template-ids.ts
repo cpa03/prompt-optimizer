@@ -30,11 +30,8 @@ export const TEMPLATE_IDS = {
  * Template categories for organization
  */
 export const TEMPLATE_CATEGORIES = {
-  VARIABLE_PROCESSING: [
-    TEMPLATE_IDS.VARIABLE_EXTRACTION,
-    TEMPLATE_IDS.VARIABLE_VALUE_GENERATION,
-  ],
+  VARIABLE_PROCESSING: [TEMPLATE_IDS.VARIABLE_EXTRACTION, TEMPLATE_IDS.VARIABLE_VALUE_GENERATION],
 } as const
 
 // Type exports for type safety
-export type TemplateId = typeof TEMPLATE_IDS[keyof typeof TEMPLATE_IDS]
+export type TemplateId = (typeof TEMPLATE_IDS)[keyof typeof TEMPLATE_IDS]

@@ -30,20 +30,20 @@
 
 ## 技术决策
 
-| 决策 | 理由 |
-| --- | --- |
+| 决策                                                                              | 理由                                                                      |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------- | ------------------------------------------------------ |
 | 在 `useBasicUserSession` 中持久化 per-panel 的 version+model 选择（`testPanels`） | session 已持久化 compare/testContent 等状态；符合“session-scoped”的预期。 |
-| `version` 使用 `0 | number | 'latest'` 表示 | 易持久化、易绑定到 select，`latest` 可跟随新版本增长。 |
-| 通过确定性 resolver 将选择值解析为 prompt 文本 | 解耦 UI 与测试逻辑，并对缺失/非法版本做 fallback。 |
-| `TestResultSection` 增加 header-extra slots，`TestAreaPanel` 透传 | 组件保持通用；各 workspace 仅注入自己的控制区。 |
+| `version` 使用 `0                                                                 | number                                                                    | 'latest'` 表示 | 易持久化、易绑定到 select，`latest` 可跟随新版本增长。 |
+| 通过确定性 resolver 将选择值解析为 prompt 文本                                    | 解耦 UI 与测试逻辑，并对缺失/非法版本做 fallback。                        |
+| `TestResultSection` 增加 header-extra slots，`TestAreaPanel` 透传                 | 组件保持通用；各 workspace 仅注入自己的控制区。                           |
 
 ## UI/布局决策（本次）
 
-| 决策 | 理由 |
-| --- | --- |
-| 结果卡 header/actions 允许换行（flex-wrap） | 避免窄屏时标题+选择器+评估入口溢出。 |
+| 决策                                                                                | 理由                                                                       |
+| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 结果卡 header/actions 允许换行（flex-wrap）                                         | 避免窄屏时标题+选择器+评估入口溢出。                                       |
 | 限制选择器宽度：version 固定 `100px`；model 覆盖为 `min-width: 120px; width: 160px` | 解决 `SelectWithConfig` 默认 minWidth=160 造成的宽度压力，同时保持可用性。 |
-| 在 header-extra 内使用 `NFlex` 对齐与 spacing | 比 `NSpace wrap=false` 更可控，且在 header 换行时更稳定。 |
+| 在 header-extra 内使用 `NFlex` 对齐与 spacing                                       | 比 `NSpace wrap=false` 更可控，且在 header 换行时更稳定。                  |
 
 ## 资源
 

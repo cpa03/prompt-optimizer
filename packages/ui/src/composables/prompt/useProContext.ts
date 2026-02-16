@@ -11,7 +11,9 @@ import type { ProEvaluationContext } from '@prompt-optimizer/core'
 /**
  * ProContext 的 InjectionKey，保证类型安全
  */
-export const ProContextKey: InjectionKey<Ref<ProEvaluationContext | undefined> | ComputedRef<ProEvaluationContext | undefined>> = Symbol('proContext')
+export const ProContextKey: InjectionKey<
+  Ref<ProEvaluationContext | undefined> | ComputedRef<ProEvaluationContext | undefined>
+> = Symbol('proContext')
 
 /**
  * 提供 Pro 模式上下文
@@ -29,7 +31,9 @@ export const ProContextKey: InjectionKey<Ref<ProEvaluationContext | undefined> |
  * provideProContext(proContext)
  * ```
  */
-export function provideProContext(proContext: Ref<ProEvaluationContext | undefined> | ComputedRef<ProEvaluationContext | undefined>): void {
+export function provideProContext(
+  proContext: Ref<ProEvaluationContext | undefined> | ComputedRef<ProEvaluationContext | undefined>
+): void {
   provide(ProContextKey, proContext)
 }
 
@@ -52,6 +56,9 @@ export function provideProContext(proContext: Ref<ProEvaluationContext | undefin
  * })
  * ```
  */
-export function useProContextOptional(): Ref<ProEvaluationContext | undefined> | ComputedRef<ProEvaluationContext | undefined> | undefined {
+export function useProContextOptional():
+  | Ref<ProEvaluationContext | undefined>
+  | ComputedRef<ProEvaluationContext | undefined>
+  | undefined {
   return inject(ProContextKey, undefined)
 }

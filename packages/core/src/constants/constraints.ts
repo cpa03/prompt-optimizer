@@ -4,7 +4,7 @@
  * Flexy loves modularity - all values are now environment-configurable!
  */
 
-import { getEnvInt } from '../config/env';
+import { getEnvInt } from '../config/env'
 
 // Validation constraints - now environment-configurable
 export const VALIDATION_CONSTRAINTS = {
@@ -12,7 +12,7 @@ export const VALIDATION_CONSTRAINTS = {
   KEY_MAX_LENGTH: getEnvInt('VALIDATION_KEY_MAX_LENGTH', 50),
   KEY_MIN_LENGTH: getEnvInt('VALIDATION_KEY_MIN_LENGTH', 1),
 
-  // Value length limits  
+  // Value length limits
   VALUE_MAX_LENGTH: getEnvInt('VALIDATION_VALUE_MAX_LENGTH', 1000),
 
   // Variable constraints
@@ -81,11 +81,11 @@ export const IMAGE_CONSTRAINTS = {
 
   // Supported MIME types - using env string with comma separation
   SUPPORTED_MIME_TYPES: (() => {
-    const envTypes = process?.env?.['IMAGE_SUPPORTED_MIME_TYPES'];
+    const envTypes = process?.env?.['IMAGE_SUPPORTED_MIME_TYPES']
     if (envTypes) {
-      return envTypes.split(',').map(t => t.trim());
+      return envTypes.split(',').map((t) => t.trim())
     }
-    return ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+    return ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
   })(),
 
   // Image storage constraints
@@ -140,4 +140,4 @@ export const CORE_CONSTRAINTS = {
 } as const
 
 // Re-export env helpers for convenience
-export { getEnvInt, getEnvFloat, getEnvString, getEnvBoolean as getEnvBool } from '../config/env';
+export { getEnvInt, getEnvFloat, getEnvString, getEnvBoolean as getEnvBool } from '../config/env'

@@ -1,24 +1,24 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { HistoryManager } from '../../../src/services/history/manager';
-import { PromptRecord } from '../../../src/services/history/types';
-import { MemoryStorageProvider } from '../../../src/services/storage/memoryStorageProvider';
-import { ModelManager } from '../../../src/services/model/manager';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { HistoryManager } from '../../../src/services/history/manager'
+import { PromptRecord } from '../../../src/services/history/types'
+import { MemoryStorageProvider } from '../../../src/services/storage/memoryStorageProvider'
+import { ModelManager } from '../../../src/services/model/manager'
 
 describe('HistoryManager Import/Export', () => {
-  let historyManager: HistoryManager;
-  let storageProvider: MemoryStorageProvider;
-  let modelManager: ModelManager;
+  let historyManager: HistoryManager
+  let storageProvider: MemoryStorageProvider
+  let modelManager: ModelManager
 
   beforeEach(async () => {
-    storageProvider = new MemoryStorageProvider();
-    modelManager = new ModelManager(storageProvider);
-    await modelManager.ensureInitialized();
-    historyManager = new HistoryManager(storageProvider, modelManager);
-  });
+    storageProvider = new MemoryStorageProvider()
+    modelManager = new ModelManager(storageProvider)
+    await modelManager.ensureInitialized()
+    historyManager = new HistoryManager(storageProvider, modelManager)
+  })
 
   afterEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   describe('exportData', () => {
     it('should export all history records', async () => {
@@ -32,8 +32,8 @@ describe('HistoryManager Import/Export', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'openai',
-        templateId: 'template-1'
-      };
+        templateId: 'template-1',
+      }
 
       const record2: PromptRecord = {
         id: 'record-2',
@@ -45,45 +45,45 @@ describe('HistoryManager Import/Export', () => {
         timestamp: Date.now() + 1000,
         modelKey: 'anthropic',
         templateId: 'template-2',
-        previousId: 'record-1'
-      };
+        previousId: 'record-1',
+      }
 
-      await historyManager.addRecord(record1);
-      await historyManager.addRecord(record2);
+      await historyManager.addRecord(record1)
+      await historyManager.addRecord(record2)
 
       // 导出数据
-      const exportedData = await historyManager.exportData();
+      const exportedData = await historyManager.exportData()
 
       // 验证导出的数据
-      expect(Array.isArray(exportedData)).toBe(true);
-      expect(exportedData.length).toBe(2);
+      expect(Array.isArray(exportedData)).toBe(true)
+      expect(exportedData.length).toBe(2)
 
       // 验证记录内容
-      const exportedRecord1 = exportedData.find(record => record.id === 'record-1');
-      const exportedRecord2 = exportedData.find(record => record.id === 'record-2');
+      const exportedRecord1 = exportedData.find((record) => record.id === 'record-1')
+      const exportedRecord2 = exportedData.find((record) => record.id === 'record-2')
 
-      expect(exportedRecord1).toBeDefined();
-      expect(exportedRecord1?.originalPrompt).toBe('Test prompt 1');
-      expect(exportedRecord1?.optimizedPrompt).toBe('Test response 1');
+      expect(exportedRecord1).toBeDefined()
+      expect(exportedRecord1?.originalPrompt).toBe('Test prompt 1')
+      expect(exportedRecord1?.optimizedPrompt).toBe('Test response 1')
 
-      expect(exportedRecord2).toBeDefined();
-      expect(exportedRecord2?.chainId).toBe('chain-1');
-      expect(exportedRecord2?.previousId).toBe('record-1');
-    });
+      expect(exportedRecord2).toBeDefined()
+      expect(exportedRecord2?.chainId).toBe('chain-1')
+      expect(exportedRecord2?.previousId).toBe('record-1')
+    })
 
     it('should export empty array when no records exist', async () => {
-      const exportedData = await historyManager.exportData();
-      expect(Array.isArray(exportedData)).toBe(true);
-      expect(exportedData.length).toBe(0);
-    });
+      const exportedData = await historyManager.exportData()
+      expect(Array.isArray(exportedData)).toBe(true)
+      expect(exportedData.length).toBe(0)
+    })
 
     it('should handle export error gracefully', async () => {
       // 模拟getRecords错误
-      vi.spyOn(historyManager, 'getRecords').mockRejectedValue(new Error('Storage error'));
+      vi.spyOn(historyManager, 'getRecords').mockRejectedValue(new Error('Storage error'))
 
-      await expect(historyManager.exportData()).rejects.toThrow('Failed to export history data');
-    });
-  });
+      await expect(historyManager.exportData()).rejects.toThrow('Failed to export history data')
+    })
+  })
 
   describe('importData', () => {
     it('should replace existing history records', async () => {
@@ -97,14 +97,14 @@ describe('HistoryManager Import/Export', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'openai',
-        templateId: 'template-1'
-      };
+        templateId: 'template-1',
+      }
 
-      await historyManager.addRecord(existingRecord);
+      await historyManager.addRecord(existingRecord)
 
       // 验证记录存在
-      const beforeImport = await historyManager.getRecords();
-      expect(beforeImport.length).toBe(1);
+      const beforeImport = await historyManager.getRecords()
+      expect(beforeImport.length).toBe(1)
 
       // 导入新记录
       const importData: PromptRecord[] = [
@@ -117,7 +117,7 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'anthropic',
-          templateId: 'template-2'
+          templateId: 'template-2',
         },
         {
           id: 'imported-record-2',
@@ -129,20 +129,20 @@ describe('HistoryManager Import/Export', () => {
           timestamp: Date.now() + 1000,
           modelKey: 'openai',
           templateId: 'template-3',
-          previousId: 'imported-record-1'
-        }
-      ];
+          previousId: 'imported-record-1',
+        },
+      ]
 
-      await historyManager.importData(importData);
+      await historyManager.importData(importData)
 
       // 验证替换模式：旧记录被删除，新记录被添加
-      const afterImport = await historyManager.getRecords();
-      expect(afterImport.length).toBe(2);
-      
-      expect(afterImport.find(r => r.id === 'existing-record')).toBeUndefined();
-      expect(afterImport.find(r => r.id === 'imported-record-1')).toBeDefined();
-      expect(afterImport.find(r => r.id === 'imported-record-2')).toBeDefined();
-    });
+      const afterImport = await historyManager.getRecords()
+      expect(afterImport.length).toBe(2)
+
+      expect(afterImport.find((r) => r.id === 'existing-record')).toBeUndefined()
+      expect(afterImport.find((r) => r.id === 'imported-record-1')).toBeDefined()
+      expect(afterImport.find((r) => r.id === 'imported-record-2')).toBeDefined()
+    })
 
     it('should preserve original IDs and maintain data relationships', async () => {
       // 导入有关联关系的记录
@@ -156,7 +156,7 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'openai',
-          templateId: 'template-1'
+          templateId: 'template-1',
         },
         {
           id: 'child-record',
@@ -168,22 +168,22 @@ describe('HistoryManager Import/Export', () => {
           timestamp: Date.now() + 1000,
           modelKey: 'openai',
           templateId: 'template-2',
-          previousId: 'parent-record' // 引用父记录
-        }
-      ];
+          previousId: 'parent-record', // 引用父记录
+        },
+      ]
 
-      await historyManager.importData(importData);
+      await historyManager.importData(importData)
 
       // 验证ID和关联关系被保持
-      const afterImport = await historyManager.getRecords();
-      const parentRecord = afterImport.find(r => r.id === 'parent-record');
-      const childRecord = afterImport.find(r => r.id === 'child-record');
+      const afterImport = await historyManager.getRecords()
+      const parentRecord = afterImport.find((r) => r.id === 'parent-record')
+      const childRecord = afterImport.find((r) => r.id === 'child-record')
 
-      expect(parentRecord).toBeDefined();
-      expect(childRecord).toBeDefined();
-      expect(childRecord?.previousId).toBe('parent-record'); // 关联关系应该被保持
-      expect(childRecord?.chainId).toBe('test-chain'); // 链ID应该被保持
-    });
+      expect(parentRecord).toBeDefined()
+      expect(childRecord).toBeDefined()
+      expect(childRecord?.previousId).toBe('parent-record') // 关联关系应该被保持
+      expect(childRecord?.chainId).toBe('test-chain') // 链ID应该被保持
+    })
 
     it('should handle records with missing optional fields', async () => {
       const importData: PromptRecord[] = [
@@ -196,21 +196,21 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'openai',
-          templateId: 'template-1'
+          templateId: 'template-1',
           // 没有previousId（因为是第一个版本）
-        }
-      ];
+        },
+      ]
 
-      await historyManager.importData(importData);
+      await historyManager.importData(importData)
 
-      const afterImport = await historyManager.getRecords();
-      const importedRecord = afterImport.find(r => r.id === 'minimal-record');
+      const afterImport = await historyManager.getRecords()
+      const importedRecord = afterImport.find((r) => r.id === 'minimal-record')
 
-      expect(importedRecord).toBeDefined();
-      expect(importedRecord?.originalPrompt).toBe('Minimal prompt');
-      expect(importedRecord?.chainId).toBe('minimal-chain');
-      expect(importedRecord?.previousId).toBeUndefined();
-    });
+      expect(importedRecord).toBeDefined()
+      expect(importedRecord?.originalPrompt).toBe('Minimal prompt')
+      expect(importedRecord?.chainId).toBe('minimal-chain')
+      expect(importedRecord?.previousId).toBeUndefined()
+    })
 
     it('should handle import errors gracefully', async () => {
       const importData: PromptRecord[] = [
@@ -223,16 +223,16 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'openai',
-          templateId: 'template-1'
-        }
-      ];
+          templateId: 'template-1',
+        },
+      ]
 
       // 模拟addRecord错误
-      vi.spyOn(historyManager, 'addRecord').mockRejectedValue(new Error('Add record error'));
+      vi.spyOn(historyManager, 'addRecord').mockRejectedValue(new Error('Add record error'))
 
       // 应该不抛出错误，只是记录失败
-      await expect(historyManager.importData(importData)).resolves.not.toThrow();
-    });
+      await expect(historyManager.importData(importData)).resolves.not.toThrow()
+    })
 
     it('should clear history before importing', async () => {
       // 添加现有记录
@@ -245,13 +245,13 @@ describe('HistoryManager Import/Export', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'openai',
-        templateId: 'template-1'
-      };
+        templateId: 'template-1',
+      }
 
-      await historyManager.addRecord(existingRecord);
+      await historyManager.addRecord(existingRecord)
 
       // 验证clearHistory被调用
-      const clearHistorySpy = vi.spyOn(historyManager, 'clearHistory');
+      const clearHistorySpy = vi.spyOn(historyManager, 'clearHistory')
 
       const importData: PromptRecord[] = [
         {
@@ -263,15 +263,15 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'anthropic',
-          templateId: 'template-2'
-        }
-      ];
+          templateId: 'template-2',
+        },
+      ]
 
-      await historyManager.importData(importData);
+      await historyManager.importData(importData)
 
-      expect(clearHistorySpy).toHaveBeenCalledOnce();
-    });
-  });
+      expect(clearHistorySpy).toHaveBeenCalledOnce()
+    })
+  })
 
   describe('validateData', () => {
     it('should validate correct history data', async () => {
@@ -285,12 +285,12 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'openai',
-          templateId: 'template-1'
-        }
-      ];
+          templateId: 'template-1',
+        },
+      ]
 
-      expect(await historyManager.validateData(validData)).toBe(true);
-    });
+      expect(await historyManager.validateData(validData)).toBe(true)
+    })
 
     it('should validate records with optional fields', async () => {
       const validData: PromptRecord[] = [
@@ -304,56 +304,62 @@ describe('HistoryManager Import/Export', () => {
           timestamp: Date.now(),
           modelKey: 'openai',
           templateId: 'template-1',
-          previousId: 'previous-record'
-        }
-      ];
+          previousId: 'previous-record',
+        },
+      ]
 
-      expect(await historyManager.validateData(validData)).toBe(true);
-    });
+      expect(await historyManager.validateData(validData)).toBe(true)
+    })
 
     it('should reject invalid data formats', async () => {
       // 非数组
-      expect(await historyManager.validateData({})).toBe(false);
-      expect(await historyManager.validateData('string')).toBe(false);
-      expect(await historyManager.validateData(null)).toBe(false);
+      expect(await historyManager.validateData({})).toBe(false)
+      expect(await historyManager.validateData('string')).toBe(false)
+      expect(await historyManager.validateData(null)).toBe(false)
 
       // 缺少必需字段
-      expect(await historyManager.validateData([
-        {
-          originalPrompt: 'Test prompt',
-          // 缺少id
-          optimizedPrompt: 'Test response',
-          timestamp: Date.now()
-        }
-      ])).toBe(false);
+      expect(
+        await historyManager.validateData([
+          {
+            originalPrompt: 'Test prompt',
+            // 缺少id
+            optimizedPrompt: 'Test response',
+            timestamp: Date.now(),
+          },
+        ])
+      ).toBe(false)
 
       // 字段类型错误
-      expect(await historyManager.validateData([
-        {
-          id: 'test-record',
-          originalPrompt: 123, // 应该是字符串
-          optimizedPrompt: 'Test response',
-          timestamp: Date.now()
-        }
-      ])).toBe(false);
+      expect(
+        await historyManager.validateData([
+          {
+            id: 'test-record',
+            originalPrompt: 123, // 应该是字符串
+            optimizedPrompt: 'Test response',
+            timestamp: Date.now(),
+          },
+        ])
+      ).toBe(false)
 
       // timestamp类型错误
-      expect(await historyManager.validateData([
-        {
-          id: 'test-record',
-          originalPrompt: 'Test prompt',
-          optimizedPrompt: 'Test response',
-          timestamp: 'invalid-timestamp' // 应该是数字
-        }
-      ])).toBe(false);
-    });
-  });
+      expect(
+        await historyManager.validateData([
+          {
+            id: 'test-record',
+            originalPrompt: 'Test prompt',
+            optimizedPrompt: 'Test response',
+            timestamp: 'invalid-timestamp', // 应该是数字
+          },
+        ])
+      ).toBe(false)
+    })
+  })
 
   describe('getDataType', () => {
     it('should return correct data type', async () => {
-      expect(await historyManager.getDataType()).toBe('history');
-    });
-  });
+      expect(await historyManager.getDataType()).toBe('history')
+    })
+  })
 
   describe('data integrity', () => {
     it('should maintain chain relationships after import', async () => {
@@ -368,7 +374,7 @@ describe('HistoryManager Import/Export', () => {
           version: 1,
           timestamp: Date.now(),
           modelKey: 'openai',
-          templateId: 'template-1'
+          templateId: 'template-1',
         },
         {
           id: 'chain-middle',
@@ -380,7 +386,7 @@ describe('HistoryManager Import/Export', () => {
           timestamp: Date.now() + 1000,
           modelKey: 'openai',
           templateId: 'template-2',
-          previousId: 'chain-start'
+          previousId: 'chain-start',
         },
         {
           id: 'chain-end',
@@ -392,26 +398,26 @@ describe('HistoryManager Import/Export', () => {
           timestamp: Date.now() + 2000,
           modelKey: 'openai',
           templateId: 'template-3',
-          previousId: 'chain-middle'
-        }
-      ];
+          previousId: 'chain-middle',
+        },
+      ]
 
-      await historyManager.importData(importData);
+      await historyManager.importData(importData)
 
       // 验证链关系完整性
-      const afterImport = await historyManager.getRecords();
-      const startRecord = afterImport.find(r => r.id === 'chain-start');
-      const middleRecord = afterImport.find(r => r.id === 'chain-middle');
-      const endRecord = afterImport.find(r => r.id === 'chain-end');
+      const afterImport = await historyManager.getRecords()
+      const startRecord = afterImport.find((r) => r.id === 'chain-start')
+      const middleRecord = afterImport.find((r) => r.id === 'chain-middle')
+      const endRecord = afterImport.find((r) => r.id === 'chain-end')
 
-      expect(startRecord?.chainId).toBe('conversation-1');
-      expect(startRecord?.previousId).toBeUndefined();
+      expect(startRecord?.chainId).toBe('conversation-1')
+      expect(startRecord?.previousId).toBeUndefined()
 
-      expect(middleRecord?.chainId).toBe('conversation-1');
-      expect(middleRecord?.previousId).toBe('chain-start');
+      expect(middleRecord?.chainId).toBe('conversation-1')
+      expect(middleRecord?.previousId).toBe('chain-start')
 
-      expect(endRecord?.chainId).toBe('conversation-1');
-      expect(endRecord?.previousId).toBe('chain-middle');
-    });
-  });
-});
+      expect(endRecord?.chainId).toBe('conversation-1')
+      expect(endRecord?.previousId).toBe('chain-middle')
+    })
+  })
+})

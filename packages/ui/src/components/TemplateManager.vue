@@ -18,8 +18,19 @@
           :title="t('templateManager.syntaxGuide')"
         >
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+              />
             </svg>
           </template>
         </NButton>
@@ -30,95 +41,139 @@
     <!-- 类型切换：一行网格自动分两行，每行三列，按钮全宽（更易扩展） -->
     <NGrid :cols="3" :x-gap="8" :y-gap="8">
       <NGridItem>
-        <NButton block :type="currentCategory==='system-optimize' ? 'primary' : 'default'" @click="currentCategory='system-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'system-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'system-optimize'"
+        >
           {{ `🎯 ${t('templateManager.optimizeTemplates')}` }}
         </NButton>
       </NGridItem>
       <NGridItem>
-        <NButton block :type="currentCategory==='user-optimize' ? 'primary' : 'default'" @click="currentCategory='user-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'user-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'user-optimize'"
+        >
           {{ `👤 ${t('templateManager.userOptimizeTemplates')}` }}
         </NButton>
       </NGridItem>
       <NGridItem>
         <NButton
           block
-          :type="(currentCategory==='basic-system-iterate' || currentCategory==='basic-user-iterate') ? 'primary' : 'default'"
-          @click="currentCategory = props.basicSubMode === 'system' ? 'basic-system-iterate' : 'basic-user-iterate'"
+          :type="
+            currentCategory === 'basic-system-iterate' || currentCategory === 'basic-user-iterate'
+              ? 'primary'
+              : 'default'
+          "
+          @click="
+            currentCategory =
+              props.basicSubMode === 'system' ? 'basic-system-iterate' : 'basic-user-iterate'
+          "
         >
           {{ `🔄 ${t('templateManager.iterateTemplates')}` }}
         </NButton>
       </NGridItem>
 
       <NGridItem>
-        <NButton block :type="currentCategory==='context-system-optimize' ? 'primary' : 'default'" @click="currentCategory='context-system-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'context-system-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'context-system-optimize'"
+        >
           {{ `🎯 ${t('templateManager.optimizeTemplatesContext')}` }}
         </NButton>
       </NGridItem>
       <NGridItem>
-        <NButton block :type="currentCategory==='context-user-optimize' ? 'primary' : 'default'" @click="currentCategory='context-user-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'context-user-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'context-user-optimize'"
+        >
           {{ `👤 ${t('templateManager.userOptimizeTemplatesContext')}` }}
         </NButton>
       </NGridItem>
       <NGridItem>
-        <NButton block :type="currentCategory==='context-iterate' ? 'primary' : 'default'" @click="currentCategory='context-iterate'">
+        <NButton
+          block
+          :type="currentCategory === 'context-iterate' ? 'primary' : 'default'"
+          @click="currentCategory = 'context-iterate'"
+        >
           {{ `🔄 ${t('templateManager.iterateTemplatesContext')}` }}
         </NButton>
       </NGridItem>
 
       <!-- 图像 · 文生图 -->
       <NGridItem>
-        <NButton block :type="currentCategory==='image-text2image-optimize' ? 'primary' : 'default'" @click="currentCategory='image-text2image-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'image-text2image-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'image-text2image-optimize'"
+        >
           {{ `🖼️ ${t('templateManager.imageText2ImageTemplates')}` }}
         </NButton>
       </NGridItem>
       <!-- 图像 · 图生图 -->
       <NGridItem>
-        <NButton block :type="currentCategory==='image-image2image-optimize' ? 'primary' : 'default'" @click="currentCategory='image-image2image-optimize'">
+        <NButton
+          block
+          :type="currentCategory === 'image-image2image-optimize' ? 'primary' : 'default'"
+          @click="currentCategory = 'image-image2image-optimize'"
+        >
           {{ `📷 ${t('templateManager.imageImage2ImageTemplates')}` }}
         </NButton>
       </NGridItem>
       <!-- 图像 · 迭代 -->
       <NGridItem>
-        <NButton block :type="currentCategory==='image-iterate' ? 'primary' : 'default'" @click="currentCategory='image-iterate'">
+        <NButton
+          block
+          :type="currentCategory === 'image-iterate' ? 'primary' : 'default'"
+          @click="currentCategory = 'image-iterate'"
+        >
           {{ `🌀 ${t('templateManager.imageIterateTemplates')}` }}
         </NButton>
       </NGridItem>
     </NGrid>
 
     <!-- 模板列表 -->
-    <NSpace vertical :size="16" style="margin-top: 16px;">
+    <NSpace vertical :size="16" style="margin-top: 16px">
       <NSpace justify="space-between" align="center">
         <NSpace align="center">
-          <NH3 style="margin: 0;">{{ getCurrentCategoryLabel() }}</NH3>
+          <NH3 style="margin: 0">{{ getCurrentCategoryLabel() }}</NH3>
           <NTag type="info" size="small">
             {{ t('templateManager.templateCount', { count: filteredTemplates.length }) }}
           </NTag>
         </NSpace>
-        <NButton
-          type="primary"
-          @click="showAddForm = true"
-          ghost
-        >
+        <NButton type="primary" @click="showAddForm = true" ghost>
           <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-              <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
-              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-              <path d="M3 15h6"/>
-              <path d="M6 12v6"/>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="h-4 w-4"
+            >
+              <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4" />
+              <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+              <path d="M3 15h6" />
+              <path d="M6 12v6" />
             </svg>
           </template>
           {{ t('templateManager.addTemplate') }}
         </NButton>
       </NSpace>
-      
-      <NScrollbar style="max-height: 60vh;">
+
+      <NScrollbar style="max-height: 60vh">
         <NSpace vertical :size="12">
           <!-- 🎨 Palette: Loading skeleton for better perceived performance -->
           <template v-if="isLoading">
             <NCard v-for="i in 3" :key="`skeleton-${i}`" embedded>
               <NSpace vertical :size="12">
                 <NSpace justify="space-between" align="center">
-                  <NSpace vertical :size="8" style="flex: 1;">
+                  <NSpace vertical :size="8" style="flex: 1">
                     <NSkeleton height="20px" width="40%" />
                     <NSkeleton height="14px" width="70%" />
                     <NSkeleton height="12px" width="30%" />
@@ -136,180 +191,251 @@
             </NCard>
           </template>
           <template v-else>
-          <NCard
-            v-for="template in filteredTemplates"
-            :key="template.id"
-            hoverable
-            :style="{
-              opacity: getSelectedTemplateId() === template.id ? 0.7 : 1,
-              transform: getSelectedTemplateId() === template.id ? 'scale(0.99)' : 'scale(1)',
-              cursor: getSelectedTemplateId() !== template.id ? 'pointer' : 'default'
-            }"
-            @click="getSelectedTemplateId() !== template.id && selectTemplate(template)"
-          >
-            <template #header>
-              <NSpace justify="space-between" align="center">
-                <NSpace vertical :size="4">
-                  <NText strong>{{ template.name }}</NText>
-                  <NText depth="3" style="font-size: 14px;">
-                    {{ template.metadata.description || t('common.noDescription') }}
-                  </NText>
-                  <NText depth="3" style="font-size: 12px;">
-                    {{ t('common.lastModified') }}: {{ formatTemplateDate(template.metadata.lastModified) }}
-                  </NText>
-                </NSpace>
-              </NSpace>
-            </template>
-            
-            <template #header-extra>
-              <NSpace @click.stop>
-                <!-- 查看按钮 -->
-                <NButton
-                  v-if="template.isBuiltin"
-                  size="small"
-                  quaternary
-                  @click="viewTemplate(template)"
-                >
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                  </template>
-                  {{ t('template.view') }}
-                </NButton>
-                
-                <!-- 编辑按钮 -->
-                <NButton
-                  v-if="!template.isBuiltin"
-                  size="small"
-                  quaternary
-                  @click="editTemplate(template)"
-                >
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                    </svg>
-                  </template>
-                  {{ t('common.edit') }}
-                </NButton>
-                
-                <!-- 复制按钮 -->
-                <NButton
-                  v-if="template.isBuiltin"
-                  size="small"
-                  quaternary
-                  @click="copyTemplate(template)"
-                >
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
-                    </svg>
-                  </template>
-                  {{ t('templateManager.copyTemplate') }}
-                </NButton>
-                
-                <!-- 迁移按钮 -->
-                <NButton
-                  v-if="!template.isBuiltin && isStringTemplate(template)"
-                  size="small"
-                  quaternary
-                  @click="showMigrationDialog(template)"
-                  :title="t('templateManager.convertToAdvanced')"
-                >
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-                    </svg>
-                  </template>
-                  {{ t('templateManager.migrate') }}
-                </NButton>
-                
-                <!-- 删除按钮 -->
-                <NButton
-                  v-if="!template.isBuiltin"
-                  size="small"
-                  type="error"
-                  quaternary
-                  @click="confirmDelete(template.id)"
-                >
-                  <template #icon>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                    </svg>
-                  </template>
-                  {{ t('common.delete') }}
-                </NButton>
-              </NSpace>
-            </template>
-            
-            <!-- 模板标签 -->
-            <NSpace>
-              <NTag
-                :type="template.isBuiltin ? 'primary' : 'default'"
-                size="small"
-              >
-                {{ template.isBuiltin ? t('common.builtin') : t('common.custom') }}
-              </NTag>
-              <NTag
-                :type="TemplateProcessor.isSimpleTemplate(template) ? 'info' : 'warning'"
-                size="small"
-              >
-                {{ TemplateProcessor.isSimpleTemplate(template) 
-                  ? `📝 ${t('templateManager.simpleTemplate')}` 
-                  : `⚡ ${t('templateManager.advancedTemplate')}` 
-                }}
-              </NTag>
-              <NTag
-                v-if="getSelectedTemplateId() === template.id"
-                type="success"
-                size="small"
-              >
-                {{ t('template.selected') }}
-              </NTag>
-            </NSpace>
-            
-            <!-- 左侧颜色条 -->
-            <div 
-              class="absolute top-0 left-0 w-1 h-full rounded-l-lg"
-              :class="template.metadata.templateType === 'optimize' ? 'bg-blue-500' : 'bg-purple-500'"
-            ></div>
-          </NCard>
-          
-          <!-- 🎨 Palette: Empty state when no templates exist -->
-          <div
-            v-if="filteredTemplates.length === 0"
-            class="template-empty-state flex flex-col items-center justify-center py-16"
-          >
-            <div class="empty-state-illustration mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-gray-300 dark:text-gray-600 empty-state-icon">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-              <div class="empty-state-decoration" aria-hidden="true"></div>
-            </div>
-            <NText class="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">
-              {{ t('templateManager.emptyState.title') }}
-            </NText>
-            <NText class="text-sm text-gray-400 dark:text-gray-500 text-center max-w-sm mb-6">
-              {{ t('templateManager.emptyState.description') }}
-            </NText>
-            <NButton
-              type="primary"
-              ghost
-              @click="showAddForm = true"
-              class="empty-state-cta"
+            <NCard
+              v-for="template in filteredTemplates"
+              :key="template.id"
+              hoverable
+              :style="{
+                opacity: getSelectedTemplateId() === template.id ? 0.7 : 1,
+                transform: getSelectedTemplateId() === template.id ? 'scale(0.99)' : 'scale(1)',
+                cursor: getSelectedTemplateId() !== template.id ? 'pointer' : 'default',
+              }"
+              @click="getSelectedTemplateId() !== template.id && selectTemplate(template)"
             >
-              <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4">
-                  <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
-                  <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                  <path d="M3 15h6"/>
-                  <path d="M6 12v6"/>
-                </svg>
+              <template #header>
+                <NSpace justify="space-between" align="center">
+                  <NSpace vertical :size="4">
+                    <NText strong>{{ template.name }}</NText>
+                    <NText depth="3" style="font-size: 14px">
+                      {{ template.metadata.description || t('common.noDescription') }}
+                    </NText>
+                    <NText depth="3" style="font-size: 12px">
+                      {{ t('common.lastModified') }}:
+                      {{ formatTemplateDate(template.metadata.lastModified) }}
+                    </NText>
+                  </NSpace>
+                </NSpace>
               </template>
-              {{ t('templateManager.emptyState.createButton') }}
-            </NButton>
-          </div>
+
+              <template #header-extra>
+                <NSpace @click.stop>
+                  <!-- 查看按钮 -->
+                  <NButton
+                    v-if="template.isBuiltin"
+                    size="small"
+                    quaternary
+                    @click="viewTemplate(template)"
+                  >
+                    <template #icon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                        />
+                      </svg>
+                    </template>
+                    {{ t('template.view') }}
+                  </NButton>
+
+                  <!-- 编辑按钮 -->
+                  <NButton
+                    v-if="!template.isBuiltin"
+                    size="small"
+                    quaternary
+                    @click="editTemplate(template)"
+                  >
+                    <template #icon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                        />
+                      </svg>
+                    </template>
+                    {{ t('common.edit') }}
+                  </NButton>
+
+                  <!-- 复制按钮 -->
+                  <NButton
+                    v-if="template.isBuiltin"
+                    size="small"
+                    quaternary
+                    @click="copyTemplate(template)"
+                  >
+                    <template #icon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"
+                        />
+                      </svg>
+                    </template>
+                    {{ t('templateManager.copyTemplate') }}
+                  </NButton>
+
+                  <!-- 迁移按钮 -->
+                  <NButton
+                    v-if="!template.isBuiltin && isStringTemplate(template)"
+                    size="small"
+                    quaternary
+                    @click="showMigrationDialog(template)"
+                    :title="t('templateManager.convertToAdvanced')"
+                  >
+                    <template #icon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+                        />
+                      </svg>
+                    </template>
+                    {{ t('templateManager.migrate') }}
+                  </NButton>
+
+                  <!-- 删除按钮 -->
+                  <NButton
+                    v-if="!template.isBuiltin"
+                    size="small"
+                    type="error"
+                    quaternary
+                    @click="confirmDelete(template.id)"
+                  >
+                    <template #icon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-4 h-4"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                        />
+                      </svg>
+                    </template>
+                    {{ t('common.delete') }}
+                  </NButton>
+                </NSpace>
+              </template>
+
+              <!-- 模板标签 -->
+              <NSpace>
+                <NTag :type="template.isBuiltin ? 'primary' : 'default'" size="small">
+                  {{ template.isBuiltin ? t('common.builtin') : t('common.custom') }}
+                </NTag>
+                <NTag
+                  :type="TemplateProcessor.isSimpleTemplate(template) ? 'info' : 'warning'"
+                  size="small"
+                >
+                  {{
+                    TemplateProcessor.isSimpleTemplate(template)
+                      ? `📝 ${t('templateManager.simpleTemplate')}`
+                      : `⚡ ${t('templateManager.advancedTemplate')}`
+                  }}
+                </NTag>
+                <NTag v-if="getSelectedTemplateId() === template.id" type="success" size="small">
+                  {{ t('template.selected') }}
+                </NTag>
+              </NSpace>
+
+              <!-- 左侧颜色条 -->
+              <div
+                class="absolute top-0 left-0 w-1 h-full rounded-l-lg"
+                :class="
+                  template.metadata.templateType === 'optimize' ? 'bg-blue-500' : 'bg-purple-500'
+                "
+              ></div>
+            </NCard>
+
+            <!-- 🎨 Palette: Empty state when no templates exist -->
+            <div
+              v-if="filteredTemplates.length === 0"
+              class="template-empty-state flex flex-col items-center justify-center py-16"
+            >
+              <div class="empty-state-illustration mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-16 h-16 text-gray-300 dark:text-gray-600 empty-state-icon"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                  />
+                </svg>
+                <div class="empty-state-decoration" aria-hidden="true"></div>
+              </div>
+              <NText class="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">
+                {{ t('templateManager.emptyState.title') }}
+              </NText>
+              <NText class="text-sm text-gray-400 dark:text-gray-500 text-center max-w-sm mb-6">
+                {{ t('templateManager.emptyState.description') }}
+              </NText>
+              <NButton type="primary" ghost @click="showAddForm = true" class="empty-state-cta">
+                <template #icon>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="w-4 h-4"
+                  >
+                    <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4" />
+                    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+                    <path d="M3 15h6" />
+                    <path d="M6 12v6" />
+                  </svg>
+                </template>
+                {{ t('templateManager.emptyState.createButton') }}
+              </NButton>
+            </div>
           </template>
         </NSpace>
       </NScrollbar>
@@ -331,12 +457,20 @@
           <!-- 在查看或编辑时显示模板类型 -->
           <NTag
             v-if="viewingTemplate || editingTemplate"
-            :type="(viewingTemplate || editingTemplate) && TemplateProcessor.isSimpleTemplate((viewingTemplate || editingTemplate)!) ? 'info' : 'warning'"
+            :type="
+              (viewingTemplate || editingTemplate) &&
+              TemplateProcessor.isSimpleTemplate((viewingTemplate || editingTemplate)!)
+                ? 'info'
+                : 'warning'
+            "
             size="small"
           >
-            {{ (viewingTemplate || editingTemplate) && TemplateProcessor.isSimpleTemplate((viewingTemplate || editingTemplate)!) 
-              ? '📝 ' + t('templateManager.simpleTemplate') 
-              : '⚡ ' + t('templateManager.advancedTemplate') }}
+            {{
+              (viewingTemplate || editingTemplate) &&
+              TemplateProcessor.isSimpleTemplate((viewingTemplate || editingTemplate)!)
+                ? '📝 ' + t('templateManager.simpleTemplate')
+                : '⚡ ' + t('templateManager.advancedTemplate')
+            }}
           </NTag>
           <!-- Template Syntax Guide Toggle -->
           <NButton
@@ -346,8 +480,19 @@
             :title="t('templateManager.syntaxGuide')"
           >
             <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+                />
               </svg>
             </template>
           </NButton>
@@ -366,7 +511,9 @@
 
         <!-- Template Format Selector -->
         <div v-if="!viewingTemplate">
-          <label class="block text-sm font-medium mb-2">{{ t('templateManager.templateFormat') }}</label>
+          <label class="block text-sm font-medium mb-2">{{
+            t('templateManager.templateFormat')
+          }}</label>
           <NSpace>
             <NButton
               :type="!form.isAdvanced ? 'primary' : 'default'"
@@ -384,13 +531,13 @@
             </NButton>
           </NSpace>
         </div>
-        
+
         <!-- Simple Template Editor -->
         <NSpace v-if="!form.isAdvanced" vertical :size="8">
           <NSpace justify="space-between" align="center">
             <NText>
               {{ t('template.content') }}
-              <NText depth="3" style="font-size: 12px; margin-left: 8px;">
+              <NText depth="3" style="font-size: 12px; margin-left: 8px">
                 {{ t('templateManager.simpleTemplateHint') }}
               </NText>
             </NText>
@@ -402,8 +549,19 @@
               :title="t('templateManager.fullscreenEdit')"
             >
               <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                  />
                 </svg>
               </template>
               {{ t('templateManager.fullscreen') }}
@@ -423,18 +581,20 @@
           <NSpace justify="space-between" align="center">
             <NText>
               {{ t('templateManager.messageTemplates') }}
-              <NText depth="3" style="font-size: 12px; margin-left: 8px;">
+              <NText depth="3" style="font-size: 12px; margin-left: 8px">
                 {{ t('templateManager.advancedTemplateHint') }}
               </NText>
             </NText>
-            <NButton
-              v-if="!viewingTemplate"
-              @click="addMessage"
-              size="small"
-              secondary
-            >
+            <NButton v-if="!viewingTemplate" @click="addMessage" size="small" secondary>
               <template #icon>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
               </template>
@@ -443,29 +603,24 @@
           </NSpace>
 
           <!-- Message List -->
-          <NScrollbar style="max-height: 500px;">
+          <NScrollbar style="max-height: 500px">
             <NSpace vertical :size="12">
-              <NCard
-                v-for="(message, index) in form.messages"
-                :key="index"
-                size="small"
-                embedded
-              >
+              <NCard v-for="(message, index) in form.messages" :key="index" size="small" embedded>
                 <div class="flex items-start gap-3">
                   <!-- Role Selector -->
                   <NSelect
                     v-model:value="message.role"
                     :disabled="!!viewingTemplate"
-                    style="width: 100px; flex-shrink: 0;"
+                    style="width: 100px; flex-shrink: 0"
                     :options="[
                       { label: t('templateManager.roleSystem'), value: 'system' },
                       { label: t('templateManager.roleUser'), value: 'user' },
-                      { label: t('templateManager.roleAssistant'), value: 'assistant' }
+                      { label: t('templateManager.roleAssistant'), value: 'assistant' },
                     ]"
                   />
 
                   <!-- Message Content -->
-                  <NSpace vertical :size="4" style="flex: 1;">
+                  <NSpace vertical :size="4" style="flex: 1">
                     <NInput
                       v-model:value="message.content"
                       type="textarea"
@@ -479,11 +634,22 @@
                       quaternary
                       @click="openFullscreenEditor('advanced', index)"
                       :title="t('templateManager.fullscreenEdit')"
-                      style="align-self: flex-end;"
+                      style="align-self: flex-end"
                     >
                       <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-3 h-3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"
+                          />
                         </svg>
                       </template>
                       {{ t('templateManager.fullscreen') }}
@@ -491,7 +657,7 @@
                   </NSpace>
 
                   <!-- Message Controls -->
-                  <NSpace v-if="!viewingTemplate" vertical :size="4" style="flex-shrink: 0;">
+                  <NSpace v-if="!viewingTemplate" vertical :size="4" style="flex-shrink: 0">
                     <NButton
                       quaternary
                       size="tiny"
@@ -499,8 +665,19 @@
                       :disabled="index === 0"
                     >
                       <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-3 h-3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M4.5 15.75l7.5-7.5 7.5 7.5"
+                          />
                         </svg>
                       </template>
                     </NButton>
@@ -511,20 +688,37 @@
                       :disabled="index === form.messages.length - 1"
                     >
                       <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-3 h-3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                          />
                         </svg>
                       </template>
                     </NButton>
-                    <NButton
-                      quaternary
-                      size="tiny"
-                      type="error"
-                      @click="removeMessage(index)"
-                    >
+                    <NButton quaternary size="tiny" type="error" @click="removeMessage(index)">
                       <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-3 h-3"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </template>
                     </NButton>
@@ -534,11 +728,11 @@
             </NSpace>
           </NScrollbar>
         </NSpace>
-        
+
         <!-- Template Preview -->
         <div v-if="form.isAdvanced && form.messages.length > 0">
           <label class="block text-sm font-medium mb-2">{{ t('templateManager.preview') }}</label>
-          <NCard size="small" embedded style="max-height: 264px; overflow-y: auto;">
+          <NCard size="small" embedded style="max-height: 264px; overflow-y: auto">
             <NSpace vertical :size="8">
               <div
                 v-for="(message, index) in processedPreview"
@@ -547,7 +741,13 @@
               >
                 <NTag
                   size="small"
-                  :type="message.role === 'system' ? 'info' : message.role === 'user' ? 'success' : 'warning'"
+                  :type="
+                    message.role === 'system'
+                      ? 'info'
+                      : message.role === 'user'
+                        ? 'success'
+                        : 'warning'
+                  "
                 >
                   {{ message.role }}
                 </NTag>
@@ -576,11 +776,7 @@
           <NButton @click="cancelEdit">
             {{ viewingTemplate ? t('common.close') : t('common.cancel') }}
           </NButton>
-          <NButton
-            v-if="!viewingTemplate"
-            type="primary"
-            @click="handleSubmit"
-          >
+          <NButton v-if="!viewingTemplate" type="primary" @click="handleSubmit">
             {{ editingTemplate ? t('template.save') : t('template.add') }}
           </NButton>
         </NSpace>
@@ -627,13 +823,21 @@
         <!-- Original Template -->
         <div>
           <NH4>{{ t('templateManager.originalTemplate') }}</NH4>
-          <NCode :code="migrationDialog.original" language="text" style="max-height: 128px; overflow-y: auto;" />
+          <NCode
+            :code="migrationDialog.original"
+            language="text"
+            style="max-height: 128px; overflow-y: auto"
+          />
         </div>
 
         <!-- Converted Template -->
         <div>
           <NH4>{{ t('templateManager.convertedTemplate') }}</NH4>
-          <NCode :code="JSON.stringify(migrationDialog.converted, null, 2)" language="json" style="max-height: 128px; overflow-y: auto;" />
+          <NCode
+            :code="JSON.stringify(migrationDialog.converted, null, 2)"
+            language="json"
+            style="max-height: 128px; overflow-y: auto"
+          />
         </div>
       </NSpace>
 
@@ -660,21 +864,23 @@
       :segmented="true"
       @update:show="(value: boolean) => !value && closeFullscreenEditor()"
     >
-      <NEl style="height: calc(90vh - 140px);">
+      <NEl style="height: calc(90vh - 140px)">
         <NInput
           v-model:value="fullscreenEditor.content"
           type="textarea"
-          :placeholder="fullscreenEditor.type === 'simple'
-            ? t('template.contentPlaceholder')
-            : t('templateManager.messageContentPlaceholder')"
-          style="height: 100%;"
+          :placeholder="
+            fullscreenEditor.type === 'simple'
+              ? t('template.contentPlaceholder')
+              : t('templateManager.messageContentPlaceholder')
+          "
+          style="height: 100%"
           :autosize="false"
         />
       </NEl>
 
       <template #action>
-        <NSpace justify="space-between" style="width: 100%;">
-          <NText depth="3" style="font-size: 12px;">
+        <NSpace justify="space-between" style="width: 100%">
+          <NText depth="3" style="font-size: 12px">
             {{ t('templateManager.characterCount', { count: fullscreenEditor.content.length }) }}
           </NText>
           <NSpace>
@@ -696,12 +902,30 @@ import { ref, onMounted, computed, watch, nextTick, inject } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import {
-  NModal, NCard, NButton, NTag, NInput,
-  NSelect, NSpace, NText, NH3, NH4, NScrollbar,
-  NCode, NSkeleton,
-  NGrid, NGridItem, NEl
+  NModal,
+  NCard,
+  NButton,
+  NTag,
+  NInput,
+  NSelect,
+  NSpace,
+  NText,
+  NH3,
+  NH4,
+  NScrollbar,
+  NCode,
+  NSkeleton,
+  NGrid,
+  NGridItem,
+  NEl,
 } from 'naive-ui'
-import { TemplateProcessor, type Template, type MessageTemplate, type ITemplateManager, TemplateLanguageService } from '@prompt-optimizer/core'
+import {
+  TemplateProcessor,
+  type Template,
+  type MessageTemplate,
+  type ITemplateManager,
+  TemplateLanguageService,
+} from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import MarkdownRenderer from './MarkdownRenderer.vue'
 import BuiltinTemplateLanguageSwitch from './BuiltinTemplateLanguageSwitch.vue'
@@ -718,14 +942,16 @@ import { formatDate } from '../utils/date'
 const { t } = useI18n()
 
 interface Services {
-  templateManager: ITemplateManager;
-  templateLanguageService: TemplateLanguageService;
+  templateManager: ITemplateManager
+  templateLanguageService: TemplateLanguageService
 }
 
 // 通过依赖注入获取服务
 const services = inject<{ value: Services | null }>('services')
 if (!services?.value) {
-  throw new Error('TemplateManager Error: The required "services" were not provided by a parent component. Make sure this component is a child of a component that uses "provide(\'services\', ...)"')
+  throw new Error(
+    'TemplateManager Error: The required "services" were not provided by a parent component. Make sure this component is a child of a component that uses "provide(\'services\', ...)"'
+  )
 }
 
 const getTemplateManager = computed(() => services.value!.templateManager)
@@ -741,7 +967,7 @@ const props = defineProps<{
     | 'imageIterate'
     | 'conversationMessageOptimize'
     | 'contextUserOptimize'
-   | 'contextIterate',
+    | 'contextIterate'
   show: boolean
   basicSubMode?: 'system' | 'user'
   proSubMode?: 'multi' | 'variable'
@@ -779,7 +1005,7 @@ const form = ref<{
   content: '',
   description: '',
   isAdvanced: false,
-  messages: []
+  messages: [],
 })
 
 const migrationDialog = ref<{
@@ -791,7 +1017,7 @@ const migrationDialog = ref<{
   show: false,
   template: null,
   original: '',
-  converted: []
+  converted: [],
 })
 
 const fullscreenEditor = ref<{
@@ -803,7 +1029,7 @@ const fullscreenEditor = ref<{
   show: false,
   type: 'simple',
   messageIndex: -1,
-  content: ''
+  content: '',
 })
 
 // 根据props确定初始分类
@@ -835,7 +1061,16 @@ function getCategoryFromProps() {
 }
 
 // 获取当前模板类型 - 根据当前分类而不是props
-function getCurrentTemplateType(): 'optimize' | 'userOptimize' | 'iterate' | 'text2imageOptimize' | 'image2imageOptimize' | 'imageIterate' | 'conversationMessageOptimize' | 'contextUserOptimize' | 'contextIterate' {
+function getCurrentTemplateType():
+  | 'optimize'
+  | 'userOptimize'
+  | 'iterate'
+  | 'text2imageOptimize'
+  | 'image2imageOptimize'
+  | 'imageIterate'
+  | 'conversationMessageOptimize'
+  | 'contextUserOptimize'
+  | 'contextIterate' {
   switch (currentCategory.value) {
     case 'system-optimize':
       return 'optimize'
@@ -878,16 +1113,16 @@ function getSelectedTemplateIdForCategory(category: string): string | undefined 
       return proVariableSession.selectedTemplateId || undefined
     case 'context-iterate':
       return props.proSubMode === 'multi'
-        ? (proMultiMessageSession.selectedIterateTemplateId || undefined)
-        : (proVariableSession.selectedIterateTemplateId || undefined)
+        ? proMultiMessageSession.selectedIterateTemplateId || undefined
+        : proVariableSession.selectedIterateTemplateId || undefined
     case 'image-text2image-optimize':
       return imageText2ImageSession.selectedTemplateId || undefined
     case 'image-image2image-optimize':
       return imageImage2ImageSession.selectedTemplateId || undefined
     case 'image-iterate':
       return props.imageSubMode === 'image2image'
-        ? (imageImage2ImageSession.selectedIterateTemplateId || undefined)
-        : (imageText2ImageSession.selectedIterateTemplateId || undefined)
+        ? imageImage2ImageSession.selectedIterateTemplateId || undefined
+        : imageText2ImageSession.selectedIterateTemplateId || undefined
     default:
       return undefined
   }
@@ -937,7 +1172,7 @@ const processedPreview = computed(() => {
   const sampleContext = {
     prompt: 'Write a creative story about space exploration',
     originalPrompt: 'Write a story',
-    iterateInput: 'Make it more creative and add space exploration theme'
+    iterateInput: 'Make it more creative and add space exploration theme',
   }
 
   try {
@@ -945,14 +1180,14 @@ const processedPreview = computed(() => {
       id: 'preview',
       name: 'Preview',
       content: JSON.parse(JSON.stringify(form.value.messages)),
-      metadata: { version: '1.0', lastModified: Date.now(), templateType: currentType.value }
+      metadata: { version: '1.0', lastModified: Date.now(), templateType: currentType.value },
     }
     return TemplateProcessor.processTemplate(tempTemplate, sampleContext)
   } catch (error) {
     console.error('Preview processing error:', error)
-    return form.value.messages.map(msg => ({
+    return form.value.messages.map((msg) => ({
       role: msg.role,
-      content: msg.content || '[Empty content]'
+      content: msg.content || '[Empty content]',
     }))
   }
 })
@@ -986,10 +1221,10 @@ const editTemplate = (template: Template) => {
 
   form.value = {
     name: template.name,
-    content: isAdvanced ? '' : template.content as string,
+    content: isAdvanced ? '' : (template.content as string),
     description: template.metadata.description || '',
     isAdvanced,
-    messages: isAdvanced ? [...template.content] as MessageTemplate[] : []
+    messages: isAdvanced ? ([...template.content] as MessageTemplate[]) : [],
   }
 
   // 等待DOM更新后初始化textarea高度
@@ -1005,10 +1240,10 @@ const viewTemplate = (template: Template) => {
 
   form.value = {
     name: template.name,
-    content: isAdvanced ? '' : template.content as string,
+    content: isAdvanced ? '' : (template.content as string),
     description: template.metadata.description || '',
     isAdvanced,
-    messages: isAdvanced ? [...template.content] as MessageTemplate[] : []
+    messages: isAdvanced ? ([...template.content] as MessageTemplate[]) : [],
   }
 
   // 等待DOM更新后初始化textarea高度
@@ -1028,7 +1263,7 @@ const cancelEdit = () => {
     content: '',
     description: '',
     isAdvanced: false,
-    messages: []
+    messages: [],
   }
 }
 
@@ -1037,15 +1272,15 @@ const generateUniqueTemplateId = (baseName = 'template') => {
   const timestamp = Date.now()
   const random = Math.random().toString(36).slice(2, 8)
   let candidateId = `${baseName}-${timestamp}-${random}`
-  
+
   // 确保ID不与现有模板冲突
-  const existingIds = templates.value.map(t => t.id)
+  const existingIds = templates.value.map((t) => t.id)
   let counter = 1
   while (existingIds.includes(candidateId)) {
     candidateId = `${baseName}-${timestamp}-${random}-${counter}`
     counter++
   }
-  
+
   return candidateId
 }
 
@@ -1053,7 +1288,7 @@ const generateUniqueTemplateId = (baseName = 'template') => {
 const addMessage = () => {
   form.value.messages.push({
     role: 'user',
-    content: ''
+    content: '',
   })
 }
 
@@ -1085,12 +1320,12 @@ const initializeTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
   try {
     const minHeight = 80
     const maxHeight = 280
-    
+
     // 设置为auto以获取内容实际高度
     // const originalHeight = textarea.style.height  // 保留用于可能的需要
     element.style.height = 'auto'
     const scrollHeight = element.scrollHeight
-    
+
     let initialHeight
     if (scrollHeight <= minHeight) {
       initialHeight = minHeight
@@ -1099,7 +1334,7 @@ const initializeTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
     } else {
       initialHeight = scrollHeight
     }
-    
+
     element.style.height = initialHeight + 'px'
     element._initialized = true
   } catch (error) {
@@ -1114,19 +1349,19 @@ const showMigrationDialog = (template: Template) => {
   const converted: MessageTemplate[] = [
     {
       role: 'system',
-      content: template.content
+      content: template.content,
     },
     {
       role: 'user',
-      content: '{{originalPrompt}}'
-    }
+      content: '{{originalPrompt}}',
+    },
   ]
 
   migrationDialog.value = {
     show: true,
     template,
     original: template.content,
-    converted
+    converted,
   }
 }
 
@@ -1141,8 +1376,8 @@ const applyMigration = async () => {
       content: migrationDialog.value.converted,
       metadata: {
         ...template.metadata,
-        lastModified: Date.now()
-      }
+        lastModified: Date.now(),
+      },
     }
 
     // ElectronProxy会自动处理序列化，这里不需要手动处理
@@ -1163,7 +1398,8 @@ const openFullscreenEditor = (type: 'simple' | 'advanced', messageIndex = -1) =>
     show: true,
     type,
     messageIndex,
-    content: type === 'simple' ? form.value.content : form.value.messages[messageIndex]?.content || ''
+    content:
+      type === 'simple' ? form.value.content : form.value.messages[messageIndex]?.content || '',
   }
 }
 
@@ -1173,7 +1409,7 @@ const closeFullscreenEditor = () => {
     show: false,
     type: 'simple',
     messageIndex: -1,
-    content: ''
+    content: '',
   }
 }
 
@@ -1182,7 +1418,8 @@ const saveFullscreenEditor = () => {
   if (fullscreenEditor.value.type === 'simple') {
     form.value.content = fullscreenEditor.value.content
   } else if (fullscreenEditor.value.messageIndex >= 0) {
-    form.value.messages[fullscreenEditor.value.messageIndex].content = fullscreenEditor.value.content
+    form.value.messages[fullscreenEditor.value.messageIndex].content =
+      fullscreenEditor.value.content
   }
   closeFullscreenEditor()
 }
@@ -1197,7 +1434,7 @@ const handleSubmit = async () => {
         return
       }
 
-      const hasEmptyContent = form.value.messages.some(msg => !msg.content.trim())
+      const hasEmptyContent = form.value.messages.some((msg) => !msg.content.trim())
       if (hasEmptyContent) {
         toast.error(t('templateManager.emptyMessageError'))
         return
@@ -1214,21 +1451,25 @@ const handleSubmit = async () => {
       lastModified: Date.now(),
       description: form.value.description,
       author: 'User',
-      templateType: getCurrentTemplateType()
+      templateType: getCurrentTemplateType(),
     }
 
     const templateData: Template = {
       id: editingTemplate.value?.id || generateUniqueTemplateId('user-template'),
       name: form.value.name,
-      content: form.value.isAdvanced ? JSON.parse(JSON.stringify(form.value.messages)) : form.value.content,
-      metadata
+      content: form.value.isAdvanced
+        ? JSON.parse(JSON.stringify(form.value.messages))
+        : form.value.content,
+      metadata,
     }
 
     // IPC层会自动处理序列化，这里不需要手动处理
     await getTemplateManager.value.saveTemplate(templateData)
     await loadTemplates()
 
-    toast.success(editingTemplate.value ? t('template.success.updated') : t('template.success.added'))
+    toast.success(
+      editingTemplate.value ? t('template.success.updated') : t('template.success.added')
+    )
     cancelEdit()
   } catch (error) {
     console.error('保存提示词失败:', error)
@@ -1287,21 +1528,21 @@ const copyTemplate = (template: Template) => {
 
   form.value = {
     name: `${template.name} - 副本`,
-    content: isAdvanced ? '' : template.content as string,
+    content: isAdvanced ? '' : (template.content as string),
     description: template.metadata.description || '',
     isAdvanced,
-    messages: isAdvanced ? [...template.content] as MessageTemplate[] : []
+    messages: isAdvanced ? ([...template.content] as MessageTemplate[]) : [],
   }
 }
 
 // 选择提示词
 const selectTemplate = (template: Template) => {
-  emit('select', template, getCurrentTemplateType(), currentCategory.value);
+  emit('select', template, getCurrentTemplateType(), currentCategory.value)
 }
 
 // 按分类过滤提示词
 const filteredTemplates = computed(() => {
-  return templates.value.filter(t => {
+  return templates.value.filter((t) => {
     const templateType = t.metadata.templateType
 
     switch (currentCategory.value) {
@@ -1357,9 +1598,13 @@ const handleLanguageChanged = async (newLanguage: string) => {
 }
 
 // 监听 props.templateType 变化，更新当前分类
-watch(() => props.templateType, () => {
-  currentCategory.value = getCategoryFromProps()
-}, { immediate: true })
+watch(
+  () => props.templateType,
+  () => {
+    currentCategory.value = getCategoryFromProps()
+  },
+  { immediate: true }
+)
 
 // 处理“同一种 templateType 反复打开”场景：templateType 可能不变，但 show 会变化
 // 这里在打开时重新对齐当前分类，避免因路由/子模式变化导致展示与选择不一致
@@ -1373,37 +1618,48 @@ watch(
 
 // 生命周期钩子
 onMounted(async () => {
-  console.log('[TemplateManager.vue] Component is mounted.');
-  console.log('[TemplateManager.vue] Injected services:', services);
+  console.log('[TemplateManager.vue] Component is mounted.')
+  console.log('[TemplateManager.vue] Injected services:', services)
   if (services?.value) {
-    console.log('[TemplateManager.vue] TemplateManager instance from services:', getTemplateManager.value);
+    console.log(
+      '[TemplateManager.vue] TemplateManager instance from services:',
+      getTemplateManager.value
+    )
   } else {
-    console.error('[TemplateManager.vue] Services not available on mount.');
+    console.error('[TemplateManager.vue] Services not available on mount.')
   }
-  await loadTemplates();
+  await loadTemplates()
 })
 
 // 监听表单消息数量变化，只在新增消息时初始化新textarea
-watch(() => form.value.messages.length, () => {
-  // 只在消息数量变化时初始化新的textarea
-  initializeAllTextareas()
-})
-
-// 监听模态框状态变化，确保打开时初始化textarea高度
-watch([() => showAddForm.value, () => editingTemplate.value, () => viewingTemplate.value], (newValues) => {
-  // 只在打开模态框时初始化
-  if (newValues.some(val => val)) {
+watch(
+  () => form.value.messages.length,
+  () => {
+    // 只在消息数量变化时初始化新的textarea
     initializeAllTextareas()
   }
-})
+)
+
+// 监听模态框状态变化，确保打开时初始化textarea高度
+watch(
+  [() => showAddForm.value, () => editingTemplate.value, () => viewingTemplate.value],
+  (newValues) => {
+    // 只在打开模态框时初始化
+    if (newValues.some((val) => val)) {
+      initializeAllTextareas()
+    }
+  }
+)
 
 // 统一初始化所有textarea高度 - 只在打开时调用一次
 const initializeAllTextareas = () => {
   // 延迟执行，确保DOM已更新
   nextTick(() => {
-    const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea.message-content-textarea')
-    
-    textareas.forEach(textarea => {
+    const textareas = document.querySelectorAll<HTMLTextAreaElement>(
+      'textarea.message-content-textarea'
+    )
+
+    textareas.forEach((textarea) => {
       // 确保textarea可见且未初始化过
       if (textarea.offsetHeight > 0 || textarea.offsetWidth > 0) {
         initializeTextareaHeight(textarea)
@@ -1505,7 +1761,8 @@ const close = () => {
 }
 
 @keyframes emptyStateFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1524,7 +1781,8 @@ const close = () => {
 }
 
 @keyframes emptyStateShadow {
-  0%, 100% {
+  0%,
+  100% {
     transform: scaleX(1);
     opacity: 1;
   }
@@ -1539,7 +1797,8 @@ const close = () => {
 }
 
 @keyframes emptyStateCtaPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.3);
   }
   50% {

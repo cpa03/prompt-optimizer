@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-chinese-optimize',
@@ -63,7 +63,7 @@ export const template: Template = {
 - 每句专注1个核心维度（主体、意境、光线/色彩、氛围等）
 - 每个关键名词配2-3个精准修饰词，强调中式美学特征
 - 使用地道中文表达，不使用参数/权重/负面清单
-- 适度融入文化元素，营造中式意境`
+- 适度融入文化元素，营造中式意境`,
     },
     {
       role: 'user',
@@ -80,8 +80,8 @@ export const template: Template = {
 需要优化的图像描述：
 {{originalPrompt}}
 
-请输出适合中文图像模型的优化提示词：`
-    }
+请输出适合中文图像模型的优化提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -89,7 +89,7 @@ export const template: Template = {
     author: 'System',
     description: '专门针对中文图像生成模型优化的提示词模板，擅长中文语境和文化元素融合',
     templateType: 'text2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

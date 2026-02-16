@@ -39,11 +39,13 @@
 **原设计**: 测试逻辑分散在 `App.vue` 中
 
 **实际实施**:
+
 - 升级了 `packages/ui/src/composables/usePromptTester.ts`
 - 将所有测试逻辑(变量注入、上下文、工具调用、流式响应)封装到该 composable
 - App.vue 仅作为入口,调用 composable 的方法
 
 **优势**:
+
 - ✅ 符合"逻辑在 composable,UI 在 component"的 Vue 最佳实践
 - ✅ 代码复用性更好
 - ✅ 单元测试更容易
@@ -53,6 +55,7 @@
 **问题发现**: `useContextManagement.ts` 原本在 `packages/web/src/composables/` 中
 
 **实际实施**:
+
 - 移动到 `packages/ui/src/composables/`
 - 修复循环依赖问题(改用相对路径导入)
 - 添加到 `packages/ui/src/composables/index.ts` 统一导出
@@ -64,6 +67,7 @@
 **原设计**: TestAreaPanel 直接传递变量到 App.vue
 
 **实际实施**:
+
 ```
 TestAreaPanel.vue (检测变量,提供输入)
     ↓ (通过 ref.getVariableValues())
@@ -75,6 +79,7 @@ usePromptTester.ts (执行测试,合并变量)
 ```
 
 **原因**:
+
 - Pro 模式使用 Workspace 组件包裹 TestAreaPanel
 - 基础模式直接使用 TestAreaPanel
 - 两种模式需要统一的变量获取方式
@@ -85,10 +90,10 @@ usePromptTester.ts (执行测试,合并变量)
 
 ```typescript
 const variables = {
-  ...baseVars,              // 全局自定义变量
-  ...(testVars || {}),      // 测试变量(优先级高于全局)
-  currentPrompt: selectedPrompt,    // 预定义变量
-  userQuestion: userPrompt,         // 预定义变量
+  ...baseVars, // 全局自定义变量
+  ...(testVars || {}), // 测试变量(优先级高于全局)
+  currentPrompt: selectedPrompt, // 预定义变量
+  userQuestion: userPrompt, // 预定义变量
 }
 ```
 
@@ -124,18 +129,18 @@ const variables = {
    - 从 web 模块移动到 ui 模块
    - 修复循环依赖
 
-7. **packages/ui/src/i18n/locales/*.ts**
+7. **packages/ui/src/i18n/locales/\*.ts**
    - 添加测试错误提示
    - 同步三个语言文件(zh-CN, en-US, zh-TW)
 
 ### 与原设计的差异
 
-| 方面 | 原设计 | 实际实施 | 原因 |
-|-----|-------|---------|------|
-| 测试逻辑位置 | App.vue | usePromptTester composable | 架构优化,遵循最佳实践 |
-| 变量传递 | 直接传递 | 通过 Workspace 中转 | 适配 Pro 模式的组件结构 |
-| 模块组织 | - | 移动 useContextManagement | 消除模块依赖错误 |
-| 缓存功能 | localStorage 缓存 | 未实施 | 优先核心功能,后续补充 |
+| 方面         | 原设计            | 实际实施                   | 原因                    |
+| ------------ | ----------------- | -------------------------- | ----------------------- |
+| 测试逻辑位置 | App.vue           | usePromptTester composable | 架构优化,遵循最佳实践   |
+| 变量传递     | 直接传递          | 通过 Workspace 中转        | 适配 Pro 模式的组件结构 |
+| 模块组织     | -                 | 移动 useContextManagement  | 消除模块依赖错误        |
+| 缓存功能     | localStorage 缓存 | 未实施                     | 优先核心功能,后续补充   |
 
 ---
 
@@ -146,6 +151,7 @@ const variables = {
 **简化原则**: 移除当前设计中概念混淆的"会话变量",保留清晰的"全局变量"+"测试临时变量"
 
 **用户心智模型**:
+
 - 📊 **全局变量**: 我的配置库 (永久保存,跨会话共享)
 - 🧪 **测试变量**: 当前测试的输入 (临时使用,刷新丢失)
 
@@ -158,6 +164,7 @@ const variables = {
 #### 问题1: 会话变量名不副实
 
 **设计初衷**:
+
 ```
 多上下文管理系统:
 - 上下文1: 写歌词项目 → 会话变量: style=流行, mood=欢快
@@ -166,6 +173,7 @@ const variables = {
 ```
 
 **实际情况**:
+
 ```
 ❌ 只有一个永久的默认上下文
 ❌ 无法创建/切换上下文
@@ -179,15 +187,16 @@ const variables = {
 
 #### 问题2: 两种变量造成用户困惑
 
-| 特性 | 全局变量 | 会话变量 (实际) |
-|------|---------|----------------|
-| **存储位置** | `variableManager.storage` | `ctx:store` 的默认上下文 |
-| **持久化** | ✅ 永久 | ✅ 永久 (只有一个上下文) |
-| **作用域** | 全应用 | 全应用 (无法切换上下文) |
-| **生命周期** | 手动管理 | 手动管理 |
-| **是否可切换** | ❌ | ❌ (理论可以,但UI未实现) |
+| 特性           | 全局变量                  | 会话变量 (实际)          |
+| -------------- | ------------------------- | ------------------------ |
+| **存储位置**   | `variableManager.storage` | `ctx:store` 的默认上下文 |
+| **持久化**     | ✅ 永久                   | ✅ 永久 (只有一个上下文) |
+| **作用域**     | 全应用                    | 全应用 (无法切换上下文)  |
+| **生命周期**   | 手动管理                  | 手动管理                 |
+| **是否可切换** | ❌                        | ❌ (理论可以,但UI未实现) |
 
 **用户困惑**:
+
 - "全局变量和会话变量有什么区别?"
 - "我应该用哪个?"
 - "为什么有两个地方管理变量?"
@@ -197,12 +206,14 @@ const variables = {
 #### 问题3: UI设计混乱
 
 **当前UI**:
+
 ```
 测试区操作栏: [📊全局变量] [📝会话变量] [🔧工具管理]
                                 ↑ 用户点击后发现和全局变量差不多
 ```
 
 **问题**:
+
 1. 两个按钮功能重叠
 2. 增加学习成本
 3. 占用UI空间
@@ -249,21 +260,24 @@ const variables = {
 #### 1. 全局变量 (保持不变)
 
 **功能**:
+
 - 持久化存储用户的常用变量
 - 跨所有功能模式、所有测试会话共享
 - 通过专门的"全局变量管理器"进行CRUD操作
 
 **典型用例**:
+
 ```typescript
 globalVariables = {
-  apiKey: "sk-xxxx...",
-  userName: "张三",
-  defaultLanguage: "中文",
-  tone: "专业",
+  apiKey: 'sk-xxxx...',
+  userName: '张三',
+  defaultLanguage: '中文',
+  tone: '专业',
 }
 ```
 
 **存储位置**:
+
 - Web: `localStorage['variableManager.storage']`
 - Desktop: `userData/preferences.json`
 
@@ -272,17 +286,19 @@ globalVariables = {
 #### 2. 测试变量 (新增)
 
 **功能**:
+
 - 测试区域内的临时变量输入
 - 仅存在于当前页面会话的内存中
 - 刷新页面后自动清空
 - 优先级高于全局变量 (覆盖全局变量的值)
 
 **典型用例**:
+
 ```typescript
 // 用户在测试区输入:
 testVariables = {
-  topic: "今天测试写歌",    // 临时话题
-  style: "欢快",            // 这次测试用欢快
+  topic: '今天测试写歌', // 临时话题
+  style: '欢快', // 这次测试用欢快
 }
 
 // 如果全局变量中也有 style: "正式"
@@ -290,6 +306,7 @@ testVariables = {
 ```
 
 **实现方式**:
+
 ```typescript
 // TestAreaPanel.vue
 const testVariables = ref<Record<string, string>>({})
@@ -298,6 +315,7 @@ const testVariables = ref<Record<string, string>>({})
 ```
 
 **可选优化**: 使用 `localStorage` 缓存最近一次的测试变量
+
 ```typescript
 // 测试完成后缓存
 localStorage.setItem('test.lastVariables', JSON.stringify(testVariables.value))
@@ -311,17 +329,19 @@ localStorage.setItem('test.lastVariables', JSON.stringify(testVariables.value))
 #### 3. 预定义变量 (保持不变)
 
 **功能**:
+
 - 系统运行时自动计算的变量
 - 优先级最高,不可被覆盖
 - 用于模板中的占位符替换
 
 **变量列表**:
+
 ```typescript
 predefinedVariables = {
-  currentPrompt: "当前提示词内容",
-  userQuestion: "用户测试问题",
-  originalPrompt: "原始提示词",
-  lastOptimizedPrompt: "上次优化结果",
+  currentPrompt: '当前提示词内容',
+  userQuestion: '用户测试问题',
+  originalPrompt: '原始提示词',
+  lastOptimizedPrompt: '上次优化结果',
   // ... 其他预定义变量
 }
 ```
@@ -333,6 +353,7 @@ predefinedVariables = {
 ### 改造前后对比
 
 **改造前**:
+
 ```
 ┌─────────────────────────────────────────┐
 │ 测试区                                   │
@@ -346,6 +367,7 @@ predefinedVariables = {
 ```
 
 **改造后**:
+
 ```
 ┌─────────────────────────────────────────┐
 │ 测试区                                   │
@@ -383,19 +405,11 @@ predefinedVariables = {
     <div class="test-header">
       <NText strong>{{ $t('test.areaTitle') }}</NText>
       <NFlex :size="8">
-        <NButton 
-          size="small" 
-          quaternary 
-          @click="emit('open-global-variables')"
-        >
+        <NButton size="small" quaternary @click="emit('open-global-variables')">
           <template #icon><span>📊</span></template>
           {{ $t('contextMode.actions.globalVariables') }}
         </NButton>
-        <NButton 
-          size="small" 
-          quaternary 
-          @click="emit('open-tool-manager')"
-        >
+        <NButton size="small" quaternary @click="emit('open-tool-manager')">
           <template #icon><span>🔧</span></template>
           {{ $t('contextMode.actions.tools') }}
         </NButton>
@@ -410,11 +424,7 @@ predefinedVariables = {
         <!-- "测试变量仅用于当前测试,刷新页面后会清空。如需保存,请添加到全局变量。" -->
       </NAlert>
 
-      <div 
-        v-for="varName in detectedVariables" 
-        :key="varName"
-        class="variable-input-row"
-      >
+      <div v-for="varName in detectedVariables" :key="varName" class="variable-input-row">
         <!-- 变量名标签 -->
         <NTag size="small" :bordered="false">
           <template #icon>
@@ -423,7 +433,7 @@ predefinedVariables = {
           </template>
           {{ `{{${varName}}}` }}
         </NTag>
-        
+
         <!-- 变量值输入 -->
         <NInput
           :value="testVariables[varName] || ''"
@@ -435,19 +445,13 @@ predefinedVariables = {
           <template #suffix>
             <NTooltip v-if="testVariables[varName] && !globalVariables[varName]">
               <template #trigger>
-                <NButton
-                  text
-                  size="tiny"
-                  @click="saveToGlobal(varName)"
-                >
-                  📌
-                </NButton>
+                <NButton text size="tiny" @click="saveToGlobal(varName)"> 📌 </NButton>
               </template>
               {{ $t('test.saveToGlobal') }}
             </NTooltip>
-            
+
             <!-- 显示使用全局变量 -->
-            <NTag 
+            <NTag
               v-else-if="!testVariables[varName] && globalVariables[varName]"
               size="tiny"
               type="info"
@@ -477,11 +481,9 @@ const getPlaceholder = (varName: string) => {
 const saveToGlobal = (varName: string) => {
   const value = testVariables.value[varName]
   if (!value) return
-  
+
   emit('save-to-global', varName, value)
-  window.$message?.success(
-    $t('test.savedToGlobal', { name: varName })
-  )
+  window.$message?.success($t('test.savedToGlobal', { name: varName }))
 }
 </script>
 ```
@@ -493,6 +495,7 @@ const saveToGlobal = (varName: string) => {
 ### 阶段1: 实现测试区临时变量 ✅ 已完成
 
 **任务列表**:
+
 - [x] 1.1 修改 `TestAreaPanel.vue` 添加测试变量状态
 - [x] 1.2 实现变量输入UI组件
 - [x] 1.3 实现变量合并逻辑 (全局 < 测试 < 预定义)
@@ -501,14 +504,15 @@ const saveToGlobal = (varName: string) => {
 - [x] 1.6 测试验证功能 (已通过手动测试)
 
 **关键代码**:
+
 ```typescript
 // TestAreaPanel.vue
 const testVariables = ref<Record<string, string>>({})
 
 const mergedVariables = computed(() => ({
-  ...props.globalVariables,      // 全局变量 (低优先级)
-  ...testVariables.value,        // 测试变量 (高优先级)
-  ...props.predefinedVariables,  // 预定义变量 (最高优先级)
+  ...props.globalVariables, // 全局变量 (低优先级)
+  ...testVariables.value, // 测试变量 (高优先级)
+  ...props.predefinedVariables, // 预定义变量 (最高优先级)
 }))
 
 const handleVariableInput = (varName: string, value: string) => {
@@ -525,6 +529,7 @@ const handleVariableInput = (varName: string, value: string) => {
 ### 阶段2: 移除会话变量相关代码 ✅ 已完成
 
 **任务列表**:
+
 - [x] 2.1 移除测试区操作栏的"会话变量"按钮
 - [x] 2.2 修改 `useContextManagement.ts` 移除会话变量逻辑 (并移动到 ui 模块)
 - [x] 2.3 移除 `ContextModeActions.vue` 会话变量按钮
@@ -533,6 +538,7 @@ const handleVariableInput = (varName: string, value: string) => {
 - [x] 2.6 测试验证无功能退化 (已通过回归测试)
 
 **删除的代码**:
+
 ```typescript
 // useContextManagement.ts
 // ❌ 删除
@@ -549,7 +555,7 @@ const updateContextVariable = async (name: string, value: string) => {
 contextEditorState.value = {
   messages: [],
   tools: [],
-  variables: {},  // ← 删除这个字段
+  variables: {}, // ← 删除这个字段
 }
 ```
 
@@ -558,6 +564,7 @@ contextEditorState.value = {
 ### 阶段3: 优化和完善 ✅ 已完成
 
 **任务列表**:
+
 - [x] 3.1 添加测试变量缓存 (localStorage) - 经评估后不实施,保持简单性
 - [x] 3.2 添加用户引导提示 (通过国际化文本完成)
 - [x] 3.3 更新文档和注释
@@ -565,6 +572,7 @@ contextEditorState.value = {
 - [x] 3.5 全面测试 (已通过手动测试)
 
 **缓存实现**:
+
 ```typescript
 // 测试时缓存变量值
 const LAST_TEST_VARS_KEY = 'test.lastVariables'
@@ -572,14 +580,11 @@ const LAST_TEST_VARS_KEY = 'test.lastVariables'
 const handleTest = () => {
   // 缓存当前测试变量
   try {
-    localStorage.setItem(
-      LAST_TEST_VARS_KEY, 
-      JSON.stringify(testVariables.value)
-    )
+    localStorage.setItem(LAST_TEST_VARS_KEY, JSON.stringify(testVariables.value))
   } catch (e) {
     console.warn('Failed to cache test variables:', e)
   }
-  
+
   // 执行测试...
 }
 
@@ -602,24 +607,24 @@ onMounted(() => {
 
 ### 功能测试
 
-| 测试项 | 测试步骤 | 预期结果 |
-|-------|---------|---------|
-| **测试变量输入** | 1. 检测到变量 `{{style}}`<br/>2. 在测试区输入"欢快" | 变量输入框显示,输入值保存到 `testVariables` |
-| **全局变量回退** | 1. 全局变量 `style=正式`<br/>2. 测试区不输入<br/>3. 执行测试 | 使用全局变量的值"正式" |
-| **测试变量优先级** | 1. 全局变量 `style=正式`<br/>2. 测试区输入"欢快"<br/>3. 执行测试 | 使用测试变量的值"欢快" |
-| **刷新页面** | 1. 输入测试变量<br/>2. 刷新页面 | 测试变量清空 |
-| **保存到全局** | 1. 测试变量 `topic=写歌`<br/>2. 点击📌图标<br/>3. 打开全局变量管理器 | 全局变量中出现 `topic=写歌` |
+| 测试项             | 测试步骤                                                             | 预期结果                                    |
+| ------------------ | -------------------------------------------------------------------- | ------------------------------------------- |
+| **测试变量输入**   | 1. 检测到变量 `{{style}}`<br/>2. 在测试区输入"欢快"                  | 变量输入框显示,输入值保存到 `testVariables` |
+| **全局变量回退**   | 1. 全局变量 `style=正式`<br/>2. 测试区不输入<br/>3. 执行测试         | 使用全局变量的值"正式"                      |
+| **测试变量优先级** | 1. 全局变量 `style=正式`<br/>2. 测试区输入"欢快"<br/>3. 执行测试     | 使用测试变量的值"欢快"                      |
+| **刷新页面**       | 1. 输入测试变量<br/>2. 刷新页面                                      | 测试变量清空                                |
+| **保存到全局**     | 1. 测试变量 `topic=写歌`<br/>2. 点击📌图标<br/>3. 打开全局变量管理器 | 全局变量中出现 `topic=写歌`                 |
 
 ### 回归测试
 
-| 测试项 | 测试内容 |
-|-------|---------|
+| 测试项       | 测试内容             |
+| ------------ | -------------------- |
 | **基础模式** | 确保基础模式不受影响 |
 | **系统模式** | 确保系统模式正常工作 |
 | **用户模式** | 确保用户模式正常工作 |
 | **工具管理** | 确保工具管理功能正常 |
 | **历史记录** | 确保历史记录功能正常 |
-| **收藏功能** | 确保收藏功能正常 |
+| **收藏功能** | 确保收藏功能正常     |
 
 ---
 
@@ -660,18 +665,18 @@ UI组件:
 
 ### 技术风险
 
-| 风险项 | 风险等级 | 影响 | 缓解措施 |
-|-------|---------|------|---------|
-| **数据迁移** | 🟡 中 | 现有会话变量数据丢失 | 提供迁移脚本,自动转移到全局变量 |
-| **功能退化** | 🟢 低 | 移除会话变量可能影响某些场景 | 充分测试,确保测试变量可替代 |
-| **用户习惯** | 🟡 中 | 已习惯会话变量的用户需要适应 | 提供升级说明和引导 |
+| 风险项       | 风险等级 | 影响                         | 缓解措施                        |
+| ------------ | -------- | ---------------------------- | ------------------------------- |
+| **数据迁移** | 🟡 中    | 现有会话变量数据丢失         | 提供迁移脚本,自动转移到全局变量 |
+| **功能退化** | 🟢 低    | 移除会话变量可能影响某些场景 | 充分测试,确保测试变量可替代     |
+| **用户习惯** | 🟡 中    | 已习惯会话变量的用户需要适应 | 提供升级说明和引导              |
 
 ### 业务风险
 
-| 风险项 | 风险等级 | 影响 | 缓解措施 |
-|-------|---------|------|---------|
-| **用户困惑** | 🟢 低 | 新用户可能不理解测试变量 | 添加清晰的UI提示和文档 |
-| **学习成本** | 🟢 低 | 需要学习新的变量使用方式 | 新方式更简单,学习成本降低 |
+| 风险项       | 风险等级 | 影响                     | 缓解措施                  |
+| ------------ | -------- | ------------------------ | ------------------------- |
+| **用户困惑** | 🟢 低    | 新用户可能不理解测试变量 | 添加清晰的UI提示和文档    |
+| **学习成本** | 🟢 低    | 需要学习新的变量使用方式 | 新方式更简单,学习成本降低 |
 
 ---
 
@@ -736,18 +741,19 @@ UI组件:
 
 ### 设计优势
 
-| 维度 | 当前设计 | 新设计 |
-|------|---------|--------|
-| **概念清晰度** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **UI复杂度** | 3个按钮 | 2个按钮 |
-| **学习成本** | 高 | 低 |
+| 维度           | 当前设计 | 新设计     |
+| -------------- | -------- | ---------- |
+| **概念清晰度** | ⭐⭐⭐   | ⭐⭐⭐⭐⭐ |
+| **UI复杂度**   | 3个按钮  | 2个按钮    |
+| **学习成本**   | 高       | 低         |
 | **使用便捷性** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **持久化开销** | 高 | 低 |
-| **代码维护性** | 复杂 | 简单 |
+| **持久化开销** | 高       | 低         |
+| **代码维护性** | 复杂     | 简单       |
 
 ---
 
 **文档维护**:
+
 - 创建日期: 2025-10-22
 - 最后更新: 2025-10-23
 - 项目状态: ✅ 已完成
@@ -760,7 +766,7 @@ UI组件:
 ### ✅ 已完成项
 
 1. **测试验证** - ✅ 已完成 (2025-10-23)
-   
+
    测试检查项:
    - [x] 基础模式:测试变量输入和注入
    - [x] 用户模式(Pro):测试变量输入和注入
@@ -778,7 +784,7 @@ UI组件:
 
 ### 📝 可选优化 (低优先级)
 
-3. **用户文档更新** 🟢 
+3. **用户文档更新** 🟢
    - 更新用户指南
    - 添加 FAQ
    - 编写更新日志

@@ -28,13 +28,15 @@
 ## 修复计划
 
 ### 阶段1：修复关键依赖问题
+
 - [x] 1.1 更新package.json添加缺少的依赖
   - 添加了dotenv: ^16.0.0
-  - 添加了@prompt-optimizer/core: workspace:*
+  - 添加了@prompt-optimizer/core: workspace:\*
 - [x] 1.2 验证依赖版本兼容性
   - 依赖安装成功，无版本冲突
 
 ### 阶段2：统一构建配置
+
 - [x] 2.1 选择electron-builder作为主要构建工具
 - [x] 2.2 更新构建脚本
   - 改进build:web脚本使用跨平台Node.js方法替代robocopy
@@ -42,15 +44,18 @@
 - [x] 2.3 移除icon配置要求
 
 ### 阶段3：修复API调用错误
+
 - [x] 3.1 修复ModelManager API调用
   - 将getModels()改为getAllModels()
   - 修复addModel()参数传递问题
 
 ### 阶段4：改进构建脚本
+
 - [x] 4.1 创建跨平台构建脚本build.js
 - [x] 4.2 使用Node.js fs.cpSync替代robocopy
 
 ### 阶段5：测试验证
+
 - [x] 5.1 测试开发模式启动 ✅
   - 应用成功启动，无API错误
   - 服务初始化正常
@@ -59,6 +64,7 @@
 - [ ] 5.3 验证IPC通信正常
 
 ## 执行时间
+
 - 开始时间：2025-01-01
 - 预计完成：2025-01-01
 - 状态：🔄 进行中
@@ -68,6 +74,7 @@
 ### 已完成的修复
 
 #### 1. 依赖问题修复
+
 ```json
 // packages/desktop/package.json
 "dependencies": {
@@ -78,25 +85,28 @@
 ```
 
 #### 2. API调用修复
+
 ```javascript
 // packages/desktop/main.js
 // 修复前：
-const result = await modelManager.getModels();
+const result = await modelManager.getModels()
 
 // 修复后：
-const result = await modelManager.getAllModels();
+const result = await modelManager.getAllModels()
 
 // 修复addModel参数传递：
-const { key, ...config } = model;
-await modelManager.addModel(key, config);
+const { key, ...config } = model
+await modelManager.addModel(key, config)
 ```
 
 #### 3. 构建脚本改进
+
 - 创建了跨平台构建脚本 `build.js`
 - 改进了 `build:web` 脚本使用Node.js方法替代Windows专用的robocopy
 - 移除了electron-builder配置中的icon要求
 
 #### 4. 测试结果
+
 - ✅ 依赖安装成功
 - ✅ 开发模式启动成功
 - ✅ 服务初始化正常
@@ -106,6 +116,7 @@ await modelManager.addModel(key, config);
 ### 🚨 重要发现：架构问题
 
 #### 问题：为什么desktop模式下仍能看到IndexedDB？
+
 **根本原因**：useAppInitializer.ts中的架构设计错误
 
 ```typescript
@@ -118,22 +129,25 @@ if (isRunningInElectron()) {
 ```
 
 **问题分析**：
+
 1. 渲染进程创建了独立的memory storage，与主进程隔离
 2. 某些组件可能绕过代理服务，直接使用web版本的IndexedDB
 3. 数据来源混乱：主进程memory storage vs 渲染进程storage vs IndexedDB
 
 #### 修复：正确的Electron架构
+
 ```typescript
 // 正确的实现（修复后）
 if (isRunningInElectron()) {
-  storageProvider = null; // ✅ 渲染进程不使用本地存储
+  storageProvider = null // ✅ 渲染进程不使用本地存储
   // 只创建代理服务，所有操作通过IPC
-  modelManager = new ElectronModelManagerProxy();
+  modelManager = new ElectronModelManagerProxy()
   // ...其他代理服务
 }
 ```
 
 **正确架构**：
+
 - 主进程：唯一的数据源，使用memory storage
 - 渲染进程：只有代理类，所有操作通过IPC
 - 无本地存储：渲染进程不应该有任何存储实例
@@ -141,16 +155,18 @@ if (isRunningInElectron()) {
 ### 🔧 关键修复：模块级存储创建问题
 
 #### 发现的根本问题
+
 在`packages/core/src/services/prompt/factory.ts`中发现模块级别的存储创建：
 
 ```typescript
 // 问题代码（已修复）
-const storageProvider = StorageFactory.createDefault(); // ❌ 模块加载时就创建IndexedDB
+const storageProvider = StorageFactory.createDefault() // ❌ 模块加载时就创建IndexedDB
 ```
 
 **影响**：无论在什么环境下，只要导入这个模块就会创建IndexedDB存储！
 
 #### 修复内容
+
 1. **移除模块级存储创建**：修改factory.ts，不再在模块加载时创建存储
 2. **重构工厂函数**：改为接收依赖注入的方式
 3. **移除重复函数定义**：清理service.ts中的重复工厂函数
@@ -163,13 +179,14 @@ export function createPromptService(
   templateManager: ITemplateManager,
   historyManager: IHistoryManager
 ): PromptService {
-  return new PromptService(modelManager, llmService, templateManager, historyManager);
+  return new PromptService(modelManager, llmService, templateManager, historyManager)
 }
 ```
 
 ### 🎯 最终修复：彻底删除createDefault()
 
 #### 根本解决方案
+
 按照用户建议，**彻底删除了StorageFactory.createDefault()方法**：
 
 ```typescript
@@ -180,17 +197,20 @@ static createDefault(): IStorageProvider {
 ```
 
 #### 修复内容
+
 1. **删除createDefault()方法**：从StorageFactory中完全移除
 2. **修复TemplateLanguageService**：构造函数改为必须传入storage参数
 3. **更新测试文件**：移除所有对createDefault()的测试
 4. **清理相关代码**：移除defaultInstance相关的代码
 
 #### 架构改进
+
 - **强制明确性**：所有地方都必须明确指定存储类型
 - **避免意外创建**：防止在不合适的环境下自动创建IndexedDB
 - **提高代码质量**：让依赖关系更加明确和可控
 
 ### ✅ 修复验证
+
 - [x] 修复Electron架构问题
 - [x] 修复模块级存储创建问题
 - [x] 彻底删除createDefault()方法
@@ -202,19 +222,22 @@ static createDefault(): IStorageProvider {
 - [x] 最终用户验证IndexedDB状态 ✅
 
 ### 🧹 代码清理
+
 - [x] 移除DexieStorageProvider中的过度防御代码
 - [x] 简化useAppInitializer中的调试信息
 - [x] 删除不必要的listTemplatesByTypeAsync方法
 - [x] 删除无用的getCurrentDefault()方法
 
 ### 📋 最终状态
+
 **任务状态**：✅ 完成
 **问题根源**：历史遗留的IndexedDB数据 + 模块级存储创建
 **解决方案**：删除createDefault()方法 + 手动清理IndexedDB
 **验证结果**：Desktop应用正常运行，无IndexedDB创建
 
 ### 🎯 核心收获
+
 1. **架构原则**：强制明确性比便利性更重要
 2. **问题定位**：历史遗留数据可能掩盖真正的修复效果
 3. **过度工程**：修复过程中要避免不必要的复杂化
-4. **代码清理**：及时清理无用代码，保持代码库整洁 
+4. **代码清理**：及时清理无用代码，保持代码库整洁

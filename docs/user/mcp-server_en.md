@@ -114,8 +114,6 @@ Create or edit the `services.json` file:
 
 > **Note**: If you are using developer local deployment (port 3000), please change the URL to `http://localhost:3000/mcp`.
 
-
-
 ### Other MCP Clients
 
 The MCP server supports the standard MCP protocol and can be used by any compatible client:
@@ -141,6 +139,7 @@ npx @modelcontextprotocol/inspector
 ```
 
 In the Inspector Web UI:
+
 1. Select transport method: `Streamable HTTP`
 2. Server URL: `http://localhost:3000/mcp`
 3. Click "Connect" to connect to the server
@@ -190,6 +189,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # not OpenAI
 **Cause**: When password protection is enabled in Docker deployment, Nginx enables Basic authentication for all routes, including the `/mcp` route
 
 **Solutions**:
+
 - **Fixed (v1.4.0+)**: The `/mcp` route is now configured to bypass Basic authentication
 - **Workarounds for older versions**:
   1. Don't set the `ACCESS_PASSWORD` environment variable
@@ -197,6 +197,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # not OpenAI
   3. Expose port 3000 directly: `docker run -p 3000:3000 ...`
 
 **Technical Details**:
+
 - The MCP protocol itself doesn't support HTTP Basic authentication
 - The new version adds `auth_basic off;` for the `/mcp` route in `docker/nginx.conf`
 - Web application access remains password-protected
@@ -204,6 +205,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # not OpenAI
 #### 5. Claude Desktop Connection Failure
 
 **Solution Steps**:
+
 1. Confirm MCP server is running
 2. Check if URL is correct
 3. Confirm firewall settings

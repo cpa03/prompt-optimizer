@@ -309,7 +309,7 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
   }
 
   const updateTestVariant = (id: TestVariantId, patch: Partial<Omit<TestVariantConfig, 'id'>>) => {
-    const idx = testVariants.value.findIndex(v => v.id === id)
+    const idx = testVariants.value.findIndex((v) => v.id === id)
     if (idx < 0) return
     const prev = testVariants.value[idx]
     const next: TestVariantConfig = { ...prev, ...patch, id }
@@ -374,10 +374,7 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
         isCompareMode: isCompareMode.value,
         lastActiveAt: lastActiveAt.value,
       }
-      await $services.preferenceService.set(
-        'session/v1/pro-variable',
-        sessionState
-      )
+      await $services.preferenceService.set('session/v1/pro-variable', sessionState)
     } catch (error) {
       console.error('[ProVariableSession] 保存会话失败:', error)
     }
@@ -391,10 +388,7 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
     }
 
     try {
-      const saved = await $services.preferenceService.get<unknown>(
-        'session/v1/pro-variable',
-        null
-      )
+      const saved = await $services.preferenceService.get<unknown>('session/v1/pro-variable', null)
 
       if (saved) {
         const parsed =
@@ -403,34 +397,41 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
             : (saved as ProVariableSessionState)
 
         prompt.value = typeof parsed.prompt === 'string' ? parsed.prompt : ''
-        optimizedPrompt.value = typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
+        optimizedPrompt.value =
+          typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
         reasoning.value = typeof parsed.reasoning === 'string' ? parsed.reasoning : ''
         chainId.value = typeof parsed.chainId === 'string' ? parsed.chainId : ''
         versionId.value = typeof parsed.versionId === 'string' ? parsed.versionId : ''
         testContent.value = typeof parsed.testContent === 'string' ? parsed.testContent : ''
 
         temporaryVariables.value = sanitizeVariableRecord(
-          (parsed as Partial<ProVariableSessionState>).temporaryVariables,
+          (parsed as Partial<ProVariableSessionState>).temporaryVariables
         )
-        testResults.value = (parsed.testResults && typeof parsed.testResults === 'object')
-          ? (parsed.testResults as TestResults)
-          : null
+        testResults.value =
+          parsed.testResults && typeof parsed.testResults === 'object'
+            ? (parsed.testResults as TestResults)
+            : null
 
         const defaultState = createDefaultState()
         const coerceVersionValue = (value: unknown): TestPanelVersionValue | null => {
           if (value === 'latest') return 'latest'
-          if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return Math.floor(value)
+          if (typeof value === 'number' && Number.isFinite(value) && value >= 0)
+            return Math.floor(value)
           return null
         }
 
-        const legacyModelKey = typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
+        const legacyModelKey =
+          typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
 
         // v2: variant results (prefer saved; else migrate legacy testResults into a/b)
         const savedVariantResults = (parsed as Partial<ProVariableSessionState>).testVariantResults
-        const savedFingerprint = (parsed as Partial<ProVariableSessionState>).testVariantLastRunFingerprint
+        const savedFingerprint = (parsed as Partial<ProVariableSessionState>)
+          .testVariantLastRunFingerprint
 
         const nextVariantResults: TestVariantResults = { ...defaultState.testVariantResults }
-        const nextFingerprint: TestVariantLastRunFingerprint = { ...defaultState.testVariantLastRunFingerprint }
+        const nextFingerprint: TestVariantLastRunFingerprint = {
+          ...defaultState.testVariantLastRunFingerprint,
+        }
 
         const coerceVariantResult = (value: unknown): TestVariantResult | null => {
           if (!value || typeof value !== 'object') return null
@@ -448,10 +449,14 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
             if (vr) nextVariantResults[id] = vr
           }
         } else if (parsed.testResults) {
-          if (typeof parsed.testResults.originalResult === 'string') nextVariantResults.a.result = parsed.testResults.originalResult
-          if (typeof parsed.testResults.originalReasoning === 'string') nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
-          if (typeof parsed.testResults.optimizedResult === 'string') nextVariantResults.b.result = parsed.testResults.optimizedResult
-          if (typeof parsed.testResults.optimizedReasoning === 'string') nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
+          if (typeof parsed.testResults.originalResult === 'string')
+            nextVariantResults.a.result = parsed.testResults.originalResult
+          if (typeof parsed.testResults.originalReasoning === 'string')
+            nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
+          if (typeof parsed.testResults.optimizedResult === 'string')
+            nextVariantResults.b.result = parsed.testResults.optimizedResult
+          if (typeof parsed.testResults.optimizedReasoning === 'string')
+            nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
         }
 
         if (savedFingerprint && typeof savedFingerprint === 'object') {
@@ -467,13 +472,18 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
 
         // layout
         const savedLayout = (parsed as Partial<ProVariableSessionState>).layout
-        const savedLeftRaw = savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
-          ? savedLayout.mainSplitLeftPct
-          : defaultState.layout.mainSplitLeftPct
+        const savedLeftRaw =
+          savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
+            ? savedLayout.mainSplitLeftPct
+            : defaultState.layout.mainSplitLeftPct
         const savedLeft = Math.min(50, Math.max(25, Math.round(savedLeftRaw)))
-        const savedCols = savedLayout && (savedLayout.testColumnCount === 2 || savedLayout.testColumnCount === 3 || savedLayout.testColumnCount === 4)
-          ? savedLayout.testColumnCount
-          : defaultState.layout.testColumnCount
+        const savedCols =
+          savedLayout &&
+          (savedLayout.testColumnCount === 2 ||
+            savedLayout.testColumnCount === 3 ||
+            savedLayout.testColumnCount === 4)
+            ? savedLayout.testColumnCount
+            : defaultState.layout.testColumnCount
         layout.value = {
           mainSplitLeftPct: savedLeft,
           testColumnCount: savedCols,
@@ -492,7 +502,10 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
           })
           testVariants.value = normalized
         } else {
-          testVariants.value = defaultState.testVariants.map((v) => ({ ...v, modelKey: legacyModelKey }))
+          testVariants.value = defaultState.testVariants.map((v) => ({
+            ...v,
+            modelKey: legacyModelKey,
+          }))
         }
 
         evaluationResults.value = {
@@ -501,11 +514,18 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
             ? (parsed.evaluationResults as PersistedEvaluationResults)
             : {}),
         }
-        selectedOptimizeModelKey.value = typeof parsed.selectedOptimizeModelKey === 'string' ? parsed.selectedOptimizeModelKey : ''
-        selectedTestModelKey.value = typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
-        selectedTemplateId.value = typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
-        selectedIterateTemplateId.value = typeof parsed.selectedIterateTemplateId === 'string' ? parsed.selectedIterateTemplateId : null
-        isCompareMode.value = typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
+        selectedOptimizeModelKey.value =
+          typeof parsed.selectedOptimizeModelKey === 'string' ? parsed.selectedOptimizeModelKey : ''
+        selectedTestModelKey.value =
+          typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
+        selectedTemplateId.value =
+          typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
+        selectedIterateTemplateId.value =
+          typeof parsed.selectedIterateTemplateId === 'string'
+            ? parsed.selectedIterateTemplateId
+            : null
+        isCompareMode.value =
+          typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
         lastActiveAt.value = Date.now()
       }
       // else: 没有保存的会话，使用默认状态

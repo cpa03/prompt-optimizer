@@ -120,27 +120,12 @@ export function useContextUserTester(
       if (isCompareMode) {
         // 对比模式：并发测试原始和优化提示词
         await Promise.all([
-          state.testPromptWithType(
-            'original',
-            prompt,
-            optimizedPrompt,
-            testVariables
-          ),
-          state.testPromptWithType(
-            'optimized',
-            prompt,
-            optimizedPrompt,
-            testVariables
-          )
+          state.testPromptWithType('original', prompt, optimizedPrompt, testVariables),
+          state.testPromptWithType('optimized', prompt, optimizedPrompt, testVariables),
         ])
       } else {
         // 单一模式：只测试优化后的提示词
-        await state.testPromptWithType(
-          'optimized',
-          prompt,
-          optimizedPrompt,
-          testVariables
-        )
+        await state.testPromptWithType('optimized', prompt, optimizedPrompt, testVariables)
       }
     },
 
@@ -217,9 +202,7 @@ export function useContextUserTester(
         }
 
         // 构造简单的消息列表（ContextUser 模式只有用户消息）
-        const messages: ConversationMessage[] = [
-          { role: 'user' as const, content: userPrompt },
-        ]
+        const messages: ConversationMessage[] = [{ role: 'user' as const, content: userPrompt }]
 
         // 使用自定义会话测试
         await services.value!.promptService.testCustomConversationStream(

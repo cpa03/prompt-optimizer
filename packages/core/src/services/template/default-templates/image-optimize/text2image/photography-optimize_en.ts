@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-photography-optimize-en',
@@ -58,7 +58,7 @@ Optimize the user's brief description into photography-oriented natural-language
 - Each sentence focuses on one core dimension (subject, lighting, atmosphere, technical details, etc.)
 - Each key noun paired with 2-3 precise modifiers
 - Do not use lists, code blocks, or JSON
-`
+`,
     },
     {
       role: 'user',
@@ -73,16 +73,17 @@ Notes:
 Original description:
 {{originalPrompt}}
 
-Please output the optimized prompt:`
-    }
+Please output the optimized prompt:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: 'Photography natural-language optimization template, emphasizing subject, composition, lighting and atmosphere; no parameters/weighting syntax',
+    description:
+      'Photography natural-language optimization template, emphasizing subject, composition, lighting and atmosphere; no parameters/weighting syntax',
     templateType: 'text2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -4,7 +4,7 @@
  * Compare test results of original and optimized user prompts
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-user-compare',
@@ -85,7 +85,7 @@ improvements should be **specific and actionable** suggestions:
 - ✓ Point out missing key information in the prompt
 - ✓ Suggest specific constraints or requirements to add
 - ✓ Identify unclear expressions and provide rewrite suggestions
-- ✓ Recommend adding output format or quality requirements`
+- ✓ Recommend adding output format or quality requirements`,
     },
     {
       role: 'user',
@@ -112,8 +112,8 @@ improvements should be **specific and actionable** suggestions:
 
 ---
 
-Please strictly compare and evaluate, determine if the optimization is effective, and provide specific improvement suggestions for the user prompt.`
-    }
+Please strictly compare and evaluate, determine if the optimization is effective, and provide specific improvement suggestions for the user prompt.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -122,7 +122,7 @@ Please strictly compare and evaluate, determine if the optimization is effective
     description: 'Compare test results of original and optimized user prompts',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'compare', 'scoring', 'basic', 'user']
+    tags: ['evaluation', 'compare', 'scoring', 'basic', 'user'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

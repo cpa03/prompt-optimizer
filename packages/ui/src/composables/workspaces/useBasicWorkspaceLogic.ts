@@ -13,7 +13,12 @@
  */
 import { ref, computed, type Ref, type ComputedRef } from 'vue'
 import type { AppServices } from '../../types/services'
-import type { OptimizationRequest, PromptRecord, PromptRecordChain, PromptRecordType } from '@prompt-optimizer/core'
+import type {
+  OptimizationRequest,
+  PromptRecord,
+  PromptRecordChain,
+  PromptRecordType,
+} from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
 import { useToast } from '../ui/useToast'
 import { useI18n } from 'vue-i18n'
@@ -46,12 +51,14 @@ type BasicSessionStore = {
     versionId: string
   }) => void
   updateTestContent: (content: string) => void
-  updateTestResults: (results: {
-    originalResult: string
-    originalReasoning: string
-    optimizedResult: string
-    optimizedReasoning: string
-  } | null) => void
+  updateTestResults: (
+    results: {
+      originalResult: string
+      originalReasoning: string
+      optimizedResult: string
+      optimizedReasoning: string
+    } | null
+  ) => void
   updateOptimizeModel: (key: string) => void
   updateTestModel: (key: string) => void
   updateTemplate: (id: string | null) => void
@@ -69,7 +76,15 @@ interface UseBasicWorkspaceLogicOptions {
 }
 
 export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
-  const { services, sessionStore, optimizationMode, promptRecordType, onOptimizeComplete, onIterateComplete, onLocalEditComplete } = options
+  const {
+    services,
+    sessionStore,
+    optimizationMode,
+    promptRecordType,
+    onOptimizeComplete,
+    onIterateComplete,
+    onLocalEditComplete,
+  } = options
   const toast = useToast()
   const { t } = useI18n()
 
@@ -87,7 +102,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
   // 状态代理（从 session store 读取）
   const prompt = computed<string>({
     get: () => sessionStore.prompt || '',
-    set: (value) => sessionStore.updatePrompt(value || '')
+    set: (value) => sessionStore.updatePrompt(value || ''),
   })
 
   const optimizedPrompt = computed<string>({
@@ -97,9 +112,9 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
         optimizedPrompt: value || '',
         reasoning: sessionStore.reasoning || '',
         chainId: sessionStore.chainId || '',
-        versionId: sessionStore.versionId || ''
+        versionId: sessionStore.versionId || '',
       })
-    }
+    },
   })
 
   const optimizedReasoning = computed<string>({
@@ -109,14 +124,14 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
         optimizedPrompt: sessionStore.optimizedPrompt || '',
         reasoning: value || '',
         chainId: sessionStore.chainId || '',
-        versionId: sessionStore.versionId || ''
+        versionId: sessionStore.versionId || '',
       })
-    }
+    },
   })
 
   const testContent = computed<string>({
     get: () => sessionStore.testContent || '',
-    set: (value) => sessionStore.updateTestContent(value || '')
+    set: (value) => sessionStore.updateTestContent(value || ''),
   })
 
   const testResults = computed<BasicSessionStore['testResults']>({
@@ -127,27 +142,27 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
     },
     set: (value) => {
       sessionStore.updateTestResults(value)
-    }
+    },
   })
 
   const selectedOptimizeModelKey = computed<string>({
     get: () => sessionStore.selectedOptimizeModelKey || '',
-    set: (value) => sessionStore.updateOptimizeModel(value || '')
+    set: (value) => sessionStore.updateOptimizeModel(value || ''),
   })
 
   const selectedTestModelKey = computed<string>({
     get: () => sessionStore.selectedTestModelKey || '',
-    set: (value) => sessionStore.updateTestModel(value || '')
+    set: (value) => sessionStore.updateTestModel(value || ''),
   })
 
   const selectedTemplateId = computed<string | null>({
     get: () => sessionStore.selectedTemplateId || null,
-    set: (value) => sessionStore.updateTemplate(value)
+    set: (value) => sessionStore.updateTemplate(value),
   })
 
   const selectedIterateTemplateId = computed<string | null>({
     get: () => sessionStore.selectedIterateTemplateId || null,
-    set: (value) => sessionStore.updateIterateTemplate(value)
+    set: (value) => sessionStore.updateIterateTemplate(value),
   })
 
   // ==================== 核心业务逻辑 ====================
@@ -183,7 +198,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
       optimizedPrompt: '',
       reasoning: '',
       chainId: '',
-      versionId: ''
+      versionId: '',
     })
 
     try {
@@ -191,7 +206,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
         optimizationMode,
         targetPrompt: prompt.value,
         templateId,
-        modelKey
+        modelKey,
       }
 
       await promptService.optimizePromptStream(request, {
@@ -215,8 +230,8 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
                 timestamp: Date.now(),
                 metadata: {
                   optimizationMode,
-                  functionMode: 'basic'
-                }
+                  functionMode: 'basic',
+                },
               }
 
               const chain = await historyManager.createNewChain(recordData)
@@ -228,7 +243,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
                 optimizedPrompt: optimizedPrompt.value,
                 reasoning: optimizedReasoning.value,
                 chainId: chain.chainId,
-                versionId: chain.currentRecord.id
+                versionId: chain.currentRecord.id,
               })
 
               onOptimizeComplete?.(chain)
@@ -243,7 +258,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
                 optimizedPrompt: optimizedPrompt.value,
                 reasoning: optimizedReasoning.value,
                 chainId: '',
-                versionId: ''
+                versionId: '',
               })
               toast.warning(t('toast.warning.optimizeCompleteButHistoryFailed'))
             }
@@ -256,14 +271,14 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
               optimizedPrompt: optimizedPrompt.value,
               reasoning: optimizedReasoning.value,
               chainId: '',
-              versionId: ''
+              versionId: '',
             })
             toast.success(t('toast.success.optimizeCompleteNoHistory'))
           }
         },
         onError: (error: Error) => {
           throw error
-        }
+        },
       })
     } catch (error) {
       const fallback = t('toast.error.optimizeFailed')
@@ -320,54 +335,66 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
         iterateInput,
         modelKey,
         {
-        onToken: (token: string) => {
-          optimizedPrompt.value += token
-        },
-        onReasoningToken: (token: string) => {
-          optimizedReasoning.value += token
-        },
-        onComplete: async () => {
-          const historyManager = services.value?.historyManager
-          if (historyManager) {
-            try {
-              const chainId = currentChainId.value || sessionStore.chainId || ''
+          onToken: (token: string) => {
+            optimizedPrompt.value += token
+          },
+          onReasoningToken: (token: string) => {
+            optimizedReasoning.value += token
+          },
+          onComplete: async () => {
+            const historyManager = services.value?.historyManager
+            if (historyManager) {
+              try {
+                const chainId = currentChainId.value || sessionStore.chainId || ''
 
-              // 如果当前没有链（例如：历史服务存在但此前未写入/被清空），先创建新链再继续
-              const chain = chainId
-                ? await historyManager.addIteration({
-                    chainId,
-                    originalPrompt: originalPromptValue,
-                    optimizedPrompt: optimizedPrompt.value,
-                    iterationNote: iterateInput,
-                    modelKey,
-                    templateId: iterateTemplateId,
-                  })
-                : await historyManager.createNewChain({
-                    id: uuidv4(),
-                    originalPrompt: originalPromptValue,
-                    optimizedPrompt: optimizedPrompt.value,
-                    type: promptRecordType,
-                    modelKey,
-                    templateId: iterateTemplateId,
-                    timestamp: Date.now(),
-                    metadata: { optimizationMode, functionMode: 'basic' },
-                  })
+                // 如果当前没有链（例如：历史服务存在但此前未写入/被清空），先创建新链再继续
+                const chain = chainId
+                  ? await historyManager.addIteration({
+                      chainId,
+                      originalPrompt: originalPromptValue,
+                      optimizedPrompt: optimizedPrompt.value,
+                      iterationNote: iterateInput,
+                      modelKey,
+                      templateId: iterateTemplateId,
+                    })
+                  : await historyManager.createNewChain({
+                      id: uuidv4(),
+                      originalPrompt: originalPromptValue,
+                      optimizedPrompt: optimizedPrompt.value,
+                      type: promptRecordType,
+                      modelKey,
+                      templateId: iterateTemplateId,
+                      timestamp: Date.now(),
+                      metadata: { optimizationMode, functionMode: 'basic' },
+                    })
 
-              currentChainId.value = chain.chainId
-              currentVersions.value = chain.versions
-              currentVersionId.value = chain.currentRecord.id
+                currentChainId.value = chain.chainId
+                currentVersions.value = chain.versions
+                currentVersionId.value = chain.currentRecord.id
 
-              sessionStore.updateOptimizedResult({
-                optimizedPrompt: optimizedPrompt.value,
-                reasoning: optimizedReasoning.value,
-                chainId: chain.chainId,
-                versionId: chain.currentRecord.id
-              })
+                sessionStore.updateOptimizedResult({
+                  optimizedPrompt: optimizedPrompt.value,
+                  reasoning: optimizedReasoning.value,
+                  chainId: chain.chainId,
+                  versionId: chain.currentRecord.id,
+                })
 
-              onIterateComplete?.(chain)
-              toast.success(t('toast.success.iterateComplete'))
-            } catch (error) {
-              console.error('[useBasicWorkspaceLogic] 保存迭代记录失败:', error)
+                onIterateComplete?.(chain)
+                toast.success(t('toast.success.iterateComplete'))
+              } catch (error) {
+                console.error('[useBasicWorkspaceLogic] 保存迭代记录失败:', error)
+                currentVersions.value = []
+                currentChainId.value = ''
+                currentVersionId.value = ''
+                sessionStore.updateOptimizedResult({
+                  optimizedPrompt: optimizedPrompt.value,
+                  reasoning: optimizedReasoning.value,
+                  chainId: '',
+                  versionId: '',
+                })
+                toast.warning(t('toast.warning.iterateCompleteButHistoryFailed'))
+              }
+            } else {
               currentVersions.value = []
               currentChainId.value = ''
               currentVersionId.value = ''
@@ -375,28 +402,16 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
                 optimizedPrompt: optimizedPrompt.value,
                 reasoning: optimizedReasoning.value,
                 chainId: '',
-                versionId: ''
+                versionId: '',
               })
-              toast.warning(t('toast.warning.iterateCompleteButHistoryFailed'))
+              toast.success(t('toast.success.iterateCompleteNoHistory'))
             }
-          } else {
-            currentVersions.value = []
-            currentChainId.value = ''
-            currentVersionId.value = ''
-            sessionStore.updateOptimizedResult({
-              optimizedPrompt: optimizedPrompt.value,
-              reasoning: optimizedReasoning.value,
-              chainId: '',
-              versionId: ''
-            })
-            toast.success(t('toast.success.iterateCompleteNoHistory'))
-          }
+          },
+          onError: (error: Error) => {
+            throw error
+          },
         },
-        onError: (error: Error) => {
-          throw error
-        }
-        },
-        iterateTemplateId,
+        iterateTemplateId
       )
     } catch (error) {
       const fallback = t('toast.error.iterateFailed')
@@ -450,7 +465,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
       originalResult: '',
       originalReasoning: '',
       optimizedResult: '',
-      optimizedReasoning: ''
+      optimizedReasoning: '',
     }
 
     try {
@@ -459,62 +474,72 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
         isTestingOriginal.value = true
         const systemPrompt = optimizationMode === 'system' ? prompt.value : ''
         const userPrompt = optimizationMode === 'system' ? testInput : prompt.value
-        await promptService.testPromptStream(
-          systemPrompt,
-          userPrompt,
-          modelKey,
-          {
-            onToken: (token: string) => {
-              testResults.value = {
-                ...(testResults.value || { originalResult: '', originalReasoning: '', optimizedResult: '', optimizedReasoning: '' }),
-                originalResult: ((testResults.value?.originalResult) || '') + token
-              }
-            },
-            onReasoningToken: (token: string) => {
-              testResults.value = {
-                ...(testResults.value || { originalResult: '', originalReasoning: '', optimizedResult: '', optimizedReasoning: '' }),
-                originalReasoning: ((testResults.value?.originalReasoning) || '') + token
-              }
-            },
-            onComplete: () => {
-              isTestingOriginal.value = false
-            },
-            onError: (error: Error) => {
-              throw error
+        await promptService.testPromptStream(systemPrompt, userPrompt, modelKey, {
+          onToken: (token: string) => {
+            testResults.value = {
+              ...(testResults.value || {
+                originalResult: '',
+                originalReasoning: '',
+                optimizedResult: '',
+                optimizedReasoning: '',
+              }),
+              originalResult: (testResults.value?.originalResult || '') + token,
             }
-          }
-        )
+          },
+          onReasoningToken: (token: string) => {
+            testResults.value = {
+              ...(testResults.value || {
+                originalResult: '',
+                originalReasoning: '',
+                optimizedResult: '',
+                optimizedReasoning: '',
+              }),
+              originalReasoning: (testResults.value?.originalReasoning || '') + token,
+            }
+          },
+          onComplete: () => {
+            isTestingOriginal.value = false
+          },
+          onError: (error: Error) => {
+            throw error
+          },
+        })
       }
 
       // 测试优化后的提示词
       isTestingOptimized.value = true
       const optimizedSystemPrompt = optimizationMode === 'system' ? optimizedPrompt.value : ''
       const optimizedUserPrompt = optimizationMode === 'system' ? testInput : optimizedPrompt.value
-      await promptService.testPromptStream(
-        optimizedSystemPrompt,
-        optimizedUserPrompt,
-        modelKey,
-        {
-          onToken: (token: string) => {
-              testResults.value = {
-                ...(testResults.value || { originalResult: '', originalReasoning: '', optimizedResult: '', optimizedReasoning: '' }),
-                optimizedResult: ((testResults.value?.optimizedResult) || '') + token
-              }
-          },
-          onReasoningToken: (token: string) => {
-              testResults.value = {
-                ...(testResults.value || { originalResult: '', originalReasoning: '', optimizedResult: '', optimizedReasoning: '' }),
-                optimizedReasoning: ((testResults.value?.optimizedReasoning) || '') + token
-              }
-          },
-          onComplete: () => {
-            toast.success(t('toast.success.testComplete'))
-          },
-          onError: (error: Error) => {
-            throw error
+      await promptService.testPromptStream(optimizedSystemPrompt, optimizedUserPrompt, modelKey, {
+        onToken: (token: string) => {
+          testResults.value = {
+            ...(testResults.value || {
+              originalResult: '',
+              originalReasoning: '',
+              optimizedResult: '',
+              optimizedReasoning: '',
+            }),
+            optimizedResult: (testResults.value?.optimizedResult || '') + token,
           }
-        }
-      )
+        },
+        onReasoningToken: (token: string) => {
+          testResults.value = {
+            ...(testResults.value || {
+              originalResult: '',
+              originalReasoning: '',
+              optimizedResult: '',
+              optimizedReasoning: '',
+            }),
+            optimizedReasoning: (testResults.value?.optimizedReasoning || '') + token,
+          }
+        },
+        onComplete: () => {
+          toast.success(t('toast.success.testComplete'))
+        },
+        onError: (error: Error) => {
+          throw error
+        },
+      })
     } catch (error) {
       const fallback = t('toast.error.testFailed')
       const detail = getI18nErrorMessage(error, fallback)
@@ -534,7 +559,11 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
    * - 将当前编辑后的 optimizedPrompt 写入历史链
    * - 清空 reasoning（避免误用旧的推理内容）
    */
-  const handleSaveLocalEdit = async (payload: { optimizedPrompt: string; note?: string; source?: 'patch' | 'manual' }) => {
+  const handleSaveLocalEdit = async (payload: {
+    optimizedPrompt: string
+    note?: string
+    source?: 'patch' | 'manual'
+  }) => {
     const historyManager = services.value?.historyManager
     if (!historyManager) {
       toast.error(t('toast.error.historyUnavailable'))
@@ -622,7 +651,7 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
       optimizedPrompt: version.optimizedPrompt || '',
       reasoning: '',
       chainId: currentChainId.value || '',
-      versionId: version.id
+      versionId: version.id,
     })
   }
 
@@ -688,6 +717,6 @@ export function useBasicWorkspaceLogic(options: UseBasicWorkspaceLogicOptions) {
     handleTest,
     handleSaveLocalEdit,
     handleSwitchVersion,
-    loadVersions
+    loadVersions,
   }
 }

@@ -1,5 +1,5 @@
-import { Template } from '../../types';
-import { BUILTIN_TEMPLATE_TIMESTAMP, TEMPLATE_VERSIONS } from '../../../../constants/templates';
+import { Template } from '../../types'
+import { BUILTIN_TEMPLATE_TIMESTAMP, TEMPLATE_VERSIONS } from '../../../../constants/templates'
 
 export const template: Template = {
   id: 'general-optimize',
@@ -71,7 +71,7 @@ export const template: Template = {
     author: 'System',
     description: '适合大多数系统提示词优化，按标准结构重组角色定义、技能和规则，提升专业性',
     templateType: 'optimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

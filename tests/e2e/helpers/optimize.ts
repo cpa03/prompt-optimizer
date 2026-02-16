@@ -99,17 +99,24 @@ async function readOutputSourceText(output: import('@playwright/test').Locator) 
   }
 }
 
-export async function expectOutputByTestIdNotEmpty(page: Page, testId: string, opts?: { timeoutMs?: number }) {
+export async function expectOutputByTestIdNotEmpty(
+  page: Page,
+  testId: string,
+  opts?: { timeoutMs?: number }
+) {
   const output = page.locator(`[data-testid="${testId}"]:visible`)
   const timeoutMs = opts?.timeoutMs ?? TIMEOUTS.API.LONG_OPERATION
 
   await ensureOutputSourceView(output)
 
   await expect
-    .poll(async () => {
-      const { text } = await readOutputSourceText(output).catch(() => ({ text: '' }))
-      return text
-    }, { timeout: timeoutMs })
+    .poll(
+      async () => {
+        const { text } = await readOutputSourceText(output).catch(() => ({ text: '' }))
+        return text
+      },
+      { timeout: timeoutMs }
+    )
     .toMatch(/\S/)
 }
 
@@ -122,10 +129,13 @@ export async function expectOptimizedResultNotEmpty(page: Page, mode: OptimizeWo
     await ensureOutputSourceView(output)
 
     await expect
-      .poll(async () => {
-        const { text } = await readOutputSourceText(output).catch(() => ({ text: '' }))
-        return text
-      }, { timeout: TIMEOUTS.API.LONG_OPERATION })
+      .poll(
+        async () => {
+          const { text } = await readOutputSourceText(output).catch(() => ({ text: '' }))
+          return text
+        },
+        { timeout: TIMEOUTS.API.LONG_OPERATION }
+      )
       .toMatch(/\S/)
   } catch (e) {
     const buttonInfo = await (async () => {
@@ -144,15 +154,27 @@ export async function expectOptimizedResultNotEmpty(page: Page, mode: OptimizeWo
       try {
         const out = await readOutputSourceText(output)
         const readonly =
-          out.kind === 'textarea' ? await output.locator('textarea').first().isDisabled().catch(() => false) : false
+          out.kind === 'textarea'
+            ? await output
+                .locator('textarea')
+                .first()
+                .isDisabled()
+                .catch(() => false)
+            : false
         return { ...out, readonly }
       } catch {
         return { kind: 'unknown', text: '', readonly: false }
       }
     })()
 
-    const alertText = await page.locator('.n-alert').allInnerTexts().catch(() => [])
-    const messageText = await page.locator('.n-message').allInnerTexts().catch(() => [])
+    const alertText = await page
+      .locator('.n-alert')
+      .allInnerTexts()
+      .catch(() => [])
+    const messageText = await page
+      .locator('.n-message')
+      .allInnerTexts()
+      .catch(() => [])
 
     const debugPayload = {
       mode,
@@ -163,12 +185,18 @@ export async function expectOptimizedResultNotEmpty(page: Page, mode: OptimizeWo
     }
 
     // eslint-disable-next-line no-console
-    console.error('[E2E][optimize] output wait timeout diagnostic:', JSON.stringify(debugPayload, null, 2))
+    console.error(
+      '[E2E][optimize] output wait timeout diagnostic:',
+      JSON.stringify(debugPayload, null, 2)
+    )
     throw e
   }
 }
 
-export async function verifyOptimizeButtonDisabledWhenEmpty(page: Page, mode: OptimizeWorkspaceMode) {
+export async function verifyOptimizeButtonDisabledWhenEmpty(
+  page: Page,
+  mode: OptimizeWorkspaceMode
+) {
   const workspace = getWorkspace(page, mode)
   const button = workspace.locator(`[data-testid="${mode}-optimize-button"]`)
 

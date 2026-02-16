@@ -15,7 +15,7 @@ describe('VCR 类', () => {
     provider: 'test',
     model: 'test-model',
     messages: [{ role: 'user', content: 'test message' }],
-    stream: false
+    stream: false,
   }
 
   let vcr: VCR
@@ -24,7 +24,7 @@ describe('VCR 类', () => {
     vcr = new VCR({
       fixtureDir: testFixtureDir,
       mode: 'auto',
-      enableRealLLM: false
+      enableRealLLM: false,
     })
   })
 
@@ -45,7 +45,7 @@ describe('VCR 类', () => {
     it('应该使用自定义配置', () => {
       const customVCR = new VCR({
         fixtureDir: './custom-fixtures',
-        mode: 'record'
+        mode: 'record',
       })
       expect(customVCR).toBeDefined()
     })
@@ -66,12 +66,12 @@ describe('VCR 类', () => {
       const vcrWithReal = new VCR({
         fixtureDir: testFixtureDir,
         mode: 'auto',
-        enableRealLLM: true
+        enableRealLLM: true,
       })
 
       const realFn = vi.fn().mockResolvedValue({
         content: 'test response',
-        usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 }
+        usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 },
       })
 
       const result = await vcrWithReal.intercept('test-scenario', testRequest, realFn)
@@ -79,7 +79,7 @@ describe('VCR 类', () => {
       expect(realFn).toHaveBeenCalledOnce()
       expect(result).toEqual({
         content: 'test response',
-        usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 }
+        usage: { prompt_tokens: 10, completion_tokens: 20, total_tokens: 30 },
       })
 
       // 验证 fixture 已保存
@@ -95,9 +95,9 @@ describe('VCR 类', () => {
     it('auto 模式且 fixture 不存在但未启用真实 LLM 应该抛出错误', async () => {
       const realFn = vi.fn().mockResolvedValue({ result: 'real' })
 
-      await expect(
-        vcr.intercept('test-scenario', testRequest, realFn)
-      ).rejects.toThrow('Real LLM is disabled')
+      await expect(vcr.intercept('test-scenario', testRequest, realFn)).rejects.toThrow(
+        'Real LLM is disabled'
+      )
     })
   })
 
@@ -122,7 +122,7 @@ describe('StreamSimulator 类', () => {
     { content: 'Hello', timestamp: 0 },
     { content: ' ', timestamp: 50 },
     { content: 'World', timestamp: 100 },
-    { content: '!', timestamp: 150 }
+    { content: '!', timestamp: 150 },
   ]
 
   describe('构造函数', () => {
@@ -244,18 +244,13 @@ describe('withVCR 便捷函数', () => {
       provider: 'test',
       model: 'test-model',
       messages: [{ role: 'user', content: 'test' }],
-      stream: false
+      stream: false,
     }
 
     const realFn = vi.fn().mockResolvedValue({ result: 'mock' })
 
     // 使用 off 模式避免真实录制
-    const result = await withVCR(
-      'test-scenario',
-      testRequest,
-      realFn,
-      { mode: 'off' }
-    )
+    const result = await withVCR('test-scenario', testRequest, realFn, { mode: 'off' })
 
     expect(realFn).toHaveBeenCalledOnce()
     expect(result).toEqual({ result: 'mock' })
@@ -266,7 +261,7 @@ describe('性能测试', () => {
   it('流式响应应该在合理时间内完成', async () => {
     const chunks: StreamChunk[] = Array.from({ length: 100 }, (_, i) => ({
       content: `chunk-${i}`,
-      timestamp: i * 10
+      timestamp: i * 10,
     }))
 
     const simulator = new StreamSimulator(chunks, { timeScale: 0.01 })

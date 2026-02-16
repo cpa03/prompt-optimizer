@@ -6,4 +6,3 @@ export class ImageError extends BaseError {
     super(code, message, params)
   }
 }
-

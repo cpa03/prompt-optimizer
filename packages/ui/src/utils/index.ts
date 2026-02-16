@@ -4,28 +4,13 @@
  */
 
 // Date utilities
-export {
-  formatDate,
-  formatDateShort,
-  formatTime,
-  formatRelativeTime,
-} from './date'
+export { formatDate, formatDateShort, formatTime, formatRelativeTime } from './date'
 
 // Text utilities
-export {
-  truncateText,
-  truncateMiddle,
-  capitalize,
-  camelToTitle,
-  normalizeWhitespace,
-} from './text'
+export { truncateText, truncateMiddle, capitalize, camelToTitle, normalizeWhitespace } from './text'
 
 // Platform utilities
-export {
-  type Platform,
-  getPlatform,
-  platform,
-} from './platform'
+export { type Platform, getPlatform, platform } from './platform'
 
 // Error utilities
 export {
@@ -42,10 +27,7 @@ export {
 } from './error'
 
 // Data transformer utilities
-export {
-  DataTransformer,
-  OptionAccessors,
-} from './data-transformer'
+export { DataTransformer, OptionAccessors } from './data-transformer'
 
 // Prompt variable utilities
 export {

@@ -10,12 +10,15 @@
 ## 📋 问题描述
 
 ### 症状
+
 在 Basic 模式下执行测试功能时：
+
 - ✅ 测试执行过程中可以看到流式更新
 - ❌ 测试完成后，结果区域显示"暂无内容"
 - ❌ Session Store 中的 `testResults` 数据确实存在，但 UI 不显示
 
 ### 复现步骤
+
 1. 访问 http://localhost:18181/#/basic/system
 2. 输入原始提示词（如"你是一个诗人"）
 3. 点击"优化"按钮生成优化后的提示词
@@ -23,6 +26,7 @@
 5. 观察结果区域：测试过程中显示内容，测试完成后显示"暂无内容"
 
 ### 影响范围
+
 - `BasicSystemWorkspace.vue`（系统提示词模式）
 - `BasicUserWorkspace.vue`（用户提示词模式）
 - 所有依赖测试结果的功能（评估、对比等）
@@ -34,6 +38,7 @@
 ### 阶段 1：数据流追踪
 
 **假设 1**: Session Store 数据被清空
+
 ```typescript
 // 检查 Session Store 的 updateTestResults 方法
 const updateTestResults = (results: TestResults | null) => {
@@ -46,6 +51,7 @@ const updateTestResults = (results: TestResults | null) => {
 **结论**: 数据没有被清空，Session Store 的 `testResults` 值正确
 
 **假设 2**: 响应式追踪失效
+
 ```typescript
 // 检查 useBasicWorkspaceLogic.ts 的 computed getter
 const testResults = computed({
@@ -54,11 +60,11 @@ const testResults = computed({
       originalResult: '',
       originalReasoning: '',
       optimizedResult: '',
-      optimizedReasoning: ''
+      optimizedReasoning: '',
     }
     console.log('[testResults getter] returning:', result)
-    return result  // ❌ 返回临时对象
-  }
+    return result // ❌ 返回临时对象
+  },
 })
 ```
 
@@ -78,6 +84,7 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 ```
 
 **核心发现**:
+
 - `logic.testResults` 是 `ComputedRef<TestResults | null>`
 - 在 `<script setup>` 中，ComputedRef **不会自动解包**
 - 必须使用 `.value` 访问实际值
@@ -104,6 +111,7 @@ console.log(testResults.value?.originalResult)  // 正确
 ```
 
 **关键规则**:
+
 - 只有**顶层变量**的 ref 会在 `<script setup>` 中自动解包
 - 对象属性中的 ref **不会**自动解包
 - `ComputedRef` 是 ref 的一种，遵循相同规则
@@ -121,6 +129,7 @@ Component
 ```
 
 **问题**:
+
 - Logic 层返回对象包装的 ref
 - 组件中需要手动 `.value` 解包
 - TypeScript 无法捕获这种运行时错误
@@ -132,18 +141,21 @@ Component
 // ❌ 修复前的代码
 const testResults = computed({
   get: () => {
-    return sessionStore.testResults || {
-      originalResult: '',
-      originalReasoning: '',
-      optimizedResult: '',
-      optimizedReasoning: ''
-    }
+    return (
+      sessionStore.testResults || {
+        originalResult: '',
+        originalReasoning: '',
+        optimizedResult: '',
+        optimizedReasoning: '',
+      }
+    )
     // ^^^^ 每次都返回新的临时对象，Vue 无法追踪！
-  }
+  },
 })
 ```
 
 **问题**:
+
 - 当 `sessionStore.testResults` 为 `null` 时，返回临时对象
 - 临时对象的引用每次都不同
 - Vue 的响应式系统依赖对象引用追踪变化
@@ -165,7 +177,7 @@ const testResults = computed<BasicSessionStore['testResults']>({
       originalResult: '',
       originalReasoning: '',
       optimizedResult: '',
-      optimizedReasoning: ''
+      optimizedReasoning: '',
     }
     console.log('[testResults getter]', result)
     return result
@@ -173,7 +185,7 @@ const testResults = computed<BasicSessionStore['testResults']>({
   set: (value) => {
     console.log('[testResults setter]', value)
     sessionStore.updateTestResults(value)
-  }
+  },
 })
 
 // ✅ 修复后
@@ -185,11 +197,12 @@ const testResults = computed<BasicSessionStore['testResults']>({
   },
   set: (value) => {
     sessionStore.updateTestResults(value)
-  }
+  },
 })
 ```
 
 **关键改进**:
+
 1. 移除临时默认对象，始终返回 `sessionStore.testResults`
 2. 移除所有调试日志
 3. 简化代码逻辑
@@ -215,13 +228,13 @@ const unwrappedLogicProps = computed(() => ({
   testResultsOriginalResult: logic.testResults.value?.originalResult || '',
   testResultsOriginalReasoning: logic.testResults.value?.originalReasoning || '',
   testResultsOptimizedResult: logic.testResults.value?.optimizedResult || '',
-  testResultsOptimizedReasoning: logic.testResults.value?.optimizedReasoning || ''
+  testResultsOptimizedReasoning: logic.testResults.value?.optimizedReasoning || '',
 }))
 
 // ✅ 评估处理器
 const testResultsComputed = computed(() => ({
   originalResult: logic.testResults.value?.originalResult || undefined,
-  optimizedResult: logic.testResults.value?.optimizedResult || undefined
+  optimizedResult: logic.testResults.value?.optimizedResult || undefined,
 }))
 ```
 
@@ -236,6 +249,7 @@ const testResultsComputed = computed(() => ({
 ## ✅ 验证结果
 
 ### 测试场景 1: Basic-System 模式
+
 ```
 访问: http://localhost:18181/#/basic/system
 输入: "你是一个诗人"
@@ -246,6 +260,7 @@ const testResultsComputed = computed(() => ({
 ```
 
 ### 测试场景 2: Basic-User 模式
+
 ```
 访问: http://localhost:18181/#/basic/user
 输入: "你是一个诗人"
@@ -255,6 +270,7 @@ const testResultsComputed = computed(() => ({
 ```
 
 ### Console 日志
+
 - ✅ 无调试日志残留
 - ✅ 无错误或警告
 - ✅ 响应式更新正常触发
@@ -306,13 +322,13 @@ const testResultsComputed = computed(() => ({
 
 ### Logic 层存在的价值
 
-| 职责 | 价值 | 代价 |
-|------|------|------|
-| **代码复用** | BasicSystem 和 BasicUser 共享 99% 的业务逻辑 | 无 |
-| **状态代理** | 统一处理空值默认值（`|| ''`） | 组件中需要 `.value` |
-| **过程态管理** | 避免 Session Store 被临时状态污染 | 增加一层抽象 |
-| **历史管理** | 不持久化大型历史数据 | 增加状态管理复杂度 |
-| **错误处理** | 统一的 toast 提示和错误处理 | 无 |
+| 职责           | 价值                                         | 代价               |
+| -------------- | -------------------------------------------- | ------------------ | ----- | ------------------- |
+| **代码复用**   | BasicSystem 和 BasicUser 共享 99% 的业务逻辑 | 无                 |
+| **状态代理**   | 统一处理空值默认值（`                        |                    | ''`） | 组件中需要 `.value` |
+| **过程态管理** | 避免 Session Store 被临时状态污染            | 增加一层抽象       |
+| **历史管理**   | 不持久化大型历史数据                         | 增加状态管理复杂度 |
+| **错误处理**   | 统一的 toast 提示和错误处理                  | 无                 |
 
 ### 当前架构的痛点
 
@@ -322,11 +338,12 @@ const testResultsComputed = computed(() => ({
 // ❌ 当前实现
 const prompt = computed<string>({
   get: () => sessionStore.prompt || '',
-  set: (value) => sessionStore.updatePrompt(value || '')
+  set: (value) => sessionStore.updatePrompt(value || ''),
 })
 ```
 
 **问题**:
+
 - Vue 3 推崇单向数据流：`state → view → actions → state`
 - 双向 computed 打破了数据流向的清晰性
 - 组件无法控制何时触发更新
@@ -336,8 +353,8 @@ const prompt = computed<string>({
 ```typescript
 // Logic 层返回对象包装的 ref
 return {
-  testResults,  // ComputedRef<TestResults | null>
-  isOptimizing  // Ref<boolean>
+  testResults, // ComputedRef<TestResults | null>
+  isOptimizing, // Ref<boolean>
 }
 
 // ❌ 组件中必须使用 .value
@@ -347,12 +364,13 @@ const hasResult = computed(() => !!logic.testResults.value?.originalResult)
 // 需要创建解包版本传递给子组件
 const unwrappedLogicProps = computed(() => ({
   testResultsOriginalResult: logic.testResults.value?.originalResult || '',
-  isOptimizing: logic.isOptimizing.value
+  isOptimizing: logic.isOptimizing.value,
   // ... 大量样板代码
 }))
 ```
 
 **问题**:
+
 - 违背了 Composition API 的设计理念：ref 应该在 `<script setup>` 中自动解包
 - 只有当 ref 是**顶层变量**时才会自动解包
 - 对象属性中的 ref **不会**自动解包
@@ -369,6 +387,7 @@ const hasResult = computed(() => !!logic.testResults?.originalResult)
 ```
 
 **问题**:
+
 - TypeScript 编译器无法捕获 `.value` 缺失
 - `logic.testResults?.originalResult` 在类型上是合法的
 - 但实际访问的是 ComputedRef 对象，而不是 TestResults
@@ -379,7 +398,7 @@ const hasResult = computed(() => !!logic.testResults?.originalResult)
 // Logic 层只是在转发 Store 的操作
 const prompt = computed<string>({
   get: () => sessionStore.prompt || '',
-  set: (value) => sessionStore.updatePrompt(value || '')
+  set: (value) => sessionStore.updatePrompt(value || ''),
 })
 
 const optimizedPrompt = computed<string>({
@@ -389,13 +408,14 @@ const optimizedPrompt = computed<string>({
       optimizedPrompt: value || '',
       reasoning: sessionStore.reasoning || '',
       chainId: sessionStore.chainId || '',
-      versionId: sessionStore.versionId || ''
+      versionId: sessionStore.versionId || '',
     })
-  }
+  },
 })
 ```
 
 **问题**:
+
 - Logic 层**没有真正的业务逻辑**，只是在做**数据转发**
 - 这不是抽象，这是**间接层**（Indirection）
 - 增加了代码复杂度，没有带来价值
@@ -447,12 +467,14 @@ const hasOriginalResult = computed(() => !!logic.testResults?.originalResult)
 ```
 
 **优点**:
+
 - ✅ 组件中不需要 `.value`
 - ✅ 保持响应式
 - ✅ 类型安全
 - ✅ **最小改动**
 
 **缺点**:
+
 - ⚠️ 仍然保留双向 computed（违背单向数据流）
 - ⚠️ Logic 层仍然是间接层
 
@@ -606,6 +628,7 @@ export function useBasicWorkspaceOperations(options: {
 ```
 
 **优点**:
+
 - ✅ 符合 Vue 3 单向数据流原则
 - ✅ 组件直接使用 Store，清晰明了
 - ✅ Composable 只包含业务逻辑和 UI 过程态，职责单一
@@ -613,6 +636,7 @@ export function useBasicWorkspaceOperations(options: {
 - ✅ 易于测试、易于维护
 
 **缺点**:
+
 - ⚠️ 需要重构多个组件
 - ⚠️ 需要拆分 Logic 层的职责
 
@@ -800,6 +824,7 @@ const {
 ```
 
 **优点**:
+
 - ✅ 返回独立的 ref，在 `<script setup>` 中自动解包
 - ✅ 派生状态在 composable 内定义，组件无需关心
 - ✅ UI 过程态和业务逻辑封装在一起
@@ -807,6 +832,7 @@ const {
 - ✅ 保留了代码复用价值
 
 **缺点**:
+
 - ⚠️ 需要重构 Logic 层
 - ⚠️ Composable 变得更复杂（但也更完整）
 
@@ -814,28 +840,30 @@ const {
 
 ## 📊 方案对比
 
-| 方面 | 当前架构 | 方案 A: toRefs | 方案 B: 移除 Logic | 方案 C: 重构 Logic |
-|------|---------|---------------|-------------------|-------------------|
-| **改动成本** | - | 小 | 大 | 中 |
-| **Vue 3 最佳实践** | ❌ | ⚠️ 部分符合 | ✅ 完全符合 | ✅ 完全符合 |
-| **数据流清晰度** | ❌ 双向 | ⚠️ 双向 | ✅ 单向 | ✅ 单向 |
-| **组件代码量** | 中 | 中 | 少 | 少 |
-| **是否需要 .value** | 是（对象属性） | 否 | 否 | 否 |
-| **类型安全** | ⚠️ 运行时错误 | ✅ | ✅ | ✅ |
-| **代码复用** | ✅ | ✅ | ⚠️ 需手动提取 | ✅ |
-| **可测试性** | ⚠️ | ⚠️ | ✅ | ✅ |
-| **推荐指数** | - | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| 方面                | 当前架构       | 方案 A: toRefs | 方案 B: 移除 Logic | 方案 C: 重构 Logic |
+| ------------------- | -------------- | -------------- | ------------------ | ------------------ |
+| **改动成本**        | -              | 小             | 大                 | 中                 |
+| **Vue 3 最佳实践**  | ❌             | ⚠️ 部分符合    | ✅ 完全符合        | ✅ 完全符合        |
+| **数据流清晰度**    | ❌ 双向        | ⚠️ 双向        | ✅ 单向            | ✅ 单向            |
+| **组件代码量**      | 中             | 中             | 少                 | 少                 |
+| **是否需要 .value** | 是（对象属性） | 否             | 否                 | 否                 |
+| **类型安全**        | ⚠️ 运行时错误  | ✅             | ✅                 | ✅                 |
+| **代码复用**        | ✅             | ✅             | ⚠️ 需手动提取      | ✅                 |
+| **可测试性**        | ⚠️             | ⚠️             | ✅                 | ✅                 |
+| **推荐指数**        | -              | ⭐⭐⭐⭐       | ⭐⭐⭐⭐⭐         | ⭐⭐⭐⭐⭐         |
 
 ---
 
 ## 🎯 建议
 
 ### 短期（当前阶段）
+
 - ✅ 使用**方案 A（toRefs）**快速修复
 - ✅ 添加 ESLint 规则检测常见的 `.value` 遗漏
 - ✅ 添加单元测试覆盖响应式更新
 
 ### 长期（架构重构）
+
 - ✅ 考虑**方案 B（移除 Logic 层）**或**方案 C（重构 Logic）**
 - ✅ 统一使用单向数据流
 - ✅ 将 Logic 层拆分为更小的、职责单一的 composables
@@ -845,23 +873,27 @@ const {
 ## 📝 经验总结
 
 ### 1. Vue 3 响应式系统的陷阱
+
 - ⚠️ Computed 在 `<template>` 中自动解包，但在 `<script setup>` 中不自动解包
 - ⚠️ 只有顶层变量的 ref 会自动解包，对象属性的 ref 不会
 - ⚠️ TypeScript 无法捕获 `.value` 缺失的错误
 
 ### 2. 架构设计原则
+
 - ✅ 避免双向 computed，使用单向数据流
 - ✅ Composable 应该返回独立的 ref，而不是对象包装的 ref
 - ✅ 优先考虑 Vue 官方推荐的模式，而不是自创模式
 - ✅ 过度抽象会增加复杂度，降低可维护性
 
 ### 3. 调试技巧
+
 - ✅ 添加详细的日志追踪数据流
 - ✅ 检查响应式依赖是否正确建立
 - ✅ 验证临时对象是否破坏响应式
 - ✅ 使用 Codex 等 AI 助手进行深度分析
 
 ### 4. 代码审查要点
+
 - ⚠️ 检查所有 ComputedRef 访问是否使用了 `.value`
 - ⚠️ 检查是否有返回临时对象的 computed getter
 - ⚠️ 检查是否有违背单向数据流的双向绑定

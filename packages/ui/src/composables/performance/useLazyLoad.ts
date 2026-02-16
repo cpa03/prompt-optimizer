@@ -32,12 +32,7 @@ interface LazyComponentErrorCallbackFunction {
  * 优化图片和组件的加载性能
  */
 export function useLazyLoad(options: LazyLoadOptions = {}) {
-  const {
-    root = null,
-    rootMargin = '50px',
-    threshold = 0.1,
-    once = true
-  } = options
+  const { root = null, rootMargin = '50px', threshold = 0.1, once = true } = options
 
   const observer = ref<IntersectionObserver | null>(null)
   const observedElements = ref(new Set<Element>())
@@ -56,8 +51,11 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const element = entry.target
-            const callback = (element as Element & { __lazyCallback?: LazyCallbackFunction }).__lazyCallback
-            const errorCallback = (element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction }).__lazyErrorCallback
+            const callback = (element as Element & { __lazyCallback?: LazyCallbackFunction })
+              .__lazyCallback
+            const errorCallback = (
+              element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction }
+            ).__lazyErrorCallback
 
             try {
               if (callback) {
@@ -68,7 +66,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
               if (element.hasAttribute('data-src')) {
                 const img = element as HTMLImageElement
                 const src = img.getAttribute('data-src')
-                
+
                 if (src) {
                   img.src = src
                   img.removeAttribute('data-src')
@@ -104,7 +102,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
       {
         root,
         rootMargin,
-        threshold
+        threshold,
       }
     )
   }
@@ -141,10 +139,12 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
 
     // 保存回调函数
     if (callback) {
-      (element as Element & { __lazyCallback?: LazyCallbackFunction }).__lazyCallback = callback
+      ;(element as Element & { __lazyCallback?: LazyCallbackFunction }).__lazyCallback = callback
     }
     if (errorCallback) {
-      (element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction }).__lazyErrorCallback = errorCallback
+      ;(
+        element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction }
+      ).__lazyErrorCallback = errorCallback
     }
 
     observer.value.observe(element)
@@ -158,10 +158,11 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
     if (observer.value && observedElements.value.has(element)) {
       observer.value.unobserve(element)
       observedElements.value.delete(element)
-      
+
       // 清理回调函数
       delete (element as Element & { __lazyCallback?: LazyCallbackFunction }).__lazyCallback
-      delete (element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction }).__lazyErrorCallback
+      delete (element as Element & { __lazyErrorCallback?: LazyErrorCallbackFunction })
+        .__lazyErrorCallback
     }
   }
 
@@ -192,30 +193,27 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
     img.setAttribute('data-src', src)
     img.classList.add('lazy-loading')
 
-    observe(
-      img,
-      () => {
-        // 图片加载监听
-        const handleLoad = () => {
-          img.classList.remove('lazy-loading')
-          img.classList.add('lazy-loaded')
-          img.removeEventListener('load', handleLoad)
-          img.removeEventListener('error', handleError)
-          if (onLoad) onLoad()
-        }
-
-        const handleError = (error: Event) => {
-          img.classList.remove('lazy-loading')
-          img.classList.add('lazy-error')
-          img.removeEventListener('load', handleLoad)
-          img.removeEventListener('error', handleError)
-          if (onError) onError(error)
-        }
-
-        img.addEventListener('load', handleLoad)
-        img.addEventListener('error', handleError)
+    observe(img, () => {
+      // 图片加载监听
+      const handleLoad = () => {
+        img.classList.remove('lazy-loading')
+        img.classList.add('lazy-loaded')
+        img.removeEventListener('load', handleLoad)
+        img.removeEventListener('error', handleError)
+        if (onLoad) onLoad()
       }
-    )
+
+      const handleError = (error: Event) => {
+        img.classList.remove('lazy-loading')
+        img.classList.add('lazy-error')
+        img.removeEventListener('load', handleLoad)
+        img.removeEventListener('error', handleError)
+        if (onError) onError(error)
+      }
+
+      img.addEventListener('load', handleLoad)
+      img.addEventListener('error', handleError)
+    })
   }
 
   /**
@@ -230,29 +228,26 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
     element.setAttribute('data-bg', bgUrl)
     element.classList.add('lazy-loading')
 
-    observe(
-      element,
-      () => {
-        // 预加载背景图片
-        const img = new Image()
-        
-        const handleLoad = () => {
-          element.classList.remove('lazy-loading')
-          element.classList.add('lazy-loaded')
-          if (onLoad) onLoad()
-        }
+    observe(element, () => {
+      // 预加载背景图片
+      const img = new Image()
 
-        const handleError = (error: Event) => {
-          element.classList.remove('lazy-loading')
-          element.classList.add('lazy-error')
-          if (onError) onError(error)
-        }
-
-        img.addEventListener('load', handleLoad)
-        img.addEventListener('error', handleError)
-        img.src = bgUrl
+      const handleLoad = () => {
+        element.classList.remove('lazy-loading')
+        element.classList.add('lazy-loaded')
+        if (onLoad) onLoad()
       }
-    )
+
+      const handleError = (error: Event) => {
+        element.classList.remove('lazy-loading')
+        element.classList.add('lazy-error')
+        if (onError) onError(error)
+      }
+
+      img.addEventListener('load', handleLoad)
+      img.addEventListener('error', handleError)
+      img.src = bgUrl
+    })
   }
 
   /**
@@ -266,21 +261,18 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
   ) => {
     element.classList.add('lazy-loading')
 
-    observe(
-      element,
-      async () => {
-        try {
-          const component = await loadComponent()
-          element.classList.remove('lazy-loading')
-          element.classList.add('lazy-loaded')
-          if (onLoad) onLoad(component)
-        } catch (error) {
-          element.classList.remove('lazy-loading')
-          element.classList.add('lazy-error')
-          if (onError) onError(error)
-        }
+    observe(element, async () => {
+      try {
+        const component = await loadComponent()
+        element.classList.remove('lazy-loading')
+        element.classList.add('lazy-loaded')
+        if (onLoad) onLoad(component)
+      } catch (error) {
+        element.classList.remove('lazy-loading')
+        element.classList.add('lazy-error')
+        if (onError) onError(error)
       }
-    )
+    })
   }
 
   /**
@@ -299,13 +291,13 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
 
       urls.forEach((url, _index) => {
         const img = new Image()
-        
+
         const handleComplete = () => {
           loaded++
           if (onProgress) {
             onProgress(loaded, total)
           }
-          
+
           if (loaded === total) {
             if (hasError) {
               reject(new Error('Some images failed to load'))
@@ -333,7 +325,7 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
     return {
       observedCount: observedElements.value.size,
       isSupported: typeof IntersectionObserver !== 'undefined',
-      options: { root, rootMargin, threshold, once }
+      options: { root, rootMargin, threshold, once },
     }
   }
 
@@ -347,15 +339,15 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
     observe,
     unobserve,
     unobserveAll,
-    
+
     // 专用方法
     lazyImage,
     lazyBackground,
     lazyComponent,
     preloadImages,
-    
+
     // 状态
     getObserverStats,
-    observedElements: observedElements.value
+    observedElements: observedElements.value,
   }
 }

@@ -30,12 +30,7 @@
         :segmented="{ content: true }"
       >
         <NFlex :size="8" :wrap="true">
-          <NTag
-            v-for="varName in missingVariables"
-            :key="varName"
-            type="warning"
-            :bordered="false"
-          >
+          <NTag v-for="varName in missingVariables" :key="varName" type="warning" :bordered="false">
             <span v-text="`{{${varName}}}`"></span>
           </NTag>
         </NFlex>
@@ -84,15 +79,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 
-import {
-  NModal,
-  NCard,
-  NFlex,
-  NTag,
-  NText,
-  NButton,
-  NScrollbar
-} from 'naive-ui'
+import { NModal, NCard, NFlex, NTag, NText, NButton, NScrollbar } from 'naive-ui'
 import { FONT_SIZES } from '../config/constants'
 import type { ContextMode } from '@prompt-optimizer/core'
 

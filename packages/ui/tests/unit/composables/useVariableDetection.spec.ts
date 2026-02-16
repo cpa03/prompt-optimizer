@@ -60,7 +60,7 @@ describe('useVariableDetection', () => {
       const variables = extractVariables(text)
 
       expect(variables).toHaveLength(3)
-      expect(variables.map(v => v.name)).toEqual(['user', 'email', 'phone'])
+      expect(variables.map((v) => v.name)).toEqual(['user', 'email', 'phone'])
     })
 
     it('应该正确处理相同变量的多次出现', () => {
@@ -230,7 +230,7 @@ describe('useVariableDetection', () => {
       expect(variables[0].source).toBe('predefined') // var1: 预定义优先
       expect(variables[1].source).toBe('predefined') // var2: 预定义优先
       expect(variables[2].source).toBe('predefined') // var3: 仅预定义
-      expect(variables[3].source).toBe('missing')    // var4: 缺失
+      expect(variables[3].source).toBe('missing') // var4: 缺失
     })
 
     it('应该正确处理空值变量', () => {
@@ -381,7 +381,7 @@ describe('useVariableDetection', () => {
     })
 
     it('应该支持 Unicode 字符变量名', () => {
-      const globalVariables = refRecord({ '用户名': '张三' })
+      const globalVariables = refRecord({ 用户名: '张三' })
       const temporaryVariables = refRecord()
       const predefinedVariables = refRecord()
 

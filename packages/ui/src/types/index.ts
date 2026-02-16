@@ -32,11 +32,11 @@ export type {
   TestAreaSlots,
   TestAreaEventCallbacks,
   CreateTestAreaConfig,
-  TestAreaPresets
+  TestAreaPresets,
 } from '../components/types/test-area'
 
 // 明确区分不同模块的同名类型
 export type {
   TestAreaPanelProps as TestAreaPanelLegacyProps,
-  TestResultSectionProps as TestResultSectionLegacyProps
+  TestResultSectionProps as TestResultSectionLegacyProps,
 } from '../components/types/test-area'

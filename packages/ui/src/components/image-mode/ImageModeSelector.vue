@@ -7,21 +7,22 @@
       @click="handleModeChange('text2image')"
       :disabled="disabled"
       class="mode-button"
-      :class="{ 
+      :class="{
         'mode-active': modelValue === 'text2image',
-        'mode-pressed': pressedMode === 'text2image'
+        'mode-pressed': pressedMode === 'text2image',
       }"
       :aria-pressed="modelValue === 'text2image'"
       :title="t('imageMode.text2image')"
     >
       <template #icon>
-        <span 
-          class="mode-icon" 
-          :class="{ 
+        <span
+          class="mode-icon"
+          :class="{
             'icon-active': modelValue === 'text2image',
-            'icon-bounce': animatingMode === 'text2image'
+            'icon-bounce': animatingMode === 'text2image',
           }"
-        >🖼️</span>
+          >🖼️</span
+        >
       </template>
       {{ t('imageMode.text2image') }}
     </NButton>
@@ -32,21 +33,22 @@
       @click="handleModeChange('image2image')"
       :disabled="disabled"
       class="mode-button"
-      :class="{ 
+      :class="{
         'mode-active': modelValue === 'image2image',
-        'mode-pressed': pressedMode === 'image2image'
+        'mode-pressed': pressedMode === 'image2image',
       }"
       :aria-pressed="modelValue === 'image2image'"
       :title="t('imageMode.image2image')"
     >
       <template #icon>
-        <span 
-          class="mode-icon" 
-          :class="{ 
+        <span
+          class="mode-icon"
+          :class="{
             'icon-active': modelValue === 'image2image',
-            'icon-bounce': animatingMode === 'image2image'
+            'icon-bounce': animatingMode === 'image2image',
           }"
-        >📷</span>
+          >📷</span
+        >
       </template>
       {{ t('imageMode.image2image') }}
     </NButton>
@@ -71,7 +73,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  disabled: false
+  disabled: false,
 })
 
 const emit = defineEmits<Emits>()
@@ -89,16 +91,16 @@ const handleModeChange = (mode: ImageMode) => {
 
   // 🎨 Set pressed state for tactile feedback
   pressedMode.value = mode
-  
+
   // Clear previous timeouts
   if (pressTimeout) clearTimeout(pressTimeout)
   if (animationTimeout) clearTimeout(animationTimeout)
-  
+
   // Release pressed state after 150ms
   pressTimeout = window.setTimeout(() => {
     pressedMode.value = null
   }, 150)
-  
+
   // Trigger bounce animation on the icon
   animatingMode.value = mode
   animationTimeout = window.setTimeout(() => {
@@ -217,7 +219,10 @@ const handleModeChange = (mode: ImageMode) => {
   background: rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.2);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+  transition:
+    width 0.4s ease-out,
+    height 0.4s ease-out,
+    opacity 0.4s ease-out;
   opacity: 0;
   pointer-events: none;
 }
@@ -226,7 +231,10 @@ const handleModeChange = (mode: ImageMode) => {
   width: 150%;
   height: 300%;
   opacity: 1;
-  transition: width 0.2s ease-out, height 0.2s ease-out, opacity 0.2s ease-out;
+  transition:
+    width 0.2s ease-out,
+    height 0.2s ease-out,
+    opacity 0.2s ease-out;
 }
 
 /* 🎨 Respect user motion preferences for accessibility */
@@ -237,17 +245,17 @@ const handleModeChange = (mode: ImageMode) => {
     transition: none !important;
     animation: none !important;
   }
-  
+
   .mode-button:not(:disabled):hover,
   .mode-button:not(:disabled):active,
   .mode-button.mode-pressed:not(:disabled) {
     transform: none;
   }
-  
+
   .icon-bounce {
     animation: none;
   }
-  
+
   .mode-button::after {
     display: none;
   }

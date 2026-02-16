@@ -16,10 +16,10 @@
 
 ### 测试结果
 
-| 阶段 | 测试数量 | 通过率 | 新增测试 |
-|------|---------|--------|---------|
-| 初始修复 | 194 | 100% | - |
-| Codex反馈改进 | 204 | 100% | +10 |
+| 阶段          | 测试数量 | 通过率 | 新增测试 |
+| ------------- | -------- | ------ | -------- |
+| 初始修复      | 194      | 100%   | -        |
+| Codex反馈改进 | 204      | 100%   | +10      |
 
 **最终结果**: 🎉 **204/204 全部通过**
 
@@ -30,9 +30,11 @@
 ### 第一轮：基础修复（P0/P1/P2）
 
 #### 🔴 P0 - 统一服务访问入口
+
 **问题**: `$services` vs `getPiniaServices()` 语义冲突
 
 **修复**:
+
 - ✅ `pinia-services-plugin.ts` 文档更新，标记 `$services` 为调试用
 - ✅ `pinia.ts` 文档完善，明确推荐 `getPiniaServices()`
 - ✅ TypeScript 类型添加 `@deprecated` 标记
@@ -40,9 +42,11 @@
 **代码变更**: 2个文件，+126/-31 行
 
 #### 🟠 P1 - 标准化测试清理机制
+
 **问题**: 测试污染风险，手动清理易遗漏
 
 **修复**:
+
 - ✅ 全局 `afterEach` 清理（兜底机制）
 - ✅ 创建 `pinia-test-helpers.ts`（159行）
   - `createPreferenceServiceStub()`
@@ -53,9 +57,11 @@
 **代码变更**: 3个文件，1个新增，测试代码减少30%
 
 #### 🟡 P2 - useTemporaryVariables 依赖检查
+
 **问题**: Pinia未安装时"静默失败"
 
 **修复**:
+
 - ✅ 使用 `getActivePinia()` 显式检测
 - ✅ 抛出清晰错误信息
 - ✅ 文档说明使用前提
@@ -71,48 +77,55 @@
 #### Codex 审查意见
 
 **✅ 方向符合预期**
+
 > "用 `getPiniaServices()` 作为唯一推荐入口 + `@deprecated` 明确 `$services` 地位，这能从根上消除'文档/实现双标准'"
 
 **🔍 三点自查建议**:
+
 1. 确认 `tests/setup.ts` 在 Vitest 配置中生效
 2. `withMockPiniaServices()` 应该可恢复（而非一律置null）
 3. `useTemporaryVariables()` 考虑 SSR/非组件场景
 
 **🧪 建议补充测试**:
+
 1. 测试 `useTemporaryVariables()` 抛错场景
 2. 测试 helper 的清理/恢复行为
 
 #### 改进实施
 
 **✅ 1. 确认配置生效**
+
 ```typescript
 // vitest.config.ts
-setupFiles: ['./tests/setup.ts']  // ✅ 已正确配置
+setupFiles: ['./tests/setup.ts'] // ✅ 已正确配置
 ```
 
 **✅ 2. 改进 withMockPiniaServices 恢复逻辑**
 
 修改前（一律置null）:
+
 ```typescript
 try {
   await testFn({ pinia, services })
 } finally {
-  cleanup()  // 置 null
+  cleanup() // 置 null
 }
 ```
 
 修改后（恢复到调用前状态）:
+
 ```typescript
-const previousServices = getPiniaServices()  // 保存状态
+const previousServices = getPiniaServices() // 保存状态
 try {
   await testFn({ pinia, services })
 } finally {
   cleanup()
-  setPiniaServices(previousServices)  // 恢复状态
+  setPiniaServices(previousServices) // 恢复状态
 }
 ```
 
 **关键改进**:
+
 - 支持嵌套调用（栈语义）
 - 错误场景也能恢复
 - null 状态也能正确恢复
@@ -120,6 +133,7 @@ try {
 **✅ 3. 新增测试文件**: `pinia-improvements.spec.ts` (10个测试)
 
 **测试覆盖**:
+
 - ✅ 无 active pinia 时抛错测试
 - ✅ 错误信息包含 installPinia 指引测试
 - ✅ 恢复到调用前状态测试
@@ -139,6 +153,7 @@ try {
 > "你描述的'保存调用前 services、结束时恢复 + 错误场景也能恢复'就是我想要的形态。"
 
 **符合关键点**:
+
 - ✅ 捕获"进入前"的值
 - ✅ `try/finally` 中恢复
 - ✅ 兼容同步/异步回调
@@ -149,6 +164,7 @@ try {
 > "新增的测试覆盖我认为足够且命中要害"
 
 **认可点**:
+
 - ✅ `useTemporaryVariables()` 错误路径测试（最容易回归）
 - ✅ helper 嵌套/异常/恢复测试（压住污染风险）
 
@@ -170,13 +186,13 @@ try {
 
 ### 代码质量提升
 
-| 指标 | 修复前 | 修复后 | 提升 |
-|------|--------|--------|------|
-| 文档完整性 | 7/10 | 10/10 | +43% |
-| 测试代码量 | 73行 | 51行 | -30% |
-| 测试覆盖 | 194个 | 204个 | +5% |
-| 错误提示清晰度 | 5/10 | 10/10 | +100% |
-| 团队困惑指数 | 高 | 低 | - |
+| 指标           | 修复前 | 修复后 | 提升  |
+| -------------- | ------ | ------ | ----- |
+| 文档完整性     | 7/10   | 10/10  | +43%  |
+| 测试代码量     | 73行   | 51行   | -30%  |
+| 测试覆盖       | 194个  | 204个  | +5%   |
+| 错误提示清晰度 | 5/10   | 10/10  | +100% |
+| 团队困惑指数   | 高     | 低     | -     |
 
 ### 开发效率提升
 
@@ -244,6 +260,7 @@ try {
 ### 1. 语义统一（消除双标准）
 
 **修改前**:
+
 ```typescript
 // 插件文档：推荐 this.$services
 // pinia.ts：不推荐 this.$services
@@ -251,6 +268,7 @@ try {
 ```
 
 **修改后**:
+
 ```typescript
 // 全部文档：统一推荐 getPiniaServices()
 // $services 标记为 @deprecated
@@ -260,6 +278,7 @@ try {
 ### 2. 测试基础设施（减少30%代码）
 
 **修改前**:
+
 ```typescript
 // 每个测试重复 8 行样板代码
 const servicesRef = shallowRef(...)
@@ -271,16 +290,18 @@ setPiniaServices(services)
 ```
 
 **修改后**:
+
 ```typescript
 // 只需 3 行
 const { pinia, services } = createTestPinia({
-  preferenceService: createPreferenceServiceStub({ set })
+  preferenceService: createPreferenceServiceStub({ set }),
 })
 ```
 
 ### 3. 恢复逻辑（支持嵌套）
 
 **关键改进**:
+
 ```typescript
 // ✅ Codex 要求：支持嵌套和错误恢复
 const previousServices = getPiniaServices()
@@ -288,11 +309,12 @@ try {
   await testFn({ pinia, services })
 } finally {
   cleanup()
-  setPiniaServices(previousServices)  // 恢复而非置null
+  setPiniaServices(previousServices) // 恢复而非置null
 }
 ```
 
 **支持场景**:
+
 - ✅ 嵌套调用（栈语义）
 - ✅ 错误场景恢复
 - ✅ null 状态恢复
@@ -301,19 +323,21 @@ try {
 ### 4. 错误提示（提速60%排查）
 
 **修改前**:
+
 ```typescript
 // 静默失败，难以排查
-const store = useTemporaryVariablesStore()  // 可能失败
+const store = useTemporaryVariablesStore() // 可能失败
 ```
 
 **修改后**:
+
 ```typescript
 // 清晰错误，立即定位
 const activePinia = getActivePinia()
 if (!activePinia) {
   throw new Error(
     '[useTemporaryVariables] Pinia not installed... ' +
-    'Make sure you have called installPinia(app)...'
+      'Make sure you have called installPinia(app)...'
   )
 }
 ```
@@ -369,17 +393,20 @@ if (!activePinia) {
 ### 准备移除 $services（观察期后）
 
 **前置条件**:
+
 - ✅ 确认仓库内外无使用点
 - ✅ 团队熟悉新规范
 - ✅ 观察期无问题反馈
 
 **删除清单**:
+
 1. 删除 `piniaServicesPlugin()` 函数
 2. 删除 `PiniaCustomProperties` 类型扩展
 3. 删除相关测试用例
 4. 更新 `pinia.ts` 文档
 
 **预期收益**:
+
 - 代码复杂度下降
 - 维护成本降低
 - 概念更简单
@@ -389,13 +416,14 @@ if (!activePinia) {
 #### 1. 并发测试清理（Codex建议）
 
 如果启用并发测试：
+
 ```typescript
 // tests/setup.ts
 import { setActivePinia } from 'pinia'
 
 afterEach(() => {
   setPiniaServices(null)
-  setActivePinia(undefined)  // 清理 active pinia
+  setActivePinia(undefined) // 清理 active pinia
 })
 ```
 
@@ -459,16 +487,18 @@ rules: {
 ### 技术亮点
 
 1. **恢复模式（Codex认可）**
+
    ```typescript
    const previous = getCurrent()
    try {
      // do something
    } finally {
-     restore(previous)  // 而非 reset()
+     restore(previous) // 而非 reset()
    }
    ```
 
 2. **显式错误检测**
+
    ```typescript
    const activePinia = getActivePinia()
    if (!activePinia) {
@@ -544,6 +574,7 @@ rules: {
 ### 最终评价
 
 **本次修复完全达到预期目标**：
+
 - ✅ 解决了所有P0/P1/P2问题
 - ✅ 通过了Codex的专业审查
 - ✅ 新增10个高质量测试

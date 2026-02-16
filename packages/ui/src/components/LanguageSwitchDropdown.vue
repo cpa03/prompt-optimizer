@@ -5,8 +5,8 @@
     placement="bottom-end"
     trigger="click"
   >
-    <NButton 
-      quaternary 
+    <NButton
+      quaternary
       size="small"
       class="flex items-center justify-center language-switch-btn"
       :title="currentLanguageLabel"
@@ -15,42 +15,62 @@
     >
       <template #icon>
         <div class="language-icon-wrapper" :class="{ 'is-animating': isAnimating }">
-          <svg class="w-5 h-5 language-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- 简洁的地球图标 - 更大更清晰 -->
-          <circle cx="16" cy="16" r="14" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2.5"/>
-          
-          <!-- 经线 -->
-          <ellipse cx="16" cy="16" rx="6" ry="14" 
-                   fill="none" 
-                   stroke="currentColor" 
-                   stroke-width="2"/>
-          <ellipse cx="16" cy="16" rx="11" ry="8" 
-                   fill="none" 
-                   stroke="currentColor" 
-                   stroke-width="2"/>
-          
-          <!-- 纬线 -->
-          <line x1="2" y1="16" x2="30" y2="16" 
-                stroke="currentColor" 
-                stroke-width="2"/>
-          
-          <!-- 语言符号 - 清晰的 A 字母 -->
-          <text x="21" y="12" 
-                fill="currentColor" 
-                font-family="system-ui, -apple-system" 
-                font-size="8" 
-                font-weight="bold">A</text>
-          
-          <!-- 中文符号 - 清晰的"中"字 -->
-          <text x="8" y="25" 
-                fill="currentColor" 
-                font-family="system-ui" 
-                font-size="7" 
-                font-weight="bold">中</text>
-        </svg>
+          <svg
+            class="w-5 h-5 language-icon"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- 简洁的地球图标 - 更大更清晰 -->
+            <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5" />
+
+            <!-- 经线 -->
+            <ellipse
+              cx="16"
+              cy="16"
+              rx="6"
+              ry="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+            <ellipse
+              cx="16"
+              cy="16"
+              rx="11"
+              ry="8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            />
+
+            <!-- 纬线 -->
+            <line x1="2" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="2" />
+
+            <!-- 语言符号 - 清晰的 A 字母 -->
+            <text
+              x="21"
+              y="12"
+              fill="currentColor"
+              font-family="system-ui, -apple-system"
+              font-size="8"
+              font-weight="bold"
+            >
+              A
+            </text>
+
+            <!-- 中文符号 - 清晰的"中"字 -->
+            <text
+              x="8"
+              y="25"
+              fill="currentColor"
+              font-family="system-ui"
+              font-size="7"
+              font-weight="bold"
+            >
+              中
+            </text>
+          </svg>
         </div>
       </template>
     </NButton>
@@ -87,33 +107,33 @@ const availableLanguages: LanguageOption[] = [
   {
     key: 'zh-CN',
     label: '简体中文',
-    locale: 'zh-CN'
+    locale: 'zh-CN',
   },
   {
     key: 'zh-TW',
     label: '繁體中文',
-    locale: 'zh-TW'
+    locale: 'zh-TW',
   },
   {
     key: 'en-US',
     label: 'English',
-    locale: 'en-US'
-  }
+    locale: 'en-US',
+  },
 ]
 
 // 当前语言计算属性
 const currentLocale = computed(() => i18n.global.locale.value)
 
 const currentLanguageLabel = computed(() => {
-  const current = availableLanguages.find(lang => lang.locale === currentLocale.value)
+  const current = availableLanguages.find((lang) => lang.locale === currentLocale.value)
   return current ? `切换语言 / Switch Language (${current.label})` : '切换语言 / Switch Language'
 })
 
 // 为Naive UI Dropdown创建选项
 const dropdownOptions = computed<DropdownOption[]>(() => {
-  return availableLanguages.map(language => ({
+  return availableLanguages.map((language) => ({
     key: language.key,
-    label: language.label
+    label: language.label,
   }))
 })
 
@@ -123,23 +143,23 @@ const isSupportedLocale = (value: unknown): value is SupportedLocale =>
 // 处理语言选择 with animation feedback
 const handleLanguageSelect = async (key: string) => {
   if (!isSupportedLocale(key)) return
-  const selectedLanguage = availableLanguages.find(lang => lang.key === key)
+  const selectedLanguage = availableLanguages.find((lang) => lang.key === key)
   if (!selectedLanguage) return
-  
+
   // Trigger animation if language actually changes
   if (selectedLanguage.locale !== currentLocale.value) {
     lastLocale.value = currentLocale.value
     isAnimating.value = true
-    
+
     // 切换语言
     i18n.global.locale.value = selectedLanguage.locale
-    
+
     // Reset animation after it completes
     setTimeout(() => {
       isAnimating.value = false
     }, 400)
   }
-  
+
   // 保存用户偏好
   try {
     await setPreference(UI_SETTINGS_KEYS.PREFERRED_LANGUAGE, selectedLanguage.locale)
@@ -234,17 +254,17 @@ watch(currentLocale, (newLocale, oldLocale) => {
     transition: none;
     transform: none;
   }
-  
+
   .language-icon-wrapper,
   .language-icon-wrapper.is-animating {
     transition: none;
     animation: none;
   }
-  
+
   .language-icon {
     transition: none;
   }
-  
+
   .language-icon:hover {
     transform: none;
   }

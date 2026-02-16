@@ -37,6 +37,7 @@
 **目标**: 调研技术方案，设计测试架构
 
 **任务**:
+
 - [x] 探索项目现有测试基础（已完成 111 个测试文件分析）
 - [x] 调研 UI 错误检测技术方案
   - [x] 控制台错误捕获方案（Vitest, Playwright）
@@ -51,6 +52,7 @@
 - [x] 设计 pre-commit hook 方案
 
 **输出**:
+
 - [x] `findings.md` - 技术调研结果（含完整技术选型对比）
 - [x] `architecture.md` - 测试架构设计文档
 
@@ -63,6 +65,7 @@
 **目标**: 实现 VCR 自动化录制-回放系统
 
 **任务**:
+
 - [x] 实现 Fixtures 管理系统
   - [x] 文件存储结构设计
   - [x] 自动录制检测逻辑
@@ -80,6 +83,7 @@
 - [x] 单元测试验证
 
 **输出**:
+
 - `packages/core/tests/fixtures/` - Fixtures 存储目录
 - `packages/core/tests/utils/vcr.ts` - VCR 工具函数
 - `packages/core/tests/utils/llm-mock-service.ts` - LLM Mock 服务（MSW handlers）
@@ -97,6 +101,7 @@
 **目标**: 建立“UI 错误自动失败”的门禁机制（Vitest + Playwright）
 
 **任务**:
+
 - [x] 控制台错误检测
   - [x] Vitest: 捕获 console.error/warn
   - [x] Playwright: 监听 page.on('console')
@@ -108,6 +113,7 @@
   - [ ] 截图对比（Playwright `toHaveScreenshot`）作为后续增强（可在 Phase 4/5 引入）
 
 **输出**:
+
 - `packages/ui/tests/utils/error-detection.ts` - 错误检测工具（Vitest）
 - `packages/ui/tests/setup.ts` - 全局设置集成
 - `tests/e2e/fixtures.ts` - Playwright 全局控制台/异常门禁
@@ -124,6 +130,7 @@
 **目标**: 实现 P0 功能的完整测试覆盖
 
 **任务**:
+
 - [ ] 提示词优化和测试流程
   - [ ] Basic-System 完整工作流
   - [ ] Basic-User 完整工作流
@@ -158,6 +165,7 @@
   - [ ] 持久化往返测试
 
 **输出**:
+
 - `tests/e2e/workflows/` - E2E 工作流测试
 - `packages/ui/tests/integration/` - 集成测试
 - `packages/ui/tests/unit/stores/` - Store 单元测试
@@ -173,6 +181,7 @@
 **目标**: 实现提交前强制门禁，优化执行时间
 
 **任务**:
+
 - [x] 测试分组（fast/full）
   - [x] `pnpm test:gate`（fast，pre-commit）
   - [x] `pnpm test:gate:full`（含 E2E）
@@ -193,6 +202,7 @@
   - [ ] 贡献者指南更新（可选）
 
 **输出**:
+
 - [x] `.husky/pre-commit` - pre-commit hook（已提交）
 - [x] `.github/workflows/test.yml` - CI 配置（已提交）
 - [x] `docs/testing/README.md` - 测试文档（已提交）
@@ -209,17 +219,18 @@
 
 ## 里程碑
 
-| 里程碑 | 完成标准 | 预计日期 |
-|--------|---------|---------|
-| M1: 方案设计完成 | Phase 1 完成，架构文档输出 | Day 3 |
-| M2: VCR 基础设施可用 | Phase 2 完成，可录制回放 LLM 响应 | Day 8 |
-| M3: UI 错误检测可用 | Phase 3 完成，4 种错误类型可检测 | Day 14 |
-| M4: 核心测试完成 | Phase 4 完成，P0 功能全覆盖 | Day 26 |
-| M5: 门禁上线 | Phase 5 完成，pre-commit hook 生效 | Day 30 |
+| 里程碑               | 完成标准                           | 预计日期 |
+| -------------------- | ---------------------------------- | -------- |
+| M1: 方案设计完成     | Phase 1 完成，架构文档输出         | Day 3    |
+| M2: VCR 基础设施可用 | Phase 2 完成，可录制回放 LLM 响应  | Day 8    |
+| M3: UI 错误检测可用  | Phase 3 完成，4 种错误类型可检测   | Day 14   |
+| M4: 核心测试完成     | Phase 4 完成，P0 功能全覆盖        | Day 26   |
+| M5: 门禁上线         | Phase 5 完成，pre-commit hook 生效 | Day 30   |
 
 ## 成功指标
 
 **定量指标**:
+
 - [x] 测试执行时间 < 10 分钟（提交前）✅ **实际: < 1 分钟（快速门禁）**
 - [x] 控制台错误检测率 100% ✅ **已启用并验证**
 - [x] P0 功能测试覆盖率 100% ✅ **257 个测试通过**
@@ -227,6 +238,7 @@
 - [x] 零误报（flaky tests < 1%）✅ **0/257 = 0%**
 
 **定性指标**:
+
 - [x] `pnpm test` 能够发现手动测试才能发现的 UI 错误 ✅ **错误门禁已启用**
 - [x] VCR 模式运行稳定，无需真实 API ✅ **fixtures 已录制，回放稳定**
 - [x] 测试失败时提供清晰的错误信息和修复建议 ✅ **控制台输出清晰**
@@ -235,14 +247,14 @@
 ## 错误记录
 
 | 错误 | 尝试次数 | 解决方案 |
-|------|---------|---------|
-| - | - | - |
+| ---- | -------- | -------- |
+| -    | -        | -        |
 
 ## 决策日志
 
 | 日期 | 决策 | 原因 |
-|------|------|------|
-| - | - | - |
+| ---- | ---- | ---- |
+| -    | -    | -    |
 
 ## 注意事项
 

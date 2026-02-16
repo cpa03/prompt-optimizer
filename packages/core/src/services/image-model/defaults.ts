@@ -13,7 +13,7 @@ const IMAGE_PROVIDER_ENV_KEYS = {
   siliconflow: 'VITE_SILICONFLOW_API_KEY',
   seedream: 'VITE_SEEDREAM_API_KEY',
   dashscope: 'VITE_DASHSCOPE_API_KEY',
-  modelscope: 'VITE_MODELSCOPE_API_KEY'
+  modelscope: 'VITE_MODELSCOPE_API_KEY',
 } as const
 
 /**
@@ -27,7 +27,7 @@ const IMAGE_CONFIG_IDS: Record<string, string> = {
   siliconflow: 'image-siliconflow-kolors',
   seedream: 'image-seedream',
   dashscope: 'image-dashscope',
-  modelscope: 'image-modelscope'
+  modelscope: 'image-modelscope',
 }
 
 /**
@@ -35,7 +35,7 @@ const IMAGE_CONFIG_IDS: Record<string, string> = {
  */
 const IMAGE_BASE_URL_ENV_KEYS: Record<string, string> = {
   openai: 'VITE_OPENAI_BASE_URL',
-  seedream: 'VITE_SEEDREAM_BASE_URL'
+  seedream: 'VITE_SEEDREAM_BASE_URL',
 }
 
 /**
@@ -47,7 +47,9 @@ const IMAGE_BASE_URL_ENV_KEYS: Record<string, string> = {
  *
  * @param registry 可选，图像适配器注册表（用于依赖注入和测试）
  */
-export function getDefaultImageModels(registry?: IImageAdapterRegistry): Record<string, ImageModelConfig> {
+export function getDefaultImageModels(
+  registry?: IImageAdapterRegistry
+): Record<string, ImageModelConfig> {
   const adapterRegistry = registry || new ImageAdapterRegistry()
   const result: Record<string, ImageModelConfig> = {}
 
@@ -84,7 +86,7 @@ export function getDefaultImageModels(registry?: IImageAdapterRegistry): Record<
 
     result[configId] = {
       id: configId,
-      name: provider.name,  // 从 provider 获取名称，不再硬编码
+      name: provider.name, // 从 provider 获取名称，不再硬编码
       providerId,
       modelId: defaultModel.id,
       enabled: !!apiKey,
@@ -92,7 +94,7 @@ export function getDefaultImageModels(registry?: IImageAdapterRegistry): Record<
       paramOverrides: { ...defaultParamValues },
       customParamOverrides: {},
       provider,
-      model: defaultModel
+      model: defaultModel,
     }
   }
 

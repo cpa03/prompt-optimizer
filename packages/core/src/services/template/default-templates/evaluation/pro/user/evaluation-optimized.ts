@@ -4,7 +4,7 @@
  * 评估优化后带变量的用户提示词效果
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-optimized',
@@ -99,7 +99,7 @@ improvements 应该是**具体可操作**的改进建议：
 - ✓ 指出如何进一步优化变量利用
 - ✓ 建议改善变量与静态文本的配合
 - ✓ 建议补充对变量值的处理逻辑
-- ✓ 指出仍可改进的结构或表达问题`
+- ✓ 指出仍可改进的结构或表达问题`,
     },
     {
       role: 'user',
@@ -131,8 +131,8 @@ improvements 应该是**具体可操作**的改进建议：
 
 ---
 
-请严格评估优化后提示词的效果，并给出进一步改进的具体建议，特别关注变量的利用方式。`
-    }
+请严格评估优化后提示词的效果，并给出进一步改进的具体建议，特别关注变量的利用方式。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -141,7 +141,7 @@ improvements 应该是**具体可操作**的改进建议：
     description: '评估优化后带变量的用户提示词效果',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

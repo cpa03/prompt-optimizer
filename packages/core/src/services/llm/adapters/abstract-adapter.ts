@@ -7,7 +7,7 @@ import type {
   LLMResponse,
   StreamHandlers,
   ToolDefinition,
-  ParameterDefinition
+  ParameterDefinition,
 } from '../types'
 import { RequestConfigError } from '../errors'
 import { MODEL_CONTEXT_LIMITS } from '../../../constants/templates'
@@ -79,10 +79,7 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
    * 发送消息（模板方法）
    * 统一验证后调用doSendMessage
    */
-  public async sendMessage(
-    messages: Message[],
-    config: TextModelConfig
-  ): Promise<LLMResponse> {
+  public async sendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse> {
     // 1. 验证消息数组
     this.validateMessages(messages)
 
@@ -184,7 +181,7 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
 
     return {
       content: mainContent,
-      reasoning: reasoningParts.length > 0 ? reasoningParts.join('\n') : undefined
+      reasoning: reasoningParts.length > 0 ? reasoningParts.join('\n') : undefined,
     }
   }
 
@@ -329,10 +326,10 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
       capabilities: {
         supportsTools: true, // 默认支持工具
         supportsReasoning: true, // 默认支持推理
-        maxContextLength: MODEL_CONTEXT_LIMITS.CLAUDE // 使用Claude级别的上下文长度作为默认
+        maxContextLength: MODEL_CONTEXT_LIMITS.CLAUDE, // 使用Claude级别的上下文长度作为默认
       },
       parameterDefinitions: this.getParameterDefinitions(modelId),
-      defaultParameterValues: this.getDefaultParameterValues(modelId)
+      defaultParameterValues: this.getDefaultParameterValues(modelId),
     }
   }
 }

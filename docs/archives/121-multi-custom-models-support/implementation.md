@@ -3,6 +3,7 @@
 ## 🔧 架构设计
 
 ### 整体架构
+
 ```
 用户环境变量 → 环境变量扫描 → 动态模型生成 → 模型注册 → UI显示
      ↓              ↓              ↓           ↓         ↓
@@ -10,6 +11,7 @@ VITE_CUSTOM_API_*  scanCustom...  generateDynamic  getAllModels  ModelSelector
 ```
 
 ### 核心组件
+
 1. **环境变量扫描器** (`scanCustomModelEnvVars`)
    - 统一的环境变量发现和解析逻辑
    - 支持多种环境源（process.env、window.runtime_config等）
@@ -26,61 +28,73 @@ VITE_CUSTOM_API_*  scanCustom...  generateDynamic  getAllModels  ModelSelector
    - 缓存和性能优化
 
 ### 数据流设计
+
 ```typescript
 // 1. 环境变量扫描
-const customModels = scanCustomModelEnvVars();
+const customModels = scanCustomModelEnvVars()
 
 // 2. 动态模型生成
-const dynamicModels = generateDynamicModels();
+const dynamicModels = generateDynamicModels()
 
 // 3. 模型合并
-const allModels = { ...staticModels, ...dynamicModels };
+const allModels = { ...staticModels, ...dynamicModels }
 ```
 
 ## 🐛 问题诊断与解决
 
 ### 问题1: 模块加载时机问题
+
 **问题描述**: 担心Electron环境中环境变量在模块加载时未就绪
-**诊断过程**: 
+**诊断过程**:
+
 - 分析主进程启动顺序
 - 检查环境变量加载时机
 - 验证模块导入顺序
 
-**解决方案**: 
+**解决方案**:
+
 - 发现问题是理论性的，实际环境变量在模块加载前已就绪
 - 保持简单的直接导出方式，避免过度设计
 
 ### 问题2: 环境变量检查逻辑错误
+
 **问题描述**: `process.env[key]` 检查会忽略空字符串值
 **诊断过程**:
+
 ```typescript
 // 错误的检查方式
-if (process.env[key]) { // 空字符串会被忽略
-  return process.env[key] || '';
+if (process.env[key]) {
+  // 空字符串会被忽略
+  return process.env[key] || ''
 }
 
-// 正确的检查方式  
-if (process.env[key] !== undefined) { // 正确处理空字符串
-  return process.env[key] || '';
+// 正确的检查方式
+if (process.env[key] !== undefined) {
+  // 正确处理空字符串
+  return process.env[key] || ''
 }
 ```
 
 **解决方案**: 修改条件检查逻辑，正确处理空字符串值
 
 ### 问题3: 代码重复和维护性
+
 **问题描述**: 多个模块重复定义相同的常量和逻辑
 **诊断过程**: 发现Desktop模块重复定义了环境变量扫描常量
 **解决方案**: 统一从core模块导入共享常量，消除重复
 
 ### 问题4: Docker脚本字符转义bug
+
 **问题描述**: `echo` 和 `sed` 的字符转义不正确
-**诊断过程**: 
+**诊断过程**:
+
 - `echo "$value"` 会解释控制字符
 - `sed 's/\n/\\n/g'` 匹配字面字符串而非实际换行符
 
 **解决方案**: 使用 `printf '%s'` 替代 `echo`，简化转义逻辑
 
 ### 问题5: 过度的生产环境判断
+
 **问题描述**: 大量 `NODE_ENV !== 'production'` 判断是过度设计
 **诊断过程**: 分析日志需求和调试价值
 **解决方案**: 移除所有过度的环境判断，保持日志简洁直接
@@ -88,6 +102,7 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
 ## 📝 实施步骤
 
 ### 第一阶段: 核心功能实现
+
 1. **创建环境变量扫描函数**
    - 实现 `scanCustomModelEnvVars` 函数
    - 支持多环境源和配置验证
@@ -99,6 +114,7 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
    - 实现动态模型生成和合并
 
 ### 第二阶段: 模块适配
+
 3. **MCP Server适配**
    - 扩展环境变量映射逻辑
    - 支持动态后缀的环境变量
@@ -115,6 +131,7 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
    - 更新配置文件生成逻辑
 
 ### 第三阶段: 质量保证
+
 6. **配置验证和容错**
    - 实现配置完整性检查
    - 添加冲突检测机制
@@ -133,11 +150,13 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
 ## 🔍 调试过程
 
 ### 调试工具
+
 - **环境变量检查**: 使用 `console.log` 跟踪变量传递
 - **模块验证**: 逐模块验证环境变量读取
 - **配置追踪**: 记录配置生成和合并过程
 
 ### 调试技巧
+
 1. **分层调试**: 从环境变量 → 扫描 → 生成 → 注册逐层验证
 2. **对比测试**: 新旧配置方式并行测试确保兼容性
 3. **边界测试**: 测试空配置、部分配置、错误配置等边界情况
@@ -145,6 +164,7 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
 ## 🧪 测试验证
 
 ### 测试场景
+
 1. **基础功能测试**
    - 单个自定义模型配置
    - 多个自定义模型配置
@@ -166,6 +186,7 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
    - Docker环境测试
 
 ### 测试结果
+
 - **测试用例**: 14个
 - **通过率**: 100%
 - **覆盖场景**: 完整覆盖所有使用场景
@@ -174,72 +195,75 @@ if (process.env[key] !== undefined) { // 正确处理空字符串
 ## 🔧 关键技术点
 
 ### 环境变量扫描
+
 ```typescript
 export const scanCustomModelEnvVars = (): Record<string, CustomModelEnvConfig> => {
-  const customModels: Record<string, CustomModelEnvConfig> = {};
-  const customApiPattern = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/;
-  
+  const customModels: Record<string, CustomModelEnvConfig> = {}
+  const customApiPattern = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/
+
   // 多环境源合并
   const mergedEnv = {
     ...getProcessEnv(),
     ...getRuntimeConfig(),
-    ...getElectronEnv()
-  };
-  
+    ...getElectronEnv(),
+  }
+
   // 扫描和分组
   Object.entries(mergedEnv).forEach(([key, value]) => {
-    const match = key.match(customApiPattern);
+    const match = key.match(customApiPattern)
     if (match) {
-      const [, configType, suffix] = match;
+      const [, configType, suffix] = match
       // 配置验证和分组逻辑
     }
-  });
-  
-  return customModels;
-};
+  })
+
+  return customModels
+}
 ```
 
 ### 动态模型生成
+
 ```typescript
 export function generateDynamicModels(): Record<string, ModelConfig> {
-  const customModelConfigs = scanCustomModelEnvVars();
-  const dynamicModels: Record<string, ModelConfig> = {};
-  
+  const customModelConfigs = scanCustomModelEnvVars()
+  const dynamicModels: Record<string, ModelConfig> = {}
+
   Object.entries(customModelConfigs).forEach(([suffix, envConfig]) => {
     // 配置验证
     if (!envConfig.apiKey || !envConfig.baseURL || !envConfig.model) {
-      return; // 跳过不完整配置
+      return // 跳过不完整配置
     }
-    
+
     // 冲突检测
-    const staticModelKeys = ['openai', 'gemini', 'deepseek', 'siliconflow', 'zhipu', 'custom'];
+    const staticModelKeys = ['openai', 'gemini', 'deepseek', 'siliconflow', 'zhipu', 'custom']
     if (staticModelKeys.includes(suffix)) {
-      return; // 跳过冲突配置
+      return // 跳过冲突配置
     }
-    
+
     // 生成模型配置
-    const modelKey = `custom_${suffix}`;
-    dynamicModels[modelKey] = generateModelConfig(envConfig);
-  });
-  
-  return dynamicModels;
+    const modelKey = `custom_${suffix}`
+    dynamicModels[modelKey] = generateModelConfig(envConfig)
+  })
+
+  return dynamicModels
 }
 ```
 
 ### 配置验证
+
 ```typescript
 // 后缀名验证
-const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/;
-const MAX_SUFFIX_LENGTH = 50;
+const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/
+const MAX_SUFFIX_LENGTH = 50
 
 if (!suffix || suffix.length > MAX_SUFFIX_LENGTH || !SUFFIX_PATTERN.test(suffix)) {
-  console.warn(`Invalid suffix: ${suffix}`);
-  return;
+  console.warn(`Invalid suffix: ${suffix}`)
+  return
 }
 
 // 配置完整性验证
 if (!envConfig.apiKey) {
-  console.warn(`Missing API key for ${suffix}`);
-  return;
+  console.warn(`Missing API key for ${suffix}`)
+  return
 }
 ```

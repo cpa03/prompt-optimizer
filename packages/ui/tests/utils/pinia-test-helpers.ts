@@ -33,7 +33,7 @@ export function createPreferenceServiceStub(
   overrides: Partial<IPreferenceService> = {}
 ): IPreferenceService {
   return {
-    get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+    get: async <T>(_key: string, defaultValue: T) => defaultValue,
     set: async () => {},
     delete: async () => {},
     keys: async () => [],
@@ -75,9 +75,7 @@ export function createPreferenceServiceStub(
  * })
  * ```
  */
-export function createTestPinia(
-  servicesOverrides: Partial<AppServices> = {}
-): {
+export function createTestPinia(servicesOverrides: Partial<AppServices> = {}): {
   pinia: Pinia
   services: AppServices
   cleanup: () => void

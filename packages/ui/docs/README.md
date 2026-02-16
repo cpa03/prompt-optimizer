@@ -18,18 +18,11 @@ npm install @prompt-optimizer/ui
 <template>
   <div>
     <!-- 上下文编辑器 -->
-    <ContextEditor
-      v-model:visible="showEditor"
-      :state="contextState"
-      @save="handleSave"
-    />
-    
+    <ContextEditor v-model:visible="showEditor" :state="contextState" @save="handleSave" />
+
     <!-- 工具调用显示 -->
-    <ToolCallDisplay
-      :tool-calls="toolCalls"
-      :collapsed="false"
-    />
-    
+    <ToolCallDisplay :tool-calls="toolCalls" :collapsed="false" />
+
     <!-- 可访问性支持 - 使用 composable 方式 -->
     <!-- <ScreenReaderSupport> 组件已移除，请使用 useAccessibility -->
     <!--
@@ -49,7 +42,7 @@ import {
   // ScreenReaderSupport, // 已移除，使用 useAccessibility composable
   useAccessibility,
   type ContextState,
-  type ToolCall
+  type ToolCall,
 } from '@prompt-optimizer/ui'
 
 // 引入样式
@@ -58,14 +51,12 @@ import '@prompt-optimizer/ui/dist/style.css'
 // 上下文状态
 const showEditor = ref(false)
 const contextState = ref<ContextState>({
-  messages: [
-    { role: 'user', content: 'Hello World' }
-  ],
+  messages: [{ role: 'user', content: 'Hello World' }],
   variables: {},
   tools: [],
   showVariablePreview: true,
   showToolManager: true,
-  mode: 'edit'
+  mode: 'edit',
 })
 
 // 工具调用数据
@@ -76,8 +67,8 @@ const toolCalls = ref<ToolCall[]>([
     arguments: { location: 'Beijing' },
     result: { temperature: 25 },
     status: 'success',
-    timestamp: Date.now()
-  }
+    timestamp: Date.now(),
+  },
 ])
 
 // 可访问性支持
@@ -94,42 +85,46 @@ const handleSave = (context: ContextState) => {
 ## 主要特性
 
 ### 🎯 完整的可访问性支持
+
 - WCAG 2.1 AA/AAA 标准合规
 - 完整的键盘导航
 - 屏幕阅读器优化
 - 高对比度模式支持
 
 ### 📱 响应式设计
+
 - 移动端优先
 - 自适应布局
 - 触摸友好的交互
 
 ### ⚡ 性能优化
+
 - 虚拟滚动
 - 懒加载
 - 防抖节流
 - 代码分割
 
 ### 🌍 国际化支持
+
 - 多语言切换
 - 本地化格式
 - RTL语言支持
 
 ## 组件概览
 
-| 组件名 | 用途 | 主要特性 |
-|--------|------|----------|
-| `ContextEditor` | 上下文编辑 | 消息管理、变量处理、工具配置 |
-| `ToolCallDisplay` | 工具调用显示 | 折叠面板、状态显示、错误处理 |
+| 组件名                | 用途           | 主要特性                       |
+| --------------------- | -------------- | ------------------------------ |
+| `ContextEditor`       | 上下文编辑     | 消息管理、变量处理、工具配置   |
+| `ToolCallDisplay`     | 工具调用显示   | 折叠面板、状态显示、错误处理   |
 | `ScreenReaderSupport` | 屏幕阅读器支持 | 实时通知、键盘快捷键、导航提示 |
 
 ## Composables
 
-| 函数名 | 用途 | 返回值 |
-|--------|------|--------|
-| `useAccessibility` | 可访问性支持 | 键盘导航、ARIA管理、消息通知 |
-| `useFocusManager` | 焦点管理 | 焦点陷阱、键盘导航、自动恢复 |
-| `useAccessibilityTesting` | 可访问性测试 | WCAG合规检查、问题报告 |
+| 函数名                    | 用途         | 返回值                       |
+| ------------------------- | ------------ | ---------------------------- |
+| `useAccessibility`        | 可访问性支持 | 键盘导航、ARIA管理、消息通知 |
+| `useFocusManager`         | 焦点管理     | 焦点陷阱、键盘导航、自动恢复 |
+| `useAccessibilityTesting` | 可访问性测试 | WCAG合规检查、问题报告       |
 
 ## 最佳实践
 
@@ -139,13 +134,8 @@ const handleSave = (context: ContextState) => {
 <template>
   <div>
     <!-- ✅ 正确：提供ARIA标签 -->
-    <button
-      :aria-label="aria.getLabel('save', '保存')"
-      @click="handleSave"
-    >
-      保存
-    </button>
-    
+    <button :aria-label="aria.getLabel('save', '保存')" @click="handleSave">保存</button>
+
     <!-- ❌ 错误：缺少语义化标签 -->
     <div @click="handleSave">保存</div>
   </div>
@@ -189,7 +179,7 @@ const { isMobile, isTablet, modalWidth } = useResponsive()
   @media (max-width: 767px) {
     padding: 8px;
   }
-  
+
   /* 桌面端 */
   @media (min-width: 1024px) {
     padding: 24px;
@@ -204,18 +194,10 @@ const { isMobile, isTablet, modalWidth } = useResponsive()
 <template>
   <div>
     <!-- 大量数据使用虚拟滚动 -->
-    <ToolCallDisplay
-      :tool-calls="largeDataset"
-      :max-items="100"
-      virtual-scroll
-    />
-    
+    <ToolCallDisplay :tool-calls="largeDataset" :max-items="100" virtual-scroll />
+
     <!-- 使用防抖搜索 -->
-    <NInput
-      :value="searchQuery"
-      @input="debouncedSearch"
-      placeholder="搜索..."
-    />
+    <NInput :value="searchQuery" @input="debouncedSearch" placeholder="搜索..." />
   </div>
 </template>
 
@@ -258,11 +240,7 @@ A: 使用虚拟化和分页：
 
 ```vue
 <template>
-  <ToolCallDisplay
-    :tool-calls="paginatedData"
-    virtual-scroll
-    :max-items="50"
-  />
+  <ToolCallDisplay :tool-calls="paginatedData" virtual-scroll :max-items="50" />
 </template>
 ```
 
@@ -288,9 +266,13 @@ import { createI18n } from 'vue-i18n'
 const i18n = createI18n({
   locale: 'zh-CN',
   messages: {
-    'zh-CN': { /* 中文消息 */ },
-    'en-US': { /* 英文消息 */ }
-  }
+    'zh-CN': {
+      /* 中文消息 */
+    },
+    'en-US': {
+      /* 英文消息 */
+    },
+  },
 })
 ```
 
@@ -299,6 +281,7 @@ const i18n = createI18n({
 ### 从传统组件升级到Naive UI版本
 
 1. **更新导入语句**：
+
 ```typescript
 // 旧版本
 import ContextEditor from './components/ContextEditor.vue'
@@ -308,6 +291,7 @@ import { ContextEditor } from '@prompt-optimizer/ui'
 ```
 
 2. **更新Props**：
+
 ```vue
 <!-- 旧版本 -->
 <ContextEditor :dialogVisible="visible" />
@@ -317,6 +301,7 @@ import { ContextEditor } from '@prompt-optimizer/ui'
 ```
 
 3. **添加可访问性支持**：
+
 ```vue
 <template>
   <div>
@@ -337,7 +322,7 @@ import type {
   ContextState,
   ToolCall,
   AccessibilityFeatures,
-  FocusManagerOptions
+  FocusManagerOptions,
 } from '@prompt-optimizer/ui'
 ```
 
@@ -366,7 +351,7 @@ const { runTest } = useAccessibilityTesting()
 // 运行可访问性测试
 const result = await runTest({
   wcagLevel: 'AA',
-  scope: document.body
+  scope: document.body,
 })
 ```
 
@@ -388,4 +373,4 @@ const result = await runTest({
 
 ---
 
-*最后更新: 2024年XX月XX日*
+_最后更新: 2024年XX月XX日_

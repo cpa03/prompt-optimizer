@@ -30,7 +30,7 @@ describe('GeminiImageAdapter', () => {
       expect(Array.isArray(models)).toBe(true)
       expect(models.length).toBeGreaterThan(0)
 
-      const geminiModel = models.find(m => m.id.includes('gemini'))
+      const geminiModel = models.find((m) => m.id.includes('gemini'))
       expect(geminiModel).toBeDefined()
       expect(geminiModel).toMatchObject({
         id: expect.any(String),
@@ -39,9 +39,9 @@ describe('GeminiImageAdapter', () => {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
-        parameterDefinitions: expect.any(Array)
+        parameterDefinitions: expect.any(Array),
       })
     })
 
@@ -69,15 +69,15 @@ describe('GeminiImageAdapter', () => {
         modelId: 'gemini-2.5-flash-image-preview',
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'A beautiful landscape',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       // Mock GoogleGenAI SDK behavior via global fetchless path by mocking the method directly
@@ -89,23 +89,31 @@ describe('GeminiImageAdapter', () => {
             content: {
               parts: [
                 { text: 'caption' },
-                { inlineData: { mimeType: 'image/png', data: 'iVBORw0KGgo' } }
-              ]
-            }
-          }
+                { inlineData: { mimeType: 'image/png', data: 'iVBORw0KGgo' } },
+              ],
+            },
+          },
         ],
-        usageMetadata: { inputTokens: 10, outputTokens: 20 }
+        usageMetadata: { inputTokens: 10, outputTokens: 20 },
       }
 
       // Mock the constructor used internally by adapter
-      const Original = (await import('../../../src/services/image/adapters/gemini')).GeminiImageAdapter
+      const Original = (await import('../../../src/services/image/adapters/gemini'))
+        .GeminiImageAdapter
       // Monkey patch instance method using prototype
-      const spy = vi.spyOn(Original.prototype as any, 'doGenerate')
-        .mockResolvedValue({
-          images: [{ b64: 'iVBORw0KGgo', mimeType: 'image/png', url: 'data:image/png;base64,iVBORw0KGgo' }],
-          text: 'caption',
-          metadata: { providerId: 'gemini', modelId: config.modelId, configId: config.id, finishReason: 'STOP', usage: mockResponse.usageMetadata }
-        })
+      const spy = vi.spyOn(Original.prototype as any, 'doGenerate').mockResolvedValue({
+        images: [
+          { b64: 'iVBORw0KGgo', mimeType: 'image/png', url: 'data:image/png;base64,iVBORw0KGgo' },
+        ],
+        text: 'caption',
+        metadata: {
+          providerId: 'gemini',
+          modelId: config.modelId,
+          configId: config.id,
+          finishReason: 'STOP',
+          usage: mockResponse.usageMetadata,
+        },
+      })
 
       const result = await adapter.generate(request, config)
       expect(result.images).toHaveLength(1)

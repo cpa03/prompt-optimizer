@@ -9,10 +9,10 @@
  */
 export interface VariableToGenerate {
   /** 变量名 */
-  name: string;
+  name: string
 
   /** 当前值（可选，用于LLM参考） */
-  currentValue?: string;
+  currentValue?: string
 
   /** 变量来源标识（用于LLM理解变量性质）
    * - global: 全局变量
@@ -20,7 +20,7 @@ export interface VariableToGenerate {
    * - test: 临时测试变量
    * - empty: 扫描出的空变量（未分配来源）
    */
-  source?: 'global' | 'predefined' | 'test' | 'empty';
+  source?: 'global' | 'predefined' | 'test' | 'empty'
 }
 
 /**
@@ -28,16 +28,16 @@ export interface VariableToGenerate {
  */
 export interface GeneratedVariableValue {
   /** 变量名 */
-  name: string;
+  name: string
 
   /** 生成的值 */
-  value: string;
+  value: string
 
   /** 生成理由 */
-  reason: string;
+  reason: string
 
   /** 置信度（0-1，可选） */
-  confidence?: number;
+  confidence?: number
 }
 
 /**
@@ -45,13 +45,13 @@ export interface GeneratedVariableValue {
  */
 export interface VariableValueGenerationRequest {
   /** 提示词内容（用于推测变量值的上下文） */
-  promptContent: string;
+  promptContent: string
 
   /** 需要生成值的变量列表 */
-  variables: VariableToGenerate[];
+  variables: VariableToGenerate[]
 
   /** 生成使用的模型键 */
-  generationModelKey: string;
+  generationModelKey: string
 }
 
 /**
@@ -59,10 +59,10 @@ export interface VariableValueGenerationRequest {
  */
 export interface VariableValueGenerationResponse {
   /** 生成的变量值列表 */
-  values: GeneratedVariableValue[];
+  values: GeneratedVariableValue[]
 
   /** 一句话总结 */
-  summary: string;
+  summary: string
 }
 
 /**
@@ -75,5 +75,5 @@ export interface IVariableValueGenerationService {
    * @param request - 生成请求
    * @returns 生成结果
    */
-  generate(request: VariableValueGenerationRequest): Promise<VariableValueGenerationResponse>;
+  generate(request: VariableValueGenerationRequest): Promise<VariableValueGenerationResponse>
 }

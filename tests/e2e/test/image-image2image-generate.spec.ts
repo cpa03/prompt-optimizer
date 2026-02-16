@@ -1,9 +1,17 @@
 import { test, expect } from '../fixtures'
-import { TIMEOUTS } from '../constants/timeouts';
+import { TIMEOUTS } from '../constants/timeouts'
 import { navigateToMode } from '../helpers/common'
-import { fillOriginalPrompt, clickOptimizeButton, expectOptimizedResultNotEmpty } from '../helpers/optimize'
+import {
+  fillOriginalPrompt,
+  clickOptimizeButton,
+  expectOptimizedResultNotEmpty,
+} from '../helpers/optimize'
 import * as path from 'path'
-import { IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT, IMAGE_GENERATION_TEST_TIMEOUT, WORKSPACE_VISIBLE } from '../constants/timeouts'
+import {
+  IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT,
+  IMAGE_GENERATION_TEST_TIMEOUT,
+  WORKSPACE_VISIBLE,
+} from '../constants/timeouts'
 
 const MODE = 'image-image2image' as const
 
@@ -72,13 +80,17 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     await fileInput.setInputFiles(seedPath)
 
     // 等待缩略图出现，说明 session 已注入 inputImage
-    await expect(page.getByTestId('image-image2image-input-preview')).toBeVisible({ timeout: WORKSPACE_VISIBLE })
+    await expect(page.getByTestId('image-image2image-input-preview')).toBeVisible({
+      timeout: WORKSPACE_VISIBLE,
+    })
 
     // 关闭 modal：不强依赖具体 DOM 结构，尽量退回到主界面继续
     await page.keyboard.press('Escape').catch(() => {})
 
     // 等待上传弹窗彻底关闭，避免残留遮罩层/动画拦截后续点击
-    await expect(page.getByTestId('image-image2image-upload-modal')).toBeHidden({ timeout: WORKSPACE_VISIBLE })
+    await expect(page.getByTestId('image-image2image-upload-modal')).toBeHidden({
+      timeout: WORKSPACE_VISIBLE,
+    })
 
     // 2) 选择文本模型（用于优化）
     const textModelSelect = page.getByTestId('image-image2image-text-model-select')
@@ -97,7 +109,9 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     await expectOptimizedResultNotEmpty(page, MODE)
 
     // 6) 确保列数为 2（避免默认列数变化导致额外请求，影响 VCR fixture 匹配）
-    const workspace = page.locator('[data-testid="workspace"][data-mode="image-image2image"]').first()
+    const workspace = page
+      .locator('[data-testid="workspace"][data-mode="image-image2image"]')
+      .first()
     // Naive UI 的 radio button 真实可点元素是 label；若 value=2 已默认选中，click 会因拦截重试而超时。
     await workspace.getByRole('radio', { name: '2' }).check()
 
@@ -117,11 +131,15 @@ test.describe('Image Image2Image - 生成（SiliconFlow）', () => {
     const optimizedImg = page.getByTestId('image-image2image-optimized-image').locator('img')
 
     await expect
-      .poll(async () => (await originalImg.getAttribute('src')) || '', { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
+      .poll(async () => (await originalImg.getAttribute('src')) || '', {
+        timeout: IMAGE_GENERATION_TEST_TIMEOUT,
+      })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     await expect
-      .poll(async () => (await optimizedImg.getAttribute('src')) || '', { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
+      .poll(async () => (await optimizedImg.getAttribute('src')) || '', {
+        timeout: IMAGE_GENERATION_TEST_TIMEOUT,
+      })
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
   })
 })

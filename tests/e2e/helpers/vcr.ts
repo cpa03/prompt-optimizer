@@ -28,7 +28,14 @@ import {
 /**
  * LLM API 提供商
  */
-type LLMProvider = 'openai' | 'deepseek' | 'anthropic' | 'gemini' | 'zhipu' | 'modelscope' | 'siliconflow'
+type LLMProvider =
+  | 'openai'
+  | 'deepseek'
+  | 'anthropic'
+  | 'gemini'
+  | 'zhipu'
+  | 'modelscope'
+  | 'siliconflow'
 
 /**
  * VCR 模式
@@ -170,11 +177,7 @@ class E2EVCR {
   private getFixturePath(): string {
     const sanitizedTestName = this.sanitizeFilename(this.currentTestName)
     const sanitizedTestCase = this.sanitizeFilename(this.currentTestCase)
-    return path.join(
-      this.config.fixtureDir,
-      sanitizedTestName,
-      `${sanitizedTestCase}.json`
-    )
+    return path.join(this.config.fixtureDir, sanitizedTestName, `${sanitizedTestCase}.json`)
   }
 
   /**
@@ -218,14 +221,21 @@ class E2EVCR {
 
     if (typeof value === 'object') {
       const keys = Object.keys(value).sort()
-      const entries = keys.map((k) => `${JSON.stringify(k)}:${this.stableStringify((value as any)[k])}`)
+      const entries = keys.map(
+        (k) => `${JSON.stringify(k)}:${this.stableStringify((value as any)[k])}`
+      )
       return `{${entries.join(',')}}`
     }
 
     return JSON.stringify(value)
   }
 
-  private computeRequestHash(provider: LLMProvider, url: string, method: string, requestBody: any): string {
+  private computeRequestHash(
+    provider: LLMProvider,
+    url: string,
+    method: string,
+    requestBody: any
+  ): string {
     // Normalize url: for some providers, query params (e.g. cache busters) should not affect matching.
     const normalizedUrl = url.split('?')[0]
 
@@ -252,7 +262,9 @@ class E2EVCR {
       for (const it of interactions) {
         if (typeof it.rawBody === 'undefined' && typeof it.rawSSE !== 'undefined') {
           it.rawBody = it.rawSSE
-          it.responseHeaders = it.responseHeaders || { [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.STREAM }
+          it.responseHeaders = it.responseHeaders || {
+            [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.STREAM,
+          }
           delete it.rawSSE
         }
       }
@@ -265,7 +277,12 @@ class E2EVCR {
       const legacyUrl = (fixture as any).url as string
       const legacyRequestBody = (fixture as any).requestBody
       const legacyMethod = 'POST'
-      const legacyRequestHash = this.computeRequestHash(legacyProvider, legacyUrl, legacyMethod, legacyRequestBody)
+      const legacyRequestHash = this.computeRequestHash(
+        legacyProvider,
+        legacyUrl,
+        legacyMethod,
+        legacyRequestBody
+      )
 
       const rawBody = String((fixture as any).rawSSE || '')
 
@@ -376,7 +393,9 @@ class E2EVCR {
       const fixture: VCRFixture = JSON.parse(content)
 
       const relativePath = path.relative(process.cwd(), fixturePath)
-      const count = Array.isArray((fixture as any).interactions) ? (fixture as any).interactions.length : 1
+      const count = Array.isArray((fixture as any).interactions)
+        ? (fixture as any).interactions.length
+        : 1
       console.log(`[VCR] ♻️  Replaying fixture (${count} interaction(s)): ${relativePath}`)
 
       return fixture
@@ -466,7 +485,7 @@ class E2EVCR {
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
-                body: responseBody
+                body: responseBody,
               })
               return
             }
@@ -501,7 +520,7 @@ class E2EVCR {
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
-                body: responseBody
+                body: responseBody,
               })
               return
             }
@@ -515,8 +534,8 @@ class E2EVCR {
               // 解析 SSE 响应，提取完整内容（OpenAI 兼容格式）
               const lines = responseBody
                 .split('\n')
-                .map(line => line.trim())
-                .filter(line => line.startsWith('data:'))
+                .map((line) => line.trim())
+                .filter((line) => line.startsWith('data:'))
 
               let fullContent = ''
               let lastChunk: any = null
@@ -539,13 +558,15 @@ class E2EVCR {
               if (lastChunk) {
                 responseJson = {
                   ...lastChunk,
-                  choices: [{
-                    ...lastChunk.choices?.[0],
-                    message: {
-                      role: 'assistant',
-                      content: fullContent
-                    }
-                  }]
+                  choices: [
+                    {
+                      ...lastChunk.choices?.[0],
+                      message: {
+                        role: 'assistant',
+                        content: fullContent,
+                      },
+                    },
+                  ],
                 }
               }
             } else {
@@ -570,12 +591,14 @@ class E2EVCR {
                   object: 'chat.completion.chunk',
                   created,
                   model,
-                  choices: [{
-                    index: 0,
-                    delta: { role: 'assistant', content: '' },
-                    logprobs: null,
-                    finish_reason: null,
-                  }]
+                  choices: [
+                    {
+                      index: 0,
+                      delta: { role: 'assistant', content: '' },
+                      logprobs: null,
+                      finish_reason: null,
+                    },
+                  ],
                 }
 
                 const contentChunk = {
@@ -583,12 +606,14 @@ class E2EVCR {
                   object: 'chat.completion.chunk',
                   created,
                   model,
-                  choices: [{
-                    index: 0,
-                    delta: { content: String(content) },
-                    logprobs: null,
-                    finish_reason: null,
-                  }]
+                  choices: [
+                    {
+                      index: 0,
+                      delta: { content: String(content) },
+                      logprobs: null,
+                      finish_reason: null,
+                    },
+                  ],
                 }
 
                 const endChunk = {
@@ -596,12 +621,14 @@ class E2EVCR {
                   object: 'chat.completion.chunk',
                   created,
                   model,
-                  choices: [{
-                    index: 0,
-                    delta: {},
-                    logprobs: null,
-                    finish_reason: 'stop',
-                  }]
+                  choices: [
+                    {
+                      index: 0,
+                      delta: {},
+                      logprobs: null,
+                      finish_reason: 'stop',
+                    },
+                  ],
                 }
 
                 rawSSE =
@@ -622,7 +649,9 @@ class E2EVCR {
               endTime - startTime,
               rawSSE,
               {
-                [HTTP_HEADERS.CONTENT_TYPE]: hasSSE ? CONTENT_TYPES.STREAM : (response.headers()[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON),
+                [HTTP_HEADERS.CONTENT_TYPE]: hasSSE
+                  ? CONTENT_TYPES.STREAM
+                  : response.headers()[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON,
               },
               method,
               response.status()
@@ -647,7 +676,7 @@ class E2EVCR {
                 [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
                 [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
               },
-              body: responseBody
+              body: responseBody,
             })
           } else {
             // replay 模式：使用 fixture（支持同一个测试内多次请求，通过 requestHash 精准匹配）
@@ -658,7 +687,8 @@ class E2EVCR {
 
             if (interaction) {
               // 直接返回原始 SSE 文本（格式完全一致）
-              const contentType = interaction.responseHeaders?.[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON
+              const contentType =
+                interaction.responseHeaders?.[HTTP_HEADERS.CONTENT_TYPE] || CONTENT_TYPES.JSON
               const isSSE = new RegExp(CONTENT_TYPES.STREAM, 'i').test(contentType)
 
               await route.fulfill({
@@ -675,7 +705,7 @@ class E2EVCR {
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_ORIGIN]: CORS_HEADERS.ALLOW_ORIGIN,
                   [HTTP_HEADERS.ACCESS_CONTROL_ALLOW_HEADERS]: CORS_HEADERS.ALLOW_HEADERS,
                 },
-                body: interaction.rawBody || ''
+                body: interaction.rawBody || '',
               })
             } else {
               if (mode === 'replay') {
@@ -690,7 +720,7 @@ class E2EVCR {
               } else {
                 // auto 模式：降级到真实 API
                 console.log(
-                  `[VCR] ⚠️  No fixture for requestHash=${requestHash} (${provider} ${method} ${url.split('?')[0]}), calling real API`,
+                  `[VCR] ⚠️  No fixture for requestHash=${requestHash} (${provider} ${method} ${url.split('?')[0]}), calling real API`
                 )
                 await route.continue()
               }

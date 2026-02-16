@@ -21,14 +21,15 @@ describe.skipIf(!RUN_REAL_API)('SiliconFlowImageAdapter Integration Test', () =>
       modelId,
       enabled: true,
       connectionConfig: { apiKey, baseURL: 'https://api.siliconflow.cn/v1' },
-      paramOverrides: { image_size: '1024x1024', num_inference_steps: 20, guidance_scale: 7.5 }
+      paramOverrides: { image_size: '1024x1024', num_inference_steps: 20, guidance_scale: 7.5 },
     } as any
 
     const request: ImageRequest = {
-      prompt: '星际穿越，黑洞，黑洞里冲出一辆快支离破碎的复古列车，蒸汽朋克风格，科幻电影场景，高质量，细节丰富，8K分辨率，壮观震撼',
+      prompt:
+        '星际穿越，黑洞，黑洞里冲出一辆快支离破碎的复古列车，蒸汽朋克风格，科幻电影场景，高质量，细节丰富，8K分辨率，壮观震撼',
       count: 1,
       configId: 'siliconflow-integration',
-      paramOverrides: { image_size: '1024x1024', num_inference_steps: 20, guidance_scale: 7.5 }
+      paramOverrides: { image_size: '1024x1024', num_inference_steps: 20, guidance_scale: 7.5 },
     }
 
     const result = await adapter.generate(request, config)

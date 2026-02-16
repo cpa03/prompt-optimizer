@@ -7,7 +7,7 @@
  * - 对外接口保持不变（兼容旧调用方）
  * - 底层由 Pinia store 承载状态
  */
- 
+
 import { readonly, computed, type Ref } from 'vue'
 import { storeToRefs, getActivePinia } from 'pinia'
 import { useTemporaryVariablesStore } from '../../stores/temporaryVariables'
@@ -79,8 +79,8 @@ export function useTemporaryVariables(): TemporaryVariablesManager {
   if (!activePinia) {
     throw new Error(
       '[useTemporaryVariables] Pinia not installed or no active pinia instance. ' +
-      'Make sure you have called installPinia(app) before using this composable, ' +
-      'and you are calling it within a component setup or after app is mounted.'
+        'Make sure you have called installPinia(app) before using this composable, ' +
+        'and you are calling it within a component setup or after app is mounted.'
     )
   }
 

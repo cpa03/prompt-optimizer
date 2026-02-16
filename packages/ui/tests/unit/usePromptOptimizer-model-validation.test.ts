@@ -6,8 +6,8 @@ vi.mock('../../src/composables/useToast', () => ({
   useToast: () => ({
     success: vi.fn(),
     error: vi.fn(),
-    warning: vi.fn()
-  })
+    warning: vi.fn(),
+  }),
 }))
 
 // useStorage已被移除，不再需要mock
@@ -17,8 +17,8 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
@@ -29,48 +29,61 @@ describe('usePromptOptimizer Model Validation', () => {
   let mockPromptService: any
 
   beforeEach(() => {
-
     // Mock services
     mockModelManager = {
-      getModel: vi.fn().mockResolvedValue({ id: 'test-model' })
+      getModel: vi.fn().mockResolvedValue({ id: 'test-model' }),
     }
 
     mockTemplateManager = {
-  
       getTemplate: vi.fn().mockReturnValue({
         id: 'test-template',
         name: 'Test Template',
         content: 'Test template {{originalPrompt}}',
-        metadata: { templateType: 'optimize', version: '1.0', lastModified: Date.now(), language: 'zh' }
+        metadata: {
+          templateType: 'optimize',
+          version: '1.0',
+          lastModified: Date.now(),
+          language: 'zh',
+        },
       }),
       listTemplatesByTypes: vi.fn().mockReturnValue([
         {
           id: 'test-template',
           name: 'Test Template',
           content: 'Test template {{originalPrompt}}',
-          metadata: { templateType: 'optimize', version: '1.0', lastModified: Date.now(), language: 'zh' }
-        }
+          metadata: {
+            templateType: 'optimize',
+            version: '1.0',
+            lastModified: Date.now(),
+            language: 'zh',
+          },
+        },
       ]),
       listTemplatesByType: vi.fn().mockReturnValue([
         {
           id: 'test-template',
           name: 'Test Template',
           content: 'Test template {{originalPrompt}}',
-          metadata: { templateType: 'optimize', version: '1.0', lastModified: Date.now(), language: 'zh' }
-        }
-      ])
+          metadata: {
+            templateType: 'optimize',
+            version: '1.0',
+            lastModified: Date.now(),
+            language: 'zh',
+          },
+        },
+      ]),
     }
 
     mockHistoryManager = {
       createNewChain: vi.fn().mockResolvedValue({
         chainId: 'test-chain',
         versions: [],
-        currentRecord: { id: 'test-record' }
-      })
+        currentRecord: { id: 'test-record' },
+      }),
     }
 
     mockPromptService = {
-      optimizePromptStreamWithType: vi.fn()
+      optimizePromptStreamWithType: vi.fn(),
     }
   })
 
@@ -96,7 +109,7 @@ describe('usePromptOptimizer Model Validation', () => {
         optimizationMode: 'system',
         targetPrompt: 'Test system prompt',
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       expect(systemRequest.optimizationMode).toBe('system')
@@ -108,7 +121,7 @@ describe('usePromptOptimizer Model Validation', () => {
         optimizationMode: 'user',
         targetPrompt: 'Test user prompt',
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       expect(userRequest.optimizationMode).toBe('user')
@@ -123,7 +136,7 @@ describe('usePromptOptimizer Model Validation', () => {
       const requiredParams = {
         optimizationMode: 'system',
         targetPrompt: 'Test prompt',
-        modelKey: 'test-model'
+        modelKey: 'test-model',
       }
 
       expect(requiredParams.optimizationMode).toBeTruthy()
@@ -132,7 +145,7 @@ describe('usePromptOptimizer Model Validation', () => {
 
       // Test optional parameters
       const optionalParams = {
-        templateId: 'optional-template'
+        templateId: 'optional-template',
       }
 
       expect(optionalParams.templateId).toBeTruthy()
@@ -141,7 +154,7 @@ describe('usePromptOptimizer Model Validation', () => {
     it('should validate model key format', () => {
       // Valid model keys
       const validKeys = ['gpt-4', 'claude-3', 'model-123', 'test-model']
-      validKeys.forEach(key => {
+      validKeys.forEach((key) => {
         expect(key).toBeTruthy()
         expect(typeof key).toBe('string')
         expect(key.length).toBeGreaterThan(0)
@@ -149,7 +162,7 @@ describe('usePromptOptimizer Model Validation', () => {
 
       // Invalid model keys
       const invalidKeys = ['', null, undefined]
-      invalidKeys.forEach(key => {
+      invalidKeys.forEach((key) => {
         expect(key).toBeFalsy()
       })
     })

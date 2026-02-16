@@ -58,7 +58,7 @@ export function useInputHistory(
       history.value[currentIndex.value] = {
         content,
         cursorPosition,
-        timestamp: now
+        timestamp: now,
       }
     } else {
       // 创建新记录: 移除当前位置之后的所有记录
@@ -68,7 +68,7 @@ export function useInputHistory(
       history.value.push({
         content,
         cursorPosition,
-        timestamp: now
+        timestamp: now,
       })
 
       // 限制历史记录数量
@@ -167,6 +167,6 @@ export function useInputHistory(
     clearHistory,
     recordVariableExtraction,
     canUndo,
-    canRedo
+    canRedo,
   }
 }

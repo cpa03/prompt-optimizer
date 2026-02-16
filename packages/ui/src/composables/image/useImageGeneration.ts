@@ -6,7 +6,7 @@ import type {
   ImageResult,
   ImageModelConfig,
   Text2ImageRequest,
-  Image2ImageRequest
+  Image2ImageRequest,
 } from '@prompt-optimizer/core'
 import { getI18nErrorMessage } from '../../utils/error'
 
@@ -94,6 +94,6 @@ export function useImageGeneration() {
     generateImage2Image,
     validateText2ImageRequest,
     validateImage2ImageRequest,
-    loadImageModels
+    loadImageModels,
   }
 }

@@ -5,7 +5,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => {
   // 加载环境变量
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-  
+
   return {
     test: {
       // Avoid Windows OOM with forked workers on large suites
@@ -18,14 +18,10 @@ export default defineConfig(({ mode }) => {
       hookTimeout: 30000, // 钩子超时30秒
       // 环境变量配置
       env: {
-        ...process.env
+        ...process.env,
       },
       // Exclude performance tests from regular runs
-      exclude: [
-        '**/tests/performance/**',
-        '**/node_modules/**',
-        '**/dist/**'
-      ]
-    }
+      exclude: ['**/tests/performance/**', '**/node_modules/**', '**/dist/**'],
+    },
   }
-}) 
+})

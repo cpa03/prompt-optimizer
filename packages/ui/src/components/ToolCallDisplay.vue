@@ -7,7 +7,9 @@
             <NSpace align="center" :size="8">
               <NIcon :size="16" class="tool-call-header-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
                   <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </NIcon>
@@ -17,10 +19,10 @@
               </NTag>
             </NSpace>
           </template>
-          
+
           <TransitionGroup name="tool-call-item" tag="div" class="tool-call-items-container">
-            <div 
-              v-for="(toolCall, index) in toolCalls" 
+            <div
+              v-for="(toolCall, index) in toolCalls"
               :key="`tool-call-${toolCall.toolCall.id || index}`"
               class="tool-call-item"
               :class="{ 'tool-call-item--new': isNewItem(index) }"
@@ -29,9 +31,11 @@
                 <template #header>
                   <NSpace justify="space-between" align="center">
                     <NSpace align="center" :size="8">
-                      <NText strong class="tool-call-name">{{ toolCall.toolCall.function.name }}</NText>
-                      <NTag 
-                        :size="tagSize" 
+                      <NText strong class="tool-call-name">{{
+                        toolCall.toolCall.function.name
+                      }}</NText>
+                      <NTag
+                        :size="tagSize"
                         :type="getStatusTagType(toolCall.status)"
                         class="tool-call-status-tag"
                       >
@@ -40,43 +44,39 @@
                     </NSpace>
                   </NSpace>
                 </template>
-                
+
                 <!-- 工具参数 -->
                 <div v-if="toolCall.toolCall.function.arguments" class="tool-arguments">
                   <NText depth="3" :size="textSize" class="section-title">
                     {{ t('toolCall.arguments') }}
                   </NText>
-                  <NCode 
+                  <NCode
                     :code="formatArguments(toolCall.toolCall.function.arguments)"
                     language="json"
                     :word-wrap="true"
                     class="mt-2"
                   />
                 </div>
-                
+
                 <!-- 工具结果 -->
                 <div v-if="toolCall.result" class="tool-result mt-3">
                   <NText depth="3" :size="textSize" class="section-title">
                     {{ t('toolCall.result') }}
                   </NText>
-                  <NCode 
+                  <NCode
                     :code="formatResult(toolCall.result)"
                     language="json"
                     :word-wrap="true"
                     class="mt-2"
                   />
                 </div>
-                
+
                 <!-- 错误信息 -->
                 <div v-if="toolCall.error" class="tool-error mt-3">
                   <NText depth="3" :size="textSize" class="section-title">
                     {{ t('toolCall.error') }}
                   </NText>
-                  <NAlert 
-                    type="error"
-                    :size="size"
-                    class="mt-2"
-                  >
+                  <NAlert type="error" :size="size" class="mt-2">
                     {{ toolCall.error }}
                   </NAlert>
                 </div>
@@ -93,9 +93,16 @@
 import { computed, ref, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import { 
-  NCollapse, NCollapseItem, NSpace, NIcon, NText, NTag, NCard, 
-  NCode, NAlert
+import {
+  NCollapse,
+  NCollapseItem,
+  NSpace,
+  NIcon,
+  NText,
+  NTag,
+  NCard,
+  NCode,
+  NAlert,
 } from 'naive-ui'
 import type { ToolCallResult } from '@prompt-optimizer/core'
 
@@ -115,7 +122,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   size: 'small',
   cardSize: 'small',
-  defaultExpanded: true
+  defaultExpanded: true,
 })
 
 // 展开状态管理
@@ -131,29 +138,32 @@ const isNewItem = (index: number) => {
   return !seenToolCallIds.value.has(toolCall.toolCall.id)
 }
 
-
 // 监听工具调用变化，自动展开并跟踪新项
-watch(() => props.toolCalls, (newToolCalls) => {
-  if (newToolCalls && newToolCalls.length > 0 && props.defaultExpanded) {
-    // 有新工具调用时自动展开
-    if (!expandedNames.value.includes('tool-calls')) {
-      expandedNames.value = ['tool-calls']
-    }
-  }
-  
-  // Track new tool calls for animation
-  if (newToolCalls) {
-    newToolCalls.forEach((tc, index) => {
-      const id = tc.toolCall.id || `index-${index}`
-      if (!seenToolCallIds.value.has(id)) {
-        // Mark as seen after animation duration
-        setTimeout(() => {
-          seenToolCallIds.value.add(id)
-        }, 600)
+watch(
+  () => props.toolCalls,
+  (newToolCalls) => {
+    if (newToolCalls && newToolCalls.length > 0 && props.defaultExpanded) {
+      // 有新工具调用时自动展开
+      if (!expandedNames.value.includes('tool-calls')) {
+        expandedNames.value = ['tool-calls']
       }
-    })
-  }
-}, { immediate: true })
+    }
+
+    // Track new tool calls for animation
+    if (newToolCalls) {
+      newToolCalls.forEach((tc, index) => {
+        const id = tc.toolCall.id || `index-${index}`
+        if (!seenToolCallIds.value.has(id)) {
+          // Mark as seen after animation duration
+          setTimeout(() => {
+            seenToolCallIds.value.add(id)
+          }, 600)
+        }
+      })
+    }
+  },
+  { immediate: true }
+)
 
 // 计算属性
 const tagSize = computed(() => {
@@ -348,7 +358,7 @@ const formatResult = (result: string | Record<string, unknown> | Array<unknown>)
     transition: none !important;
     animation: none !important;
   }
-  
+
   .tool-call-item--new .tool-call-card {
     animation: none !important;
   }

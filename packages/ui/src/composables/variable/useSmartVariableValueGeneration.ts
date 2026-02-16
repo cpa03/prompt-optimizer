@@ -47,13 +47,8 @@ export function useSmartVariableValueGeneration(
 
   const functionModelManager = useFunctionModelManager(options.services)
 
-  const {
-    isGenerating,
-    generationResult,
-    showPreviewDialog,
-    generateValues,
-    confirmBatchApply,
-  } = useVariableValueGeneration(options.services, options.applyValue)
+  const { isGenerating, generationResult, showPreviewDialog, generateValues, confirmBatchApply } =
+    useVariableValueGeneration(options.services, options.applyValue)
 
   const handleGenerateValues = async (targetName?: string) => {
     const promptContent = options.promptContent.value || ''
@@ -64,7 +59,8 @@ export function useSmartVariableValueGeneration(
 
     const buildVariableToGenerate = (name: string): VariableToGenerate => {
       const currentValueRaw = options.getVariableValue(name)
-      const currentValue = typeof currentValueRaw === 'string' ? currentValueRaw : String(currentValueRaw ?? '')
+      const currentValue =
+        typeof currentValueRaw === 'string' ? currentValueRaw : String(currentValueRaw ?? '')
       const trimmedCurrentValue = currentValue.trim()
       return {
         name,

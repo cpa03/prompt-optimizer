@@ -4,7 +4,7 @@
  * Use LLM to intelligently infer variable values based on prompt context
  */
 
-import type { Template, MessageTemplate } from '../../../types';
+import type { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'variable-value-generation',
@@ -64,7 +64,7 @@ Use strict JSON format, wrapped in a \`\`\`json code block:
 - If a variable has a current value, you may reference it but don't need to copy it
 - Generated values should be concrete and directly usable strings
 - If a variable is difficult to infer, provide a generic placeholder and explain in reason
-- Output only JSON, no additional explanations`
+- Output only JSON, no additional explanations`,
     },
     {
       role: 'user',
@@ -80,8 +80,8 @@ Use strict JSON format, wrapped in a \`\`\`json code block:
 
 Total: {{variableCount}} variables.
 
-Please intelligently infer reasonable example values for each variable based on the prompt context.`
-    }
+Please intelligently infer reasonable example values for each variable based on the prompt context.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -90,7 +90,7 @@ Please intelligently infer reasonable example values for each variable based on 
     description: 'AI Variable Value Generation - Infer values based on prompt context',
     templateType: 'variable-value-generation',
     language: 'en',
-    tags: ['variable-generation', 'intelligent', 'testing']
+    tags: ['variable-generation', 'intelligent', 'testing'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

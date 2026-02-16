@@ -9,15 +9,17 @@
 ### 1. ElectronProxy层自动处理序列化
 
 ✅ **现在的做法**：
+
 ```javascript
 // 可以直接传递Vue响应式对象，ElectronProxy会自动序列化
 await modelManager.addModel(newModel.value.key, {
   name: newModel.value.name,
-  llmParams: newModel.value.llmParams // ElectronProxy会自动清理响应式包装
+  llmParams: newModel.value.llmParams, // ElectronProxy会自动清理响应式包装
 })
 ```
 
 **架构优势**：
+
 - Vue组件无需关心序列化细节
 - 所有序列化逻辑集中在ElectronProxy层
 - 自动保护，不易遗漏
@@ -26,11 +28,13 @@ await modelManager.addModel(newModel.value.key, {
 ### 2. 自动序列化处理
 
 **ElectronProxy层自动处理序列化**：
+
 - 所有ElectronProxy类已经内置了序列化处理
 - Vue组件无需手动调用序列化函数
 - 直接传递Vue响应式对象即可，代理层会自动清理
 
 **技术实现**：
+
 - 使用 `packages/core/src/utils/ipc-serialization.ts` 中的 `safeSerializeForIPC` 函数
 - 在每个需要的ElectronProxy方法中自动调用序列化
 - 确保100%的IPC兼容性
@@ -38,6 +42,7 @@ await modelManager.addModel(newModel.value.key, {
 ### 3. 识别问题的方法
 
 当你看到以下错误时，说明存在IPC序列化问题：
+
 - `An object could not be cloned`
 - `DataCloneError`
 - `Failed to execute 'postMessage'`
@@ -45,26 +50,29 @@ await modelManager.addModel(newModel.value.key, {
 ## 常见问题场景
 
 ### 1. 模型管理
+
 ```javascript
 // ✅ 现在可以直接传递Vue响应式对象
 await modelManager.addModel(key, {
-  llmParams: formData.value.llmParams // ElectronProxy会自动序列化
+  llmParams: formData.value.llmParams, // ElectronProxy会自动序列化
 })
 ```
 
 ### 2. 历史记录
+
 ```javascript
 // ✅ 现在可以直接传递Vue响应式对象
 await historyManager.createNewChain({
-  metadata: { mode: optimizationMode.value } // ElectronProxy会自动序列化
+  metadata: { mode: optimizationMode.value }, // ElectronProxy会自动序列化
 })
 ```
 
 ### 3. 模板管理
+
 ```javascript
 // ✅ 现在可以直接传递Vue响应式对象
 await templateManager.saveTemplate({
-  content: form.value.messages // ElectronProxy会自动序列化
+  content: form.value.messages, // ElectronProxy会自动序列化
 })
 ```
 
@@ -79,6 +87,7 @@ await templateManager.saveTemplate({
 ## 调试技巧
 
 ### 1. 检查对象类型
+
 ```javascript
 console.log('Object type:', Object.prototype.toString.call(obj))
 console.log('Is reactive:', obj.__v_isReactive)
@@ -86,6 +95,7 @@ console.log('Is ref:', obj.__v_isRef)
 ```
 
 ### 2. 测试序列化
+
 ```javascript
 try {
   JSON.stringify(obj)
@@ -96,11 +106,13 @@ try {
 ```
 
 ### 3. 使用开发工具
+
 在Chrome DevTools中，响应式对象会显示为 `Proxy` 类型。
 
 ## 架构建议
 
 ### 1. ElectronProxy层统一处理
+
 序列化处理已经移到ElectronProxy层，Vue组件可以直接调用：
 
 ```javascript
@@ -111,6 +123,7 @@ const handleSave = async () => {
 ```
 
 ### 2. 新增ElectronProxy方法的规范
+
 当添加新的ElectronProxy方法时，对复杂对象参数进行序列化：
 
 ```typescript
@@ -122,6 +135,7 @@ async newMethod(complexObject: SomeType): Promise<ResultType> {
 ```
 
 ### 3. 类型安全
+
 ElectronProxy的接口应该接受Vue响应式对象，内部自动处理：
 
 ```typescript

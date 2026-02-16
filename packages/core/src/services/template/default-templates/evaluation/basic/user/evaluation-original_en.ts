@@ -4,7 +4,7 @@
  * Evaluate whether the test result achieves the user's goal defined in the user prompt
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-user-original',
@@ -86,7 +86,7 @@ improvements should be **specific and actionable** suggestions:
 - ✓ Point out missing key information in the prompt
 - ✓ Suggest specific constraints or requirements to add
 - ✓ Identify unclear expressions and provide rewrite suggestions
-- ✓ Recommend adding output format or quality requirements`
+- ✓ Recommend adding output format or quality requirements`,
     },
     {
       role: 'user',
@@ -107,8 +107,8 @@ improvements should be **specific and actionable** suggestions:
 
 ---
 
-Please strictly evaluate the above test result and provide specific improvement suggestions for the user prompt.`
-    }
+Please strictly evaluate the above test result and provide specific improvement suggestions for the user prompt.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -117,7 +117,7 @@ Please strictly evaluate the above test result and provide specific improvement 
     description: 'Evaluate whether the test result of the original user prompt achieves user goals',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'original', 'scoring', 'basic', 'user']
+    tags: ['evaluation', 'original', 'scoring', 'basic', 'user'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

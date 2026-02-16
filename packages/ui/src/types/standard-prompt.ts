@@ -28,15 +28,15 @@ export interface ToolDefinition {
 export interface StandardMessage {
   role: 'system' | 'user' | 'assistant' | 'tool'
   content: string
-  name?: string              // 工具调用时的函数名或工具名
-  tool_calls?: ToolCall[]    // assistant消息中的工具调用
-  tool_call_id?: string      // tool消息中关联的工具调用ID
+  name?: string // 工具调用时的函数名或工具名
+  tool_calls?: ToolCall[] // assistant消息中的工具调用
+  tool_call_id?: string // tool消息中关联的工具调用ID
 }
 
 // 标准化Prompt数据结构
 export interface StandardPromptData {
   messages: StandardMessage[]
-  tools?: ToolDefinition[]   // 可用工具定义
+  tools?: ToolDefinition[] // 可用工具定义
   model?: string
   temperature?: number
   max_tokens?: number

@@ -35,8 +35,8 @@ vi.mock('../../../src/composables/useImageModelManager', () => ({
       {
         id: 'openai',
         name: 'OpenAI',
-        description: 'OpenAI Image models'
-      }
+        description: 'OpenAI Image models',
+      },
     ]),
     configs: ref([
       {
@@ -47,10 +47,10 @@ vi.mock('../../../src/composables/useImageModelManager', () => ({
           id: 'gpt-image-1',
           capabilities: {
             text2image: true,
-            image2image: false
-          }
-        }
-      }
+            image2image: false,
+          },
+        },
+      },
     ]),
     models: ref([
       {
@@ -59,9 +59,9 @@ vi.mock('../../../src/composables/useImageModelManager', () => ({
         enabled: true,
         capabilities: {
           text2image: true,
-          image2image: false
-        }
-      }
+          image2image: false,
+        },
+      },
     ]),
     isLoading: ref(false),
     error: ref(null),
@@ -73,8 +73,8 @@ vi.mock('../../../src/composables/useImageModelManager', () => ({
     enableModel: vi.fn().mockResolvedValue(undefined),
     disableModel: vi.fn().mockResolvedValue(undefined),
     openAddModal: vi.fn(),
-    openEditModal: vi.fn()
-  })
+    openEditModal: vi.fn(),
+  }),
 }))
 
 describe('ImageModelManager', () => {
@@ -93,24 +93,24 @@ describe('ImageModelManager', () => {
       {
         value: 'openai',
         label: 'OpenAI',
-        aliases: []
-      }
-    ])
+        aliases: [],
+      },
+    ]),
   }
 
   const mockImageService = {
-    testConnection: vi.fn().mockResolvedValue({ success: true })
+    testConnection: vi.fn().mockResolvedValue({ success: true }),
   }
 
   const createWrapper = (props = {}) => {
     return mount(ImageModelManager, {
       props: {
-        ...props
+        ...props,
       },
       global: {
         provide: {
           imageRegistry: mockImageRegistry,
-          imageService: mockImageService
+          imageService: mockImageService,
         },
         stubs: {
           // Stub all NaiveUI components
@@ -124,12 +124,12 @@ describe('ImageModelManager', () => {
           'n-text': { template: '<span><slot /></span>' },
           'n-tag': { template: '<span><slot /></span>' },
           'n-divider': { template: '<hr />' },
-          'n-empty': { template: '<div><slot name="extra" /></div>' }
+          'n-empty': { template: '<div><slot name="extra" /></div>' },
         },
         mocks: {
-          $t: (key: string) => key
-        }
-      }
+          $t: (key: string) => key,
+        },
+      },
     })
   }
 

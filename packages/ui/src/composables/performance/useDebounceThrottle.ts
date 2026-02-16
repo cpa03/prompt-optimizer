@@ -94,19 +94,15 @@ export function useDebounceThrottle() {
   /**
    * 创建一个可取消的延迟执行函数
    */
-  const createCancelableDelay = (
-    fn: () => void,
-    delay: number,
-    key: string = 'default'
-  ) => {
+  const createCancelableDelay = (fn: () => void, delay: number, key: string = 'default') => {
     const timerId = window.setTimeout(fn, delay)
     timers.value.set(key, timerId)
-    
+
     return {
       cancel: () => {
         clearTimeout(timerId)
         timers.value.delete(key)
-      }
+      },
     }
   }
 
@@ -154,11 +150,11 @@ export function useDebounceThrottle() {
 
       callCount++
       lastCallTime = now
-      
+
       // 根据调用频率动态调整延迟时间
       const frequency = callCount / Math.max(1, timeSinceLastCall / 1000)
       let adaptiveDelay = minDelay
-      
+
       if (frequency > 10) {
         adaptiveDelay = maxDelay
       } else if (frequency > 5) {
@@ -166,7 +162,7 @@ export function useDebounceThrottle() {
       } else if (frequency > 2) {
         adaptiveDelay = Math.min(maxDelay, minDelay * 2)
       }
-      
+
       // 重置计数器（使用集中常量）
       if (timeSinceLastCall > TIME_CONSTANTS.THROTTLE_RESET_MS) {
         callCount = 0
@@ -185,27 +181,27 @@ export function useDebounceThrottle() {
     key: string = 'default'
   ) => {
     const batches = new Map<string, T[]>()
-    
+
     return (item: T) => {
       const batch = batches.get(key) || []
       batch.push(item)
       batches.set(key, batch)
-      
+
       const timerId = timers.value.get(key)
       if (timerId) {
         clearTimeout(timerId)
       }
-      
+
       const newTimerId = window.setTimeout(() => {
         const finalBatch = batches.get(key) || []
         batches.delete(key)
         timers.value.delete(key)
-        
+
         if (finalBatch.length > 0) {
           fn(finalBatch)
         }
       }, delay)
-      
+
       timers.value.set(key, newTimerId)
     }
   }
@@ -224,6 +220,6 @@ export function useDebounceThrottle() {
     createCancelableDelay,
     cancel,
     cancelAll,
-    getActiveTimersCount
+    getActiveTimersCount,
   }
 }

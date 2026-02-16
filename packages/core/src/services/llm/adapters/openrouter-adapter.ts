@@ -19,9 +19,9 @@ const OPENROUTER_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 96000
-    }
-  }
+      maxContextLength: 96000,
+    },
+  },
 ]
 
 export class OpenRouterAdapter extends OpenAIAdapter {
@@ -39,9 +39,9 @@ export class OpenRouterAdapter extends OpenAIAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -55,14 +55,14 @@ export class OpenRouterAdapter extends OpenAIAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }

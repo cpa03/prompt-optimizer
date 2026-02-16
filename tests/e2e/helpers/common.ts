@@ -5,7 +5,9 @@ import { TIMEOUTS } from '../constants/timeouts'
  * 等待应用加载完成
  */
 export async function waitForAppReady(page: Page): Promise<void> {
-  await expect(page.locator('.loading-container')).toHaveCount(0, { timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD })
+  await expect(page.locator('.loading-container')).toHaveCount(0, {
+    timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD,
+  })
   await expect(page.locator('#app, [id="app"], main')).toBeAttached()
 }
 
@@ -24,12 +26,16 @@ export async function navigateToMode(
   await waitForAppReady(page)
 
   // RootBootstrapRoute 会把 / 重定向到某个 workspace；等到 workspace 出现即可。
-  await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+  await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({
+    timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+  })
 
   await switchModeViaUI(page, mode, subMode)
 
   // ✅ 验证 URL 正确
-  await expect(page).toHaveURL(new RegExp(`\\/#\\/${mode}\\/${subMode}$`), { timeout: TIMEOUTS.NAVIGATION.ROUTE_SWITCH })
+  await expect(page).toHaveURL(new RegExp(`\\/#\\/${mode}\\/${subMode}$`), {
+    timeout: TIMEOUTS.NAVIGATION.ROUTE_SWITCH,
+  })
 }
 
 export async function switchModeViaUI(

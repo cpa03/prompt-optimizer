@@ -6,13 +6,13 @@ const messageMock = {
   error: vi.fn(),
   info: vi.fn(),
   success: vi.fn(),
-  warning: vi.fn()
+  warning: vi.fn(),
 }
 
 vi.mock('vue-i18n', () => ({
   useI18n: () => ({
-    t: (key: string) => key
-  })
+    t: (key: string) => key,
+  }),
 }))
 
 vi.mock('naive-ui', async () => {
@@ -30,18 +30,18 @@ vi.mock('naive-ui', async () => {
               class: `stub-${name}`,
               'data-value': props.value,
               'data-checked': props.checked,
-              onClick: () => emit('click')
+              onClick: () => emit('click'),
             },
             slots.default?.()
           )
-      }
+      },
     })
 
   return {
     ...actual,
     useMessage: () => messageMock,
     NForm: stubComponent('NForm'),
-    NFormItem: stubComponent('NFormItem')
+    NFormItem: stubComponent('NFormItem'),
   }
 })
 
@@ -49,7 +49,7 @@ vi.mock('@prompt-optimizer/core', async () => {
   const actual = await vi.importActual<any>('@prompt-optimizer/core')
   return {
     ...actual,
-    isSafeCustomKey: (key: string) => /^[A-Za-z0-9._\-:/]+$/.test(key)
+    isSafeCustomKey: (key: string) => /^[A-Za-z0-9._\-:/]+$/.test(key),
   }
 })
 
@@ -61,12 +61,12 @@ const createSelectStub = () =>
     props: {
       options: {
         type: Array,
-        default: () => []
+        default: () => [],
       },
       value: {
         type: [String, Number, Array],
-        default: ''
-      }
+        default: '',
+      },
     },
     emits: ['update:value'],
     setup(props, { emit, attrs }) {
@@ -79,13 +79,13 @@ const createSelectStub = () =>
             onChange: (event: Event) => {
               const target = event.target as HTMLSelectElement
               emit('update:value', target.value)
-            }
+            },
           },
           (props.options as Array<{ value: string; label?: string }>).map((option) =>
             h('option', { value: option.value }, option.label ?? option.value)
           )
         )
-    }
+    },
   })
 
 const createInputStub = () =>
@@ -94,8 +94,8 @@ const createInputStub = () =>
     props: {
       value: {
         type: [String, Number],
-        default: ''
-      }
+        default: '',
+      },
     },
     emits: ['update:value'],
     setup(props, { emit, attrs, slots }) {
@@ -107,13 +107,11 @@ const createInputStub = () =>
           onInput: (event: Event) => {
             const target = event.target as HTMLInputElement | HTMLTextAreaElement
             emit('update:value', target.value)
-          }
+          },
         }
-        return isTextarea
-          ? h('textarea', common, slots.default?.())
-          : h('input', common)
+        return isTextarea ? h('textarea', common, slots.default?.()) : h('input', common)
       }
-    }
+    },
   })
 
 const createInputNumberStub = () =>
@@ -122,8 +120,8 @@ const createInputNumberStub = () =>
     props: {
       value: {
         type: Number,
-        default: undefined
-      }
+        default: undefined,
+      },
     },
     emits: ['update:value'],
     setup(props, { emit, attrs }) {
@@ -135,9 +133,9 @@ const createInputNumberStub = () =>
           onInput: (event: Event) => {
             const target = event.target as HTMLInputElement
             emit('update:value', target.value === '' ? undefined : Number(target.value))
-          }
+          },
         })
-    }
+    },
   })
 
 const createCheckboxStub = () =>
@@ -146,8 +144,8 @@ const createCheckboxStub = () =>
     props: {
       checked: {
         type: Boolean,
-        default: false
-      }
+        default: false,
+      },
     },
     emits: ['update:checked'],
     setup(props, { emit, slots }) {
@@ -159,11 +157,11 @@ const createCheckboxStub = () =>
             onChange: (event: Event) => {
               const target = event.target as HTMLInputElement
               emit('update:checked', target.checked)
-            }
+            },
           }),
-          slots.default?.()
+          slots.default?.(),
         ])
-    }
+    },
   })
 
 const createButtonStub = () =>
@@ -177,11 +175,11 @@ const createButtonStub = () =>
           {
             type: 'button',
             'data-test': attrs['data-test'],
-            onClick: () => emit('click')
+            onClick: () => emit('click'),
           },
           [slots.icon?.(), slots.default?.()]
         )
-    }
+    },
   })
 
 const createSimpleStub = (name: string) =>
@@ -189,7 +187,7 @@ const createSimpleStub = (name: string) =>
     name,
     setup(_, { slots }) {
       return () => h('div', { class: name }, slots.default?.())
-    }
+    },
   })
 
 const createCardStub = () =>
@@ -200,9 +198,9 @@ const createCardStub = () =>
         h('div', { class: 'card-stub' }, [
           slots.header?.(),
           slots.default?.(),
-          slots['header-extra']?.()
+          slots['header-extra']?.(),
         ])
-    }
+    },
   })
 
 const createFormItemStub = () =>
@@ -213,9 +211,9 @@ const createFormItemStub = () =>
         h('div', { class: 'form-item-stub' }, [
           slots['label-extra']?.(),
           slots.default?.(),
-          slots.feedback?.()
+          slots.feedback?.(),
         ])
-    }
+    },
   })
 
 const stubs = {
@@ -242,7 +240,7 @@ const stubs = {
   NText: createSimpleStub('NText'),
   'n-text': createSimpleStub('n-text'),
   NAlert: createSimpleStub('NAlert'),
-  'n-alert': createSimpleStub('n-alert')
+  'n-alert': createSimpleStub('n-alert'),
 }
 
 const baseSchema = [
@@ -253,8 +251,8 @@ const baseSchema = [
     minValue: 0,
     maxValue: 2,
     step: 0.1,
-    labelKey: 'params.temperature.label'
-  }
+    labelKey: 'params.temperature.label',
+  },
 ]
 
 describe('ModelParameterEditor', () => {
@@ -268,11 +266,11 @@ describe('ModelParameterEditor', () => {
         mode: 'text',
         schema: baseSchema,
         paramOverrides: {},
-        ...overrideProps
+        ...overrideProps,
       },
       global: {
-        stubs
-      }
+        stubs,
+      },
     })
 
   it('emits update when adding a definition', async () => {
@@ -291,7 +289,7 @@ describe('ModelParameterEditor', () => {
 
   it('updates value when handleValueChange is called', async () => {
     const wrapper = mountComponent({
-      paramOverrides: { temperature: 0.5 }
+      paramOverrides: { temperature: 0.5 },
     })
     const vm = wrapper.vm as unknown as {
       handleValueChange: (definition: any, raw: unknown) => void
@@ -307,7 +305,7 @@ describe('ModelParameterEditor', () => {
 
   it('removes override when value becomes empty', async () => {
     const wrapper = mountComponent({
-      paramOverrides: { temperature: 0.9 }
+      paramOverrides: { temperature: 0.9 },
     })
     const vm = wrapper.vm as unknown as {
       handleValueChange: (definition: any, raw: unknown) => void

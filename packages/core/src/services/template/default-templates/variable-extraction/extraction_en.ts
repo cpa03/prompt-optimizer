@@ -4,7 +4,7 @@
  * Intelligently identify parameterizable variables in prompts using LLM
  */
 
-import type { Template, MessageTemplate } from '../../../types';
+import type { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'variable-extraction',
@@ -63,7 +63,7 @@ Strictly use JSON format, wrapped in a \`\`\`json code block:
 - If the original text already has {{variable}}, do not extract it again
 - If there are no suitable variables, return {"variables": [], "summary": "No extractable variables"}
 
-Only output JSON, without additional explanations.`
+Only output JSON, without additional explanations.`,
     },
     {
       role: 'user',
@@ -73,17 +73,18 @@ Only output JSON, without additional explanations.`
 {{promptContent}}
 \`\`\`
 
-Please intelligently identify parameterizable variables in the prompt. Autonomously decide whether to extract fine-grained (words/phrases) or medium-grained (sentences/paragraphs) variables based on actual situations.`
-    }
+Please intelligently identify parameterizable variables in the prompt. Autonomously decide whether to extract fine-grained (words/phrases) or medium-grained (sentences/paragraphs) variables based on actual situations.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: Date.now(),
     author: 'System',
-    description: 'AI Intelligent Variable Extraction - LLM autonomously determines extraction granularity',
+    description:
+      'AI Intelligent Variable Extraction - LLM autonomously determines extraction granularity',
     templateType: 'variable-extraction',
     language: 'en',
-    tags: ['variable-extraction', 'intelligent', 'parameterization']
+    tags: ['variable-extraction', 'intelligent', 'parameterization'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

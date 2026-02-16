@@ -3,12 +3,14 @@
 ## 当前状态
 
 **已完成** (2026-01-09):
+
 - ✅ VCR 基础设施（录制/回放）
 - ✅ UI 错误检测门禁（Vitest + Playwright）
 - ✅ 基础冒烟测试（6 个集成测试 + 3 个 Store 单元测试 + 1 个 E2E 冒烟）
 - ✅ 门禁验证通过（257 个测试，执行时间 < 1 分钟）
 
 **待补充**:
+
 - ⏳ 完整工作流测试（端到端场景）
 - ⏳ LLM 服务集成测试（多提供商、流式响应）
 - ⏳ Session Store 集成测试（模式切换、并发保护）
@@ -21,12 +23,15 @@
 ### 🔴 P0 - 高优先级（核心功能，必须补充）
 
 #### 1. LLM 服务集成测试
+
 **重要性**: ⭐⭐⭐⭐⭐
+
 - **原因**: LLM 是核心依赖，直接影响所有优化和测试功能
 - **风险**: 多提供商切换、流式响应异常、错误重试失败
 - **已有基础**: VCR 系统已完成，可快速录制 fixtures
 
 **测试用例**:
+
 ```typescript
 // packages/core/tests/integration/llm-service.spec.ts
 describe('LLM Service Integration', () => {
@@ -61,12 +66,15 @@ describe('LLM Service Integration', () => {
 ---
 
 #### 2. Basic-System/User 完整工作流测试
+
 **重要性**: ⭐⭐⭐⭐⭐
+
 - **原因**: Basic 模式是最常用功能，需要端到端验证
 - **风险**: 优化结果丢失、测试结果不同步、迭代逻辑错误
 - **已有基础**: 冒烟测试已通过，需扩展为完整场景
 
 **测试用例**:
+
 ```typescript
 // packages/ui/tests/integration/basic-complete-workflow.spec.ts
 describe('Basic-System Complete Workflow', () => {
@@ -97,12 +105,15 @@ describe('Basic-User Complete Workflow', () => {
 ### 🟡 P1 - 中优先级（增强测试覆盖）
 
 #### 3. Session Store 集成测试
+
 **重要性**: ⭐⭐⭐⭐
+
 - **原因**: Store 是状态管理核心，模式切换时易出错
 - **风险**: 跨模式状态污染、持久化数据丢失
 - **已有基础**: 3 个 Store 单元测试已完成
 
 **测试用例**:
+
 ```typescript
 // packages/ui/tests/integration/session-store-switching.spec.ts
 describe('Session Store Mode Switching', () => {
@@ -124,12 +135,15 @@ describe('Session Store Persistence', () => {
 ---
 
 #### 4. Context 模式完整工作流
+
 **重要性**: ⭐⭐⭐⭐
+
 - **原因**: Context 模式涉及多轮对话和变量管理，复杂度高
 - **风险**: 变量替换错误、对话历史丢失、链映射错误
 - **已有基础**: 4 个冒烟测试已通过
 
 **测试用例**:
+
 ```typescript
 // packages/ui/tests/integration/context-complete-workflow.spec.ts
 describe('Context-System Multi-turn Conversation', () => {
@@ -152,12 +166,15 @@ describe('Context-User Variable Management', () => {
 ### 🟢 P2 - 低优先级（可选增强）
 
 #### 5. 图像生成+历史收藏
+
 **重要性**: ⭐⭐⭐
+
 - **原因**: 图像功能相对独立，现有冒烟测试已覆盖核心逻辑
 - **风险**: ImageStorage 大文件处理、IndexedDB 限制
 - **已有基础**: Image 生成逻辑冒烟测试已完成
 
 **测试用例**:
+
 ```typescript
 // packages/core/tests/unit/services/image-storage.spec.ts
 describe('ImageStorageService', () => {
@@ -183,24 +200,29 @@ describe('Image History & Favorites', () => {
 ### 🎯 渐进式补充（推荐）
 
 **Week 1** (高优先级):
+
 - Day 1-3: LLM 服务集成测试（P0）
 - Day 4-6: Basic 完整工作流测试（P0）
 
 **Week 2** (中优先级):
+
 - Day 7-8: Session Store 集成测试（P1）
 - Day 9-11: Context 完整工作流测试（P1）
 
 **Week 3+** (可选):
+
 - Day 12-14: 图像生成+历史收藏测试（P2）
 - 后续: 持续优化和增强
 
 ### ⚡ 快速补充（最小可行）
 
 仅补充 P0 高优先级测试：
+
 - LLM 服务集成测试（2-3 天）
 - Basic 完整工作流测试（2-3 天）
 
 **理由**:
+
 - 当前 257 个测试已覆盖核心冒烟场景
 - P0 测试补充后，核心功能测试覆盖率可达 80%+
 - P1/P2 测试可按需渐进补充
@@ -212,11 +234,13 @@ describe('Image History & Favorites', () => {
 ### ✅ 立即行动
 
 1. **先提交当前进度**
+
    ```bash
    git commit -m "test: 建立测试基础设施（VCR + 错误门禁 + 冒烟测试）"
    ```
 
 2. **创建 Phase 4 补充分支**
+
    ```bash
    git checkout -b feat/phase4-test-coverage
    ```
@@ -237,12 +261,14 @@ describe('Image History & Favorites', () => {
 ## 成功标准
 
 **最小可行标准** (MVP):
+
 - ✅ LLM 服务集成测试完成（多提供商 + 流式响应）
 - ✅ Basic 完整工作流测试完成（优化 + 测试 + 迭代）
 - ✅ 所有测试通过门禁
 - ✅ 无 flaky tests
 
 **理想标准** (Ideal):
+
 - ✅ MVP 标准
 - ✅ Session Store 集成测试完成
 - ✅ Context 完整工作流测试完成

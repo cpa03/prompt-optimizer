@@ -4,7 +4,7 @@
  * 直接评估带变量的用户提示词质量，无需测试结果
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-prompt-only',
@@ -86,7 +86,7 @@ export const template: Template = {
   - instruction：简洁说明问题和修复方案
 - **summary**：一句话总结评估结论（必填）
 
-只输出 JSON，不添加额外解释。`
+只输出 JSON，不添加额外解释。`,
     },
     {
       role: 'user',
@@ -110,8 +110,8 @@ export const template: Template = {
 
 ---
 
-请直接评估优化后的用户提示词相对于原始版本的改进程度。`
-    }
+请直接评估优化后的用户提示词相对于原始版本的改进程度。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -120,7 +120,7 @@ export const template: Template = {
     description: '直接评估带变量的用户提示词质量，无需测试结果',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

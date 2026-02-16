@@ -2,7 +2,10 @@
  * 变量值生成服务 - 错误类定义
  */
 
-import { VARIABLE_VALUE_GENERATION_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import {
+  VARIABLE_VALUE_GENERATION_ERROR_CODES,
+  type ErrorParams,
+} from '../../constants/error-codes'
 
 /**
  * 变量值生成服务基础错误类

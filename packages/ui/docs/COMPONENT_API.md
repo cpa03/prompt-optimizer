@@ -7,12 +7,14 @@
 ## 组件架构
 
 ### 设计原则
+
 - **SOLID**: 单一职责、开闭原则、里氏替换、接口隔离、依赖倒置
 - **KISS**: 保持简单，避免过度复杂的设计
 - **DRY**: 避免重复代码，统一通用逻辑
 - **YAGNI**: 只实现当前需要的功能
 
 ### 技术栈
+
 - **Vue 3**: Composition API + TypeScript
 - **Naive UI**: 现代化组件库
 - **无障碍**: WCAG 2.1 AA/AAA 标准
@@ -87,7 +89,7 @@ interface ContextEditorEmits {
     <template #toolbar>
       <NButton>自定义按钮</NButton>
     </template>
-    
+
     <!-- 自定义底部 -->
     <template #footer>
       <div class="custom-footer">自定义内容</div>
@@ -126,10 +128,8 @@ interface ContextEditorEmits {
 ```vue
 <template>
   <div>
-    <NButton @click="showEditor = true">
-      打开编辑器
-    </NButton>
-    
+    <NButton @click="showEditor = true"> 打开编辑器 </NButton>
+
     <ContextEditor
       v-model:visible="showEditor"
       :state="contextState"
@@ -152,13 +152,13 @@ const showEditor = ref(false)
 const contextState = ref<ContextState>({
   messages: [
     { role: 'user', content: 'Hello {{name}}' },
-    { role: 'assistant', content: 'Hi there!' }
+    { role: 'assistant', content: 'Hi there!' },
   ],
   variables: { name: 'World' }, // 上下文覆盖变量
   tools: [],
   showVariablePreview: true,
   showToolManager: true,
-  mode: 'edit'
+  mode: 'edit',
 })
 
 // 全局可用变量（包括预定义和全局变量）
@@ -241,12 +241,7 @@ interface ToolCall {
 
 ```vue
 <template>
-  <ToolCallDisplay
-    :tool-calls="toolCalls"
-    :collapsed="false"
-    size="medium"
-    :max-items="50"
-  />
+  <ToolCallDisplay :tool-calls="toolCalls" :collapsed="false" size="medium" :max-items="50" />
 </template>
 
 <script setup lang="ts">
@@ -260,7 +255,7 @@ const toolCalls = ref<ToolCall[]>([
     arguments: { location: 'Beijing', unit: 'celsius' },
     result: { temperature: 25, condition: 'sunny' },
     status: 'success',
-    timestamp: Date.now()
+    timestamp: Date.now(),
   },
   {
     id: 'call_2',
@@ -268,8 +263,8 @@ const toolCalls = ref<ToolCall[]>([
     arguments: { to: 'user@example.com', subject: 'Test' },
     error: 'Network timeout',
     status: 'error',
-    timestamp: Date.now()
-  }
+    timestamp: Date.now(),
+  },
 ])
 </script>
 ```
@@ -329,10 +324,8 @@ interface ScreenReaderSupportMethods {
       :show-shortcut-help="showShortcuts"
       @shortcut="handleShortcut"
     />
-    
-    <NButton @click="notifyUser">
-      发送通知
-    </NButton>
+
+    <NButton @click="notifyUser"> 发送通知 </NButton>
   </div>
 </template>
 
@@ -378,7 +371,7 @@ function useAccessibility(componentName?: string): {
     focusFirst: () => void
     focusLast: () => void
   }
-  
+
   // ARIA 标签管理
   aria: {
     getLabel: (key: string, fallback?: string) => string
@@ -386,14 +379,14 @@ function useAccessibility(componentName?: string): {
     getRole: (elementType: string) => string
     getLiveRegionText: (key: string) => string
   }
-  
+
   // 消息通知
   announce: (message: string, priority?: 'polite' | 'assertive') => void
-  
+
   // 焦点管理
   enableFocusTrap: () => void
   disableFocusTrap: () => void
-  
+
   // 响应式状态
   focusableElements: Ref<HTMLElement[]>
   currentFocusIndex: Ref<number>
@@ -426,12 +419,8 @@ interface AccessibilityFeatures {
     >
       {{ item.name }}
     </button>
-    
-    <div
-      role="status"
-      aria-live="polite"
-      class="sr-only"
-    >
+
+    <div role="status" aria-live="polite" class="sr-only">
       {{ liveRegionMessage }}
     </div>
   </div>
@@ -444,7 +433,7 @@ import { useAccessibility } from '@prompt-optimizer/ui'
 const items = ref([
   { id: 1, name: '项目1' },
   { id: 2, name: '项目2' },
-  { id: 3, name: '项目3' }
+  { id: 3, name: '项目3' },
 ])
 
 const {
@@ -454,14 +443,14 @@ const {
   enableFocusTrap,
   disableFocusTrap,
   accessibilityClasses,
-  liveRegionMessage
+  liveRegionMessage,
 } = useAccessibility('MyComponent')
 
 onMounted(() => {
   const buttons = document.querySelectorAll('button')
   keyboard.setFocusableElements(Array.from(buttons) as HTMLElement[])
   enableFocusTrap()
-  
+
   announce('组件已加载', 'polite')
 })
 </script>
@@ -486,11 +475,11 @@ function useFocusManager(options: FocusManagerOptions = {}): {
   moveFocusPrevious: () => boolean
   focusFirstElement: () => boolean
   focusLastElement: () => boolean
-  
+
   // 工具方法
   updateFocusableElements: () => HTMLElement[]
   isFocusable: (element: HTMLElement) => boolean
-  
+
   // 响应式状态
   focusableElements: Ref<HTMLElement[]>
   currentFocusIndex: Ref<number>
@@ -533,17 +522,17 @@ const {
   moveFocusPrevious,
   focusableElements,
   currentFocusIndex,
-  isTrapped
+  isTrapped,
 } = useFocusManager({
   container: containerRef,
-  restoreFocus: true
+  restoreFocus: true,
 })
 
 onMounted(() => {
   // 监听键盘事件
   document.addEventListener('keydown', (e) => {
     if (!isTrapped.value) return
-    
+
     if (e.key === 'Tab') {
       e.preventDefault()
       if (e.shiftKey) {
@@ -612,18 +601,18 @@ onMounted(async () => {
   const result = await runTest({
     scope: document.body,
     wcagLevel: 'AA',
-    includeWarnings: true
+    includeWarnings: true,
   })
-  
+
   console.log('可访问性测试结果:', result)
-  
+
   if (result.score < 80) {
     console.warn('可访问性分数较低:', result.score)
-    result.issues.forEach(issue => {
+    result.issues.forEach((issue) => {
       console.error(`${issue.rule}: ${issue.message}`)
     })
   }
-  
+
   // 单独测试某个规则
   const imgAltResult = runSingleRule('img-alt')
   if (imgAltResult.issues.length > 0) {
@@ -676,17 +665,23 @@ onMounted(async () => {
 ```scss
 // 移动端
 @media (max-width: 767px) {
-  .responsive-mobile { /* 样式 */ }
+  .responsive-mobile {
+    /* 样式 */
+  }
 }
 
 // 平板端
 @media (min-width: 768px) and (max-width: 1023px) {
-  .responsive-tablet { /* 样式 */ }
+  .responsive-tablet {
+    /* 样式 */
+  }
 }
 
 // 桌面端
 @media (min-width: 1024px) {
-  .responsive-desktop { /* 样式 */ }
+  .responsive-desktop {
+    /* 样式 */
+  }
 }
 ```
 
@@ -698,16 +693,14 @@ onMounted(async () => {
 
 ```typescript
 // 组件懒加载
-const ContextEditor = defineAsyncComponent(
-  () => import('./components/ContextEditor.vue')
-)
+const ContextEditor = defineAsyncComponent(() => import('./components/ContextEditor.vue'))
 
 // 路由级别代码分割
 const routes = [
   {
     path: '/editor',
-    component: () => import('./pages/EditorPage.vue')
-  }
+    component: () => import('./pages/EditorPage.vue'),
+  },
 ]
 ```
 
@@ -716,11 +709,7 @@ const routes = [
 ```vue
 <template>
   <!-- 大量数据的虚拟列表 -->
-  <VirtualList
-    :items="largeDataset"
-    :item-height="50"
-    :visible-count="10"
-  >
+  <VirtualList :items="largeDataset" :item-height="50" :visible-count="10">
     <template #item="{ item }">
       <div class="virtual-item">{{ item.name }}</div>
     </template>
@@ -762,8 +751,8 @@ const i18n = createI18n({
   fallbackLocale: 'en-US',
   messages: {
     'zh-CN': zhCN,
-    'en-US': enUS
-  }
+    'en-US': enUS,
+  },
 })
 ```
 
@@ -776,18 +765,18 @@ export default {
     labels: {
       contextEditor: '上下文编辑器',
       closeButton: '关闭按钮',
-      saveButton: '保存按钮'
+      saveButton: '保存按钮',
     },
     descriptions: {
       contextEditor: '编辑消息、变量和工具配置',
-      navigationHelp: '使用Tab键在元素间导航'
+      navigationHelp: '使用Tab键在元素间导航',
     },
     announcements: {
       saved: '内容已保存',
       loading: '正在加载中',
-      error: '发生错误，请重试'
-    }
-  }
+      error: '发生错误，请重试',
+    },
+  },
 }
 ```
 
@@ -810,11 +799,11 @@ describe('ContextEditor', () => {
         state: {
           messages: [],
           variables: {},
-          tools: []
-        }
-      }
+          tools: [],
+        },
+      },
     })
-    
+
     expect(wrapper.find('[role="dialog"]').exists()).toBe(true)
   })
 })
@@ -829,9 +818,9 @@ describe('Accessibility Tests', () => {
   it('应该通过WCAG AA标准', async () => {
     const { runTest } = useAccessibilityTesting()
     const result = await runTest({ wcagLevel: 'AA' })
-    
+
     expect(result.score).toBeGreaterThan(80)
-    expect(result.issues.filter(i => i.severity === 'critical')).toHaveLength(0)
+    expect(result.issues.filter((i) => i.severity === 'critical')).toHaveLength(0)
   })
 })
 ```
@@ -846,7 +835,7 @@ describe('端到端测试', () => {
     await page.click('[data-testid="open-editor"]')
     await page.fill('[aria-label="消息输入框"]', '测试内容')
     await page.click('[aria-label="保存按钮"]')
-    
+
     expect(await page.textContent('[role="status"]')).toContain('保存成功')
   })
 })
@@ -869,18 +858,18 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: 'PromptOptimizerUI',
-      formats: ['es', 'cjs']
+      formats: ['es', 'cjs'],
     },
     rollupOptions: {
       external: ['vue', 'naive-ui'],
       output: {
         globals: {
           vue: 'Vue',
-          'naive-ui': 'NaiveUI'
-        }
-      }
-    }
-  }
+          'naive-ui': 'NaiveUI',
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -986,6 +975,7 @@ const componentClasses = computed(() => ({
 ## 更新日志
 
 ### v1.0.0 (2024-XX-XX)
+
 - ✨ 完成Naive UI重构
 - ✨ 新增完整可访问性支持
 - ✨ 实现响应式布局
@@ -1006,4 +996,4 @@ const componentClasses = computed(() => ({
 
 ---
 
-*最后更新时间: 2024年XX月XX日*
+_最后更新时间: 2024年XX月XX日_

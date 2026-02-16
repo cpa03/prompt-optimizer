@@ -6,7 +6,7 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { IMAGE_CONSTRAINTS } from '../../../constants/constraints'
@@ -53,15 +53,15 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
   getModels(): ImageModel[] {
     const sizes = IMAGE_SIZE_PRESETS.modelscope
-    
+
     return [
       {
         id: 'Tongyi-MAI/Z-Image-Turbo',
@@ -71,20 +71,20 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: false,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: this.getDefaultParameterDefinitions(),
         defaultParameterValues: {
           size: sizes.default,
-          n: 1
-        }
-      }
+          n: 1,
+        },
+      },
     ]
   }
 
   private getDefaultParameterDefinitions(): ImageParameterDefinition[] {
     const sizes = IMAGE_SIZE_PRESETS.modelscope
-    
+
     return [
       {
         name: 'size',
@@ -92,7 +92,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         descriptionKey: 'image.params.size.description',
         type: 'string',
         defaultValue: sizes.default,
-        allowedValues: sizes.available
+        allowedValues: sizes.available,
       },
       {
         name: 'n',
@@ -101,16 +101,18 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         type: 'integer',
         defaultValue: 1,
         minValue: 1,
-        maxValue: 4
-      }
+        maxValue: 4,
+      },
     ]
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: '一朵简单的红色花朵',
-        count: 1
+        count: 1,
       }
     }
 
@@ -123,47 +125,55 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
     const sizes = IMAGE_SIZE_PRESETS.modelscope
-    
+
     return {
       size: sizes.default,
-      n: 1
+      n: 1,
     }
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     // ModelScope 适配器仅支持文生图
     if (request.inputImage) {
-      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, { modelName: config.modelId })
+      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, {
+        modelName: config.modelId,
+      })
     }
 
     return await this.generateImage(request, config)
   }
 
-  private async generateImage(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  private async generateImage(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const url = this.resolveEndpointUrl(config, '/images/generations')
     const sizes = IMAGE_SIZE_PRESETS.modelscope
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
 
     const payload = {
       model: config.modelId,
       prompt: request.prompt,
       size: merged.size || sizes.default,
-      n: merged.n || request.count || 1
+      n: merged.n || request.count || 1,
     }
 
     // 提交异步任务
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
         'Content-Type': 'application/json',
-        'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode // 异步模式
+        'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode, // 异步模式
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -183,11 +193,19 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     const taskId = submitData.task_id
 
     if (!taskId) {
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, 'No task_id received from ModelScope API')
+      throw new ImageError(
+        IMAGE_ERROR_CODES.GENERATION_FAILED,
+        'No task_id received from ModelScope API'
+      )
     }
 
     // 轮询任务状态
-    return await this.pollTaskResult(taskId, config, RETRY_CONFIG.DEFAULT_POLL_ATTEMPTS, IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS)
+    return await this.pollTaskResult(
+      taskId,
+      config,
+      RETRY_CONFIG.DEFAULT_POLL_ATTEMPTS,
+      IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS
+    )
   }
 
   /**
@@ -202,14 +220,14 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     const taskUrl = this.resolveEndpointUrl(config, `/tasks/${taskId}`)
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      await new Promise(resolve => setTimeout(resolve, intervalMs))
+      await new Promise((resolve) => setTimeout(resolve, intervalMs))
 
       const response = await fetch(taskUrl, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-          'X-ModelScope-Task-Type': 'image_generation'
-        }
+          Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+          'X-ModelScope-Task-Type': 'image_generation',
+        },
       })
 
       if (!response.ok) {
@@ -223,7 +241,10 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
         } catch {
           // 如果无法解析 JSON，使用默认错误信息
         }
-        throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Failed to poll task status: ${errorMessage}`)
+        throw new ImageError(
+          IMAGE_ERROR_CODES.GENERATION_FAILED,
+          `Failed to poll task status: ${errorMessage}`
+        )
       }
 
       const data = await response.json()
@@ -238,7 +259,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
 
         const images = outputImages.map((imageUrl: string) => ({
           url: imageUrl,
-          mimeType: MIME_TYPES.PNG
+          mimeType: MIME_TYPES.PNG,
         }))
 
         return {
@@ -247,13 +268,16 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
             providerId: 'modelscope',
             modelId: config.modelId,
             configId: config.id,
-            taskId
-          }
+            taskId,
+          },
         }
       } else if (IMAGE_ADAPTER_CONFIG.modelscope.status.terminal.includes(status)) {
         // 任务失败或被取消，提取错误信息
         const errorMessage = data.error?.message || data.error || data.message || 'Unknown error'
-        throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Task ${status.toLowerCase()}: ${errorMessage}`)
+        throw new ImageError(
+          IMAGE_ERROR_CODES.GENERATION_FAILED,
+          `Task ${status.toLowerCase()}: ${errorMessage}`
+        )
       } else if (!IMAGE_ADAPTER_CONFIG.modelscope.status.pending.includes(status)) {
         // 未知的终态，视为失败
         throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Unknown task status: ${status}`)
@@ -261,7 +285,9 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
       // task_status 为 PENDING、RUNNING 或 PROCESSING，继续轮询
     }
 
-    throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Task timeout after ${maxAttempts} attempts`)
+    throw new ImageError(
+      IMAGE_ERROR_CODES.GENERATION_FAILED,
+      `Task timeout after ${maxAttempts} attempts`
+    )
   }
-
 }

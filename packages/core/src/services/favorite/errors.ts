@@ -29,13 +29,12 @@ export class FavoriteAlreadyExistsError extends FavoriteError {
     const raw = typeof content === 'string' ? content : ''
     const trimmed = raw.trim()
     const maxLen = ERROR_CONFIG.MAX_MESSAGE_LENGTH
-    const preview =
-      trimmed.length > maxLen ? `${trimmed.slice(0, maxLen)}…` : trimmed
+    const preview = trimmed.length > maxLen ? `${trimmed.slice(0, maxLen)}…` : trimmed
 
     super(
       FAVORITE_ERROR_CODES.ALREADY_EXISTS,
       undefined,
-      preview ? { preview, length: trimmed.length } : undefined,
+      preview ? { preview, length: trimmed.length } : undefined
     )
     this.name = 'FavoriteAlreadyExistsError'
   }
@@ -56,7 +55,10 @@ export class FavoriteValidationError extends FavoriteError {
 }
 
 export class FavoriteStorageError extends FavoriteError {
-  constructor(details: string, public cause?: Error) {
+  constructor(
+    details: string,
+    public cause?: Error
+  ) {
     super(FAVORITE_ERROR_CODES.STORAGE_ERROR, details, { details })
     this.name = 'FavoriteStorageError'
   }
@@ -96,7 +98,10 @@ export class FavoriteTagNotFoundError extends FavoriteTagError {
  * Data migration error
  */
 export class FavoriteMigrationError extends FavoriteError {
-  constructor(message: string, public cause?: Error) {
+  constructor(
+    message: string,
+    public cause?: Error
+  ) {
     super(FAVORITE_ERROR_CODES.MIGRATION_ERROR, message, { details: message })
     this.name = 'FavoriteMigrationError'
   }
@@ -106,7 +111,11 @@ export class FavoriteMigrationError extends FavoriteError {
  * 导入导出错误
  */
 export class FavoriteImportExportError extends FavoriteError {
-  constructor(message: string, public cause?: Error, public details?: string[]) {
+  constructor(
+    message: string,
+    public cause?: Error,
+    public details?: string[]
+  ) {
     super(FAVORITE_ERROR_CODES.IMPORT_EXPORT_ERROR, message, { details: message })
     this.name = 'FavoriteImportExportError'
   }

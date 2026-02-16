@@ -68,11 +68,11 @@ graph TB
 
 ```typescript
 interface TextProvider {
-  id: string;                    // 'openai' | 'gemini' | 'anthropic'
-  name: string;                  // 'OpenAI' | 'Google Gemini' | 'Anthropic'
-  description: string;
-  defaultBaseURL?: string;
-  connectionSchema: ConnectionSchema;  // 连接参数定义
+  id: string // 'openai' | 'gemini' | 'anthropic'
+  name: string // 'OpenAI' | 'Google Gemini' | 'Anthropic'
+  description: string
+  defaultBaseURL?: string
+  connectionSchema: ConnectionSchema // 连接参数定义
 }
 ```
 
@@ -82,18 +82,18 @@ interface TextProvider {
 
 ```typescript
 interface TextModel {
-  id: string;                    // 'gpt-4o-mini' | 'gemini-2.0-flash-exp'
-  name: string;
-  description?: string;
-  providerId: string;            // 归属Provider
+  id: string // 'gpt-4o-mini' | 'gemini-2.0-flash-exp'
+  name: string
+  description?: string
+  providerId: string // 归属Provider
   capabilities: {
-    supportsStreaming: boolean;
-    supportsTools: boolean;
-    supportsReasoning: boolean;
-    maxContextLength: number;
-  };
-  parameterDefinitions: ParameterDefinition[];
-  defaultParameterValues: Record<string, any>;
+    supportsStreaming: boolean
+    supportsTools: boolean
+    supportsReasoning: boolean
+    maxContextLength: number
+  }
+  parameterDefinitions: ParameterDefinition[]
+  defaultParameterValues: Record<string, any>
 }
 ```
 
@@ -103,17 +103,18 @@ interface TextModel {
 
 ```typescript
 interface TextModelConfig {
-  id: string;
-  name: string;
-  enabled: boolean;
-  providerMeta: TextProvider;     // 嵌入Provider元数据
-  modelMeta: TextModel;            // 嵌入Model元数据
-  connectionConfig: ConnectionConfig;  // 连接配置(apiKey, baseURL)
-  paramOverrides: Record<string, any>; // 参数覆盖
+  id: string
+  name: string
+  enabled: boolean
+  providerMeta: TextProvider // 嵌入Provider元数据
+  modelMeta: TextModel // 嵌入Model元数据
+  connectionConfig: ConnectionConfig // 连接配置(apiKey, baseURL)
+  paramOverrides: Record<string, any> // 参数覆盖
 }
 ```
 
 **特点**:
+
 - **自包含**: 包含运行时所需的全部信息
 - **类型安全**: 完整TypeScript类型定义
 - **元数据嵌入**: 无需运行时查找Provider/Model
@@ -122,18 +123,28 @@ interface TextModelConfig {
 
 ```typescript
 interface ITextProviderAdapter {
-  getProvider(): TextProvider;
-  getModels(): TextModel[];
-  getModelsAsync?(config: TextModelConfig): Promise<TextModel[]>;
-  buildDefaultModel(modelId: string): TextModel;
+  getProvider(): TextProvider
+  getModels(): TextModel[]
+  getModelsAsync?(config: TextModelConfig): Promise<TextModel[]>
+  buildDefaultModel(modelId: string): TextModel
 
-  sendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse>;
-  sendMessageStream(messages: Message[], config: TextModelConfig, handlers: StreamHandlers): Promise<void>;
-  sendMessageStreamWithTools?(messages: Message[], config: TextModelConfig, tools: ToolDefinition[], handlers: StreamHandlers): Promise<void>;
+  sendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse>
+  sendMessageStream(
+    messages: Message[],
+    config: TextModelConfig,
+    handlers: StreamHandlers
+  ): Promise<void>
+  sendMessageStreamWithTools?(
+    messages: Message[],
+    config: TextModelConfig,
+    tools: ToolDefinition[],
+    handlers: StreamHandlers
+  ): Promise<void>
 }
 ```
 
 **职责**:
+
 - 提供Provider和Model元数据
 - 封装SDK调用逻辑
 - 处理消息格式转换
@@ -143,18 +154,19 @@ interface ITextProviderAdapter {
 
 ```typescript
 class TextAdapterRegistry implements ITextAdapterRegistry {
-  private adapters: Map<string, ITextProviderAdapter>;
-  private staticModelsCache: Map<string, TextModel[]>;
+  private adapters: Map<string, ITextProviderAdapter>
+  private staticModelsCache: Map<string, TextModel[]>
 
-  getAdapter(providerId: string): ITextProviderAdapter;
-  getAllProviders(): TextProvider[];
-  getStaticModels(providerId: string): TextModel[];
-  getDynamicModels(providerId: string, config: TextModelConfig): Promise<TextModel[]>;
-  getModels(providerId: string, config?: TextModelConfig): Promise<TextModel[]>;
+  getAdapter(providerId: string): ITextProviderAdapter
+  getAllProviders(): TextProvider[]
+  getStaticModels(providerId: string): TextModel[]
+  getDynamicModels(providerId: string, config: TextModelConfig): Promise<TextModel[]>
+  getModels(providerId: string, config?: TextModelConfig): Promise<TextModel[]>
 }
 ```
 
 **职责**:
+
 - 注册和管理所有Adapter实例
 - 提供统一的Adapter查找接口
 - 缓存静态模型列表
@@ -191,18 +203,18 @@ export async function convertLegacyToTextModelConfigWithRegistry(
   registry: ITextAdapterRegistry
 ): Promise<TextModelConfig> {
   // 1. Provider映射
-  const providerId = mapProviderToAdapterId(legacy.provider);
+  const providerId = mapProviderToAdapterId(legacy.provider)
 
   // 2. 获取Adapter
-  const adapter = registry.getAdapter(providerId);
+  const adapter = registry.getAdapter(providerId)
 
   // 3. 获取Provider元数据
-  const providerMeta = adapter.getProvider();
+  const providerMeta = adapter.getProvider()
 
   // 4. 获取Model元数据
-  let modelMeta = adapter.getModels().find(m => m.id === legacy.defaultModel);
+  let modelMeta = adapter.getModels().find((m) => m.id === legacy.defaultModel)
   if (!modelMeta) {
-    modelMeta = adapter.buildDefaultModel(legacy.defaultModel);
+    modelMeta = adapter.buildDefaultModel(legacy.defaultModel)
   }
 
   // 5. 构建TextModelConfig
@@ -214,14 +226,15 @@ export async function convertLegacyToTextModelConfigWithRegistry(
     modelMeta,
     connectionConfig: {
       apiKey: legacy.apiKey,
-      baseURL: legacy.baseURL
+      baseURL: legacy.baseURL,
     },
-    paramOverrides: legacy.llmParams || {}
-  };
+    paramOverrides: legacy.llmParams || {},
+  }
 }
 ```
 
 **Provider映射规则**:
+
 - `gemini` → `gemini` (GeminiAdapter)
 - `anthropic` → `anthropic` (AnthropicAdapter)
 - `openai` | `deepseek` | `zhipu` | `siliconflow` | `custom` → `openai` (OpenAIAdapter)
@@ -274,20 +287,21 @@ export class LLMService implements ILLMService {
 
   async sendMessage(messages: Message[], provider: string): Promise<string> {
     // 1. 获取配置
-    const config = await this.modelManager.getModel(provider) as TextModelConfig;
+    const config = (await this.modelManager.getModel(provider)) as TextModelConfig
 
     // 2. 获取Adapter
-    const adapter = this.registry.getAdapter(config.providerMeta.id);
+    const adapter = this.registry.getAdapter(config.providerMeta.id)
 
     // 3. 调用Adapter
-    const response = await adapter.sendMessage(messages, config);
+    const response = await adapter.sendMessage(messages, config)
 
-    return response.content;
+    return response.content
   }
 }
 ```
 
 **关键特性**:
+
 - 通过`config.providerMeta.id`获取正确的Adapter
 - 无需switch/case Provider类型
 - SDK调用完全由Adapter封装
@@ -298,14 +312,14 @@ export class LLMService implements ILLMService {
 ```typescript
 export function createLLMService(modelManager: ModelManager): ILLMService {
   if (isRunningInElectron()) {
-    return new ElectronLLMProxy();
+    return new ElectronLLMProxy()
   }
 
   // 创建Registry实例
-  const registry = new TextAdapterRegistry();
+  const registry = new TextAdapterRegistry()
 
   // 注入Registry到Service
-  return new LLMService(modelManager, registry);
+  return new LLMService(modelManager, registry)
 }
 ```
 
@@ -317,8 +331,15 @@ export function createLLMService(modelManager: ModelManager): ILLMService {
 
 ```typescript
 // packages/core/src/services/llm/adapters/example-adapter.ts
-import { AbstractTextProviderAdapter } from './abstract-adapter';
-import type { TextProvider, TextModel, TextModelConfig, LLMResponse, Message, StreamHandlers } from '../types';
+import { AbstractTextProviderAdapter } from './abstract-adapter'
+import type {
+  TextProvider,
+  TextModel,
+  TextModelConfig,
+  LLMResponse,
+  Message,
+  StreamHandlers,
+} from '../types'
 
 export class ExampleAdapter extends AbstractTextProviderAdapter {
   getProvider(): TextProvider {
@@ -332,10 +353,10 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'url'
-        }
-      }
-    };
+          baseURL: 'url',
+        },
+      },
+    }
   }
 
   getModels(): TextModel[] {
@@ -349,7 +370,7 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
           supportsStreaming: true,
           supportsTools: false,
           supportsReasoning: false,
-          maxContextLength: 8000
+          maxContextLength: 8000,
         },
         parameterDefinitions: [
           {
@@ -358,14 +379,14 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
             description: 'Sampling temperature',
             min: 0,
             max: 2,
-            default: 0.7
-          }
+            default: 0.7,
+          },
         ],
         defaultParameterValues: {
-          temperature: 0.7
-        }
-      }
-    ];
+          temperature: 0.7,
+        },
+      },
+    ]
   }
 
   protected async doSendMessage(
@@ -375,27 +396,27 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
     // 实现SDK调用逻辑
     const client = new ExampleSDK({
       apiKey: config.connectionConfig.apiKey,
-      baseURL: config.connectionConfig.baseURL || this.getProvider().defaultBaseURL
-    });
+      baseURL: config.connectionConfig.baseURL || this.getProvider().defaultBaseURL,
+    })
 
     try {
       const response = await client.chat.completions.create({
         model: config.modelMeta.id,
         messages: messages,
-        ...config.paramOverrides
-      });
+        ...config.paramOverrides,
+      })
 
       return {
         content: response.choices[0].message.content || '',
         reasoning: undefined,
         metadata: {
           model: config.modelMeta.id,
-          usage: response.usage
-        }
-      };
+          usage: response.usage,
+        },
+      }
     } catch (error: any) {
       // 保留原始错误堆栈
-      throw error;
+      throw error
     }
   }
 
@@ -407,32 +428,32 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
     // 实现流式调用逻辑
     const client = new ExampleSDK({
       apiKey: config.connectionConfig.apiKey,
-      baseURL: config.connectionConfig.baseURL
-    });
+      baseURL: config.connectionConfig.baseURL,
+    })
 
     try {
       const stream = await client.chat.completions.create({
         model: config.modelMeta.id,
         messages: messages,
         stream: true,
-        ...config.paramOverrides
-      });
+        ...config.paramOverrides,
+      })
 
       for await (const chunk of stream) {
-        const content = chunk.choices[0]?.delta?.content || '';
+        const content = chunk.choices[0]?.delta?.content || ''
         if (content && handlers.onToken) {
-          handlers.onToken(content);
+          handlers.onToken(content)
         }
       }
 
       if (handlers.onComplete) {
-        handlers.onComplete({ content: '', metadata: {} });
+        handlers.onComplete({ content: '', metadata: {} })
       }
     } catch (error: any) {
       if (handlers.onError) {
-        handlers.onError(error);
+        handlers.onError(error)
       }
-      throw error;
+      throw error
     }
   }
 }
@@ -442,20 +463,20 @@ export class ExampleAdapter extends AbstractTextProviderAdapter {
 
 ```typescript
 // packages/core/src/services/llm/adapters/registry.ts
-import { ExampleAdapter } from './example-adapter';
+import { ExampleAdapter } from './example-adapter'
 
 export class TextAdapterRegistry implements ITextAdapterRegistry {
-  private adapters: Map<string, ITextProviderAdapter>;
+  private adapters: Map<string, ITextProviderAdapter>
 
   constructor() {
-    this.adapters = new Map();
-    this.staticModelsCache = new Map();
+    this.adapters = new Map()
+    this.staticModelsCache = new Map()
 
     // 注册所有Adapter
-    this.adapters.set('openai', new OpenAIAdapter());
-    this.adapters.set('gemini', new GeminiAdapter());
-    this.adapters.set('anthropic', new AnthropicAdapter());
-    this.adapters.set('example', new ExampleAdapter());  // 新增
+    this.adapters.set('openai', new OpenAIAdapter())
+    this.adapters.set('gemini', new GeminiAdapter())
+    this.adapters.set('anthropic', new AnthropicAdapter())
+    this.adapters.set('example', new ExampleAdapter()) // 新增
   }
 }
 ```
@@ -467,18 +488,18 @@ export class TextAdapterRegistry implements ITextAdapterRegistry {
 function mapProviderToAdapterId(provider: string): string {
   switch (provider) {
     case 'gemini':
-      return 'gemini';
+      return 'gemini'
     case 'anthropic':
-      return 'anthropic';
-    case 'example':  // 新增
-      return 'example';
+      return 'anthropic'
+    case 'example': // 新增
+      return 'example'
     case 'openai':
     case 'deepseek':
     case 'zhipu':
     case 'siliconflow':
     case 'custom':
     default:
-      return 'openai';
+      return 'openai'
   }
 }
 ```
@@ -488,6 +509,7 @@ function mapProviderToAdapterId(provider: string): string {
 ### Q1: 为什么要重构为Adapter模式?
 
 **A**:
+
 1. **解耦SDK**: 不同SDK的调用逻辑分离,易于维护和测试
 2. **统一接口**: 所有Provider遵循相同接口,简化Service层逻辑
 3. **扩展性**: 添加新Provider只需实现Adapter,无需修改Service
@@ -496,6 +518,7 @@ function mapProviderToAdapterId(provider: string): string {
 ### Q2: 传统配置如何迁移?
 
 **A**: 自动迁移,无需手动操作:
+
 1. ModelManager初始化时检测传统配置
 2. 自动调用`convertLegacyToTextModelConfigWithRegistry()`
 3. 转换后保存到Storage
@@ -504,6 +527,7 @@ function mapProviderToAdapterId(provider: string): string {
 ### Q3: TextModelConfig为什么要嵌入元数据?
 
 **A**:
+
 1. **自包含**: 运行时无需查找Provider/Model元数据
 2. **类型安全**: 完整类型定义,IDE智能提示
 3. **性能**: 避免运行时查找,直接访问
@@ -515,10 +539,10 @@ function mapProviderToAdapterId(provider: string): string {
 
 ```typescript
 try {
-  const response = await sdk.call();
+  const response = await sdk.call()
 } catch (error: any) {
   // 直接throw,不要包装,保留原始堆栈
-  throw error;
+  throw error
 }
 ```
 
@@ -552,6 +576,7 @@ Registry会自动fallback到静态模型。
 ### Q6: Provider映射规则是什么?
 
 **A**:
+
 - **Gemini**: `gemini` → GeminiAdapter (Google SDK)
 - **Anthropic**: `anthropic` → AnthropicAdapter (Anthropic SDK)
 - **OpenAI及兼容**:

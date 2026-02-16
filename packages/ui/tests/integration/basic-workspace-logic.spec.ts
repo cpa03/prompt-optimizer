@@ -5,7 +5,7 @@ const toast = {
   error: vi.fn(),
   warning: vi.fn(),
   info: vi.fn(),
-  loading: vi.fn()
+  loading: vi.fn(),
 }
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -19,7 +19,7 @@ vi.mock('vue-i18n', async (importOriginal) => {
 })
 
 vi.mock('../../src/composables/ui/useToast', () => ({
-  useToast: () => toast
+  useToast: () => toast,
 }))
 
 import { ref, reactive } from 'vue'
@@ -76,39 +76,45 @@ describe('Basic workspace logic (smoke)', () => {
       },
       updateIterateTemplate: (id: string | null) => {
         sessionStore.selectedIterateTemplateId = id
-      }
+      },
     }) as any
 
     const promptService = {
-      iteratePromptStream: vi.fn(async (_orig: any, _last: any, _note: any, _modelKey: any, handlers: any) => {
-        handlers.onToken('new ')
-        handlers.onToken('prompt')
-        handlers.onReasoningToken('why')
-        await handlers.onComplete()
-      })
+      iteratePromptStream: vi.fn(
+        async (_orig: any, _last: any, _note: any, _modelKey: any, handlers: any) => {
+          handlers.onToken('new ')
+          handlers.onToken('prompt')
+          handlers.onReasoningToken('why')
+          await handlers.onComplete()
+        }
+      ),
     }
 
     const historyManager = {
       addIteration: vi.fn(async (_payload: any) => ({
         chainId: 'chain-1',
         versions: [{ id: 'v0' }, { id: 'v1' }],
-        currentRecord: { id: 'v1' }
-      }))
+        currentRecord: { id: 'v1' },
+      })),
     }
 
     const services = ref({
       promptService,
-      historyManager
+      historyManager,
     } as unknown as AppServices)
 
     const logic = useBasicWorkspaceLogic({
       services,
       sessionStore,
       optimizationMode: 'system',
-      promptRecordType: 'optimize'
+      promptRecordType: 'optimize',
     })
 
-    await logic.handleIterate({ iterateInput: 'more', originalPrompt: 'original', optimizedPrompt: 'last' } as any)
+    await logic.handleIterate({
+      iterateInput: 'more',
+      originalPrompt: 'original',
+      optimizedPrompt: 'last',
+    } as any)
 
     expect(promptService.iteratePromptStream).toHaveBeenCalledTimes(1)
     expect(historyManager.addIteration).toHaveBeenCalledTimes(1)
@@ -167,7 +173,7 @@ describe('Basic workspace logic (smoke)', () => {
       },
       updateIterateTemplate: (id: string | null) => {
         sessionStore.selectedIterateTemplateId = id
-      }
+      },
     }) as any
 
     const promptService = {
@@ -176,18 +182,18 @@ describe('Basic workspace logic (smoke)', () => {
         handlers.onToken('B')
         handlers.onReasoningToken('R')
         handlers.onComplete()
-      })
+      }),
     }
 
     const services = ref({
-      promptService
+      promptService,
     } as unknown as AppServices)
 
     const logic = useBasicWorkspaceLogic({
       services,
       sessionStore,
       optimizationMode: 'system',
-      promptRecordType: 'optimize'
+      promptRecordType: 'optimize',
     })
 
     await logic.handleTest()
@@ -246,7 +252,7 @@ describe('Basic workspace logic (smoke)', () => {
       },
       updateIterateTemplate: (id: string | null) => {
         sessionStore.selectedIterateTemplateId = id
-      }
+      },
     }) as any
 
     const promptService = {
@@ -256,18 +262,18 @@ describe('Basic workspace logic (smoke)', () => {
         handlers.onToken(isOriginal ? 'O' : 'N')
         handlers.onToken(isOriginal ? '1' : '2')
         handlers.onComplete()
-      })
+      }),
     }
 
     const services = ref({
-      promptService
+      promptService,
     } as unknown as AppServices)
 
     const logic = useBasicWorkspaceLogic({
       services,
       sessionStore,
       optimizationMode: 'system',
-      promptRecordType: 'optimize'
+      promptRecordType: 'optimize',
     })
 
     await logic.handleTest()
@@ -326,7 +332,7 @@ describe('Basic workspace logic (smoke)', () => {
       },
       updateIterateTemplate: (id: string | null) => {
         sessionStore.selectedIterateTemplateId = id
-      }
+      },
     }) as any
 
     const promptService = {
@@ -335,27 +341,27 @@ describe('Basic workspace logic (smoke)', () => {
         handlers.onToken('prompt')
         handlers.onReasoningToken('reason')
         await handlers.onComplete()
-      })
+      }),
     }
 
     const historyManager = {
       createNewChain: vi.fn(async (recordData: any) => ({
         chainId: 'chain-1',
         versions: [recordData],
-        currentRecord: recordData
-      }))
+        currentRecord: recordData,
+      })),
     }
 
     const services = ref({
       promptService,
-      historyManager
+      historyManager,
     } as unknown as AppServices)
 
     const logic = useBasicWorkspaceLogic({
       services,
       sessionStore,
       optimizationMode: 'system',
-      promptRecordType: 'optimize'
+      promptRecordType: 'optimize',
     })
 
     await logic.handleOptimize()

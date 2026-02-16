@@ -4,7 +4,7 @@
  * 提供 LLM 智能评估功能的类型系统
  */
 
-import type { BasicSubMode, ProSubMode, ImageSubMode } from '../prompt/types';
+import type { BasicSubMode, ProSubMode, ImageSubMode } from '../prompt/types'
 
 // ==================== 评估类型 ====================
 
@@ -15,13 +15,13 @@ export type EvaluationType =
   | 'original'
   | 'optimized'
   | 'compare'
-  | 'prompt-only'      // 仅提示词评估（无需测试结果）
-  | 'prompt-iterate';  // 带迭代需求的提示词评估
+  | 'prompt-only' // 仅提示词评估（无需测试结果）
+  | 'prompt-iterate' // 带迭代需求的提示词评估
 
 /**
  * 所有子模式的联合类型（用于评估模式配置）
  */
-export type EvaluationSubMode = BasicSubMode | ProSubMode | ImageSubMode;
+export type EvaluationSubMode = BasicSubMode | ProSubMode | ImageSubMode
 
 /**
  * 评估模式配置
@@ -29,9 +29,9 @@ export type EvaluationSubMode = BasicSubMode | ProSubMode | ImageSubMode;
  */
 export interface EvaluationModeConfig {
   /** 功能模式 */
-  functionMode: 'basic' | 'pro' | 'image';
+  functionMode: 'basic' | 'pro' | 'image'
   /** 子模式 */
-  subMode: EvaluationSubMode;
+  subMode: EvaluationSubMode
 }
 
 // ==================== Pro 模式评估上下文 ====================
@@ -44,21 +44,21 @@ export interface ProSystemEvaluationContext {
   /** 被优化消息的元信息 */
   targetMessage: {
     /** 消息角色 */
-    role: 'system' | 'user' | 'assistant' | 'tool';
+    role: 'system' | 'user' | 'assistant' | 'tool'
     /** 消息内容（当前版本） */
-    content: string;
+    content: string
     /** 原始内容（用于对比） */
-    originalContent?: string;
-  };
+    originalContent?: string
+  }
   /** 完整对话上下文 */
   conversationMessages: Array<{
     /** 消息角色 */
-    role: string;
+    role: string
     /** 消息内容 */
-    content: string;
+    content: string
     /** 是否为被优化的目标消息 */
-    isTarget?: boolean;
-  }>;
+    isTarget?: boolean
+  }>
 }
 
 /**
@@ -69,29 +69,29 @@ export interface ProUserEvaluationContext {
   /** 变量列表 */
   variables: Array<{
     /** 变量名 */
-    name: string;
+    name: string
     /** 变量值 */
-    value: string;
+    value: string
     /** 变量来源 */
-    source: 'predefined' | 'global' | 'temporary';
-  }>;
+    source: 'predefined' | 'global' | 'temporary'
+  }>
   /** 原始提示词（含变量占位符） */
-  rawPrompt: string;
+  rawPrompt: string
   /** 变量替换后的提示词 */
-  resolvedPrompt: string;
+  resolvedPrompt: string
 }
 
 /**
  * Pro 模式评估上下文联合类型
  */
-export type ProEvaluationContext = ProSystemEvaluationContext | ProUserEvaluationContext;
+export type ProEvaluationContext = ProSystemEvaluationContext | ProUserEvaluationContext
 
 // ==================== 补丁操作类型 ====================
 
 /**
  * 补丁操作类型
  */
-export type PatchOperationType = 'insert' | 'replace' | 'delete';
+export type PatchOperationType = 'insert' | 'replace' | 'delete'
 
 /**
  * 补丁操作 - 精准修复指令
@@ -108,15 +108,15 @@ export type PatchOperationType = 'insert' | 'replace' | 'delete';
  */
 export interface PatchOperation {
   /** 操作类型 */
-  op: PatchOperationType;
+  op: PatchOperationType
   /** 修改前的原文本片段（用于定位和 diff 展示） */
-  oldText: string;
+  oldText: string
   /** 修改后的文本（删除时为空字符串） */
-  newText: string;
+  newText: string
   /** 操作说明（包含问题描述 + 修复说明） */
-  instruction: string;
+  instruction: string
   /** 出现次数（从1开始，用于处理多次出现的情况，默认1） */
-  occurrence?: number;
+  occurrence?: number
 }
 
 // ==================== 评估请求类型 ====================
@@ -126,17 +126,17 @@ export interface PatchOperation {
  */
 export interface EvaluationRequestBase {
   /** 原始提示词（可选，用于对比） */
-  originalPrompt?: string;
+  originalPrompt?: string
   /** 测试文本/输入 */
-  testContent?: string;
+  testContent?: string
   /** 评估使用的模型Key */
-  evaluationModelKey: string;
+  evaluationModelKey: string
   /** 可选：自定义变量 */
-  variables?: Record<string, string>;
+  variables?: Record<string, string>
   /** 评估模式配置（必填） */
-  mode: EvaluationModeConfig;
+  mode: EvaluationModeConfig
   /** Pro 模式专用上下文（可选） */
-  proContext?: ProEvaluationContext;
+  proContext?: ProEvaluationContext
 }
 
 /**
@@ -144,9 +144,9 @@ export interface EvaluationRequestBase {
  * 评估原始提示词的测试结果是否达成用户目的
  */
 export interface OriginalEvaluationRequest extends EvaluationRequestBase {
-  type: 'original';
+  type: 'original'
   /** 原始测试结果 */
-  testResult: string;
+  testResult: string
 }
 
 /**
@@ -154,11 +154,11 @@ export interface OriginalEvaluationRequest extends EvaluationRequestBase {
  * 评估优化后提示词的测试效果
  */
 export interface OptimizedEvaluationRequest extends EvaluationRequestBase {
-  type: 'optimized';
+  type: 'optimized'
   /** 优化后的提示词 */
-  optimizedPrompt: string;
+  optimizedPrompt: string
   /** 优化后的测试结果 */
-  testResult: string;
+  testResult: string
 }
 
 /**
@@ -166,13 +166,13 @@ export interface OptimizedEvaluationRequest extends EvaluationRequestBase {
  * 对比原始和优化后两个版本的测试效果
  */
 export interface CompareEvaluationRequest extends EvaluationRequestBase {
-  type: 'compare';
+  type: 'compare'
   /** 优化后的提示词 */
-  optimizedPrompt: string;
+  optimizedPrompt: string
   /** 原始测试结果 */
-  originalTestResult: string;
+  originalTestResult: string
   /** 优化后的测试结果 */
-  optimizedTestResult: string;
+  optimizedTestResult: string
 }
 
 /**
@@ -180,9 +180,9 @@ export interface CompareEvaluationRequest extends EvaluationRequestBase {
  * 直接评估提示词本身的质量，无需测试结果
  */
 export interface PromptOnlyEvaluationRequest extends EvaluationRequestBase {
-  type: 'prompt-only';
+  type: 'prompt-only'
   /** 优化后的提示词 */
-  optimizedPrompt: string;
+  optimizedPrompt: string
 }
 
 /**
@@ -190,11 +190,11 @@ export interface PromptOnlyEvaluationRequest extends EvaluationRequestBase {
  * 评估优化后的提示词是否满足迭代需求
  */
 export interface PromptIterateEvaluationRequest extends EvaluationRequestBase {
-  type: 'prompt-iterate';
+  type: 'prompt-iterate'
   /** 优化后的提示词 */
-  optimizedPrompt: string;
+  optimizedPrompt: string
   /** 迭代需求（来自 iterationNote） */
-  iterateRequirement: string;
+  iterateRequirement: string
 }
 
 /**
@@ -205,7 +205,7 @@ export type EvaluationRequest =
   | OptimizedEvaluationRequest
   | CompareEvaluationRequest
   | PromptOnlyEvaluationRequest
-  | PromptIterateEvaluationRequest;
+  | PromptIterateEvaluationRequest
 
 // ==================== 评估结果类型 ====================
 
@@ -214,11 +214,11 @@ export type EvaluationRequest =
  */
 export interface EvaluationDimension {
   /** 维度标识符 */
-  key: string;
+  key: string
   /** 本地化显示名称（由模板返回） */
-  label: string;
+  label: string
   /** 维度分数 (0-100) */
-  score: number;
+  score: number
 }
 
 /**
@@ -226,9 +226,9 @@ export interface EvaluationDimension {
  */
 export interface EvaluationScore {
   /** 总分 (0-100) */
-  overall: number;
+  overall: number
   /** 各维度评分（动态数组） */
-  dimensions: EvaluationDimension[];
+  dimensions: EvaluationDimension[]
 }
 
 /**
@@ -236,21 +236,21 @@ export interface EvaluationScore {
  */
 export interface EvaluationResponse {
   /** 评估类型 */
-  type: EvaluationType;
+  type: EvaluationType
   /** 评估分数 */
-  score: EvaluationScore;
+  score: EvaluationScore
   /** 方向性改进建议（最多3条，用于迭代重写） */
-  improvements: string[];
+  improvements: string[]
   /** 一句话总结 */
-  summary: string;
+  summary: string
   /** 精准修复操作（最多3条，用于直接编辑） */
-  patchPlan: PatchOperation[];
+  patchPlan: PatchOperation[]
   /** 元数据 */
   metadata?: {
-    model?: string;
-    timestamp?: number;
-    duration?: number;
-  };
+    model?: string
+    timestamp?: number
+    duration?: number
+  }
 }
 
 // ==================== 流式评估回调 ====================
@@ -260,13 +260,13 @@ export interface EvaluationResponse {
  */
 export interface EvaluationStreamHandlers {
   /** 接收到内容 token */
-  onToken: (token: string) => void;
+  onToken: (token: string) => void
   /** 接收到分数更新（可选） */
-  onScore?: (score: Partial<EvaluationScore>) => void;
+  onScore?: (score: Partial<EvaluationScore>) => void
   /** 评估完成 */
-  onComplete: (response: EvaluationResponse) => void;
+  onComplete: (response: EvaluationResponse) => void
   /** 评估出错 */
-  onError: (error: Error) => void;
+  onError: (error: Error) => void
 }
 
 // ==================== 服务接口 ====================
@@ -280,17 +280,14 @@ export interface IEvaluationService {
    * @param request 评估请求
    * @returns 评估响应
    */
-  evaluate(request: EvaluationRequest): Promise<EvaluationResponse>;
+  evaluate(request: EvaluationRequest): Promise<EvaluationResponse>
 
   /**
    * 流式评估（用于实时显示）
    * @param request 评估请求
    * @param callbacks 流式回调处理器
    */
-  evaluateStream(
-    request: EvaluationRequest,
-    callbacks: EvaluationStreamHandlers
-  ): Promise<void>;
+  evaluateStream(request: EvaluationRequest, callbacks: EvaluationStreamHandlers): Promise<void>
 }
 
 // ==================== 评估模板 ID 命名规则 ====================

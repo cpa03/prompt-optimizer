@@ -7,7 +7,7 @@ import {
   ImageModelConfig,
   ImageModel,
   Text2ImageRequest,
-  Image2ImageRequest
+  Image2ImageRequest,
 } from './types'
 import { createImageAdapterRegistry } from './adapters/registry'
 import { BaseError } from '../llm/errors'
@@ -55,20 +55,26 @@ export class ImageService implements IImageService {
 
     const config = await this.imageModelManager.getConfig(request.configId)
     if (!config) {
-      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, { configId: request.configId })
+      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, {
+        configId: request.configId,
+      })
     }
 
     // 能力校验：优先使用 config.model（动态/自定义模型），静态列表作为兜底
     const configModel = config.model
     const staticModels = this.registry.getStaticModels(config.providerId)
-    const staticModel = staticModels.find(m => m.id === config.modelId)
+    const staticModel = staticModels.find((m) => m.id === config.modelId)
     const capabilities = configModel?.capabilities ?? staticModel?.capabilities
     const modelName = configModel?.name ?? staticModel?.name ?? config.modelId
 
     if (capabilities && !capabilities.text2image) {
       // 对于仅支持图生图的模型，给出更明确指引
       if (capabilities.image2image) {
-        throw new ImageError(IMAGE_ERROR_CODES.MODEL_ONLY_SUPPORTS_IMAGE2IMAGE_NEED_INPUT, undefined, { modelName })
+        throw new ImageError(
+          IMAGE_ERROR_CODES.MODEL_ONLY_SUPPORTS_IMAGE2IMAGE_NEED_INPUT,
+          undefined,
+          { modelName }
+        )
       }
       throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_TEXT2IMAGE, undefined, { modelName })
     }
@@ -87,7 +93,11 @@ export class ImageService implements IImageService {
       throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_URL_NOT_SUPPORTED)
     }
 
-    if (!request.inputImage.b64 || typeof request.inputImage.b64 !== 'string' || !request.inputImage.b64.trim()) {
+    if (
+      !request.inputImage.b64 ||
+      typeof request.inputImage.b64 !== 'string' ||
+      !request.inputImage.b64.trim()
+    ) {
       throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_B64_REQUIRED)
     }
 
@@ -96,22 +106,28 @@ export class ImageService implements IImageService {
 
     const config = await this.imageModelManager.getConfig(request.configId)
     if (!config) {
-      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, { configId: request.configId })
+      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, {
+        configId: request.configId,
+      })
     }
 
     // 能力校验：优先使用 config.model（动态/自定义模型），静态列表作为兜底
     const configModel = config.model
     const staticModels = this.registry.getStaticModels(config.providerId)
-    const staticModel = staticModels.find(m => m.id === config.modelId)
+    const staticModel = staticModels.find((m) => m.id === config.modelId)
     const capabilities = configModel?.capabilities ?? staticModel?.capabilities
     const modelName = configModel?.name ?? staticModel?.name ?? config.modelId
 
     if (capabilities && !capabilities.image2image) {
-      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, { modelName })
+      throw new ImageError(IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE, undefined, {
+        modelName,
+      })
     }
   }
 
-  private async validateBaseRequest(request: Pick<ImageRequest, 'prompt' | 'configId' | 'count'>): Promise<void> {
+  private async validateBaseRequest(
+    request: Pick<ImageRequest, 'prompt' | 'configId' | 'count'>
+  ): Promise<void> {
     // 验证基本字段
     if (!request?.prompt || !request.prompt.trim()) {
       throw new ImageError(IMAGE_ERROR_CODES.PROMPT_EMPTY)
@@ -124,17 +140,23 @@ export class ImageService implements IImageService {
     // 验证配置是否存在且启用
     const config = await this.imageModelManager.getConfig(request.configId)
     if (!config) {
-      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, { configId: request.configId })
+      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, {
+        configId: request.configId,
+      })
     }
     if (!config.enabled) {
-      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_ENABLED, undefined, { configName: config.name })
+      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_ENABLED, undefined, {
+        configName: config.name,
+      })
     }
 
     // 快速验证：仅检查提供商是否存在（本地操作）
     try {
       this.registry.getAdapter(config.providerId)
     } catch {
-      throw new ImageError(IMAGE_ERROR_CODES.PROVIDER_NOT_FOUND, undefined, { providerId: config.providerId })
+      throw new ImageError(IMAGE_ERROR_CODES.PROVIDER_NOT_FOUND, undefined, {
+        providerId: config.providerId,
+      })
     }
 
     // 验证生成数量（仅支持单图）
@@ -155,16 +177,20 @@ export class ImageService implements IImageService {
     // 验证输入图像 MIME 类型和大小
     const mime = (inputImage.mimeType || '').toLowerCase()
     if (mime && mime !== 'image/png' && mime !== 'image/jpeg') {
-      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_UNSUPPORTED_MIME, undefined, { mimeType: inputImage.mimeType })
+      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_UNSUPPORTED_MIME, undefined, {
+        mimeType: inputImage.mimeType,
+      })
     }
 
     // 估算 base64 大小：每4字符≈3字节，去除末尾填充
     const len = inputImage.b64.length
-    const padding = (inputImage.b64.endsWith('==') ? 2 : inputImage.b64.endsWith('=') ? 1 : 0)
+    const padding = inputImage.b64.endsWith('==') ? 2 : inputImage.b64.endsWith('=') ? 1 : 0
     const bytes = Math.floor((len * 3) / 4) - padding
     const maxSize = CONSTRAINTS.image.maxSizeBytes
     if (bytes > maxSize) {
-      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_TOO_LARGE, undefined, { maxSizeMB: CONSTRAINTS.image.maxSizeBytes / (1024 * 1024) })
+      throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_TOO_LARGE, undefined, {
+        maxSizeMB: CONSTRAINTS.image.maxSizeBytes / (1024 * 1024),
+      })
     }
   }
 
@@ -188,7 +214,9 @@ export class ImageService implements IImageService {
     // 获取配置
     const config = await this.imageModelManager.getConfig(request.configId)
     if (!config) {
-      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, { configId: request.configId })
+      throw new ImageError(IMAGE_ERROR_CODES.CONFIG_NOT_FOUND, undefined, {
+        configId: request.configId,
+      })
     }
 
     // 获取适配器
@@ -205,7 +233,7 @@ export class ImageService implements IImageService {
         result.metadata = {
           providerId: config.providerId,
           modelId: config.modelId,
-          configId: config.id
+          configId: config.id,
         }
       } else {
         // 补充溯源信息
@@ -230,27 +258,29 @@ export class ImageService implements IImageService {
     }
   }
 
-
   // 新增：连接测试（不要求配置已保存）
   async testConnection(config: ImageModelConfig): Promise<ImageResult> {
     // 构造一个最小的请求（根据模型能力选择文本或图像测试）
     const adapter = this.registry.getAdapter(config.providerId)
     const runtimeConfig = this.prepareRuntimeConfig(config)
-    const caps = (config.model?.capabilities) || this.registry.getStaticModels(config.providerId).find(m => m.id === config.modelId)?.capabilities || { text2image: true }
+    const caps = config.model?.capabilities ||
+      this.registry.getStaticModels(config.providerId).find((m) => m.id === config.modelId)
+        ?.capabilities || { text2image: true }
     const testType: 'text2image' | 'image2image' = caps.text2image ? 'text2image' : 'image2image'
     const maybeTestRequestProvider = adapter as unknown as {
       getTestImageRequest?: (type: 'text2image' | 'image2image') => Partial<ImageRequest>
     }
-    const baseReq = typeof maybeTestRequestProvider.getTestImageRequest === 'function'
-      ? maybeTestRequestProvider.getTestImageRequest(testType)
-      : { prompt: 'hello', count: 1 }
+    const baseReq =
+      typeof maybeTestRequestProvider.getTestImageRequest === 'function'
+        ? maybeTestRequestProvider.getTestImageRequest(testType)
+        : { prompt: 'hello', count: 1 }
 
     const request: ImageRequest = {
       prompt: baseReq.prompt ?? 'hello',
       configId: config.id || 'test',
       count: baseReq.count ?? 1,
       inputImage: baseReq.inputImage,
-      paramOverrides: baseReq.paramOverrides
+      paramOverrides: baseReq.paramOverrides,
     }
 
     // 强制：测试连接如果走 image2image，必须使用 base64 输入（不支持 url）
@@ -284,7 +314,10 @@ export class ImageService implements IImageService {
   }
 
   // 新增：获取动态模型
-  async getDynamicModels(providerId: string, connectionConfig: Record<string, any>): Promise<ImageModel[]> {
+  async getDynamicModels(
+    providerId: string,
+    connectionConfig: Record<string, any>
+  ): Promise<ImageModel[]> {
     return await this.registry.getDynamicModels(providerId, connectionConfig)
   }
 
@@ -296,43 +329,50 @@ export class ImageService implements IImageService {
     const mergedOverrides = mergeOverrides({
       schema,
       includeDefaults: false,
-      customOverrides: config.customParamOverrides,  // 🔧 兼容旧格式：自定义参数
-      requestOverrides: config.paramOverrides        // 当前参数（包含内置 + 可能已合并的自定义）
+      customOverrides: config.customParamOverrides, // 🔧 兼容旧格式：自定义参数
+      requestOverrides: config.paramOverrides, // 当前参数（包含内置 + 可能已合并的自定义）
     })
 
     return {
       ...config,
-      paramOverrides: mergedOverrides
+      paramOverrides: mergedOverrides,
     }
   }
 
   private prepareRuntimeRequest(request: ImageRequest, config: ImageModelConfig): ImageRequest {
     // 最终兜底：不允许把 url 输入图透传给适配器。
     const unsafeInputImage = (request as unknown as { inputImage?: unknown }).inputImage
-    if (isRecord(unsafeInputImage) && typeof unsafeInputImage.url === 'string' && unsafeInputImage.url.trim()) {
+    if (
+      isRecord(unsafeInputImage) &&
+      typeof unsafeInputImage.url === 'string' &&
+      unsafeInputImage.url.trim()
+    ) {
       throw new ImageError(IMAGE_ERROR_CODES.INPUT_IMAGE_URL_NOT_SUPPORTED)
     }
 
     const schema = config.model?.parameterDefinitions ?? []
 
     // 请求级别的参数覆盖，同样需要考虑旧格式
-    const unsafeCustomOverrides = (request as unknown as { customParamOverrides?: unknown }).customParamOverrides
+    const unsafeCustomOverrides = (request as unknown as { customParamOverrides?: unknown })
+      .customParamOverrides
     const customOverrides = isRecord(unsafeCustomOverrides) ? unsafeCustomOverrides : undefined
     const sanitized = mergeOverrides({
       schema,
       includeDefaults: false,
       customOverrides, // 兼容旧字段（向后兼容）
-      requestOverrides: request.paramOverrides
+      requestOverrides: request.paramOverrides,
     })
 
-    const normalizedOverrides =
-      Object.keys(sanitized).length > 0 ? sanitized : undefined
+    const normalizedOverrides = Object.keys(sanitized).length > 0 ? sanitized : undefined
 
     return {
       ...request,
-      paramOverrides: normalizedOverrides
+      paramOverrides: normalizedOverrides,
     }
   }
 }
 
-export const createImageService = (imageModelManager: IImageModelManager, registry?: IImageAdapterRegistry) => new ImageService(imageModelManager, registry)
+export const createImageService = (
+  imageModelManager: IImageModelManager,
+  registry?: IImageAdapterRegistry
+) => new ImageService(imageModelManager, registry)

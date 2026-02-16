@@ -25,9 +25,9 @@ export class OllamaAdapter extends OpenAIAdapter {
         optional: ['baseURL', 'apiKey'],
         fieldTypes: {
           baseURL: 'string',
-          apiKey: 'string'
-        }
-      }
+          apiKey: 'string',
+        },
+      },
     }
   }
 
@@ -37,10 +37,12 @@ export class OllamaAdapter extends OpenAIAdapter {
   }
 
   protected createOpenAIInstance(config: TextModelConfig, isStream: boolean = false): OpenAI {
-    const rawApiKey = typeof config.connectionConfig.apiKey === 'string' ? config.connectionConfig.apiKey : ''
+    const rawApiKey =
+      typeof config.connectionConfig.apiKey === 'string' ? config.connectionConfig.apiKey : ''
     const apiKey = rawApiKey.trim() ? rawApiKey : OLLAMA_FALLBACK_API_KEY
 
-    const rawBaseURL = typeof config.connectionConfig.baseURL === 'string' ? config.connectionConfig.baseURL : ''
+    const rawBaseURL =
+      typeof config.connectionConfig.baseURL === 'string' ? config.connectionConfig.baseURL : ''
     const baseURL = this.normalizeBaseURL(rawBaseURL)
 
     const normalizedConfig: TextModelConfig = {
@@ -48,8 +50,8 @@ export class OllamaAdapter extends OpenAIAdapter {
       connectionConfig: {
         ...config.connectionConfig,
         apiKey,
-        baseURL
-      }
+        baseURL,
+      },
     }
 
     return super.createOpenAIInstance(normalizedConfig, isStream)

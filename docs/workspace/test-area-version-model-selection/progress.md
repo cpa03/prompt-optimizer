@@ -49,8 +49,8 @@
 
 ### 验证（已完成）
 
-| 命令 | 结果 |
-| --- | --- |
-| `pnpm -F @prompt-optimizer/ui lint` | 通过 |
+| 命令                                     | 结果 |
+| ---------------------------------------- | ---- |
+| `pnpm -F @prompt-optimizer/ui lint`      | 通过 |
 | `pnpm -F @prompt-optimizer/ui typecheck` | 通过 |
-| `pnpm -F @prompt-optimizer/ui test` | 通过 |
+| `pnpm -F @prompt-optimizer/ui test`      | 通过 |

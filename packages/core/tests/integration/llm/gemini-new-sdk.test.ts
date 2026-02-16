@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import { GeminiAdapter } from '../../../src/services/llm/adapters/gemini-adapter'
-import type { TextModelConfig, Message, ToolDefinition, ToolCall } from '../../../src/services/llm/types'
+import type {
+  TextModelConfig,
+  Message,
+  ToolDefinition,
+  ToolCall,
+} from '../../../src/services/llm/types'
 import dotenv from 'dotenv'
 import path from 'path'
 
@@ -39,10 +44,10 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
       providerMeta: adapter.getProvider(),
       modelMeta: models[0], // 使用第一个可用模型
       connectionConfig: {
-        apiKey: apiKey!
+        apiKey: apiKey!,
         // 不覆盖 baseURL，使用 adapter 的默认值
       },
-      paramOverrides
+      paramOverrides,
     }
   }
 
@@ -59,16 +64,17 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
       expect(models.length).toBeGreaterThan(0)
 
       console.log(`✓ 获取到 ${models.length} 个模型`)
-      console.log('前5个模型:', models.slice(0, 5).map(m => m.id))
+      console.log(
+        '前5个模型:',
+        models.slice(0, 5).map((m) => m.id)
+      )
     }, 30000)
   })
 
   describe('Basic Text Generation', () => {
     it('应该能够发送简单的单轮对话', async () => {
       const config = createConfig()
-      const messages: Message[] = [
-        { role: 'user', content: '请用一句话介绍你自己' }
-      ]
+      const messages: Message[] = [{ role: 'user', content: '请用一句话介绍你自己' }]
 
       const response = await adapter.sendMessage(messages, config)
 
@@ -85,7 +91,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
       const messages: Message[] = [
         { role: 'user', content: '我有2只狗' },
         { role: 'assistant', content: '太好了！狗是很忠诚的宠物。' },
-        { role: 'user', content: '我家里有多少只爪子？' }
+        { role: 'user', content: '我家里有多少只爪子？' },
       ]
 
       const response = await adapter.sendMessage(messages, config)
@@ -104,7 +110,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
       const config = createConfig()
       const messages: Message[] = [
         { role: 'system', content: '你是一个数学老师，回答要简洁专业' },
-        { role: 'user', content: '1+1等于几？' }
+        { role: 'user', content: '1+1等于几？' },
       ]
 
       const response = await adapter.sendMessage(messages, config)
@@ -120,9 +126,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
   describe('Streaming', () => {
     it('应该能够处理流式响应', async () => {
       const config = createConfig()
-      const messages: Message[] = [
-        { role: 'user', content: '请用3句话介绍人工智能' }
-      ]
+      const messages: Message[] = [{ role: 'user', content: '请用3句话介绍人工智能' }]
 
       const tokens: string[] = []
       let completed = false
@@ -140,7 +144,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
         },
         onError: (error) => {
           throw error
-        }
+        },
       })
 
       expect(tokens.length).toBeGreaterThan(0)
@@ -156,12 +160,10 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
     it('应该能够使用自定义参数', async () => {
       const config = createConfig({
         temperature: 0.1,
-        maxOutputTokens: 50
+        maxOutputTokens: 50,
       })
 
-      const messages: Message[] = [
-        { role: 'user', content: '说一个数字' }
-      ]
+      const messages: Message[] = [{ role: 'user', content: '说一个数字' }]
 
       const response = await adapter.sendMessage(messages, config)
 
@@ -177,9 +179,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
   describe('Tool Calling (Function Calling)', () => {
     it('应该能够处理工具调用', async () => {
       const config = createConfig()
-      const messages: Message[] = [
-        { role: 'user', content: '北京今天的天气怎么样？' }
-      ]
+      const messages: Message[] = [{ role: 'user', content: '北京今天的天气怎么样？' }]
 
       const tools: ToolDefinition[] = [
         {
@@ -192,13 +192,13 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
               properties: {
                 city: {
                   type: 'string',
-                  description: '城市名称，如"北京"、"上海"'
-                }
+                  description: '城市名称，如"北京"、"上海"',
+                },
               },
-              required: ['city']
-            }
-          }
-        }
+              required: ['city'],
+            },
+          },
+        },
       ]
 
       const toolCalls: ToolCall[] = []
@@ -220,7 +220,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
         },
         onError: (error) => {
           throw error
-        }
+        },
       })
 
       expect(completed).toBe(true)
@@ -244,14 +244,15 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
       const config = createConfig({
         thinkingBudget: 2048,
         includeThoughts: true,
-        temperature: 1.0
+        temperature: 1.0,
       })
 
       const messages: Message[] = [
         {
           role: 'user',
-          content: '请分析一下这个数学问题：如果一个数字序列是 2, 4, 8, 16，下一个数字是什么？请详细解释你的推理过程。'
-        }
+          content:
+            '请分析一下这个数学问题：如果一个数字序列是 2, 4, 8, 16，下一个数字是什么？请详细解释你的推理过程。',
+        },
       ]
 
       const response = await adapter.sendMessage(messages, config)
@@ -276,14 +277,15 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
     it('应该能够处理流式思考过程', async () => {
       const config = createConfig({
         thinkingBudget: 2048,
-        includeThoughts: true
+        includeThoughts: true,
       })
 
       const messages: Message[] = [
         {
           role: 'user',
-          content: '分析这个逻辑问题：所有的猫都有尾巴，小花是一只猫，那么小花有尾巴吗？请说明推理步骤。'
-        }
+          content:
+            '分析这个逻辑问题：所有的猫都有尾巴，小花是一只猫，那么小花有尾巴吗？请说明推理步骤。',
+        },
       ]
 
       const tokens: string[] = []
@@ -309,7 +311,7 @@ describe.skipIf(!RUN_REAL_API || !apiKey)('Gemini New SDK Integration Tests', ()
         },
         onError: (error) => {
           throw error
-        }
+        },
       })
 
       expect(completed).toBe(true)

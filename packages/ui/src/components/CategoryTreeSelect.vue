@@ -37,11 +37,7 @@
           <span class="manage-btn-text">{{ t('favorites.manager.categoryManager.title') }}</span>
           <!-- 🎨 Palette: Keyboard shortcut hint (visible on hover/focus) -->
           <Transition name="shortcut-hint">
-            <span
-              v-if="showShortcutHint"
-              class="shortcut-hint"
-              aria-hidden="true"
-            >
+            <span v-if="showShortcutHint" class="shortcut-hint" aria-hidden="true">
               {{ shortcutDisplay }}
             </span>
           </Transition>
@@ -66,47 +62,47 @@
 <script setup lang="ts">
 import { ref, computed, watch, inject, type Ref } from 'vue'
 
-import { NTreeSelect, NButton, NIcon, NModal, type TreeSelectOption } from 'naive-ui';
-import { Folder } from '@vicons/tabler';
-import { useI18n } from 'vue-i18n';
-import CategoryManager from './CategoryManager.vue';
-import type { FavoriteCategory } from '@prompt-optimizer/core';
-import type { AppServices } from '../types/services';
-import { SPACING, UI_DIMENSIONS } from '../config/constants';
+import { NTreeSelect, NButton, NIcon, NModal, type TreeSelectOption } from 'naive-ui'
+import { Folder } from '@vicons/tabler'
+import { useI18n } from 'vue-i18n'
+import CategoryManager from './CategoryManager.vue'
+import type { FavoriteCategory } from '@prompt-optimizer/core'
+import type { AppServices } from '../types/services'
+import { SPACING, UI_DIMENSIONS } from '../config/constants'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
-const services = inject<Ref<AppServices | null> | null>('services', null);
+const services = inject<Ref<AppServices | null> | null>('services', null)
 
 // 🎨 Palette: Interaction states for enhanced UX
-const isHovered = ref(false);
-const isFocused = ref(false);
+const isHovered = ref(false)
+const isFocused = ref(false)
 
 // 🎨 Palette: Keyboard shortcut configuration
 const modifierKey = computed(() => {
-  if (typeof navigator === 'undefined') return 'Ctrl';
-  return /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl';
-});
+  if (typeof navigator === 'undefined') return 'Ctrl'
+  return /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'
+})
 
-const shortcutDisplay = computed(() => `${modifierKey.value}⇧C`);
+const shortcutDisplay = computed(() => `${modifierKey.value}⇧C`)
 
 // 🎨 Palette: Show shortcut hint on hover or focus
-const showShortcutHint = computed(() => isHovered.value || isFocused.value);
+const showShortcutHint = computed(() => isHovered.value || isFocused.value)
 
 // 🎨 Palette: Enhanced button title with shortcut
 const manageButtonTitle = computed(() => {
-  return `${t('favorites.manager.categoryManager.title')} (${shortcutDisplay.value})`;
-});
+  return `${t('favorites.manager.categoryManager.title')} (${shortcutDisplay.value})`
+})
 
 // Props definition
 interface Props {
-  modelValue: string;
-  placeholder?: string;
-  clearable?: boolean;
-  consistentMenuWidth?: boolean;
-  style?: Record<string, unknown>;
-  showManageButton?: boolean;
-  showAllOption?: boolean;
+  modelValue: string
+  placeholder?: string
+  clearable?: boolean
+  consistentMenuWidth?: boolean
+  style?: Record<string, unknown>
+  showManageButton?: boolean
+  showAllOption?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -115,97 +111,101 @@ const props = withDefaults(defineProps<Props>(), {
   consistentMenuWidth: true,
   style: () => ({}),
   showManageButton: true,
-  showAllOption: false
-});
+  showAllOption: false,
+})
 
 // 内部状态
-const internalValue = ref(props.modelValue);
-const categories = ref<FavoriteCategory[]>([]);
-const managerVisible = ref(false);
-const isLoading = ref(false);
+const internalValue = ref(props.modelValue)
+const categories = ref<FavoriteCategory[]>([])
+const managerVisible = ref(false)
+const isLoading = ref(false)
 
 // 计算树状分类选项
 const treeOptions = computed<TreeSelectOption[]>(() => {
   const buildTree = (parentId?: string): TreeSelectOption[] => {
     return categories.value
-      .filter(cat => cat.parentId === parentId)
-      .map(cat => ({
+      .filter((cat) => cat.parentId === parentId)
+      .map((cat) => ({
         label: cat.name,
         key: cat.id,
-        children: buildTree(cat.id)
-      }));
-  };
+        children: buildTree(cat.id),
+      }))
+  }
 
-  const tree = buildTree(undefined);
+  const tree = buildTree(undefined)
 
   // 如果是筛选模式,添加"全部分类"选项
   if (props.showAllOption) {
-    return [
-      { label: t('favorites.manager.allCategories'), key: '' },
-      ...tree
-    ];
+    return [{ label: t('favorites.manager.allCategories'), key: '' }, ...tree]
   }
 
-  return tree;
-});
+  return tree
+})
 
 // 计算样式
-const computedStyle = computed(() => props.style);
+const computedStyle = computed(() => props.style)
 
 // 加载分类数据
 const loadCategories = async () => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager) {
-    console.warn('收藏管理器未初始化,跳过分类加载');
-    return;
+    console.warn('收藏管理器未初始化,跳过分类加载')
+    return
   }
 
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    categories.value = await servicesValue.favoriteManager.getCategories();
+    categories.value = await servicesValue.favoriteManager.getCategories()
   } catch (error) {
-    console.error('加载分类失败:', error);
+    console.error('加载分类失败:', error)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 // 处理值变化
 const handleValueChange = (value: string) => {
-  internalValue.value = value;
-  emit('update:modelValue', value);
-  emit('change', value);
-};
+  internalValue.value = value
+  emit('update:modelValue', value)
+  emit('change', value)
+}
 
 // 打开分类管理器
 const handleOpenManager = () => {
-  managerVisible.value = true;
-};
+  managerVisible.value = true
+}
 
 // 分类更新后刷新数据
 const handleCategoryUpdated = async () => {
-  await loadCategories();
-  emit('category-updated');
-};
+  await loadCategories()
+  emit('category-updated')
+}
 
 // 监听外部值变化
-watch(() => props.modelValue, (newValue) => {
-  if (newValue !== internalValue.value) {
-    internalValue.value = newValue;
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue !== internalValue.value) {
+      internalValue.value = newValue
+    }
   }
-});
+)
 
 // 监听服务初始化
-watch(() => services?.value?.favoriteManager, (favoriteManager) => {
-  if (favoriteManager) {
-    loadCategories();
-  }
-}, { immediate: true });
+watch(
+  () => services?.value?.favoriteManager,
+  (favoriteManager) => {
+    if (favoriteManager) {
+      loadCategories()
+    }
+  },
+  { immediate: true }
+)
 
 // 暴露方法
 defineExpose({
-  reloadCategories: loadCategories
-});
+  reloadCategories: loadCategories,
+})
 </script>
 
 <style scoped>
@@ -234,8 +234,9 @@ defineExpose({
 .category-manage-btn.is-focused {
   outline: none;
   background-color: rgba(64, 128, 128, 0.12);
-  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3),
-              0 2px 8px rgba(64, 128, 128, 0.15);
+  box-shadow:
+    0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3),
+    0 2px 8px rgba(64, 128, 128, 0.15);
   transform: translateX(4px);
 }
 
@@ -326,8 +327,9 @@ defineExpose({
 .dark .category-manage-btn:focus-visible,
 .dark .category-manage-btn.is-focused {
   background-color: rgba(64, 128, 128, 0.18);
-  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4),
-              0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* 🎨 Palette: Respect user motion preferences */
@@ -337,35 +339,35 @@ defineExpose({
   .manage-btn-text {
     transition: none;
   }
-  
+
   .category-manage-btn:hover,
   .category-manage-btn.is-hovered,
   .category-manage-btn:focus-visible,
   .category-manage-btn.is-focused {
     transform: none;
   }
-  
+
   .category-manage-btn:hover .folder-icon,
   .category-manage-btn.is-hovered .folder-icon {
     transform: none;
   }
-  
+
   .category-manage-btn:hover .manage-btn-text,
   .category-manage-btn.is-hovered .manage-btn-text {
     transform: none;
   }
-  
+
   .shortcut-hint {
     animation: none;
     opacity: 1;
     transform: none;
   }
-  
+
   .shortcut-hint-enter-active,
   .shortcut-hint-leave-active {
     transition: opacity 0.1s ease;
   }
-  
+
   .shortcut-hint-enter-from,
   .shortcut-hint-leave-to {
     transform: none;
@@ -420,7 +422,8 @@ defineExpose({
 }
 
 @keyframes loading-pulse {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 200% 0;
   }
   50% {
@@ -433,7 +436,7 @@ defineExpose({
   .category-tree-select :deep(.n-base-loading .n-base-loading__icon) {
     animation: none;
   }
-  
+
   .category-tree-select.is-loading :deep(.n-tree-select-trigger) {
     animation: none;
     background: rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.05);

@@ -7,11 +7,13 @@
 **核心思想**: 在动态布局中通过固定关键元素确保整体稳定性
 
 **应用场景**:
+
 - 条件渲染的按钮组合
 - 模态切换的界面元素
 - 响应式布局中的关键组件
 
 **实施要点**:
+
 ```vue
 <!-- ✅ 正确模式：锚点策略 -->
 <!-- 条件元素放在锚点前 -->
@@ -23,11 +25,13 @@
 
 <!-- ❌ 错误模式：条件渲染导致位移 -->
 <Button />
-<Button v-if="condition" />  <!-- 会影响后续元素位置 -->
+<Button v-if="condition" />
+<!-- 会影响后续元素位置 -->
 <Button />
 ```
 
 **设计原则**:
+
 - **锚点选择**: 选择视觉权重适中、功能重要的元素
 - **状态表达**: 通过CSS类而不是条件渲染表达状态
 - **位置策略**: 条件元素放在锚点前，保护锚点后的布局
@@ -39,6 +43,7 @@
 **核心理念**: 通过视觉权重区分功能重要性，优化用户认知负担
 
 **分层标准**:
+
 ```typescript
 // 功能分层配置
 const UI_LAYERS = {
@@ -47,24 +52,26 @@ const UI_LAYERS = {
     type: 'default',
     size: 'medium',
     ghost: false,
-    weight: 'high'
+    weight: 'high',
   },
-  
+
   // 辅助功能：设置和次要操作
   auxiliary: {
-    type: 'quaternary', 
+    type: 'quaternary',
     size: 'small',
     ghost: true,
-    weight: 'low'
-  }
+    weight: 'low',
+  },
 }
 ```
 
 **视觉权重控制**:
+
 - **高权重**: 饱和色彩、较大尺寸、实心按钮
 - **低权重**: 淡化颜色、较小尺寸、透明背景
 
 **用户体验效果**:
+
 - 降低界面认知复杂度
 - 引导用户关注主要功能
 - 保持次要功能的可访问性
@@ -74,6 +81,7 @@ const UI_LAYERS = {
 **统一原则**: "一个功能，一个组件"
 
 **实施策略**:
+
 ```vue
 <!-- ❌ 避免：混用不同组件 -->
 <NButton>操作A</NButton>
@@ -87,6 +95,7 @@ const UI_LAYERS = {
 ```
 
 **配置标准化**:
+
 ```typescript
 // 建立配置预设
 const BUTTON_PRESETS = {
@@ -94,17 +103,18 @@ const BUTTON_PRESETS = {
     type: 'default',
     size: 'medium',
     ghost: false,
-    round: true
+    round: true,
   },
   auxiliary: {
     type: 'quaternary',
-    size: 'small', 
-    ghost: true
-  }
+    size: 'small',
+    ghost: true,
+  },
 }
 ```
 
 **长期收益**:
+
 - 维护成本降低：只需维护一套组件逻辑
 - 样式一致性：避免微妙的视觉差异
 - 重构便利性：统一修改影响全局
@@ -114,16 +124,18 @@ const BUTTON_PRESETS = {
 **核心思路**: 在不破坏现有功能的基础上逐步改进架构
 
 **实施路径**:
+
 1. **功能保持**: 确保新架构100%兼容现有功能
-2. **平滑过渡**: 保留旧组件导出，标记为deprecated  
+2. **平滑过渡**: 保留旧组件导出，标记为deprecated
 3. **逐步替换**: 在新功能中使用新组件，旧功能逐步迁移
 4. **最终清理**: 确认无依赖后删除废弃组件
 
 **风险控制**:
+
 ```typescript
 // 渐进式导出策略
 export { default as LanguageSwitchDropdown } from './components/LanguageSwitchDropdown.vue'
-export { 
+export {
   default as LanguageSwitch,
   /** @deprecated Use LanguageSwitchDropdown instead */
 } from './components/LanguageSwitch.vue'
@@ -138,12 +150,10 @@ export {
 **集成策略**: 充分利用组件库能力，避免重复造轮子
 
 **最佳实践**:
+
 ```vue
 <!-- ✅ 正确：利用NDropdown原生能力 -->
-<NDropdown 
-  :options="languageOptions"
-  @select="handleLanguageSelect"
->
+<NDropdown :options="languageOptions" @select="handleLanguageSelect">
   <NButton quaternary>
     <template #icon>
       <span class="text-lg">🌐</span>
@@ -158,8 +168,9 @@ export {
 ```
 
 **组件选型原则**:
+
 - **功能匹配度**: 组件功能是否满足需求
-- **扩展性**: 是否支持未来功能扩展  
+- **扩展性**: 是否支持未来功能扩展
 - **样式统一**: 与整体设计语言的一致性
 - **API稳定性**: 组件接口是否稳定可靠
 
@@ -168,27 +179,29 @@ export {
 ### 2. Vue 3 Composition API应用经验
 
 **状态管理模式**:
+
 ```typescript
 // ✅ 推荐：reactive + computed的清晰模式
 const state = reactive({
   currentLanguage: 'zh-CN',
-  availableLanguages: []
+  availableLanguages: [],
 })
 
-const languageOptions = computed(() => 
-  state.availableLanguages.map(lang => ({
+const languageOptions = computed(() =>
+  state.availableLanguages.map((lang) => ({
     key: lang.code,
-    label: lang.name
+    label: lang.name,
   }))
 )
 
 // ❌ 避免：过度使用ref导致解包混乱
 const currentLanguage = ref('zh-CN')
 const availableLanguages = ref([])
-const languageOptions = ref([])  // 手动维护衍生状态
+const languageOptions = ref([]) // 手动维护衍生状态
 ```
 
 **生命周期使用**:
+
 ```typescript
 // 服务注入和初始化的标准模式
 const preferences = inject('preferenceService')
@@ -205,6 +218,7 @@ onMounted(async () => {
 ```
 
 **错误处理模式**:
+
 ```typescript
 const handleLanguageSelect = async (key: string) => {
   try {
@@ -225,9 +239,10 @@ const handleLanguageSelect = async (key: string) => {
 **响应式策略**: 组件内置响应式 > 媒体查询 > JavaScript动态计算
 
 **组件内置响应式**:
+
 ```vue
 <!-- ✅ 最优：利用组件内置特性 -->
-<ActionButtonUI 
+<ActionButtonUI
   icon="⚙️"
   text="设置"
   <!-- 组件内部自动处理：max-md:hidden -->
@@ -241,16 +256,17 @@ const handleLanguageSelect = async (key: string) => {
 ```
 
 **断点设计原则**:
+
 ```css
 /* 移动优先的断点策略 */
 .navigation-button {
   /* 移动端基础样式 */
-  
+
   @media (min-width: 768px) {
     /* 平板样式 */
   }
-  
-  @media (min-width: 1024px) { 
+
+  @media (min-width: 1024px) {
     /* 桌面样式 */
   }
 }
@@ -261,17 +277,18 @@ const handleLanguageSelect = async (key: string) => {
 ### 4. TypeScript类型设计经验
 
 **接口设计原则**:
+
 ```typescript
 // ✅ 清晰的接口定义
 interface LanguageOption {
-  key: string      // 必需：locale代码
-  label: string    // 必需：显示名称
-  flag?: string    // 可选：图标
+  key: string // 必需：locale代码
+  label: string // 必需：显示名称
+  flag?: string // 可选：图标
 }
 
 interface LanguageSwitchProps {
-  options?: LanguageOption[]  // 可选：默认使用内置选项
-  showFlags?: boolean         // 可选：是否显示图标
+  options?: LanguageOption[] // 可选：默认使用内置选项
+  showFlags?: boolean // 可选：是否显示图标
 }
 
 // ❌ 避免：模糊的类型定义
@@ -282,6 +299,7 @@ interface SomeProps {
 ```
 
 **类型复用策略**:
+
 ```typescript
 // 建立类型复用体系
 export type ButtonType = 'default' | 'primary' | 'secondary' | 'tertiary' | 'quaternary'
@@ -299,6 +317,7 @@ interface BaseButtonProps {
 ### 1. 条件渲染布局陷阱
 
 **常见错误**: 在布局关键位置使用v-if
+
 ```vue
 <!-- ❌ 危险：会导致布局跳动 -->
 <div class="navigation">
@@ -309,6 +328,7 @@ interface BaseButtonProps {
 ```
 
 **正确做法**: 使用样式控制可见性或锚点策略
+
 ```vue
 <!-- ✅ 安全：保持DOM结构稳定 -->
 <div class="navigation">
@@ -321,21 +341,24 @@ interface BaseButtonProps {
 ### 2. 组件导出清理误区
 
 **常见错误**: 急于删除旧组件导出
+
 ```typescript
 // ❌ 危险：可能存在隐藏依赖
 // export { default as OldComponent } from './OldComponent.vue'  // 直接删除
 ```
 
 **安全做法**: 渐进式清理
+
 ```typescript
 // ✅ 安全：保留并标记deprecated
-export { 
+export {
   default as OldComponent,
   /** @deprecated Use NewComponent instead. Will be removed in next major version. */
 } from './OldComponent.vue'
 ```
 
 **清理检查清单**:
+
 1. 全局搜索组件使用情况
 2. 检查测试文件中的引用
 3. 确认文档中无示例代码引用
@@ -344,14 +367,16 @@ export {
 ### 3. CSS权重冲突
 
 **常见问题**: 主题切换时图标颜色被覆盖
+
 ```css
 /* 问题：全局CSS覆盖了组件样式 */
 .icon {
-  color: currentColor !important;  /* 过强的权重 */
+  color: currentColor !important; /* 过强的权重 */
 }
 ```
 
-**解决策略**: 
+**解决策略**:
+
 ```vue
 <!-- 方案1：内联样式优先级最高 -->
 <NIcon :style="{ color: iconColor }">
@@ -369,29 +394,32 @@ export {
 ### 4. 响应式测试盲区
 
 **常见遗漏**: 只在浏览器开发工具中测试响应式
+
 ```javascript
 // ❌ 不充分：仅模拟器测试
 browser.setViewportSize({ width: 375, height: 812 })
 ```
 
 **完整测试**: 真实设备验证
+
 ```javascript
 // ✅ 完整：多设备尺寸 + 真实设备测试
 const testSizes = [
   { width: 375, height: 812, name: 'iPhone' },
   { width: 768, height: 1024, name: 'iPad' },
-  { width: 1920, height: 1080, name: 'Desktop' }
+  { width: 1920, height: 1080, name: 'Desktop' },
 ]
 
 // 额外：真实设备测试
 // 1. iPhone实际测试
-// 2. Android设备测试  
+// 2. Android设备测试
 // 3. 不同浏览器测试
 ```
 
 ### 5. 国际化文本长度陷阱
 
 **问题**: 不同语言文本长度差异巨大
+
 ```vue
 <!-- 问题：德语文本可能比中文长3倍 -->
 <Button>{{ $t('nav.settings') }}</Button>
@@ -399,7 +427,8 @@ const testSizes = [
 <!-- 德语："Einstellungen" (12字符) -->
 ```
 
-**解决方案**: 
+**解决方案**:
+
 ```vue
 <!-- CSS处理文本溢出 -->
 <Button class="nav-button">
@@ -409,7 +438,7 @@ const testSizes = [
 
 ```css
 .nav-button {
-  min-width: 120px;      /* 为长文本预留空间 */
+  min-width: 120px; /* 为长文本预留空间 */
   text-overflow: ellipsis; /* 溢出显示省略号 */
   overflow: hidden;
 }
@@ -422,11 +451,12 @@ const testSizes = [
 **设计目标**: 减少代码重复，统一维护入口
 
 **实施模式**: "单一源码，多端部署"
+
 ```bash
 # Web版本（主实现）
 packages/web/src/App.vue
 
-# Extension版本（复用）  
+# Extension版本（复用）
 cp packages/web/src/App.vue packages/extension/src/App.vue
 
 # 好处：
@@ -436,6 +466,7 @@ cp packages/web/src/App.vue packages/extension/src/App.vue
 ```
 
 **适用场景判断**:
+
 - ✅ 界面逻辑相同的跨平台应用
 - ✅ 功能需求99%重叠的组件
 - ❌ 平台特定功能较多的场景
@@ -443,24 +474,27 @@ cp packages/web/src/App.vue packages/extension/src/App.vue
 
 ### 2. 组件层次架构设计
 
-**分层原则**: 
+**分层原则**:
+
 ```
 UI组件库 (Naive UI)
     ↓
 封装组件层 (ActionButtonUI, LanguageSwitchDropdown)
-    ↓  
+    ↓
 业务组件层 (App.vue, MainLayout)
     ↓
 页面应用层 (Web, Extension, Desktop)
 ```
 
 **职责划分**:
+
 - **UI组件库**: 提供基础交互能力
 - **封装组件**: 统一样式和行为规范
 - **业务组件**: 实现具体功能逻辑
 - **页面应用**: 组织整体用户体验
 
 **设计收益**:
+
 - 清晰的依赖关系
 - 便于单独测试和维护
 - 支持逐层优化和替换
@@ -470,12 +504,13 @@ UI组件库 (Naive UI)
 **核心思想**: 通过配置而非代码修改支持功能扩展
 
 **语言扩展示例**:
+
 ```typescript
 // ✅ 配置驱动：添加新语言只需修改配置
 const AVAILABLE_LANGUAGES = [
   { key: 'zh-CN', label: '简体中文', flag: '🇨🇳' },
   { key: 'en-US', label: 'English', flag: '🇺🇸' },
-  { key: 'ja-JP', label: '日本語', flag: '🇯🇵' }  // 新增
+  { key: 'ja-JP', label: '日本語', flag: '🇯🇵' }, // 新增
 ]
 
 // ❌ 硬编码：添加新语言需要修改多处代码
@@ -487,6 +522,7 @@ const toggleLanguage = () => {
 ```
 
 **扩展点设计原则**:
+
 - **数据驱动**: 功能变化通过数据配置体现
 - **接口稳定**: 扩展不影响现有API
 - **向后兼容**: 新功能不破坏旧版本
@@ -494,11 +530,12 @@ const toggleLanguage = () => {
 ### 4. 错误边界和降级策略
 
 **容错设计**: 组件在异常情况下的行为
+
 ```vue
 <template>
   <!-- 主要功能 -->
   <LanguageSwitchDropdown v-if="servicesReady" />
-  
+
   <!-- 降级功能 -->
   <NButton v-else disabled>
     {{ $t('common.loading') }}
@@ -520,6 +557,7 @@ const handleLanguageSwitch = async (lang) => {
 ```
 
 **降级策略制定**:
+
 - **功能降级**: 核心功能失败时的替代方案
 - **样式降级**: CSS失效时的基础可用性
 - **服务降级**: 外部服务失败时的本地处理

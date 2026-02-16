@@ -6,9 +6,7 @@
 
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue'
 import { usePreferences } from '../storage/usePreferenceManager'
-import {
-  FUNCTION_MODEL_KEYS,
-} from '@prompt-optimizer/core'
+import { FUNCTION_MODEL_KEYS } from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 
 /**
@@ -82,9 +80,7 @@ export function useFunctionModelManager(
     // 2) 调用方传入的全局优化模型 key（运行时状态）
     // 3) 从偏好设置读取的全局优化模型（持久化状态）
     return (
-      evaluationModel.value ||
-      globalOptimizeModelKeyRef?.value ||
-      globalOptimizeModelFallback.value
+      evaluationModel.value || globalOptimizeModelKeyRef?.value || globalOptimizeModelFallback.value
     )
   })
 
@@ -102,17 +98,14 @@ export function useFunctionModelManager(
         // 兜底：从当前可用模型中选一个
         if (services.value?.modelManager) {
           const allModels = await services.value.modelManager.getAllModels()
-          const enabledModels = allModels.filter(m => m.enabled)
+          const enabledModels = allModels.filter((m) => m.enabled)
           globalOptimizeModelFallback.value = enabledModels[0]?.id || ''
         } else {
           globalOptimizeModelFallback.value = ''
         }
 
         // 读取评估模型
-        const savedEvaluationModel = await getPreference(
-          FUNCTION_MODEL_KEYS.EVALUATION_MODEL,
-          ''
-        )
+        const savedEvaluationModel = await getPreference(FUNCTION_MODEL_KEYS.EVALUATION_MODEL, '')
         evaluationModel.value = savedEvaluationModel
 
         isInitialized.value = true

@@ -4,7 +4,7 @@
  * Compare effectiveness of original and optimized messages in multi-message conversation
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-multi-compare',
@@ -103,7 +103,7 @@ improvements should be **generic** improvements, such as:
 - ✓ Further enhance message clarity
 - ✓ Optimize message structure
 - ✓ Improve connection with context
-- ✓ Add generic constraints or requirements`
+- ✓ Add generic constraints or requirements`,
     },
     {
       role: 'user',
@@ -138,17 +138,18 @@ improvements should be **generic** improvements, such as:
 
 ---
 
-Please compare and evaluate the effectiveness difference between original and optimized messages, determine if optimization brought substantial improvement, and provide generic suggestions for further improvement.`
-    }
+Please compare and evaluate the effectiveness difference between original and optimized messages, determine if optimization brought substantial improvement, and provide generic suggestions for further improvement.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
     lastModified: Date.now(),
     author: 'System',
-    description: 'Compare effectiveness of original and optimized messages in multi-message conversation',
+    description:
+      'Compare effectiveness of original and optimized messages in multi-message conversation',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'compare', 'scoring', 'pro', 'system', 'multi-message']
+    tags: ['evaluation', 'compare', 'scoring', 'pro', 'system', 'multi-message'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

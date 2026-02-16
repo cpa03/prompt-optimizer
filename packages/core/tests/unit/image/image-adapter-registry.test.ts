@@ -11,7 +11,7 @@ describe('ImageAdapterRegistry', () => {
     expect(providers.length).toBeGreaterThan(0)
 
     // 检查必要的 provider
-    const providerIds = providers.map(p => p.id)
+    const providerIds = providers.map((p) => p.id)
     expect(providerIds).toContain('gemini')
     expect(providerIds).toContain('openai')
     expect(providerIds).toContain('seedream')
@@ -22,7 +22,7 @@ describe('ImageAdapterRegistry', () => {
   it('should return providers with correct structure', () => {
     const providers = registry.getAllProviders()
 
-    providers.forEach(provider => {
+    providers.forEach((provider) => {
       expect(provider).toHaveProperty('id')
       expect(provider).toHaveProperty('name')
       expect(provider).toHaveProperty('description')
@@ -42,7 +42,7 @@ describe('ImageAdapterRegistry', () => {
   it('should get adapters for all available providers', () => {
     const providers = registry.getAllProviders()
 
-    providers.forEach(provider => {
+    providers.forEach((provider) => {
       expect(() => registry.getAdapter(provider.id)).not.toThrow()
     })
   })
@@ -50,12 +50,12 @@ describe('ImageAdapterRegistry', () => {
   it('should get static models for providers', () => {
     const providers = registry.getAllProviders()
 
-    providers.forEach(provider => {
+    providers.forEach((provider) => {
       const models = registry.getStaticModels(provider.id)
       expect(Array.isArray(models)).toBe(true)
 
       // 验证模型结构
-      models.forEach(model => {
+      models.forEach((model) => {
         expect(model).toHaveProperty('id')
         expect(model).toHaveProperty('name')
         expect(model).toHaveProperty('providerId')
@@ -72,7 +72,7 @@ describe('ImageAdapterRegistry', () => {
   it('should check dynamic model support', () => {
     const providers = registry.getAllProviders()
 
-    providers.forEach(provider => {
+    providers.forEach((provider) => {
       const supportsDynamic = registry.supportsDynamicModels(provider.id)
       expect(typeof supportsDynamic).toBe('boolean')
       expect(supportsDynamic).toBe(provider.supportsDynamicModels)
@@ -85,7 +85,7 @@ describe('ImageAdapterRegistry', () => {
     expect(Array.isArray(allModels)).toBe(true)
     expect(allModels.length).toBeGreaterThan(0)
 
-    allModels.forEach(item => {
+    allModels.forEach((item) => {
       expect(item).toHaveProperty('provider')
       expect(item).toHaveProperty('model')
       expect(item.model.providerId).toBe(item.provider.id)

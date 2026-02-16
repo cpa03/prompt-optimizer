@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-iterate-general-en',
@@ -33,7 +33,7 @@ Your job is to produce a new optimized image prompt based on the previous optimi
 - Directly output the new optimized image prompt (natural language, plain text)
 - Do not include any prefixes or explanations; output the result only
 - Keep it readable and executable
-- Output result only, no explanations`
+- Output result only, no explanations`,
     },
     {
       role: 'user',
@@ -43,16 +43,17 @@ Your job is to produce a new optimized image prompt based on the previous optimi
 Iteration direction:
 {{iterateInput}}
 
-Please output the new optimized image prompt accordingly:`
-    }
+Please output the new optimized image prompt accordingly:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: 'Small, controllable iterative improvement of image prompts based on the last optimized version, keeping style continuity and visual intent',
+    description:
+      'Small, controllable iterative improvement of image prompts based on the last optimized version, keeping style continuity and visual intent',
     templateType: 'imageIterate',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

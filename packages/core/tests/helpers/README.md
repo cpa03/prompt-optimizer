@@ -16,16 +16,17 @@
 
 ## 支持的提供商
 
-| 提供商 | API密钥环境变量 |
-|--------|---------------|
-| OpenAI | `VITE_OPENAI_API_KEY` 或 `OPENAI_API_KEY` |
-| Anthropic | `VITE_ANTHROPIC_API_KEY` 或 `ANTHROPIC_API_KEY` |
-| Google Gemini | `VITE_GEMINI_API_KEY` 或 `GEMINI_API_KEY` |
-| DeepSeek | `VITE_DEEPSEEK_API_KEY` 或 `DEEPSEEK_API_KEY` |
-| ModelScope | `VITE_MODELSCOPE_API_KEY` 或 `MODELSCOPE_API_KEY` |
-| 智谱AI | `VITE_ZHIPU_API_KEY` 或 `ZHIPU_API_KEY` |
+| 提供商        | API密钥环境变量                                   |
+| ------------- | ------------------------------------------------- |
+| OpenAI        | `VITE_OPENAI_API_KEY` 或 `OPENAI_API_KEY`         |
+| Anthropic     | `VITE_ANTHROPIC_API_KEY` 或 `ANTHROPIC_API_KEY`   |
+| Google Gemini | `VITE_GEMINI_API_KEY` 或 `GEMINI_API_KEY`         |
+| DeepSeek      | `VITE_DEEPSEEK_API_KEY` 或 `DEEPSEEK_API_KEY`     |
+| ModelScope    | `VITE_MODELSCOPE_API_KEY` 或 `MODELSCOPE_API_KEY` |
+| 智谱AI        | `VITE_ZHIPU_API_KEY` 或 `ZHIPU_API_KEY`           |
 
 **注意**：
+
 - 辅助工具使用系统内置的 `getDefaultTextModels()` 函数获取配置
 - BaseURL 由各提供商的 adapter 自动设置
 - 只有 `custom` 提供商支持通过环境变量 `VITE_CUSTOM_API_BASE_URL` 自定义 BaseURL
@@ -59,29 +60,33 @@ RUN_REAL_API=1 pnpm test real-llm.example.test.ts
 ### 3. 编写测试
 
 ```typescript
-import { describe, it, expect } from 'vitest';
-import { createRealLLMTestContext, hasAvailableProvider } from './helpers/real-llm';
+import { describe, it, expect } from 'vitest'
+import { createRealLLMTestContext, hasAvailableProvider } from './helpers/real-llm'
 
-const RUN_REAL_API = process.env.RUN_REAL_API === '1';
+const RUN_REAL_API = process.env.RUN_REAL_API === '1'
 
 describe.skipIf(!RUN_REAL_API)('My Real API Test', () => {
-  it.skipIf(!hasAvailableProvider())('应该能调用真实LLM', async () => {
-    // 创建测试上下文（自动选择第一个可用提供商）
-    const context = await createRealLLMTestContext();
-    if (!context) {
-      console.log('跳过测试：无可用的LLM提供商');
-      return;
-    }
+  it.skipIf(!hasAvailableProvider())(
+    '应该能调用真实LLM',
+    async () => {
+      // 创建测试上下文（自动选择第一个可用提供商）
+      const context = await createRealLLMTestContext()
+      if (!context) {
+        console.log('跳过测试：无可用的LLM提供商')
+        return
+      }
 
-    // 使用LLM服务发送消息
-    const messages = [{ role: 'user', content: 'Hello!' }];
-    const response = await context.llmService.sendMessage(messages, context.modelKey);
+      // 使用LLM服务发送消息
+      const messages = [{ role: 'user', content: 'Hello!' }]
+      const response = await context.llmService.sendMessage(messages, context.modelKey)
 
-    // 验证响应
-    expect(response.content).toBeDefined();
-    expect(response.content.length).toBeGreaterThan(0);
-  }, 30000);
-});
+      // 验证响应
+      expect(response.content).toBeDefined()
+      expect(response.content.length).toBeGreaterThan(0)
+    },
+    30000
+  )
+})
 ```
 
 ## API 参考
@@ -91,33 +96,36 @@ describe.skipIf(!RUN_REAL_API)('My Real API Test', () => {
 创建真实LLM测试上下文，自动选择第一个可用的提供商。
 
 **参数：**
+
 ```typescript
 interface Options {
   /** 参数覆盖（如temperature等） */
-  paramOverrides?: Record<string, any>;
+  paramOverrides?: Record<string, any>
 }
 ```
 
 **返回值：**
+
 ```typescript
 interface RealLLMTestContext {
   /** 提供商信息 */
-  provider: AvailableProvider;
+  provider: AvailableProvider
   /** 模型配置（使用第一个可用模型） */
-  modelConfig: TextModelConfig;
+  modelConfig: TextModelConfig
   /** LLM服务实例 */
-  llmService: ILLMService;
+  llmService: ILLMService
   /** 模型管理器实例 */
-  modelManager: IModelManager;
+  modelManager: IModelManager
   /** 模型键（已添加到modelManager） */
-  modelKey: string;
+  modelKey: string
 }
 ```
 
 **示例：**
+
 ```typescript
 // 使用默认配置
-const context = await createRealLLMTestContext();
+const context = await createRealLLMTestContext()
 
 // 使用自定义参数
 const context = await createRealLLMTestContext({
@@ -125,7 +133,7 @@ const context = await createRealLLMTestContext({
     temperature: 0.7,
     max_tokens: 1000,
   },
-});
+})
 ```
 
 ### `hasAvailableProvider()`
@@ -135,10 +143,11 @@ const context = await createRealLLMTestContext({
 **返回值：** `boolean`
 
 **示例：**
+
 ```typescript
 if (!hasAvailableProvider()) {
-  console.log('没有可用的API密钥');
-  return;
+  console.log('没有可用的API密钥')
+  return
 }
 ```
 
@@ -149,13 +158,14 @@ if (!hasAvailableProvider()) {
 **返回值：** `AvailableProvider[]`
 
 **示例：**
-```typescript
-const providers = getAvailableProviders();
-console.log(`找到 ${providers.length} 个可用提供商`);
 
-providers.forEach(p => {
-  console.log(`- ${p.config.name}: ${p.models.length} 个模型`);
-});
+```typescript
+const providers = getAvailableProviders()
+console.log(`找到 ${providers.length} 个可用提供商`)
+
+providers.forEach((p) => {
+  console.log(`- ${p.config.name}: ${p.models.length} 个模型`)
+})
 ```
 
 ### `getFirstAvailableProvider()`
@@ -165,11 +175,12 @@ providers.forEach(p => {
 **返回值：** `AvailableProvider | undefined`
 
 **示例：**
+
 ```typescript
-const provider = getFirstAvailableProvider();
+const provider = getFirstAvailableProvider()
 if (provider) {
-  console.log(`使用提供商: ${provider.config.name}`);
-  console.log(`模型: ${provider.models[0].name}`);
+  console.log(`使用提供商: ${provider.config.name}`)
+  console.log(`模型: ${provider.models[0].name}`)
 }
 ```
 
@@ -178,10 +189,11 @@ if (provider) {
 打印可用提供商信息（用于调试）。
 
 **示例：**
+
 ```typescript
 beforeAll(() => {
-  printAvailableProviders();
-});
+  printAvailableProviders()
+})
 
 // 输出：
 // ✅ 找到 2 个可用提供商：
@@ -202,6 +214,7 @@ beforeAll(() => {
 从提供商创建测试配置（低级API）。
 
 **参数：**
+
 - `provider: AvailableProvider` - 提供商信息
 - `paramOverrides?: Record<string, any>` - 参数覆盖
 
@@ -215,46 +228,39 @@ beforeAll(() => {
 
 ```typescript
 it('应该能发送消息', async () => {
-  const context = await createRealLLMTestContext();
-  if (!context) return;
+  const context = await createRealLLMTestContext()
+  if (!context) return
 
-  const messages = [
-    { role: 'user', content: '请用一句话介绍你自己' }
-  ];
+  const messages = [{ role: 'user', content: '请用一句话介绍你自己' }]
 
-  const response = await context.llmService.sendMessage(
-    messages,
-    context.modelKey
-  );
+  const response = await context.llmService.sendMessage(messages, context.modelKey)
 
-  expect(response.content).toBeDefined();
-  console.log(`响应: ${response.content}`);
-}, 30000);
+  expect(response.content).toBeDefined()
+  console.log(`响应: ${response.content}`)
+}, 30000)
 ```
 
 ### 示例2：多轮对话
 
 ```typescript
 it('应该能进行多轮对话', async () => {
-  const context = await createRealLLMTestContext();
-  if (!context) return;
+  const context = await createRealLLMTestContext()
+  if (!context) return
 
   // 第一轮
-  const messages1 = [
-    { role: 'user', content: '我的名字叫Alice' }
-  ];
-  const response1 = await context.llmService.sendMessage(messages1, context.modelKey);
+  const messages1 = [{ role: 'user', content: '我的名字叫Alice' }]
+  const response1 = await context.llmService.sendMessage(messages1, context.modelKey)
 
   // 第二轮（带上下文）
   const messages2 = [
     { role: 'user', content: '我的名字叫Alice' },
     { role: 'assistant', content: response1.content },
-    { role: 'user', content: '我的名字是什么？' }
-  ];
-  const response2 = await context.llmService.sendMessage(messages2, context.modelKey);
+    { role: 'user', content: '我的名字是什么？' },
+  ]
+  const response2 = await context.llmService.sendMessage(messages2, context.modelKey)
 
-  console.log(`第2轮响应: ${response2.content}`);
-}, 60000);
+  console.log(`第2轮响应: ${response2.content}`)
+}, 60000)
 ```
 
 ### 示例3：自定义参数
@@ -263,46 +269,46 @@ it('应该能进行多轮对话', async () => {
 it('应该能使用自定义参数', async () => {
   const context = await createRealLLMTestContext({
     paramOverrides: {
-      temperature: 0.1,  // 低温度，更确定性
-      max_tokens: 50,    // 限制长度
+      temperature: 0.1, // 低温度，更确定性
+      max_tokens: 50, // 限制长度
     },
-  });
+  })
 
-  if (!context) return;
+  if (!context) return
 
-  const messages = [{ role: 'user', content: '1+1等于几？' }];
-  const response = await context.llmService.sendMessage(messages, context.modelKey);
+  const messages = [{ role: 'user', content: '1+1等于几？' }]
+  const response = await context.llmService.sendMessage(messages, context.modelKey)
 
-  expect(response.content).toBeDefined();
-}, 30000);
+  expect(response.content).toBeDefined()
+}, 30000)
 ```
 
 ### 示例4：测试特定服务
 
 ```typescript
-import { createVariableExtractionService } from '../../../src/services/variable-extraction/service';
+import { createVariableExtractionService } from '../../../src/services/variable-extraction/service'
 
 it('应该能提取变量', async () => {
-  const context = await createRealLLMTestContext();
-  if (!context) return;
+  const context = await createRealLLMTestContext()
+  if (!context) return
 
   // 创建变量提取服务
   const variableExtractionService = createVariableExtractionService(
     context.llmService,
     context.modelManager,
     templateManager
-  );
+  )
 
   // 使用服务
   const result = await variableExtractionService.extract({
     promptContent: '请写一篇关于春天的文章，字数要求在500字以内。',
     extractionModelKey: context.modelKey,
     existingVariableNames: [],
-  });
+  })
 
-  expect(result.variables).toBeDefined();
-  console.log(`提取了 ${result.variables.length} 个变量`);
-}, 60000);
+  expect(result.variables).toBeDefined()
+  console.log(`提取了 ${result.variables.length} 个变量`)
+}, 60000)
 ```
 
 ## 最佳实践
@@ -312,13 +318,13 @@ it('应该能提取变量', async () => {
 始终使用 `describe.skipIf()` 和 `it.skipIf()` 来条件执行测试：
 
 ```typescript
-const RUN_REAL_API = process.env.RUN_REAL_API === '1';
+const RUN_REAL_API = process.env.RUN_REAL_API === '1'
 
 describe.skipIf(!RUN_REAL_API)('Real API Tests', () => {
   it.skipIf(!hasAvailableProvider())('test case', async () => {
     // ...
-  });
-});
+  })
+})
 ```
 
 ### 2. 检查上下文存在性
@@ -326,10 +332,10 @@ describe.skipIf(!RUN_REAL_API)('Real API Tests', () => {
 始终检查 `context` 是否存在：
 
 ```typescript
-const context = await createRealLLMTestContext();
+const context = await createRealLLMTestContext()
 if (!context) {
-  console.log('跳过测试：无可用的LLM提供商');
-  return;
+  console.log('跳过测试：无可用的LLM提供商')
+  return
 }
 ```
 
@@ -340,7 +346,7 @@ if (!context) {
 ```typescript
 it('test case', async () => {
   // ...
-}, 30000); // 30秒超时
+}, 30000) // 30秒超时
 ```
 
 ### 4. 打印调试信息
@@ -349,8 +355,8 @@ it('test case', async () => {
 
 ```typescript
 beforeAll(() => {
-  printAvailableProviders();
-});
+  printAvailableProviders()
+})
 ```
 
 ### 5. 限制输出长度
@@ -362,7 +368,7 @@ const context = await createRealLLMTestContext({
   paramOverrides: {
     max_tokens: 100,
   },
-});
+})
 ```
 
 ## 故障排除
@@ -372,6 +378,7 @@ const context = await createRealLLMTestContext({
 **原因：** 没有设置 `RUN_REAL_API=1` 或没有可用的API密钥。
 
 **解决方案：**
+
 1. 运行测试时添加 `RUN_REAL_API=1`
 2. 确保 `.env.local` 文件中至少有一个提供商的API密钥
 3. 运行 `printAvailableProviders()` 检查可用提供商
@@ -382,10 +389,11 @@ const context = await createRealLLMTestContext({
 
 **解决方案：**
 增加测试超时时间（第二个参数）：
+
 ```typescript
 it('test case', async () => {
   // ...
-}, 60000); // 增加到60秒
+}, 60000) // 增加到60秒
 ```
 
 ### 问题：找不到模型

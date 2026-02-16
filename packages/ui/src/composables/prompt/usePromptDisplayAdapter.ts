@@ -85,9 +85,7 @@ export function usePromptDisplayAdapter(
   const displayedOriginalPrompt = computed(() => {
     if (!isInMessageOptimizationMode.value) return ''
 
-    const message = options.optimizationContext.value?.find(
-      m => m.id === selectedMessageId.value
-    )
+    const message = options.optimizationContext.value?.find((m) => m.id === selectedMessageId.value)
     return message?.originalContent || message?.content || ''
   })
 
@@ -97,9 +95,7 @@ export function usePromptDisplayAdapter(
    * - 历史记录模式: 空字符串（不显示）
    */
   const displayedOptimizedPrompt = computed(() => {
-    return isInMessageOptimizationMode.value
-      ? conversationOptimization.optimizedPrompt.value
-      : ''
+    return isInMessageOptimizationMode.value ? conversationOptimization.optimizedPrompt.value : ''
   })
 
   /**

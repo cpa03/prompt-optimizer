@@ -47,7 +47,7 @@
               >
                 {{ t('modelManager.capabilities.reasoning') }}
               </NTag>
-                          </NSpace>
+            </NSpace>
           </NSpace>
         </NSpace>
       </template>
@@ -185,16 +185,16 @@ import { isRunningInElectron, type TextModelConfig } from '@prompt-optimizer/cor
 const { models, isTestingConnectionFor, isDefaultModel } = defineProps({
   models: {
     type: Array as PropType<TextModelConfig[]>,
-    default: () => []
+    default: () => [],
   },
   isTestingConnectionFor: {
     type: Function as PropType<(id: string) => boolean>,
-    required: true
+    required: true,
   },
   isDefaultModel: {
     type: Function as PropType<(id: string) => boolean>,
-    required: true
-  }
+    required: true,
+  },
 })
 
 const emit = defineEmits(['test', 'edit', 'enable', 'disable', 'delete'])
@@ -231,7 +231,9 @@ const isElectronEnv = isRunningInElectron()
 }
 
 /* Test connection button - blue accent */
-.n-button[quaternary]:not(.n-button--error-type):not(.n-button--success-type):not(.n-button--warning-type):hover {
+.n-button[quaternary]:not(.n-button--error-type):not(.n-button--success-type):not(
+    .n-button--warning-type
+  ):hover {
   color: #2080f0;
   background-color: rgba(32, 128, 240, 0.1);
 }

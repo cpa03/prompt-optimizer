@@ -3,19 +3,18 @@
  * 简化的参数验证，移除过度抽象
  */
 
-import { CONSTRAINTS } from '@prompt-optimizer/core';
+import { CONSTRAINTS } from '@prompt-optimizer/core'
 
 export class ParameterValidator {
-
   /**
    * 验证提示词输入
    */
   static validatePrompt(prompt: string): void {
     if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-      throw new Error('提示词必须是非空字符串');
+      throw new Error('提示词必须是非空字符串')
     }
     if (prompt.length > CONSTRAINTS.mcp.maxPromptLength) {
-      throw new Error(`提示词过长（最大 ${CONSTRAINTS.mcp.maxPromptLength.toLocaleString()} 字符）`);
+      throw new Error(`提示词过长（最大 ${CONSTRAINTS.mcp.maxPromptLength.toLocaleString()} 字符）`)
     }
   }
 
@@ -24,7 +23,7 @@ export class ParameterValidator {
    */
   static validateTemplate(template?: string): void {
     if (template !== undefined && (typeof template !== 'string' || template.trim().length === 0)) {
-      throw new Error('模板必须是非空字符串');
+      throw new Error('模板必须是非空字符串')
     }
   }
 
@@ -33,10 +32,12 @@ export class ParameterValidator {
    */
   static validateRequirements(requirements: string): void {
     if (!requirements || typeof requirements !== 'string' || requirements.trim().length === 0) {
-      throw new Error('需求描述必须是非空字符串');
+      throw new Error('需求描述必须是非空字符串')
     }
     if (requirements.length > CONSTRAINTS.mcp.maxRequirementsLength) {
-      throw new Error(`需求描述过长（最大 ${CONSTRAINTS.mcp.maxRequirementsLength.toLocaleString()} 字符）`);
+      throw new Error(
+        `需求描述过长（最大 ${CONSTRAINTS.mcp.maxRequirementsLength.toLocaleString()} 字符）`
+      )
     }
   }
 }

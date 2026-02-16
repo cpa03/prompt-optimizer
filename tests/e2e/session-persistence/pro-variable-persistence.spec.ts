@@ -9,7 +9,9 @@ import { TIMEOUTS } from '../constants/timeouts'
  */
 test.describe('Pro Variable - Session Persistence', () => {
   const normalizeText = (text: string | null | undefined) =>
-    String(text || '').replace(/\s+/g, ' ').trim()
+    String(text || '')
+      .replace(/\s+/g, ' ')
+      .trim()
 
   const gotoMode = async (page: any, route: string) => {
     await page.goto('/')
@@ -38,7 +40,9 @@ test.describe('Pro Variable - Session Persistence', () => {
     await select.click()
 
     const optionLocator = page.locator('.n-base-select-option')
-    await expect(optionLocator.first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+    await expect(optionLocator.first()).toBeVisible({
+      timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+    })
 
     const count = await optionLocator.count()
     expect(count).toBeGreaterThan(0)
@@ -48,7 +52,9 @@ test.describe('Pro Variable - Session Persistence', () => {
     await optionLocator.nth(1).click()
 
     await expect
-      .poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+      .poll(async () => normalizeText(await select.textContent()), {
+        timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+      })
       .toBe(target)
 
     await page.reload()
@@ -68,7 +74,9 @@ test.describe('Pro Variable - Session Persistence', () => {
     await select.click()
 
     const optionLocator = page.locator('.n-base-select-option')
-    await expect(optionLocator.first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+    await expect(optionLocator.first()).toBeVisible({
+      timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+    })
 
     const count = await optionLocator.count()
     expect(count).toBeGreaterThan(0)
@@ -78,7 +86,9 @@ test.describe('Pro Variable - Session Persistence', () => {
     await optionLocator.nth(1).click()
 
     await expect
-      .poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+      .poll(async () => normalizeText(await select.textContent()), {
+        timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+      })
       .toBe(target)
 
     await page.reload()
@@ -91,4 +101,3 @@ test.describe('Pro Variable - Session Persistence', () => {
       .toBe(target)
   })
 })
-

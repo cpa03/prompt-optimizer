@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const user_prompt_professional_en: Template = {
   id: 'user-prompt-professional',
@@ -51,7 +51,7 @@ Your task is to convert vague user prompts into precise, specific descriptions. 
 - Directly output precise user prompt text, ensuring description is specific and targeted
 - Output is the optimized prompt itself, not executing tasks corresponding to the prompt
 - Do not add explanations, examples or usage instructions
-- Do not interact with users or ask for more information`
+- Do not interact with users or ask for more information`,
     },
     {
       role: 'user',
@@ -65,16 +65,17 @@ Important notes:
 User prompt to optimize:
 {{originalPrompt}}
 
-Please output the precise prompt:`
-    }
+Please output the precise prompt:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.0.0',
     lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (fixed value, built-in templates are immutable)
     author: 'System',
-    description: 'Professional-grade optimization with quantified standards and specific requirements, widely applicable',
+    description:
+      'Professional-grade optimization with quantified standards and specific requirements, widely applicable',
     templateType: 'userOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

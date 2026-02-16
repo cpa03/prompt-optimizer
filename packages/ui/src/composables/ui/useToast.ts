@@ -44,7 +44,7 @@ export function useToast() {
       duration: TIME_CONSTANTS.TOAST_DURATION,
       closable: true,
       keepAliveOnHover: true,
-      ...(typeof options === 'number' ? { duration: options } : options || {})
+      ...(typeof options === 'number' ? { duration: options } : options || {}),
     }
 
     if (!message) {
@@ -56,7 +56,7 @@ export function useToast() {
       }
       return undefined
     }
-    
+
     switch (type) {
       case 'success':
         return message.success(content, normalizedOptions)

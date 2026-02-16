@@ -35,7 +35,9 @@ export function useSessionRestoreCoordinator(restoreFn: () => Promise<void> | vo
   const executeRestore = async () => {
     // 🔧 互斥检查：如果正在恢复中，设置 pending 标志后返回
     if (isRestoring.value) {
-      console.warn('[SessionRestoreCoordinator] executeRestore 已在执行中，设置 pendingRestore 标志')
+      console.warn(
+        '[SessionRestoreCoordinator] executeRestore 已在执行中，设置 pendingRestore 标志'
+      )
       pendingRestore.value = true
       return
     }
@@ -63,7 +65,7 @@ export function useSessionRestoreCoordinator(restoreFn: () => Promise<void> | vo
             return
           }
           // 🔧 Codex 修复：添加错误处理，避免未处理的 Promise rejection
-          void executeRestore().catch(err => {
+          void executeRestore().catch((err) => {
             console.error('[SessionRestoreCoordinator] pending restore failed', err)
           })
         })
@@ -87,6 +89,6 @@ export function useSessionRestoreCoordinator(restoreFn: () => Promise<void> | vo
 
     // 方法
     executeRestore,
-    markUnmounted
+    markUnmounted,
   }
 }

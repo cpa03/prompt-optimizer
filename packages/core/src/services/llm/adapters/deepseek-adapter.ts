@@ -19,8 +19,8 @@ const DEEPSEEK_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 128000
-    }
+      maxContextLength: 128000,
+    },
   },
   {
     id: 'deepseek-reasoner',
@@ -28,9 +28,9 @@ const DEEPSEEK_STATIC_MODELS: ModelOverride[] = [
     description: 'DeepSeek reasoning model with step-by-step thinking outputs',
     capabilities: {
       supportsReasoning: true,
-      maxContextLength: 128000
-    }
-  }
+      maxContextLength: 128000,
+    },
+  },
 ]
 
 export class DeepseekAdapter extends OpenAIAdapter {
@@ -48,9 +48,9 @@ export class DeepseekAdapter extends OpenAIAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -64,14 +64,14 @@ export class DeepseekAdapter extends OpenAIAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }

@@ -1,10 +1,12 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-user-prompt-planning',
   name: '上下文版·用户提示词规划优化',
   content: [
-    { role: 'system', content: `你是“上下文驱动的用户提示词规划专家”。在上下文/工具约束下，将 originalPrompt 优化为“目标清楚、阶段明确、依赖与验收可追踪”的用户提示词。仅输出优化后的提示词文本。
+    {
+      role: 'system',
+      content: `你是“上下文驱动的用户提示词规划专家”。在上下文/工具约束下，将 originalPrompt 优化为“目标清楚、阶段明确、依赖与验收可追踪”的用户提示词。仅输出优化后的提示词文本。
 
 {{#conversationContext}}
 [会话上下文]
@@ -34,16 +36,24 @@ export const template: Template = {
 输出要求
 - 规划包含：阶段/里程碑、每阶段输入/输出/验收标准、风险与回退路径；严禁执行任务与解释。
 - 必须保留所有双花括号格式的变量占位符，不要替换或删除它们。
-` },
-    { role: 'user', content: `原始用户提示词：
+`,
+    },
+    {
+      role: 'user',
+      content: `原始用户提示词：
 {{originalPrompt}}
-` }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
-    version: '1.0.0', lastModified: 1704067200000, author: 'System',
+    version: '1.0.0',
+    lastModified: 1704067200000,
+    author: 'System',
     description: '在上下文约束下，将用户提示词规划为阶段化、可追踪与可验收的文本',
-    templateType: 'contextUserOptimize', language: 'zh', variant: 'context', tags: ['context','user','optimize','planning']
+    templateType: 'contextUserOptimize',
+    language: 'zh',
+    variant: 'context',
+    tags: ['context', 'user', 'optimize', 'planning'],
   },
-  isBuiltin: true
-};
-
+  isBuiltin: true,
+}

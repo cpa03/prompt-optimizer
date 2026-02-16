@@ -4,7 +4,7 @@ import {
   fillOriginalPrompt,
   clickOptimizeButton,
   expectOptimizedResultNotEmpty,
-  verifyOptimizeButtonDisabledWhenEmpty
+  verifyOptimizeButtonDisabledWhenEmpty,
 } from '../helpers/optimize'
 import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 

@@ -4,71 +4,79 @@
  */
 
 // 导入静态常量
-const { IPC_EVENTS, PREFERENCE_KEYS, DEFAULT_CONFIG, PORTS, TIMEOUTS, MAX_SAVE_TIME, EMERGENCY_EXIT_TIME } = require('./constants');
+const {
+  IPC_EVENTS,
+  PREFERENCE_KEYS,
+  DEFAULT_CONFIG,
+  PORTS,
+  TIMEOUTS,
+  MAX_SAVE_TIME,
+  EMERGENCY_EXIT_TIME,
+} = require('./constants')
 
 // 从package.json读取仓库信息
-const packageJson = require('../package.json');
+const packageJson = require('../package.json')
 
 // 从环境变量或package.json获取仓库信息
 const getRepositoryInfo = () => {
   // 优先使用环境变量
   if (process.env.GITHUB_REPOSITORY) {
-    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-    return { owner, repo };
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
+    return { owner, repo }
   }
-  
+
   // 从package.json的repository字段获取
   if (packageJson.repository && packageJson.repository.url) {
-    const repoUrl = packageJson.repository.url;
-    const match = repoUrl.match(/github\.com[/:]([\w-]+)\/([\w-]+)/);
+    const repoUrl = packageJson.repository.url
+    const match = repoUrl.match(/github\.com[/:]([\w-]+)\/([\w-]+)/)
     if (match) {
-      return { owner: match[1], repo: match[2] };
+      return { owner: match[1], repo: match[2] }
     }
   }
-  
+
   // 从build.publish配置获取
   if (packageJson.build && packageJson.build.publish) {
-    const { owner, repo } = packageJson.build.publish;
+    const { owner, repo } = packageJson.build.publish
     if (owner && repo) {
-      return { owner, repo };
+      return { owner, repo }
     }
   }
-  
+
   // 最后的fallback（应该避免到达这里）
-  console.warn('[Update Config] No repository info found, using fallback');
-  return { owner: 'unknown', repo: 'unknown' };
-};
+  console.warn('[Update Config] No repository info found, using fallback')
+  return { owner: 'unknown', repo: 'unknown' }
+}
 
 // 验证版本号格式
 const validateVersion = (version) => {
   if (!version || typeof version !== 'string') {
-    return false;
+    return false
   }
-  
+
   // 基本的版本号格式验证（支持语义化版本）
-  const versionRegex = /^v?\d+\.\d+\.\d+(-[\w.-]+)?(\+[\w.-]+)?$/;
-  return versionRegex.test(version);
-};
+  const versionRegex = /^v?\d+\.\d+\.\d+(-[\w.-]+)?(\+[\w.-]+)?$/
+  return versionRegex.test(version)
+}
 
 // 构建安全的Release URL
 const buildReleaseUrl = (version) => {
   if (!validateVersion(version)) {
-    throw new Error(`Invalid version format: ${version}`);
+    throw new Error(`Invalid version format: ${version}`)
   }
-  
-  const { owner, repo } = getRepositoryInfo();
-  
+
+  const { owner, repo } = getRepositoryInfo()
+
   if (owner === 'unknown' || repo === 'unknown') {
-    throw new Error('Repository information not available');
+    throw new Error('Repository information not available')
   }
-  
+
   // 确保版本号以v开头
-  const versionTag = version.startsWith('v') ? version : `v${version}`;
-  
+  const versionTag = version.startsWith('v') ? version : `v${version}`
+
   // 使用URL构造器确保安全性
-  const baseUrl = 'https://github.com';
-  return `${baseUrl}/${owner}/${repo}/releases/tag/${encodeURIComponent(versionTag)}`;
-};
+  const baseUrl = 'https://github.com'
+  return `${baseUrl}/${owner}/${repo}/releases/tag/${encodeURIComponent(versionTag)}`
+}
 
 // 注意：静态常量已移至 constants.js 文件
 // 这里只保留动态逻辑函数
@@ -86,5 +94,5 @@ module.exports = {
   PORTS,
   TIMEOUTS,
   MAX_SAVE_TIME,
-  EMERGENCY_EXIT_TIME
-};
+  EMERGENCY_EXIT_TIME,
+}

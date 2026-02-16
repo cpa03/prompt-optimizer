@@ -5,9 +5,10 @@
 ## 概述
 
 TestArea组件系统采用模块化架构，由以下核心组件组成：
+
 - **TestAreaPanel** - 主容器组件，统一管理布局和状态
 - **TestInputSection** - 测试内容输入组件
-- **TestControlBar** - 测试控制栏组件  
+- **TestControlBar** - 测试控制栏组件
 - **TestResultSection** - 测试结果展示组件
 - **ConversationSection** - 会话管理包装组件
 
@@ -18,7 +19,7 @@ TestArea组件系统采用模块化架构，由以下核心组件组成：
 ✅ **主题兼容性** - 完全兼容亮色/暗色主题切换  
 ✅ **模式切换** - 支持系统提示词/用户提示词模式  
 ✅ **对比测试** - 支持原始vs优化提示词的并行对比  
-✅ **类型安全** - 完整的TypeScript类型定义  
+✅ **类型安全** - 完整的TypeScript类型定义
 
 ## 快速开始
 
@@ -88,22 +89,19 @@ const handleTest = async () => {
   >
     <!-- 模型选择插槽 -->
     <template #model-select>
-      <ModelSelectUI 
-        v-model="selectedModel" 
-        :size="buttonSize"
-      />
+      <ModelSelectUI v-model="selectedModel" :size="buttonSize" />
     </template>
-    
+
     <!-- 原始结果插槽 -->
     <template #original-result>
       <OutputDisplay :content="originalResult" />
     </template>
-    
+
     <!-- 优化结果插槽 -->
     <template #optimized-result>
       <OutputDisplay :content="optimizedResult" />
     </template>
-    
+
     <!-- 单一结果插槽 -->
     <template #single-result>
       <OutputDisplay :content="singleResult" />
@@ -113,20 +111,15 @@ const handleTest = async () => {
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { 
-  TestAreaPanel, 
-  ModelSelectUI, 
+import {
+  TestAreaPanel,
+  ModelSelectUI,
   OutputDisplay,
-  useResponsiveTestLayout 
+  useResponsiveTestLayout,
 } from '@prompt-optimizer/ui'
 
 // 响应式布局配置
-const { 
-  inputMode, 
-  controlBarLayout, 
-  buttonSize,
-  isMobile 
-} = useResponsiveTestLayout()
+const { inputMode, controlBarLayout, buttonSize, isMobile } = useResponsiveTestLayout()
 
 // 状态管理
 const optimizationMode = ref<OptimizationMode>('system')
@@ -150,35 +143,35 @@ const enableCompareMode = computed(() => !isMobile.value)
 
 ### TestAreaPanel Props
 
-| 属性名 | 类型 | 默认值 | 描述 |
-|--------|------|--------|------|
-| `optimizationMode` | `OptimizationMode` | `'system'` | 优化模式：'system' 或 'user' |
-| `isTestRunning` | `boolean` | `false` | 测试是否正在进行中 |
-| `advancedModeEnabled` | `boolean` | `false` | 是否启用高级模式 |
-| `testContent` | `string` | `''` | 测试内容（v-model支持） |
-| `isCompareMode` | `boolean` | `false` | 是否为对比模式 |
-| `enableCompareMode` | `boolean` | `true` | 是否允许切换到对比模式 |
-| `enableFullscreen` | `boolean` | `true` | 是否启用全屏编辑功能 |
-| `inputMode` | `'default' \| 'compact'` | `'default'` | 输入框显示模式 |
-| `controlBarLayout` | `'default' \| 'compact'` | `'default'` | 控制栏布局模式 |
-| `buttonSize` | `'small' \| 'medium' \| 'large'` | `'medium'` | 按钮尺寸 |
+| 属性名                | 类型                             | 默认值      | 描述                         |
+| --------------------- | -------------------------------- | ----------- | ---------------------------- |
+| `optimizationMode`    | `OptimizationMode`               | `'system'`  | 优化模式：'system' 或 'user' |
+| `isTestRunning`       | `boolean`                        | `false`     | 测试是否正在进行中           |
+| `advancedModeEnabled` | `boolean`                        | `false`     | 是否启用高级模式             |
+| `testContent`         | `string`                         | `''`        | 测试内容（v-model支持）      |
+| `isCompareMode`       | `boolean`                        | `false`     | 是否为对比模式               |
+| `enableCompareMode`   | `boolean`                        | `true`      | 是否允许切换到对比模式       |
+| `enableFullscreen`    | `boolean`                        | `true`      | 是否启用全屏编辑功能         |
+| `inputMode`           | `'default' \| 'compact'`         | `'default'` | 输入框显示模式               |
+| `controlBarLayout`    | `'default' \| 'compact'`         | `'default'` | 控制栏布局模式               |
+| `buttonSize`          | `'small' \| 'medium' \| 'large'` | `'medium'`  | 按钮尺寸                     |
 
 ### TestAreaPanel Events
 
-| 事件名 | 参数 | 描述 |
-|--------|------|------|
+| 事件名               | 参数              | 描述         |
+| -------------------- | ----------------- | ------------ |
 | `update:testContent` | `(value: string)` | 测试内容变化 |
-| `compare-toggle` | `()` | 对比模式切换 |
-| `test` | `()` | 开始测试 |
+| `compare-toggle`     | `()`              | 对比模式切换 |
+| `test`               | `()`              | 开始测试     |
 
 ### TestAreaPanel Slots
 
-| 插槽名 | 描述 | 示例 |
-|--------|------|------|
-| `model-select` | 模型选择组件 | `<ModelSelectUI v-model="model" />` |
-| `original-result` | 原始测试结果显示 | `<OutputDisplay :content="result" />` |
+| 插槽名             | 描述             | 示例                                  |
+| ------------------ | ---------------- | ------------------------------------- |
+| `model-select`     | 模型选择组件     | `<ModelSelectUI v-model="model" />`   |
+| `original-result`  | 原始测试结果显示 | `<OutputDisplay :content="result" />` |
 | `optimized-result` | 优化测试结果显示 | `<OutputDisplay :content="result" />` |
-| `single-result` | 单一模式结果显示 | `<OutputDisplay :content="result" />` |
+| `single-result`    | 单一模式结果显示 | `<OutputDisplay :content="result" />` |
 
 ## 子组件说明
 
@@ -198,6 +191,7 @@ const enableCompareMode = computed(() => !isMobile.value)
 ```
 
 **Props:**
+
 - `modelValue: string` - 输入内容
 - `label: string` - 输入框标签
 - `placeholder: string` - 占位符文本
@@ -279,13 +273,13 @@ const enableCompareMode = computed(() => !isMobile.value)
 import { useResponsiveTestLayout } from '@prompt-optimizer/ui'
 
 const {
-  isMobile,           // 是否为移动端
-  isTablet,           // 是否为平板
-  currentBreakpoint,  // 当前断点
-  inputMode,          // 推荐的输入模式
-  controlBarLayout,   // 推荐的控制栏布局
-  buttonSize,         // 推荐的按钮尺寸
-  responsiveHeights   // 响应式高度配置
+  isMobile, // 是否为移动端
+  isTablet, // 是否为平板
+  currentBreakpoint, // 当前断点
+  inputMode, // 推荐的输入模式
+  controlBarLayout, // 推荐的控制栏布局
+  buttonSize, // 推荐的按钮尺寸
+  responsiveHeights, // 响应式高度配置
 } = useResponsiveTestLayout()
 ```
 
@@ -297,15 +291,15 @@ const {
 import { useTestModeConfig } from '@prompt-optimizer/ui'
 
 const {
-  currentModeConfig,      // 当前模式配置
-  showTestInput,          // 是否显示测试输入
-  requiresTestContent,    // 是否需要测试内容
-  inputLabel,             // 输入框标签
-  canStartTest,           // 是否可以开始测试
-  enableCompareMode,      // 是否启用对比模式
+  currentModeConfig, // 当前模式配置
+  showTestInput, // 是否显示测试输入
+  requiresTestContent, // 是否需要测试内容
+  inputLabel, // 输入框标签
+  canStartTest, // 是否可以开始测试
+  enableCompareMode, // 是否启用对比模式
   showConversationManager, // 是否显示会话管理
-  getDynamicButtonText,   // 获取动态按钮文本
-  validateTestSetup       // 验证测试配置
+  getDynamicButtonText, // 获取动态按钮文本
+  validateTestSetup, // 验证测试配置
 } = useTestModeConfig(optimizationMode)
 ```
 
@@ -365,25 +359,20 @@ const canStartTest = computed(() => {
 <script setup>
 const handleTest = async () => {
   testState.isRunning = true
-  
+
   try {
-    await promptService.testPromptStream(
-      systemPrompt,
-      userPrompt,
-      selectedModel.value,
-      {
-        onToken: (token) => {
-          // 处理流式token
-        },
-        onComplete: () => {
-          // 测试完成
-        },
-        onError: (error) => {
-          console.error('测试失败:', error)
-          // 显示错误提示
-        }
-      }
-    )
+    await promptService.testPromptStream(systemPrompt, userPrompt, selectedModel.value, {
+      onToken: (token) => {
+        // 处理流式token
+      },
+      onComplete: () => {
+        // 测试完成
+      },
+      onError: (error) => {
+        console.error('测试失败:', error)
+        // 显示错误提示
+      },
+    })
   } catch (error) {
     console.error('测试请求失败:', error)
   } finally {
@@ -402,7 +391,7 @@ const handleTest = async () => {
     <!-- 其他props -->
   >
     <template #model-select>
-      <ModelSelectUI 
+      <ModelSelectUI
         v-model="selectedModel"
         :placeholder="$t('common.selectModel')"
       />
@@ -417,7 +406,7 @@ const { t } = useI18n()
 
 // 动态计算标签文本
 const inputLabel = computed(() => {
-  return optimizationMode.value === 'system' 
+  return optimizationMode.value === 'system'
     ? t('test.content')
     : t('test.userPromptTest')
 })
@@ -453,16 +442,16 @@ describe('TestAreaPanel', () => {
       props: {
         optimizationMode: 'system',
         testContent: '测试内容',
-        isCompareMode: true
-      }
+        isCompareMode: true,
+      },
     })
 
     // 验证初始状态
     expect(wrapper.find('[data-testid="test-input-section"]').exists()).toBe(true)
-    
+
     // 切换到用户模式
     await wrapper.setProps({ optimizationMode: 'user' })
-    
+
     // 验证状态更新
     expect(wrapper.find('[data-testid="test-input-section"]').exists()).toBe(false)
   })
@@ -492,15 +481,19 @@ A: 确认导入了正确的类型定义，检查@prompt-optimizer/core和@prompt
 // 开发模式下启用调试
 if (import.meta.env.DEV) {
   // 监听状态变化
-  watch(() => testState, (newState) => {
-    console.log('TestArea状态变化:', newState)
-  }, { deep: true })
-  
+  watch(
+    () => testState,
+    (newState) => {
+      console.log('TestArea状态变化:', newState)
+    },
+    { deep: true }
+  )
+
   // 暴露组件状态到全局
   window.__testAreaDebug = {
     state: testState,
     config: useTestModeConfig(optimizationMode),
-    layout: useResponsiveTestLayout()
+    layout: useResponsiveTestLayout(),
   }
 }
 </script>
@@ -509,6 +502,7 @@ if (import.meta.env.DEV) {
 ## 更新日志
 
 ### v1.0.0 (2025-01-20)
+
 - ✨ 初始发布TestArea组件系统
 - ✨ 支持系统/用户提示词模式
 - ✨ 完整的响应式布局系统

@@ -54,8 +54,8 @@ export function useHistoryManager(
       // 调用基础方法处理数据层面的删除
       handleDeleteChainBase(chainId)
       // 不关闭历史记录抽屉，让用户继续查看其他记录
-    }
+    },
   })
 
   return state
-} 
+}

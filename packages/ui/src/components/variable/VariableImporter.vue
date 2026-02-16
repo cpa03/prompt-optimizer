@@ -1,7 +1,7 @@
 <template>
-  <NModal 
+  <NModal
     v-model:show="localVisible"
-    preset="card" 
+    preset="card"
     :title="t('variables.importer.title')"
     size="large"
     :segmented="{ content: true }"
@@ -12,7 +12,6 @@
     @mask-click="cancel"
     @esc="cancel"
   >
-
     <!-- 导入方式选择 -->
     <NTabs v-model:value="activeMethod" type="segment">
       <NTabPane name="file" :tab="t('variables.importer.fromFile')">
@@ -26,10 +25,21 @@
             drag
           >
             <NUploadDragger>
-              <div :style="{ textAlign: 'center', padding: VARIABLE_IMPORTER.UPLOAD_AREA_PADDING + 'px' }">
-                <NIcon :size="ICON_SIZES.XXL" :style="{ display: 'block', margin: '0 auto ' + VARIABLE_IMPORTER.UPLOAD_ICON_MARGIN_BOTTOM + 'px' }">
+              <div
+                :style="{
+                  textAlign: 'center',
+                  padding: VARIABLE_IMPORTER.UPLOAD_AREA_PADDING + 'px',
+                }"
+              >
+                <NIcon
+                  :size="ICON_SIZES.XXL"
+                  :style="{
+                    display: 'block',
+                    margin: '0 auto ' + VARIABLE_IMPORTER.UPLOAD_ICON_MARGIN_BOTTOM + 'px',
+                  }"
+                >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
                   </svg>
                 </NIcon>
                 <NText>
@@ -48,7 +58,11 @@
             <template #icon>
               <NIcon>
                 <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-.894.553l-3 6a1 1 0 001.788.894L8.618 12h2.764l.724 1.447a1 1 0 001.788-.894l-3-6A1 1 0 0010 6z" clip-rule="evenodd"/>
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-4a1 1 0 00-.894.553l-3 6a1 1 0 001.788.894L8.618 12h2.764l.724 1.447a1 1 0 001.788-.894l-3-6A1 1 0 0010 6z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </NIcon>
             </template>
@@ -79,7 +93,12 @@
               type="textarea"
               :placeholder="getTextInputPlaceholder()"
               :autosize="{ minRows: 10, maxRows: 15 }"
-              :input-props="{ style: 'font-family: Monaco, Consolas, monospace; font-size: ' + VARIABLE_IMPORTER.MONOSPACE_FONT_SIZE + 'px;' }"
+              :input-props="{
+                style:
+                  'font-family: Monaco, Consolas, monospace; font-size: ' +
+                  VARIABLE_IMPORTER.MONOSPACE_FONT_SIZE +
+                  'px;',
+              }"
             />
             <template #feedback>
               <NText depth="3" :style="{ fontSize: VARIABLE_IMPORTER.HELP_TEXT_FONT_SIZE + 'px' }">
@@ -93,14 +112,18 @@
 
     <!-- 文件选择反馈 -->
     <NAlert v-if="selectedFile && activeMethod === 'file'" type="success" size="small">
-        <template #icon>
-          <NIcon>
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd"/>
-            </svg>
-          </NIcon>
-        </template>
-        已选择文件：{{ selectedFile.name }} ({{ (selectedFile.size / 1024).toFixed(1) }} KB)
+      <template #icon>
+        <NIcon>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </NIcon>
+      </template>
+      已选择文件：{{ selectedFile.name }} ({{ (selectedFile.size / 1024).toFixed(1) }} KB)
     </NAlert>
 
     <!-- 预览区域 -->
@@ -108,7 +131,9 @@
       <NCard size="small">
         <template #header>
           <NText strong>
-            {{ t('variables.importer.previewTitle', { count: Object.keys(previewVariables).length }) }}
+            {{
+              t('variables.importer.previewTitle', { count: Object.keys(previewVariables).length })
+            }}
           </NText>
         </template>
         <NScrollbar :style="{ maxHeight: VARIABLE_IMPORTER.PREVIEW_MAX_HEIGHT + 'px' }">
@@ -126,14 +151,18 @@
 
     <!-- 错误信息 -->
     <NAlert v-if="error" type="error" size="small">
-        <template #icon>
-          <NIcon>
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/>
-            </svg>
-          </NIcon>
-        </template>
-        {{ error }}
+      <template #icon>
+        <NIcon>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </NIcon>
+      </template>
+      {{ error }}
     </NAlert>
 
     <template #footer>
@@ -141,7 +170,7 @@
         <NButton @click="cancel" :disabled="loading">
           {{ t('common.cancel') }}
         </NButton>
-        <NButton 
+        <NButton
           type="primary"
           @click="importVariables"
           :disabled="!canImport || loading"
@@ -158,13 +187,35 @@
 import { ref, computed, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import { 
-  NModal, NButton, NTabs, NTabPane, NUpload, NUploadDragger, NText, 
-  NAlert, NUl, NLi, NFormItem, NInput, NSpace,
-  NRadioGroup, NRadio, NCard, NList, NListItem, NScrollbar, NIcon,
-  type UploadFileInfo 
+import {
+  NModal,
+  NButton,
+  NTabs,
+  NTabPane,
+  NUpload,
+  NUploadDragger,
+  NText,
+  NAlert,
+  NUl,
+  NLi,
+  NFormItem,
+  NInput,
+  NSpace,
+  NRadioGroup,
+  NRadio,
+  NCard,
+  NList,
+  NListItem,
+  NScrollbar,
+  NIcon,
+  type UploadFileInfo,
 } from 'naive-ui'
-import { UI_DIMENSIONS, COMPONENT_CONSTANTS, ICON_SIZES, FILE_SIZE_LIMITS } from '../../config/constants'
+import {
+  UI_DIMENSIONS,
+  COMPONENT_CONSTANTS,
+  ICON_SIZES,
+  FILE_SIZE_LIMITS,
+} from '../../config/constants'
 import { truncateText } from '../../utils/text'
 
 // Destructure constants for cleaner usage
@@ -183,12 +234,12 @@ const emit = defineEmits<Emits>()
 const props = defineProps<{ show?: boolean }>()
 const localVisible = computed({
   get: () => props.show ?? true,
-  set: (val: boolean) => emit('update:show', val)
+  set: (val: boolean) => emit('update:show', val),
 })
 
-const modalStyle = { 
-  width: UI_DIMENSIONS.MODAL_WIDTH_SMALL, 
-  maxWidth: VARIABLE_IMPORTER.MODAL_MAX_WIDTH 
+const modalStyle = {
+  width: UI_DIMENSIONS.MODAL_WIDTH_SMALL,
+  maxWidth: VARIABLE_IMPORTER.MODAL_MAX_WIDTH,
 }
 
 // 状态管理
@@ -203,7 +254,9 @@ const previewVariables = ref<Record<string, string>>({})
 // 计算属性
 const canImport = computed(() => {
   if (activeMethod.value === 'file') {
-    return selectedFile.value !== null && Object.keys(previewVariables.value).length > 0 && !error.value
+    return (
+      selectedFile.value !== null && Object.keys(previewVariables.value).length > 0 && !error.value
+    )
   }
   return importText.value.trim() !== '' && !error.value
 })
@@ -218,7 +271,7 @@ const formatVariableName = (name: string) => `{{${name}}}`
 const getTextInputLabel = (): string => {
   const labels = {
     csv: t('variables.importer.csvText'),
-    txt: t('variables.importer.txtText')
+    txt: t('variables.importer.txtText'),
   }
   return labels[textFormat.value] || labels.csv
 }
@@ -226,7 +279,7 @@ const getTextInputLabel = (): string => {
 const getTextInputPlaceholder = (): string => {
   const placeholders = {
     csv: 'name,value\nvariable1,value1\nvariable2,value2',
-    txt: 'variable1=value1\nvariable2=value2\nvariable3:value3'
+    txt: 'variable1=value1\nvariable2=value2\nvariable3:value3',
   }
   return placeholders[textFormat.value] || placeholders.csv
 }
@@ -234,7 +287,7 @@ const getTextInputPlaceholder = (): string => {
 const getTextInputHelp = (): string => {
   const helps = {
     csv: t('variables.importer.csvTextHelp'),
-    txt: t('variables.importer.txtTextHelp')
+    txt: t('variables.importer.txtTextHelp'),
   }
   return helps[textFormat.value] || helps.csv
 }
@@ -253,19 +306,19 @@ const parseCsvVariables = (content: string): Record<string, string> => {
   if (lines.length < 2) {
     throw new Error(t('variables.importer.errors.csvMinRows'))
   }
-  
-  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
-  const nameIndex = headers.findIndex(h => ['name', 'key', 'variable'].includes(h.toLowerCase()))
-  const valueIndex = headers.findIndex(h => ['value', 'val'].includes(h.toLowerCase()))
-  
+
+  const headers = lines[0].split(',').map((h) => h.trim().replace(/"/g, ''))
+  const nameIndex = headers.findIndex((h) => ['name', 'key', 'variable'].includes(h.toLowerCase()))
+  const valueIndex = headers.findIndex((h) => ['value', 'val'].includes(h.toLowerCase()))
+
   if (nameIndex === -1 || valueIndex === -1) {
     throw new Error(t('variables.importer.errors.csvRequiredColumns'))
   }
-  
+
   const variables: Record<string, string> = {}
-  
+
   for (let i = 1; i < lines.length; i++) {
-    const cells = lines[i].split(',').map(c => c.trim().replace(/"/g, ''))
+    const cells = lines[i].split(',').map((c) => c.trim().replace(/"/g, ''))
     if (cells.length > Math.max(nameIndex, valueIndex)) {
       const name = cells[nameIndex]
       const value = cells[valueIndex]
@@ -278,24 +331,24 @@ const parseCsvVariables = (content: string): Record<string, string> => {
       }
     }
   }
-  
+
   return variables
 }
 
 const parseTxtVariables = (content: string): Record<string, string> => {
   const variables: Record<string, string> = {}
   const lines = content.trim().split('\n')
-  
+
   for (const line of lines) {
     const trimmedLine = line.trim()
     if (!trimmedLine || trimmedLine.startsWith('#')) continue
-    
+
     const separatorIndex = Math.max(
       trimmedLine.indexOf('='),
       trimmedLine.indexOf(':'),
       trimmedLine.indexOf('\t')
     )
-    
+
     if (separatorIndex > 0) {
       const name = trimmedLine.substring(0, separatorIndex).trim()
       const value = trimmedLine.substring(separatorIndex + 1).trim()
@@ -308,7 +361,7 @@ const parseTxtVariables = (content: string): Record<string, string> => {
       }
     }
   }
-  
+
   return variables
 }
 
@@ -324,32 +377,32 @@ const handleBeforeUpload = (data: { file: UploadFileInfo }) => {
 const handleFile = (file: File) => {
   const fileExtension = file.name.split('.').pop()?.toLowerCase()
   const supportedTypes = ['csv', 'txt']
-  
+
   if (!supportedTypes.includes(fileExtension || '')) {
     error.value = t('variables.importer.errors.invalidFileType')
     return
   }
-  
+
   if (file.size > FILE_SIZE_LIMITS.MAX_VARIABLE_FILE_SIZE_BYTES) {
     error.value = t('variables.importer.errors.fileTooLarge')
     return
   }
-  
+
   selectedFile.value = file
   error.value = ''
-  
+
   const reader = new FileReader()
   reader.onload = (e) => {
     const content = e.target?.result as string
     importText.value = content
-    
+
     // 根据文件类型设置文本格式
     if (fileExtension === 'csv') {
       textFormat.value = 'csv'
     } else if (fileExtension === 'txt') {
       textFormat.value = 'txt'
     }
-    
+
     // 立即解析并预览变量
     try {
       const variables = parseVariables(content, textFormat.value)
@@ -378,13 +431,13 @@ const cancel = () => {
 
 const importVariables = () => {
   if (!canImport.value) return
-  
+
   try {
     loading.value = true
     error.value = ''
-    
+
     let variables: Record<string, string>
-    
+
     if (activeMethod.value === 'file' && Object.keys(previewVariables.value).length > 0) {
       // 使用已预览的变量
       variables = previewVariables.value
@@ -392,17 +445,25 @@ const importVariables = () => {
       // 从文本解析变量
       variables = parseVariables(importText.value, textFormat.value)
     }
-    
+
     // 过滤掉预定义变量
-    const predefinedNames = ['originalPrompt', 'lastOptimizedPrompt', 'iterateInput', 'currentPrompt', 'userQuestion', 'conversationContext', 'toolsContext']
+    const predefinedNames = [
+      'originalPrompt',
+      'lastOptimizedPrompt',
+      'iterateInput',
+      'currentPrompt',
+      'userQuestion',
+      'conversationContext',
+      'toolsContext',
+    ]
     const filteredVariables: Record<string, string> = {}
-    
+
     for (const [name, value] of Object.entries(variables)) {
       if (!predefinedNames.includes(name)) {
         filteredVariables[name] = value
       }
     }
-    
+
     emit('import', filteredVariables)
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : t('variables.importer.errors.parseError')

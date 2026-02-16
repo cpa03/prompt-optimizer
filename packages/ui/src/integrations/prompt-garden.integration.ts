@@ -6,9 +6,7 @@ export const integration: OptionalIntegration = {
   id: 'prompt-garden',
   envFlag: 'VITE_ENABLE_PROMPT_GARDEN_IMPORT',
   register: async (ctx) => {
-    const { useAppPromptGardenImport } = await import(
-      '../composables/app/useAppPromptGardenImport'
-    )
+    const { useAppPromptGardenImport } = await import('../composables/app/useAppPromptGardenImport')
 
     const gardenBaseUrl = getEnvVar('VITE_PROMPT_GARDEN_BASE_URL').trim() || null
 

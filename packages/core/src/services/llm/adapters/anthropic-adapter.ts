@@ -13,7 +13,7 @@ import type {
   LLMResponse,
   StreamHandlers,
   ParameterDefinition,
-  ToolDefinition
+  ToolDefinition,
 } from '../types'
 
 // Use centralized LLM constraints instead of hardcoded values
@@ -52,8 +52,8 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-        }
-      }
+        },
+      },
     }
   }
 
@@ -72,12 +72,12 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         description: 'Most powerful Claude model for complex tasks',
         providerId,
         capabilities: {
-                    supportsTools: true,
+          supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: 200000,
         },
         parameterDefinitions: this.getParameterDefinitions('claude-opus-4-20250514'),
-        defaultParameterValues: this.getDefaultParameterValues('claude-opus-4-20250514')
+        defaultParameterValues: this.getDefaultParameterValues('claude-opus-4-20250514'),
       },
       {
         id: 'claude-sonnet-4-20250514',
@@ -85,13 +85,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         description: 'Balanced Claude model for most tasks',
         providerId,
         capabilities: {
-                    supportsTools: true,
+          supportsTools: true,
           supportsReasoning: false,
-          maxContextLength: 200000
+          maxContextLength: 200000,
         },
         parameterDefinitions: this.getParameterDefinitions('claude-sonnet-4-20250514'),
-        defaultParameterValues: this.getDefaultParameterValues('claude-sonnet-4-20250514')
-      }
+        defaultParameterValues: this.getDefaultParameterValues('claude-sonnet-4-20250514'),
+      },
     ]
   }
 
@@ -129,10 +129,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       console.error('[AnthropicAdapter] Failed to fetch models:', error)
 
       // 连接错误处理（包括跨域检测）
-      if (error.message && (error.message.includes('Failed to fetch') ||
+      if (
+        error.message &&
+        (error.message.includes('Failed to fetch') ||
           error.message.includes('NetworkError') ||
           error.message.includes('ECONNREFUSED') ||
-          error.message.includes('CORS'))) {
+          error.message.includes('CORS'))
+      ) {
         throw new APIError(`Network error: ${error.message}`)
       }
 
@@ -165,7 +168,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         maxValue: 1,
         min: 0,
         max: 1,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'top_p',
@@ -179,7 +182,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         maxValue: 1,
         min: 0,
         max: 1,
-        step: 0.01
+        step: 0.01,
       },
       {
         name: 'top_k',
@@ -189,7 +192,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         type: 'integer',
         minValue: 1,
         min: 1,
-        step: 1
+        step: 1,
       },
       {
         name: 'max_tokens',
@@ -202,7 +205,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         minValue: 1,
         min: 1,
         unitKey: 'params.tokens.unit',
-        step: 1
+        step: 1,
       },
       {
         name: 'thinking_budget_tokens',
@@ -214,8 +217,8 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         min: LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS,
         unitKey: 'params.tokens.unit',
         step: 1,
-        tags: ['advanced']
-      }
+        tags: ['advanced'],
+      },
     ]
   }
 
@@ -254,7 +257,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       const requestParams: any = {
         model: config.modelMeta.id,
         messages: this.convertMessages(messages),
-        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS // 强制预设值，Anthropic API 必需
+        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS, // 强制预设值，Anthropic API 必需
       }
 
       // 只在用户明确设置时才添加参数，避免使用客户端默认值
@@ -275,10 +278,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
+      if (
+        thinking_budget_tokens !== undefined &&
+        thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS
+      ) {
         requestParams.thinking = {
           type: 'enabled',
-          budget_tokens: thinking_budget_tokens
+          budget_tokens: thinking_budget_tokens,
         }
       }
 
@@ -296,8 +302,10 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         metadata: {
           model: response.model,
           finishReason: response.stop_reason || undefined,
-          tokens: response.usage ? (response.usage.input_tokens || 0) + (response.usage.output_tokens || 0) : undefined
-        }
+          tokens: response.usage
+            ? (response.usage.input_tokens || 0) + (response.usage.output_tokens || 0)
+            : undefined,
+        },
       }
     } catch (error) {
       throw this.handleError(error)
@@ -329,7 +337,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       const requestParams: any = {
         model: config.modelMeta.id,
         messages: this.convertMessages(messages),
-        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS // 强制预设值，Anthropic API 必需
+        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS, // 强制预设值，Anthropic API 必需
       }
 
       // 只在用户明确设置时才添加参数，避免使用客户端默认值
@@ -350,10 +358,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
+      if (
+        thinking_budget_tokens !== undefined &&
+        thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS
+      ) {
         requestParams.thinking = {
           type: 'enabled',
-          budget_tokens: thinking_budget_tokens
+          budget_tokens: thinking_budget_tokens,
         }
       }
 
@@ -385,12 +396,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
           metadata: {
             model: message.model,
             finishReason: message.stop_reason || undefined,
-            tokens: message.usage ? (message.usage.input_tokens || 0) + (message.usage.output_tokens || 0) : undefined
-          }
+            tokens: message.usage
+              ? (message.usage.input_tokens || 0) + (message.usage.output_tokens || 0)
+              : undefined,
+          },
         }
         callbacks.onComplete(response)
       })
-
       ;(stream as any).on('error', (error: any) => {
         callbacks.onError(error)
       })
@@ -431,7 +443,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
         model: config.modelMeta.id,
         messages: this.convertMessages(messages),
         tools: this.convertTools(tools),
-        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS // 强制预设值，Anthropic API 必需
+        max_tokens: max_tokens ?? DEFAULT_MAX_TOKENS, // 强制预设值，Anthropic API 必需
       }
 
       // 只在用户明确设置时才添加参数，避免使用客户端默认值
@@ -452,10 +464,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       }
 
       // 添加 Extended Thinking 配置
-      if (thinking_budget_tokens !== undefined && thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS) {
+      if (
+        thinking_budget_tokens !== undefined &&
+        thinking_budget_tokens >= LLM_CONSTRAINTS.MIN_THINKING_BUDGET_TOKENS
+      ) {
         requestParams.thinking = {
           type: 'enabled',
-          budget_tokens: thinking_budget_tokens
+          budget_tokens: thinking_budget_tokens,
         }
       }
 
@@ -486,8 +501,8 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
             type: 'function' as const,
             function: {
               name: event.contentBlock.name,
-              arguments: ''
-            }
+              arguments: '',
+            },
           })
         }
       })
@@ -526,12 +541,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
           metadata: {
             model: message.model,
             finishReason: message.stop_reason || undefined,
-            tokens: message.usage ? (message.usage.input_tokens || 0) + (message.usage.output_tokens || 0) : undefined
-          }
+            tokens: message.usage
+              ? (message.usage.input_tokens || 0) + (message.usage.output_tokens || 0)
+              : undefined,
+          },
         }
         callbacks.onComplete(response)
       })
-
       ;(stream as any).on('error', (error: any) => {
         callbacks.onError(error)
       })
@@ -552,7 +568,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
   private createClient(config: TextModelConfig): Anthropic {
     const options: any = {
       apiKey: config.connectionConfig?.apiKey || '',
-      dangerouslyAllowBrowser: true // 根据实际环境配置
+      dangerouslyAllowBrowser: true, // 根据实际环境配置
     }
 
     if (config.connectionConfig?.baseURL) {
@@ -576,10 +592,10 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    */
   private convertMessages(messages: Message[]) {
     return messages
-      .filter(msg => msg.role !== 'system')
-      .map(msg => ({
+      .filter((msg) => msg.role !== 'system')
+      .map((msg) => ({
         role: msg.role as 'user' | 'assistant',
-        content: msg.content
+        content: msg.content,
       }))
   }
 
@@ -587,9 +603,9 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 提取系统消息
    */
   private extractSystemMessage(messages: Message[]): string | undefined {
-    const systemMessages = messages.filter(msg => msg.role === MESSAGE_ROLES.SYSTEM)
+    const systemMessages = messages.filter((msg) => msg.role === MESSAGE_ROLES.SYSTEM)
     return systemMessages.length > 0
-      ? systemMessages.map(msg => msg.content).join('\n')
+      ? systemMessages.map((msg) => msg.content).join('\n')
       : undefined
   }
 
@@ -611,14 +627,14 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
    * 转换工具定义
    */
   private convertTools(tools: ToolDefinition[]) {
-    return tools.map(tool => ({
+    return tools.map((tool) => ({
       name: tool.function.name,
       description: tool.function.description || '',
       input_schema: {
         type: 'object' as const,
         properties: (tool.function.parameters as any)?.properties || {},
-        required: (tool.function.parameters as any)?.required || []
-      }
+        required: (tool.function.parameters as any)?.required || [],
+      },
     }))
   }
 
@@ -630,17 +646,13 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       return undefined
     }
 
-    const thinkingBlocks = response.content.filter(
-      (block: any) => block.type === 'thinking'
-    )
+    const thinkingBlocks = response.content.filter((block: any) => block.type === 'thinking')
 
     if (thinkingBlocks.length === 0) {
       return undefined
     }
 
-    return thinkingBlocks
-      .map((block: any) => block.thinking)
-      .join('\n')
+    return thinkingBlocks.map((block: any) => block.thinking).join('\n')
   }
 
   /**

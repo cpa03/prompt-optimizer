@@ -4,7 +4,7 @@
  * Flexy loves modularity! All prompts centralized and configurable.
  */
 
-import { getEnvString } from './env';
+import { getEnvString } from './env'
 
 /**
  * Test prompt configurations for text-to-image generation
@@ -23,12 +23,15 @@ export const TEST_PROMPTS_TEXT2IMAGE = {
   /** ModelScope-specific test prompt */
   modelscope: getEnvString('VITE_TEST_PROMPT_TEXT2IMAGE_MODELSCOPE', 'a simple red flower'),
   /** SeaDream-specific test prompt */
-  seedream: getEnvString('VITE_TEST_PROMPT_TEXT2IMAGE_SEEDREAM', 'a beautiful landscape with mountains and lake'),
+  seedream: getEnvString(
+    'VITE_TEST_PROMPT_TEXT2IMAGE_SEEDREAM',
+    'a beautiful landscape with mountains and lake'
+  ),
   /** Ollama-specific test prompt */
   ollama: getEnvString('VITE_TEST_PROMPT_TEXT2IMAGE_OLLAMA', 'a simple red flower'),
   /** OpenRouter-specific test prompt */
   openrouter: getEnvString('VITE_TEST_PROMPT_TEXT2IMAGE_OPENROUTER', 'a simple red flower'),
-} as const;
+} as const
 
 /**
  * Test prompt configurations for image-to-image generation
@@ -43,14 +46,23 @@ export const TEST_PROMPTS_IMAGE2IMAGE = {
   /** Gemini-specific test prompt */
   gemini: getEnvString('VITE_TEST_PROMPT_IMAGE2IMAGE_GEMINI', 'make this image more colorful'),
   /** ModelScope-specific test prompt */
-  modelscope: getEnvString('VITE_TEST_PROMPT_IMAGE2IMAGE_MODELSCOPE', 'make this image more colorful'),
+  modelscope: getEnvString(
+    'VITE_TEST_PROMPT_IMAGE2IMAGE_MODELSCOPE',
+    'make this image more colorful'
+  ),
   /** SeaDream-specific test prompt */
-  seedream: getEnvString('VITE_TEST_PROMPT_IMAGE2IMAGE_SEEDREAM', 'enhance the colors and add more details'),
+  seedream: getEnvString(
+    'VITE_TEST_PROMPT_IMAGE2IMAGE_SEEDREAM',
+    'enhance the colors and add more details'
+  ),
   /** Ollama-specific test prompt */
   ollama: getEnvString('VITE_TEST_PROMPT_IMAGE2IMAGE_OLLAMA', 'make this image more colorful'),
   /** OpenRouter-specific test prompt */
-  openrouter: getEnvString('VITE_TEST_PROMPT_IMAGE2IMAGE_OPENROUTER', 'make this image more colorful'),
-} as const;
+  openrouter: getEnvString(
+    'VITE_TEST_PROMPT_IMAGE2IMAGE_OPENROUTER',
+    'make this image more colorful'
+  ),
+} as const
 
 /**
  * Get test prompt for a specific provider and test type
@@ -58,19 +70,20 @@ export const TEST_PROMPTS_IMAGE2IMAGE = {
  * @param testType - The test type ('text2image' or 'image2image')
  * @returns The test prompt string
  */
-export function getTestPrompt(
-  providerId: string,
-  testType: 'text2image' | 'image2image'
-): string {
-  const normalizedProviderId = providerId.toLowerCase();
-  
+export function getTestPrompt(providerId: string, testType: 'text2image' | 'image2image'): string {
+  const normalizedProviderId = providerId.toLowerCase()
+
   if (testType === 'text2image') {
-    return (TEST_PROMPTS_TEXT2IMAGE as Record<string, string>)[normalizedProviderId] 
-      || TEST_PROMPTS_TEXT2IMAGE.default;
+    return (
+      (TEST_PROMPTS_TEXT2IMAGE as Record<string, string>)[normalizedProviderId] ||
+      TEST_PROMPTS_TEXT2IMAGE.default
+    )
   }
-  
-  return (TEST_PROMPTS_IMAGE2IMAGE as Record<string, string>)[normalizedProviderId]
-    || TEST_PROMPTS_IMAGE2IMAGE.default;
+
+  return (
+    (TEST_PROMPTS_IMAGE2IMAGE as Record<string, string>)[normalizedProviderId] ||
+    TEST_PROMPTS_IMAGE2IMAGE.default
+  )
 }
 
 /**
@@ -83,4 +96,4 @@ export const TEST_GENERATION_COUNT = {
   min: 1,
   /** Maximum allowed test count */
   max: 1, // Currently fixed to 1 as multi-image is not supported
-} as const;
+} as const

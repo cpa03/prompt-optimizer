@@ -39,13 +39,19 @@
           <NSpace vertical>
             <NRadio value="temporary">
               <span>{{ t('variableExtraction.temporaryVariable') }}</span>
-              <NText depth="3" :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }">
+              <NText
+                depth="3"
+                :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }"
+              >
                 {{ t('variableExtraction.temporaryVariableDesc') }}
               </NText>
             </NRadio>
             <NRadio value="global">
               <span>{{ t('variableExtraction.globalVariable') }}</span>
-              <NText depth="3" :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }">
+              <NText
+                depth="3"
+                :style="{ marginLeft: SPACING.SM + 'px', fontSize: FONT_SIZES.XS + 'px' }"
+              >
                 {{ t('variableExtraction.globalVariableDesc') }}
               </NText>
             </NRadio>
@@ -69,16 +75,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 
-import {
-  NModal,
-  NSpace,
-  NFormItem,
-  NInput,
-  NRadioGroup,
-  NRadio,
-  NCheckbox,
-  NText
-} from 'naive-ui'
+import { NModal, NSpace, NFormItem, NInput, NRadioGroup, NRadio, NCheckbox, NText } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
 import { useToast } from '../../composables/ui/useToast'
 import { VARIABLE_VALIDATION, getVariableNameValidationError } from '../../types/variable'
@@ -114,7 +111,7 @@ const props = withDefaults(defineProps<Props>(), {
   existingGlobalVariables: () => [],
   existingTemporaryVariables: () => [],
   predefinedVariables: () => [],
-  occurrenceCount: 1
+  occurrenceCount: 1,
 })
 
 // Emits 定义
@@ -122,12 +119,15 @@ interface Emits {
   /** 更新对话框显示状态 */
   (e: 'update:show', value: boolean): void
   /** 确认提取变量 */
-  (e: 'confirm', data: {
-    variableName: string
-    variableValue: string
-    variableType: 'global' | 'temporary'
-    replaceAll: boolean
-  }): void
+  (
+    e: 'confirm',
+    data: {
+      variableName: string
+      variableValue: string
+      variableType: 'global' | 'temporary'
+      replaceAll: boolean
+    }
+  ): void
   /** 取消操作 */
   (e: 'cancel'): void
 }
@@ -140,7 +140,7 @@ const message = useToast()
 // 内部状态
 const isVisible = computed({
   get: () => props.show,
-  set: (value) => emit('update:show', value)
+  set: (value) => emit('update:show', value),
 })
 
 const variableName = ref('')
@@ -170,7 +170,7 @@ const validationStatus = computed<'success' | 'warning' | 'error' | undefined>((
   // 验证规则4: 不能与已有变量重名
   const allExistingVariables = [
     ...props.existingGlobalVariables,
-    ...props.existingTemporaryVariables
+    ...props.existingTemporaryVariables,
   ]
   if (allExistingVariables.includes(variableName.value)) {
     return 'warning'
@@ -186,7 +186,9 @@ const validationMessage = computed(() => {
     case 'required':
       return t('variableExtraction.validation.required')
     case 'tooLong':
-      return t('variableExtraction.validation.tooLong', { max: VARIABLE_VALIDATION.MAX_NAME_LENGTH })
+      return t('variableExtraction.validation.tooLong', {
+        max: VARIABLE_VALIDATION.MAX_NAME_LENGTH,
+      })
     case 'forbiddenPrefix':
       return t('variableExtraction.validation.forbiddenPrefix')
     case 'noNumberStart':
@@ -203,7 +205,7 @@ const validationMessage = computed(() => {
 
   const allExistingVariables = [
     ...props.existingGlobalVariables,
-    ...props.existingTemporaryVariables
+    ...props.existingTemporaryVariables,
   ]
   if (allExistingVariables.includes(variableName.value)) {
     return t('variableExtraction.validation.duplicateVariable')
@@ -213,19 +215,26 @@ const validationMessage = computed(() => {
 })
 
 // 监听 props 变化,更新内部状态
-watch(() => props.selectedText, (newValue) => {
-  variableValue.value = newValue
-}, { immediate: true })
+watch(
+  () => props.selectedText,
+  (newValue) => {
+    variableValue.value = newValue
+  },
+  { immediate: true }
+)
 
-watch(() => props.show, (newValue) => {
-  if (newValue) {
-    // 对话框打开时重置状态
-    variableName.value = ''
-    variableValue.value = props.selectedText
-    variableType.value = 'temporary'
-    replaceAll.value = props.occurrenceCount > 1
+watch(
+  () => props.show,
+  (newValue) => {
+    if (newValue) {
+      // 对话框打开时重置状态
+      variableName.value = ''
+      variableValue.value = props.selectedText
+      variableType.value = 'temporary'
+      replaceAll.value = props.occurrenceCount > 1
+    }
   }
-})
+)
 
 // 处理变量名输入
 const handleVariableNameInput = () => {
@@ -251,7 +260,7 @@ const handleConfirm = () => {
     variableName: variableName.value,
     variableValue: variableValue.value,
     variableType: variableType.value,
-    replaceAll: replaceAll.value
+    replaceAll: replaceAll.value,
   })
 
   // 关闭对话框

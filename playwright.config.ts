@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Playwright E2E 测试配置
@@ -6,8 +6,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 
 // E2E 测试专用端口,避免与开发服务器冲突
-const E2E_PORT = process.env.E2E_PORT || 15555;
-const BASE_URL = `http://localhost:${E2E_PORT}`;
+const E2E_PORT = process.env.E2E_PORT || 15555
+const BASE_URL = `http://localhost:${E2E_PORT}`
 
 export default defineConfig({
   // 测试目录
@@ -25,10 +25,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
 
   // 测试报告配置
-  reporter: [
-    ['html', { open: 'never' }],
-    ['list']
-  ],
+  reporter: [['html', { open: 'never' }], ['list']],
 
   // 共享设置
   use: {
@@ -81,4 +78,4 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 120 * 1000,
   },
-});
+})

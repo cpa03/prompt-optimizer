@@ -1,8 +1,5 @@
 <template>
-  <Modal
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
-  >
+  <Modal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)">
     <template #title>
       {{ t('updater.title') }}
     </template>
@@ -72,7 +69,9 @@
               :loading="state.isDownloadingStable"
               @click="handleDownloadStable"
             >
-              {{ state.isDownloadingStable ? t('updater.downloadingShort') : t('updater.download') }}
+              {{
+                state.isDownloadingStable ? t('updater.downloadingShort') : t('updater.download')
+              }}
             </NButton>
           </NSpace>
         </div>
@@ -132,7 +131,11 @@
               :loading="state.isDownloadingPrerelease"
               @click="handleDownloadPrerelease"
             >
-              {{ state.isDownloadingPrerelease ? t('updater.downloadingShort') : t('updater.download') }}
+              {{
+                state.isDownloadingPrerelease
+                  ? t('updater.downloadingShort')
+                  : t('updater.download')
+              }}
             </NButton>
           </NSpace>
         </div>
@@ -199,8 +202,10 @@
             :height="8"
           />
           <NText depth="3" class="text-sm">
-            {{ Math.round(state.downloadProgress.percent) }}%
-            ({{ formatBytes(state.downloadProgress.transferred) }} / {{ formatBytes(state.downloadProgress.total) }})
+            {{ Math.round(state.downloadProgress.percent) }}% ({{
+              formatBytes(state.downloadProgress.transferred)
+            }}
+            / {{ formatBytes(state.downloadProgress.total) }})
           </NText>
         </div>
       </div>
@@ -271,7 +276,7 @@ const {
   ignoreUpdate,
   unignoreUpdate,
   downloadStableVersion,
-  downloadPrereleaseVersion
+  downloadPrereleaseVersion,
 } = useUpdater()
 
 const downloadMessageAlertType = computed(() => {
@@ -293,14 +298,9 @@ const handleCheckUpdate = async () => {
   await checkUpdate()
 }
 
-
 const handleInstallUpdate = async () => {
   await installUpdate()
 }
-
-
-
-
 
 const openStableReleaseUrl = async () => {
   if (!state.stableReleaseUrl || !isRunningInElectron() || !window.electronAPI?.shell) return
@@ -349,10 +349,6 @@ const handleUnignoreStableUpdate = async () => {
 const handleUnignorePrereleaseUpdate = async () => {
   await unignoreUpdate('prerelease')
 }
-
-
-
-
 
 // 格式化字节数
 const formatBytes = (bytes: number) => {
@@ -415,12 +411,7 @@ const formatBytes = (bytes: number) => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.25),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
   animation: button-loading-shimmer 1.5s infinite;
   pointer-events: none;
 }

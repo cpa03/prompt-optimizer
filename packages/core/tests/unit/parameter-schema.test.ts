@@ -4,7 +4,7 @@ import {
   isSafeCustomKey,
   isValueEmpty,
   normalizeDefaultValue,
-  type UnifiedParameterDefinition
+  type UnifiedParameterDefinition,
 } from '../../src/services/model/parameter-schema'
 
 describe('parameter-schema helpers', () => {
@@ -58,7 +58,7 @@ describe('parameter-schema helpers', () => {
       descriptionKey: 'params.temperature.description',
       required: false,
       unitKey: 'params.temperature.unit',
-      tags: ['llm', 'sampling']
+      tags: ['llm', 'sampling'],
     }
     expect(definition.name).toBe('temperature')
   })

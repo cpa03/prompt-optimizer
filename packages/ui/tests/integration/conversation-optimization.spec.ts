@@ -6,7 +6,7 @@ const toast = {
   error: vi.fn(),
   warning: vi.fn(),
   info: vi.fn(),
-  loading: vi.fn()
+  loading: vi.fn(),
 }
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -14,13 +14,13 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
 vi.mock('../../src/composables/ui/useToast', () => ({
-  useToast: () => toast
+  useToast: () => toast,
 }))
 
 import type { AppServices } from '../../src/types/services'
@@ -42,22 +42,22 @@ describe('Conversation optimization (integration)', () => {
         handlers.onReasoningToken('why')
         await handlers.onComplete()
       }),
-      iteratePromptStream: vi.fn()
+      iteratePromptStream: vi.fn(),
     }
 
     const historyManager = {
       createNewChain: vi.fn(async (recordData: any) => ({
         chainId: 'chain-pro-1',
         versions: [recordData],
-        currentRecord: { id: 'v1', optimizedPrompt: recordData.optimizedPrompt }
+        currentRecord: { id: 'v1', optimizedPrompt: recordData.optimizedPrompt },
       })),
       addIteration: vi.fn(),
-      getChain: vi.fn()
+      getChain: vi.fn(),
     }
 
     const { pinia } = createTestPinia({
       promptService: promptService as any,
-      historyManager: historyManager as any
+      historyManager: historyManager as any,
     } as Partial<AppServices>)
     void pinia
 
@@ -66,11 +66,11 @@ describe('Conversation optimization (integration)', () => {
 
     const services = ref({
       promptService,
-      historyManager
+      historyManager,
     } as unknown as AppServices)
 
     const conversationMessages = ref<ConversationMessage[]>([
-      { id: 'm1', role: 'user', content: 'hello', originalContent: 'hello' } as any
+      { id: 'm1', role: 'user', content: 'hello', originalContent: 'hello' } as any,
     ])
 
     const optimizationMode = ref<'system' | 'user'>('system')
@@ -104,4 +104,3 @@ describe('Conversation optimization (integration)', () => {
     expect(proSession.messageChainMap).toEqual({ m1: 'chain-pro-1' })
   })
 })
-

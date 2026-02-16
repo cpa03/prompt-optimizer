@@ -1,15 +1,15 @@
-import { IHistoryManager } from '../history/types';
-import { IModelManager } from '../model/types';
-import { ITemplateManager } from '../template/types';
-import { IPreferenceService } from '../preference/types';
-import { ContextRepo } from '../context/types';
+import { IHistoryManager } from '../history/types'
+import { IModelManager } from '../model/types'
+import { ITemplateManager } from '../template/types'
+import { IPreferenceService } from '../preference/types'
+import { ContextRepo } from '../context/types'
 import {
   DataExportFailedError,
   DataImportPartialFailedError,
   DataInvalidFormatError,
   DataInvalidJsonError,
-} from './errors';
-import { toErrorWithCode } from '../../utils/error';
+} from './errors'
+import { toErrorWithCode } from '../../utils/error'
 
 /**
  * 数据导入导出管理器
@@ -30,21 +30,21 @@ export interface IDataManager {
    * 导出所有数据
    * @returns JSON格式的数据字符串
    */
-  exportAllData(): Promise<string>;
+  exportAllData(): Promise<string>
 
   /**
    * 导入所有数据
    * @param dataString JSON格式的数据字符串
    */
-  importAllData(dataString: string): Promise<void>;
+  importAllData(dataString: string): Promise<void>
 }
 
 export class DataManager implements IDataManager {
-  private modelManager: IModelManager;
-  private templateManager: ITemplateManager;
-  private historyManager: IHistoryManager;
-  private preferenceService: IPreferenceService;
-  private contextRepo: ContextRepo;
+  private modelManager: IModelManager
+  private templateManager: ITemplateManager
+  private historyManager: IHistoryManager
+  private preferenceService: IPreferenceService
+  private contextRepo: ContextRepo
 
   constructor(
     modelManager: IModelManager,
@@ -53,25 +53,25 @@ export class DataManager implements IDataManager {
     preferenceService: IPreferenceService,
     contextRepo: ContextRepo
   ) {
-    this.modelManager = modelManager;
-    this.templateManager = templateManager;
-    this.historyManager = historyManager;
-    this.preferenceService = preferenceService;
-    this.contextRepo = contextRepo;
+    this.modelManager = modelManager
+    this.templateManager = templateManager
+    this.historyManager = historyManager
+    this.preferenceService = preferenceService
+    this.contextRepo = contextRepo
   }
 
   async exportAllData(): Promise<string> {
-    const data: Record<string, any> = {};
+    const data: Record<string, any> = {}
 
     try {
       // 使用各服务的exportData接口，使用固定的键名保持兼容性
-      data['history'] = await this.historyManager.exportData();
-      data['models'] = await this.modelManager.exportData();
-      data['userTemplates'] = await this.templateManager.exportData();
-      data['userSettings'] = await this.preferenceService.exportData();
-      data['contexts'] = await this.contextRepo.exportData();
+      data['history'] = await this.historyManager.exportData()
+      data['models'] = await this.modelManager.exportData()
+      data['userTemplates'] = await this.templateManager.exportData()
+      data['userSettings'] = await this.preferenceService.exportData()
+      data['contexts'] = await this.contextRepo.exportData()
     } catch (error) {
-      console.error('导出数据失败:', error);
+      console.error('导出数据失败:', error)
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
@@ -80,17 +80,17 @@ export class DataManager implements IDataManager {
 
     const exportFormat = {
       version: 1,
-      data
-    };
+      data,
+    }
 
-    return JSON.stringify(exportFormat, null, 2); // 格式化输出，便于调试
+    return JSON.stringify(exportFormat, null, 2) // 格式化输出，便于调试
   }
 
   async importAllData(dataString: string): Promise<void> {
-    let exportData: any;
+    let exportData: any
 
     try {
-      exportData = JSON.parse(dataString);
+      exportData = JSON.parse(dataString)
     } catch (error) {
       throw new DataInvalidJsonError(error instanceof Error ? error.message : String(error))
     }
@@ -100,24 +100,33 @@ export class DataManager implements IDataManager {
     }
 
     // Support both old and new format for backward compatibility
-    let dataToImport: Record<string, any>;
+    let dataToImport: Record<string, any>
 
     // New format: { version: 1, data: { ... } }
     if (exportData.version) {
-      if (!exportData.data || typeof exportData.data !== 'object' || Array.isArray(exportData.data)) {
+      if (
+        !exportData.data ||
+        typeof exportData.data !== 'object' ||
+        Array.isArray(exportData.data)
+      ) {
         throw new DataInvalidFormatError('"data" property is missing or not an object')
       }
-      dataToImport = exportData.data;
+      dataToImport = exportData.data
     }
     // Old format: direct data object { history: [...], models: [...], ... }
-    else if (exportData.history || exportData.models || exportData.userTemplates || exportData.userSettings || exportData.contexts) {
-      dataToImport = exportData;
-    }
-    else {
+    else if (
+      exportData.history ||
+      exportData.models ||
+      exportData.userTemplates ||
+      exportData.userSettings ||
+      exportData.contexts
+    ) {
+      dataToImport = exportData
+    } else {
       throw new DataInvalidFormatError('Unrecognized data structure')
     }
 
-    const errors: string[] = [];
+    const errors: string[] = []
 
     // 使用各服务的importData接口
     const serviceMap = [
@@ -125,18 +134,18 @@ export class DataManager implements IDataManager {
       { service: this.modelManager, dataKey: 'models' },
       { service: this.templateManager, dataKey: 'userTemplates' },
       { service: this.preferenceService, dataKey: 'userSettings' },
-      { service: this.contextRepo, dataKey: 'contexts' }
-    ];
+      { service: this.contextRepo, dataKey: 'contexts' },
+    ]
 
     for (const { service, dataKey } of serviceMap) {
       if (dataToImport[dataKey] !== undefined) {
         try {
-          await service.importData(dataToImport[dataKey]);
-          console.log(`Successfully imported ${dataKey}`);
+          await service.importData(dataToImport[dataKey])
+          console.log(`Successfully imported ${dataKey}`)
         } catch (error) {
-          const errorMessage = `Failed to import ${dataKey}: ${error instanceof Error ? error.message : String(error)}`;
-          errors.push(errorMessage);
-          console.error(errorMessage, error);
+          const errorMessage = `Failed to import ${dataKey}: ${error instanceof Error ? error.message : String(error)}`
+          errors.push(errorMessage)
+          console.error(errorMessage, error)
         }
       }
     }
@@ -163,5 +172,11 @@ export function createDataManager(
   preferenceService: IPreferenceService,
   contextRepo: ContextRepo
 ): DataManager {
-  return new DataManager(modelManager, templateManager, historyManager, preferenceService, contextRepo);
+  return new DataManager(
+    modelManager,
+    templateManager,
+    historyManager,
+    preferenceService,
+    contextRepo
+  )
 }

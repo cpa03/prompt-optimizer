@@ -55,7 +55,9 @@ const MODE_CASES: ModeCase[] = [
 ]
 
 function normalizeText(text: string | null | undefined): string {
-  return String(text || '').replace(/\s+/g, ' ').trim()
+  return String(text || '')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 async function gotoMode(page: any, route: string) {
@@ -65,12 +67,15 @@ async function gotoMode(page: any, route: string) {
   const sub = parts[1] || ''
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
-    await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+  await expect(page.locator('[data-testid="workspace"]').first()).toBeVisible({
+    timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+  })
 
   await page.getByTestId('function-mode-selector').getByTestId(`function-mode-${mode}`).click()
 
   if (mode === 'image') {
-    const imageId = sub === 'text2image' ? 'image-sub-mode-text2image' : 'image-sub-mode-image2image'
+    const imageId =
+      sub === 'text2image' ? 'image-sub-mode-text2image' : 'image-sub-mode-image2image'
     await page.getByTestId('core-nav').getByTestId(imageId).click()
   } else {
     await page.getByTestId('optimization-mode-selector').getByTestId(`sub-mode-${sub}`).click()
@@ -96,13 +101,13 @@ async function waitForWorkspace(page: any, mode: string) {
 
 async function getSelectByLabel(page: any, label: RegExp) {
   const labelEl = page.getByText(label).first()
-    await expect(labelEl).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+  await expect(labelEl).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
 
   const container = labelEl.locator(
     'xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]'
   )
   const select = container.locator('.n-base-selection').first()
-    await expect(select).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+  await expect(select).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
   return select
 }
 
@@ -115,7 +120,9 @@ async function openSelectAndWaitForOptions(page: any, select: any) {
   // Retry once to reduce flakiness when the first click happens before options are ready.
   const ensureOptionsVisible = async () => {
     await expect
-      .poll(async () => await optionLocator.count(), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+      .poll(async () => await optionLocator.count(), {
+        timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+      })
       .toBeGreaterThan(0)
   }
 
@@ -139,7 +146,10 @@ async function openSelectAndGetOptions(page: any, select: any): Promise<string[]
 }
 
 async function expectSelectionEquals(page: any, select: any, expected: string) {
-  await expect.poll(async () => normalizeText(await select.textContent()), { timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE })
+  await expect
+    .poll(async () => normalizeText(await select.textContent()), {
+      timeout: TIMEOUTS.NAVIGATION.WORKSPACE_VISIBLE,
+    })
     .toBe(normalizeText(expected))
 }
 
@@ -160,7 +170,9 @@ test.describe('Template default selection + cross-mode persistence', () => {
   }
 
   for (const c of MODE_CASES) {
-    test(`${c.name}: selecting last template persists across mode switch + reload + back`, async ({ page }) => {
+    test(`${c.name}: selecting last template persists across mode switch + reload + back`, async ({
+      page,
+    }) => {
       await gotoMode(page, c.route)
       await waitForWorkspace(page, c.workspaceMode)
 

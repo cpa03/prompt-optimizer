@@ -1,12 +1,6 @@
-import { 
-  ICompareService, 
-  CompareResult, 
-  CompareOptions, 
-  TextFragment, 
-  ChangeType 
-} from './types';
-import { CompareValidationError, CompareCalculationError } from './errors';
-import { diffChars, diffWords, type Change } from 'diff';
+import { ICompareService, CompareResult, CompareOptions, TextFragment, ChangeType } from './types'
+import { CompareValidationError, CompareCalculationError } from './errors'
+import { diffChars, diffWords, type Change } from 'diff'
 
 /**
  * 默认对比选项
@@ -14,8 +8,8 @@ import { diffChars, diffWords, type Change } from 'diff';
 const DEFAULT_OPTIONS: CompareOptions = {
   granularity: 'word',
   ignoreWhitespace: false,
-  caseSensitive: true
-};
+  caseSensitive: true,
+}
 
 /**
  * 文本对比服务实现 - 使用 jsdiff 库
@@ -31,30 +25,28 @@ export class CompareService implements ICompareService {
   ): CompareResult {
     try {
       // 验证输入
-      this.validateInput(original, optimized);
-      
+      this.validateInput(original, optimized)
+
       // 合并选项
-      const finalOptions = { ...DEFAULT_OPTIONS, ...options };
-      
+      const finalOptions = { ...DEFAULT_OPTIONS, ...options }
+
       // 执行对比
-      const fragments = this.performTextComparison(original, optimized, finalOptions);
-      
+      const fragments = this.performTextComparison(original, optimized, finalOptions)
+
       // 生成统计信息
-      const summary = this.generateSummary(fragments);
-      
+      const summary = this.generateSummary(fragments)
+
       return {
         fragments,
-        summary
-      };
+        summary,
+      }
     } catch (error) {
       if (error instanceof CompareValidationError) {
-        throw error;
+        throw error
       }
-      
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      throw new CompareCalculationError(
-        `Text comparison calculation failed: ${errorMessage}`
-      );
+
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      throw new CompareCalculationError(`Text comparison calculation failed: ${errorMessage}`)
     }
   }
 
@@ -63,10 +55,10 @@ export class CompareService implements ICompareService {
    */
   private validateInput(original: string, optimized: string): void {
     if (typeof original !== 'string') {
-      throw new CompareValidationError('Original text must be a string');
+      throw new CompareValidationError('Original text must be a string')
     }
     if (typeof optimized !== 'string') {
-      throw new CompareValidationError('Optimized text must be a string');
+      throw new CompareValidationError('Optimized text must be a string')
     }
   }
 
@@ -78,79 +70,76 @@ export class CompareService implements ICompareService {
     optimized: string,
     options: CompareOptions
   ): TextFragment[] {
-    let diffResult: Change[];
+    let diffResult: Change[]
 
     // 根据配置处理文本预处理
-    let processedOriginal = original;
-    let processedOptimized = optimized;
+    let processedOriginal = original
+    let processedOptimized = optimized
 
     if (options.ignoreWhitespace) {
       // 标准化空白符
-      processedOriginal = original.replace(/\s+/g, ' ').trim();
-      processedOptimized = optimized.replace(/\s+/g, ' ').trim();
+      processedOriginal = original.replace(/\s+/g, ' ').trim()
+      processedOptimized = optimized.replace(/\s+/g, ' ').trim()
     }
 
     if (!options.caseSensitive) {
-      processedOriginal = processedOriginal.toLowerCase();
-      processedOptimized = processedOptimized.toLowerCase();
+      processedOriginal = processedOriginal.toLowerCase()
+      processedOptimized = processedOptimized.toLowerCase()
     }
 
     // 根据粒度选择不同的 diff 方法
     switch (options.granularity) {
       case 'char':
-        diffResult = diffChars(processedOriginal, processedOptimized);
-        break;
+        diffResult = diffChars(processedOriginal, processedOptimized)
+        break
       case 'word':
       default:
-        diffResult = diffWords(processedOriginal, processedOptimized);
-        break;
+        diffResult = diffWords(processedOriginal, processedOptimized)
+        break
     }
 
     // 转换为我们的 TextFragment 格式
-    return this.convertDiffResultToFragments(diffResult, original);
+    return this.convertDiffResultToFragments(diffResult, original)
   }
 
   /**
    * 将 jsdiff 的结果转换为我们的 TextFragment 格式
    */
-  private convertDiffResultToFragments(
-    diffResult: Change[],
-    originalText: string
-  ): TextFragment[] {
-    const fragments: TextFragment[] = [];
-    let fragmentIndex = 0;
+  private convertDiffResultToFragments(diffResult: Change[], originalText: string): TextFragment[] {
+    const fragments: TextFragment[] = []
+    let fragmentIndex = 0
 
     for (const change of diffResult) {
-      let changeType: ChangeType;
+      let changeType: ChangeType
 
       if (change.added) {
-        changeType = ChangeType.ADDED;
+        changeType = ChangeType.ADDED
       } else if (change.removed) {
-        changeType = ChangeType.REMOVED;
+        changeType = ChangeType.REMOVED
       } else {
-        changeType = ChangeType.UNCHANGED;
+        changeType = ChangeType.UNCHANGED
       }
 
       // 确保文本内容来自原始输入（保持原始格式）
-      let text = change.value;
-      
+      let text = change.value
+
       // 如果是未更改的部分，使用原始文本以保持格式
       if (changeType === ChangeType.UNCHANGED) {
         // 在原始文本中查找对应的部分
-        const position = this.findTextPosition(text, originalText);
+        const position = this.findTextPosition(text, originalText)
         if (position !== -1) {
-          text = originalText.substring(position, position + text.length);
+          text = originalText.substring(position, position + text.length)
         }
       }
 
       fragments.push({
         text,
         type: changeType,
-        index: fragmentIndex++
-      });
+        index: fragmentIndex++,
+      })
     }
 
-    return this.mergeConsecutiveFragments(fragments);
+    return this.mergeConsecutiveFragments(fragments)
   }
 
   /**
@@ -158,34 +147,34 @@ export class CompareService implements ICompareService {
    */
   private findTextPosition(searchText: string, sourceText: string): number {
     // 简单的查找实现
-    return sourceText.indexOf(searchText);
+    return sourceText.indexOf(searchText)
   }
 
   /**
    * 合并连续的相同类型片段
    */
   private mergeConsecutiveFragments(fragments: TextFragment[]): TextFragment[] {
-    if (fragments.length === 0) return fragments;
-    
-    const merged: TextFragment[] = [];
-    let current = { ...fragments[0] };
-    
+    if (fragments.length === 0) return fragments
+
+    const merged: TextFragment[] = []
+    let current = { ...fragments[0] }
+
     for (let i = 1; i < fragments.length; i++) {
-      const fragment = fragments[i];
-      
+      const fragment = fragments[i]
+
       if (fragment.type === current.type) {
         // 合并相同类型的片段
-        current.text += fragment.text;
+        current.text += fragment.text
       } else {
         // 添加当前片段并开始新的片段
-        merged.push(current);
-        current = { ...fragment, index: merged.length };
+        merged.push(current)
+        current = { ...fragment, index: merged.length }
       }
     }
-    
-    merged.push(current);
-    
-    return merged;
+
+    merged.push(current)
+
+    return merged
   }
 
   /**
@@ -195,24 +184,24 @@ export class CompareService implements ICompareService {
     const summary = {
       additions: 0,
       deletions: 0,
-      unchanged: 0
-    };
-    
-    fragments.forEach(fragment => {
+      unchanged: 0,
+    }
+
+    fragments.forEach((fragment) => {
       switch (fragment.type) {
         case ChangeType.ADDED:
-          summary.additions++;
-          break;
+          summary.additions++
+          break
         case ChangeType.REMOVED:
-          summary.deletions++;
-          break;
+          summary.deletions++
+          break
         case ChangeType.UNCHANGED:
-          summary.unchanged++;
-          break;
+          summary.unchanged++
+          break
       }
-    });
-    
-    return summary;
+    })
+
+    return summary
   }
 }
 
@@ -221,5 +210,5 @@ export class CompareService implements ICompareService {
  * @returns 文本对比服务实例
  */
 export function createCompareService(): ICompareService {
-  return new CompareService();
-} 
+  return new CompareService()
+}

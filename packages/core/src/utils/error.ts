@@ -35,10 +35,10 @@ function isRecord(value: unknown): value is RecordLike {
 /**
  * Type guard to check if a value matches the StructuredErrorLike interface.
  * Used to identify errors that already have structured error information.
- * 
+ *
  * @param value - The value to check
  * @returns True if the value has a string `code` property
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -58,11 +58,11 @@ export function isStructuredErrorLike(value: unknown): value is StructuredErrorL
  * Normalizes unknown values into an Error instance while preserving structured error
  * information (code, params) when available. This is particularly useful for errors
  * crossing IPC boundaries or coming from external sources.
- * 
+ *
  * @param value - The unknown value to convert to an Error
  * @param fallbackMessage - Message to use if value cannot be converted meaningfully
  * @returns An Error instance with optional code and params properties
- * 
+ *
  * @example
  * ```typescript
  * try {
@@ -73,7 +73,10 @@ export function isStructuredErrorLike(value: unknown): value is StructuredErrorL
  * }
  * ```
  */
-export function toErrorWithCode(value: unknown, fallbackMessage = 'Unknown error'): Error & Partial<StructuredErrorLike> {
+export function toErrorWithCode(
+  value: unknown,
+  fallbackMessage = 'Unknown error'
+): Error & Partial<StructuredErrorLike> {
   if (value instanceof Error) {
     return value as Error & Partial<StructuredErrorLike>
   }
@@ -81,9 +84,7 @@ export function toErrorWithCode(value: unknown, fallbackMessage = 'Unknown error
   if (isStructuredErrorLike(value)) {
     const code = value.code
     const message =
-      typeof value.message === 'string' && value.message.trim()
-        ? value.message
-        : `[${code}]`
+      typeof value.message === 'string' && value.message.trim() ? value.message : `[${code}]`
 
     const err = new Error(message) as Error & Partial<StructuredErrorLike>
     err.name = typeof value.name === 'string' ? value.name : 'Error'
@@ -107,4 +108,3 @@ export function toErrorWithCode(value: unknown, fallbackMessage = 'Unknown error
 
   return new Error(String(value))
 }
-

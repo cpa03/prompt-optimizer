@@ -1,17 +1,17 @@
 <template>
   <NCard
     :bordered="false"
-    class="output-display-core h-full  max-height: 100% "
+    class="output-display-core h-full max-height: 100%"
     content-style="padding: 0; height: 100%; max-height: 100%; display: flex; flex-direction: column; overflow: hidden;"
     :data-testid="testId"
   >
-    <NFlex vertical style="height: 100%; min-height: 0; overflow: hidden;">
+    <NFlex vertical style="height: 100%; min-height: 0; overflow: hidden">
       <!-- 统一顶层工具栏 -->
-      <NFlex v-if="hasToolbar" justify="space-between" align="center" style="flex: 0 0 auto;">
+      <NFlex v-if="hasToolbar" justify="space-between" align="center" style="flex: 0 0 auto">
         <!-- 左侧：视图控制按钮组 -->
         <NButtonGroup class="toolbar-button-group">
           <div class="toolbar-btn-wrapper">
-            <NButton 
+            <NButton
               @click="internalViewMode = 'render'"
               :disabled="internalViewMode === 'render'"
               size="small"
@@ -32,7 +32,7 @@
             </Transition>
           </div>
           <div class="toolbar-btn-wrapper">
-            <NButton 
+            <NButton
               @click="internalViewMode = 'source'"
               :disabled="internalViewMode === 'source'"
               size="small"
@@ -53,7 +53,7 @@
             </Transition>
           </div>
           <div v-if="isActionEnabled('diff') && originalContent" class="toolbar-btn-wrapper">
-            <NButton 
+            <NButton
               @click="internalViewMode = 'diff'"
               :disabled="internalViewMode === 'diff' || !originalContent"
               size="small"
@@ -74,112 +74,136 @@
             </Transition>
           </div>
         </NButtonGroup>
-        
+
         <!-- 右侧：操作按钮 -->
         <NFlex align="center" :size="8" :wrap="false">
           <slot name="toolbar-right-extra"></slot>
           <NButtonGroup class="toolbar-button-group">
-          <div v-if="isActionEnabled('favorite')" class="toolbar-btn-wrapper">
-            <NButton
-              @click="handleFavorite"
-              size="small"
-              quaternary
-              circle
-              :title="t('common.addToFavorites') + ' (Ctrl+S)'"
-              :aria-label="t('common.addToFavorites')"
-              @mouseenter="showShortcutHint('ctrl+s', true)"
-              @mouseleave="showShortcutHint('ctrl+s', false)"
-              @focus="showShortcutHint('ctrl+s', true)"
-              @blur="showShortcutHint('ctrl+s', false)"
-            >
-              <template #icon>
-                <NIcon>
-                  <Star />
-                </NIcon>
-              </template>
-            </NButton>
-            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
-            <Transition name="shortcut-hint">
-              <div v-if="shortcutHints['ctrl+s']" class="keyboard-shortcut-hint" role="tooltip">
-                <span class="shortcut-key">Ctrl+S</span>
-              </div>
-            </Transition>
-          </div>
-          <div v-if="isActionEnabled('copy')" class="toolbar-btn-wrapper">
-            <NButton
-              @click="handleCopy('content')"
-              size="small"
-              quaternary
-              circle
-              :title="(copySuccess ? t('common.copied') : t('common.copy')) + ' (Ctrl+C)'"
-              :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
-              :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
-              @mouseenter="showShortcutHint('ctrl+c', true)"
-              @mouseleave="showShortcutHint('ctrl+c', false)"
-              @focus="showShortcutHint('ctrl+c', true)"
-              @blur="showShortcutHint('ctrl+c', false)"
-            >
-              <template #icon>
-                <div class="copy-icon-container">
-                  <Transition name="icon-morph" mode="out-in">
-                    <NIcon v-if="copySuccess" key="check" class="check-icon">
-                      <Check />
-                    </NIcon>
-                    <NIcon v-else key="copy" class="copy-icon">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5" />
-                      </svg>
-                    </NIcon>
-                  </Transition>
-                  <span v-if="copySuccess" class="success-ring" aria-hidden="true"></span>
+            <div v-if="isActionEnabled('favorite')" class="toolbar-btn-wrapper">
+              <NButton
+                @click="handleFavorite"
+                size="small"
+                quaternary
+                circle
+                :title="t('common.addToFavorites') + ' (Ctrl+S)'"
+                :aria-label="t('common.addToFavorites')"
+                @mouseenter="showShortcutHint('ctrl+s', true)"
+                @mouseleave="showShortcutHint('ctrl+s', false)"
+                @focus="showShortcutHint('ctrl+s', true)"
+                @blur="showShortcutHint('ctrl+s', false)"
+              >
+                <template #icon>
+                  <NIcon>
+                    <Star />
+                  </NIcon>
+                </template>
+              </NButton>
+              <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+              <Transition name="shortcut-hint">
+                <div v-if="shortcutHints['ctrl+s']" class="keyboard-shortcut-hint" role="tooltip">
+                  <span class="shortcut-key">Ctrl+S</span>
                 </div>
-              </template>
-            </NButton>
-            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
-            <Transition name="shortcut-hint">
-              <div v-if="shortcutHints['ctrl+c']" class="keyboard-shortcut-hint" role="tooltip">
-                <span class="shortcut-key">Ctrl+C</span>
-              </div>
-            </Transition>
-          </div>
-          <div v-if="isActionEnabled('fullscreen')" class="toolbar-btn-wrapper">
-            <NButton
-              @click="handleFullscreen"
-              size="small"
-              quaternary
-              circle
-              :title="t('common.fullscreen') + ' (Ctrl+Enter)'"
-              :aria-label="t('common.fullscreen')"
-              @mouseenter="showShortcutHint('ctrl+enter', true)"
-              @mouseleave="showShortcutHint('ctrl+enter', false)"
-              @focus="showShortcutHint('ctrl+enter', true)"
-              @blur="showShortcutHint('ctrl+enter', false)"
-            >
-              <template #icon>
-                <NIcon>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
-                </NIcon>
-              </template>
-            </NButton>
-            <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
-            <Transition name="shortcut-hint">
-              <div v-if="shortcutHints['ctrl+enter']" class="keyboard-shortcut-hint" role="tooltip">
-                <span class="shortcut-key">Ctrl+Enter</span>
-              </div>
-            </Transition>
-          </div>
+              </Transition>
+            </div>
+            <div v-if="isActionEnabled('copy')" class="toolbar-btn-wrapper">
+              <NButton
+                @click="handleCopy('content')"
+                size="small"
+                quaternary
+                circle
+                :title="(copySuccess ? t('common.copied') : t('common.copy')) + ' (Ctrl+C)'"
+                :aria-label="copySuccess ? t('common.copied') : t('common.copy')"
+                :class="{ 'copy-success': copySuccess, 'copy-button-pulse': copySuccess }"
+                @mouseenter="showShortcutHint('ctrl+c', true)"
+                @mouseleave="showShortcutHint('ctrl+c', false)"
+                @focus="showShortcutHint('ctrl+c', true)"
+                @blur="showShortcutHint('ctrl+c', false)"
+              >
+                <template #icon>
+                  <div class="copy-icon-container">
+                    <Transition name="icon-morph" mode="out-in">
+                      <NIcon v-if="copySuccess" key="check" class="check-icon">
+                        <Check />
+                      </NIcon>
+                      <NIcon v-else key="copy" class="copy-icon">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.03 1.125 0 1.13.094 1.976 1.057 1.976 2.192V7.5M8.25 7.5h7.5M8.25 7.5h-1.5a1.5 1.5 0 00-1.5 1.5v11.25c0 .828.672 1.5 1.5 1.5h10.5a1.5 1.5 0 001.5-1.5V9a1.5 1.5 0 00-1.5-1.5h-1.5"
+                          />
+                        </svg>
+                      </NIcon>
+                    </Transition>
+                    <span v-if="copySuccess" class="success-ring" aria-hidden="true"></span>
+                  </div>
+                </template>
+              </NButton>
+              <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+              <Transition name="shortcut-hint">
+                <div v-if="shortcutHints['ctrl+c']" class="keyboard-shortcut-hint" role="tooltip">
+                  <span class="shortcut-key">Ctrl+C</span>
+                </div>
+              </Transition>
+            </div>
+            <div v-if="isActionEnabled('fullscreen')" class="toolbar-btn-wrapper">
+              <NButton
+                @click="handleFullscreen"
+                size="small"
+                quaternary
+                circle
+                :title="t('common.fullscreen') + ' (Ctrl+Enter)'"
+                :aria-label="t('common.fullscreen')"
+                @mouseenter="showShortcutHint('ctrl+enter', true)"
+                @mouseleave="showShortcutHint('ctrl+enter', false)"
+                @focus="showShortcutHint('ctrl+enter', true)"
+                @blur="showShortcutHint('ctrl+enter', false)"
+              >
+                <template #icon>
+                  <NIcon>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                      />
+                    </svg>
+                  </NIcon>
+                </template>
+              </NButton>
+              <!-- 🎨 Palette: Keyboard shortcut hint overlay -->
+              <Transition name="shortcut-hint">
+                <div
+                  v-if="shortcutHints['ctrl+enter']"
+                  class="keyboard-shortcut-hint"
+                  role="tooltip"
+                >
+                  <span class="shortcut-key">Ctrl+Enter</span>
+                </div>
+              </Transition>
+            </div>
           </NButtonGroup>
         </NFlex>
       </NFlex>
 
       <!-- 推理内容区域 -->
-      <NFlex v-if="shouldShowReasoning" style="flex: 0 0 auto;">
-        <NCollapse v-model:expanded-names="reasoningExpandedNames" style="width: 100%;">
+      <NFlex v-if="shouldShowReasoning" style="flex: 0 0 auto">
+        <NCollapse v-model:expanded-names="reasoningExpandedNames" style="width: 100%">
           <NCollapseItem name="reasoning">
             <template #header>
-              <NFlex justify="space-between" align="center" style="width: 100%;">
+              <NFlex justify="space-between" align="center" style="width: 100%">
                 <NText class="text-sm font-medium">
                   {{ t('common.reasoning') }}
                 </NText>
@@ -189,8 +213,12 @@
                 </NFlex>
               </NFlex>
             </template>
-            
-            <NScrollbar class="reasoning-content" ref="reasoningContentRef" style="max-height: clamp(160px, 28vh, 360px); overflow: auto;">
+
+            <NScrollbar
+              class="reasoning-content"
+              ref="reasoningContentRef"
+              style="max-height: clamp(160px, 28vh, 360px); overflow: auto"
+            >
               <MarkdownRenderer
                 v-if="displayReasoning"
                 :content="displayReasoning"
@@ -206,14 +234,15 @@
         </NCollapse>
       </NFlex>
       <!-- 主要内容区域 -->
-      <NFlex vertical style="flex: 1; min-height: 0; max-height: 100%; overflow: hidden;">
+      <NFlex vertical style="flex: 1; min-height: 0; max-height: 100%; overflow: hidden">
         <!-- 对比模式 -->
-        <TextDiffUI v-if="internalViewMode === 'diff' && content && originalContent"
+        <TextDiffUI
+          v-if="internalViewMode === 'diff' && content && originalContent"
           :originalText="originalContent"
           :optimizedText="content"
           :compareResult="compareResult"
           class="w-full"
-          style="height: 100%; min-height: 0; overflow: auto;"
+          style="height: 100%; min-height: 0; overflow: auto"
         />
 
         <!-- 原文模式 -->
@@ -229,7 +258,7 @@
             v-bind="variableData"
             @variable-extracted="handleVariableExtracted"
             @add-missing-variable="handleAddMissingVariable"
-            style="height: 100%; min-height: 0;"
+            style="height: 100%; min-height: 0"
           />
 
           <!-- Basic/Image 模式：使用普通输入框 -->
@@ -241,22 +270,23 @@
             type="textarea"
             :placeholder="placeholder"
             :autosize="{ minRows: 10 }"
-            style="height: 100%; min-height: 0;"
+            style="height: 100%; min-height: 0"
           />
         </template>
 
         <!-- 渲染模式（默认） -->
-        <NFlex v-else
+        <NFlex
+          v-else
           vertical
           :align="displayContent ? 'stretch' : 'center'"
           :justify="displayContent ? 'start' : 'center'"
-          style="flex: 1; min-height: 0; overflow: hidden;"
+          style="flex: 1; min-height: 0; overflow: hidden"
         >
           <MarkdownRenderer
             v-if="displayContent"
             :content="displayContent"
             :streaming="streaming"
-            style="flex: 1; min-height: 0; overflow: auto;"
+            style="flex: 1; min-height: 0; overflow: auto"
           />
           <!-- 🎨 Palette: Enhanced empty state with contextual guidance and animation -->
           <div
@@ -264,15 +294,22 @@
             class="enhanced-empty-state flex flex-col items-center justify-center h-full px-6"
           >
             <div class="empty-state-illustration">
-              <NIcon :size="ICON_SIZES.XXL" class="empty-state-icon text-gray-300 dark:text-gray-600">
+              <NIcon
+                :size="ICON_SIZES.XXL"
+                class="empty-state-icon text-gray-300 dark:text-gray-600"
+              >
                 <FileText />
               </NIcon>
               <div class="empty-state-decoration" aria-hidden="true"></div>
             </div>
-            <NText class="empty-state-title text-lg font-medium mt-4 text-gray-600 dark:text-gray-400">
+            <NText
+              class="empty-state-title text-lg font-medium mt-4 text-gray-600 dark:text-gray-400"
+            >
               {{ placeholder || t('common.noContent') }}
             </NText>
-            <NText class="empty-state-hint text-sm mt-2 text-gray-400 dark:text-gray-500 text-center max-w-md">
+            <NText
+              class="empty-state-hint text-sm mt-2 text-gray-400 dark:text-gray-500 text-center max-w-md"
+            >
               {{ t('common.getStartedHint') }}
             </NText>
           </div>
@@ -295,7 +332,6 @@
           </div>
         </NFlex>
       </NFlex>
-  
     </NFlex>
   </NCard>
 </template>
@@ -305,8 +341,18 @@ import { computed, ref, watch, nextTick, onMounted, inject, type Ref } from 'vue
 
 import { useI18n } from 'vue-i18n'
 import {
-  NCard, NButton, NButtonGroup, NIcon, NCollapse, NCollapseItem,
-  NInput, NSpin, NScrollbar, NFlex, NText, NSpace
+  NCard,
+  NButton,
+  NButtonGroup,
+  NIcon,
+  NCollapse,
+  NCollapseItem,
+  NInput,
+  NSpin,
+  NScrollbar,
+  NFlex,
+  NText,
+  NSpace,
 } from 'naive-ui'
 import { useToast } from '../composables/ui/useToast'
 import { Star, FileText, Check } from '@vicons/tabler'
@@ -343,22 +389,22 @@ interface Props {
 
   /** E2E/测试定位用的 data-testid（挂在组件根节点） */
   testId?: string
-  
+
   // 显示模式
   mode: 'readonly' | 'editable'
   reasoningMode?: 'show' | 'hide' | 'auto'
-  
+
   // 功能开关
   enabledActions?: ActionName[]
-  
+
   // 样式配置
   height?: string | number
   placeholder?: string
-  
+
   // 状态
   loading?: boolean
   streaming?: boolean
-  
+
   // 服务
   compareService?: ICompareService
 }
@@ -372,7 +418,7 @@ const props = withDefaults(defineProps<Props>(), {
   reasoningMode: 'auto',
   enabledActions: () => ['fullscreen', 'diff', 'copy', 'edit', 'reasoning', 'favorite'],
   height: '100%',
-  placeholder: ''
+  placeholder: '',
 })
 
 const testId = computed(() => props.testId || undefined)
@@ -381,8 +427,8 @@ const testId = computed(() => props.testId || undefined)
 const emit = defineEmits<{
   'update:content': [content: string]
   'update:reasoning': [reasoning: string]
-  'copy': [content: string, type: 'content' | 'reasoning' | 'all']
-  'fullscreen': []
+  copy: [content: string, type: 'content' | 'reasoning' | 'all']
+  fullscreen: []
   'edit-start': []
   'edit-end': []
   'reasoning-toggle': [expanded: boolean]
@@ -399,7 +445,9 @@ const routeFunctionMode = computed<'basic' | 'pro' | 'image'>(() => {
   return 'basic'
 })
 
-const shouldEnableVariables = computed(() => routeFunctionMode.value === 'pro' || routeFunctionMode.value === 'image')
+const shouldEnableVariables = computed(
+  () => routeFunctionMode.value === 'pro' || routeFunctionMode.value === 'image'
+)
 
 // ==================== 变量管理 Composables ====================
 // 临时变量管理器（全局单例）
@@ -442,7 +490,7 @@ const shortcutHints = ref<Record<string, boolean>>({
   'ctrl+3': false,
   'ctrl+s': false,
   'ctrl+c': false,
-  'ctrl+enter': false
+  'ctrl+enter': false,
 })
 
 // 🎨 Palette: Show/hide keyboard shortcut hint with debounce for better UX
@@ -454,7 +502,7 @@ const showShortcutHint = (key: string, show: boolean) => {
     clearTimeout(shortcutHintTimeouts.value[key]!)
     shortcutHintTimeouts.value[key] = null
   }
-  
+
   if (show) {
     // Small delay before showing to avoid flickering on quick mouse passes
     shortcutHintTimeouts.value[key] = window.setTimeout(() => {
@@ -480,7 +528,7 @@ const reasoningExpandedNames = ref<string[]>([])
 const isActionEnabled = (action: ActionName) => props.enabledActions.includes(action)
 
 const hasToolbar = computed(() =>
-  ['diff', 'copy', 'fullscreen', 'edit'].some(action => isActionEnabled(action as ActionName))
+  ['diff', 'copy', 'fullscreen', 'edit'].some((action) => isActionEnabled(action as ActionName))
 )
 
 // 计算属性
@@ -511,7 +559,7 @@ const isReasoningExpanded = computed({
       reasoningExpandedNames.value = []
     }
     emit('reasoning-toggle', expanded)
-  }
+  },
 })
 
 // 处理原文模式输入
@@ -534,8 +582,10 @@ const handleCopy = (type: 'content' | 'reasoning' | 'all') => {
     case 'all':
       textToCopy = [
         displayReasoning.value && `推理过程：\n${displayReasoning.value}`,
-        `主要内容：\n${displayContent.value}`
-      ].filter(Boolean).join('\n\n')
+        `主要内容：\n${displayContent.value}`,
+      ]
+        .filter(Boolean)
+        .join('\n\n')
       break
   }
 
@@ -565,7 +615,7 @@ const scrollReasoningToBottom = () => {
       if (reasoningContentRef.value) {
         reasoningContentRef.value.scrollTo({
           top: 999999, // 滚动到底部
-          behavior: 'smooth'
+          behavior: 'smooth',
         })
       }
     })
@@ -579,10 +629,7 @@ const updateCompareResult = async () => {
       const compareService = props.compareService ?? services.value?.compareService
       if (!compareService) throw new Error('CompareService not available')
 
-      compareResult.value = await compareService.compareTexts(
-        props.originalContent,
-        props.content
-      )
+      compareResult.value = await compareService.compareTexts(props.originalContent, props.content)
     } catch (error) {
       console.error('[OutputDisplayCore] Error calculating diff:', error)
       message.warning(t('toast.warning.compareFailed'))
@@ -596,58 +643,71 @@ const updateCompareResult = async () => {
 // 智能自动切换逻辑
 const previousViewMode = ref<'render' | 'source' | 'diff' | null>(null)
 
-watch(() => props.streaming, (isStreaming, wasStreaming) => {
-  if (isStreaming && !wasStreaming) {
-    // 新任务开始，重置用户记忆
-    userHasManuallyToggledReasoning.value = false
-  } else if (!isStreaming && wasStreaming) {
-    // 任务结束，如果用户未干预且思考区域仍然展开，自动折叠
-    if (!userHasManuallyToggledReasoning.value && isReasoningExpanded.value) {
+watch(
+  () => props.streaming,
+  (isStreaming, wasStreaming) => {
+    if (isStreaming && !wasStreaming) {
+      // 新任务开始，重置用户记忆
+      userHasManuallyToggledReasoning.value = false
+    } else if (!isStreaming && wasStreaming) {
+      // 任务结束，如果用户未干预且思考区域仍然展开，自动折叠
+      if (!userHasManuallyToggledReasoning.value && isReasoningExpanded.value) {
+        isReasoningExpanded.value = false
+      }
+    }
+
+    if (isStreaming) {
+      // 记住当前模式，并强制切换到原文模式
+      if (internalViewMode.value !== 'source') {
+        previousViewMode.value = internalViewMode.value
+        internalViewMode.value = 'source'
+      }
+    } else {
+      // 流式结束后，恢复之前的模式
+      if (previousViewMode.value) {
+        internalViewMode.value = previousViewMode.value
+        previousViewMode.value = null
+      }
+    }
+  }
+)
+
+watch(internalViewMode, updateCompareResult, { immediate: true })
+watch(
+  () => [props.content, props.originalContent],
+  () => {
+    if (internalViewMode.value === 'diff') {
+      updateCompareResult()
+    }
+  }
+)
+
+watch(
+  () => props.reasoning,
+  (newReasoning, oldReasoning) => {
+    // 当推理内容从无到有，且用户未手动干预时，自动展开
+    if (newReasoning && !oldReasoning && !userHasManuallyToggledReasoning.value) {
+      isReasoningExpanded.value = true
+    }
+
+    // 如果思考过程已展开且有新内容，滚动到底部
+    if (isReasoningExpanded.value && newReasoning) {
+      scrollReasoningToBottom()
+    }
+  },
+  { flush: 'post' }
+)
+
+watch(
+  () => props.content,
+  (newContent, oldContent) => {
+    // 当主要内容开始流式输出时，如果用户未干预，自动折叠思考过程
+    const mainContentJustStarted = newContent && !oldContent
+    if (props.streaming && mainContentJustStarted && !userHasManuallyToggledReasoning.value) {
       isReasoningExpanded.value = false
     }
   }
-
-  if (isStreaming) {
-    // 记住当前模式，并强制切换到原文模式
-    if (internalViewMode.value !== 'source') {
-      previousViewMode.value = internalViewMode.value
-      internalViewMode.value = 'source'
-    }
-  } else {
-    // 流式结束后，恢复之前的模式
-    if (previousViewMode.value) {
-      internalViewMode.value = previousViewMode.value
-      previousViewMode.value = null
-    }
-  }
-})
-
-watch(internalViewMode, updateCompareResult, { immediate: true })
-watch(() => [props.content, props.originalContent], () => {
-  if (internalViewMode.value === 'diff') {
-    updateCompareResult()
-  }
-})
-
-watch(() => props.reasoning, (newReasoning, oldReasoning) => {
-  // 当推理内容从无到有，且用户未手动干预时，自动展开
-  if (newReasoning && !oldReasoning && !userHasManuallyToggledReasoning.value) {
-    isReasoningExpanded.value = true
-  }
-  
-  // 如果思考过程已展开且有新内容，滚动到底部
-  if (isReasoningExpanded.value && newReasoning) {
-    scrollReasoningToBottom()
-  }
-}, { flush: 'post' })
-
-watch(() => props.content, (newContent, oldContent) => {
-  // 当主要内容开始流式输出时，如果用户未干预，自动折叠思考过程
-  const mainContentJustStarted = newContent && !oldContent
-  if (props.streaming && mainContentJustStarted && !userHasManuallyToggledReasoning.value) {
-    isReasoningExpanded.value = false
-  }
-})
+)
 
 // 监听推理折叠状态变化
 watch(reasoningExpandedNames, (newNames) => {
@@ -678,16 +738,16 @@ const forceRefreshContent = () => {
 // 收藏相关方法 - 触发保存对话框而不是直接保存
 const handleFavorite = () => {
   if (!props.content) {
-    message.warning('没有内容可以收藏');
-    return;
+    message.warning('没有内容可以收藏')
+    return
   }
 
   // 触发保存收藏事件,由父组件打开保存对话框
   emit('save-favorite', {
     content: props.content,
-    originalContent: props.originalContent
-  });
-};
+    originalContent: props.originalContent,
+  })
+}
 
 // 组件挂载时设置初始视图模式
 onMounted(() => {
@@ -699,18 +759,21 @@ onMounted(() => {
 
   // 如果是可编辑模式，默认显示原文
   if (props.mode === 'editable') {
-    internalViewMode.value = 'source';
+    internalViewMode.value = 'source'
   }
-});
+})
 
 // 监听 mode 变化，自动切换视图模式
-watch(() => props.mode, (newMode) => {
-  if (newMode === 'editable' && internalViewMode.value === 'render') {
-    internalViewMode.value = 'source';
-  } else if (newMode === 'readonly' && internalViewMode.value === 'source') {
-    internalViewMode.value = 'render';
+watch(
+  () => props.mode,
+  (newMode) => {
+    if (newMode === 'editable' && internalViewMode.value === 'render') {
+      internalViewMode.value = 'source'
+    } else if (newMode === 'readonly' && internalViewMode.value === 'source') {
+      internalViewMode.value = 'render'
+    }
   }
-});
+)
 
 defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 </script>
@@ -836,25 +899,25 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
   .icon-morph-leave-active {
     transition: opacity 0.1s ease;
   }
-  
+
   .icon-morph-enter-from,
   .icon-morph-leave-to {
     transform: none;
   }
-  
+
   .check-icon {
     animation: none;
   }
-  
+
   .success-ring {
     animation: none;
     display: none;
   }
-  
+
   .copy-button-pulse {
     animation: none;
   }
-  
+
   .copy-icon {
     transition: none;
   }
@@ -950,7 +1013,8 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 }
 
 @keyframes skeleton-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -1004,7 +1068,8 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 }
 
 @keyframes emptyStateFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -1023,7 +1088,8 @@ defineExpose({ resetReasoningState, forceRefreshContent, forceExitEditing })
 }
 
 @keyframes emptyStateShadow {
-  0%, 100% {
+  0%,
+  100% {
     transform: scaleX(1);
     opacity: 1;
   }

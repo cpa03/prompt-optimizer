@@ -9,15 +9,15 @@
   - Accessibility improvements
 -->
 <template>
-  <NCard 
-    class="content-card h-full" 
-    :class="{ 
+  <NCard
+    class="content-card h-full"
+    :class="{
       'content-card--loading': loading,
       'content-card--interactive': interactive,
       'content-card--empty': isEmpty,
-      'content-card--hovered': isHovered
+      'content-card--hovered': isHovered,
     }"
-    :bordered="false" 
+    :bordered="false"
     size="small"
     content-style="max-height: 100%"
     @mouseenter="handleMouseEnter"
@@ -47,9 +47,9 @@
     </Transition>
 
     <!-- Main content -->
-    <NSpace 
+    <NSpace
       v-show="!isEmpty || loading"
-      vertical 
+      vertical
       :size="SPACING.LG"
       style="height: 100%; max-height: 100%"
     >
@@ -69,20 +69,26 @@ const { t } = useI18n()
 // Simple box icon for empty state
 const BoxIcon = {
   render() {
-    return h('svg', {
-      xmlns: 'http://www.w3.org/2000/svg',
-      viewBox: '0 0 24 24',
-      fill: 'none',
-      stroke: 'currentColor',
-      'stroke-width': 1.5,
-      'stroke-linecap': 'round',
-      'stroke-linejoin': 'round',
-    }, [
-      h('path', { d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z' }),
-      h('path', { d: 'm3.3 7 8.7 5 8.7-5' }),
-      h('path', { d: 'M12 22V12' }),
-    ])
-  }
+    return h(
+      'svg',
+      {
+        xmlns: 'http://www.w3.org/2000/svg',
+        viewBox: '0 0 24 24',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': 1.5,
+        'stroke-linecap': 'round',
+        'stroke-linejoin': 'round',
+      },
+      [
+        h('path', {
+          d: 'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z',
+        }),
+        h('path', { d: 'm3.3 7 8.7 5 8.7-5' }),
+        h('path', { d: 'M12 22V12' }),
+      ]
+    )
+  },
 }
 
 interface Props {
@@ -103,7 +109,7 @@ const props = withDefaults(defineProps<Props>(), {
   interactive: false,
   emptyIcon: undefined,
   emptyTitle: '',
-  emptyHint: ''
+  emptyHint: '',
 })
 
 const slots = useSlots()
@@ -115,8 +121,10 @@ const isEmpty = computed(() => {
   const defaultSlot = slots.default?.()
   if (!defaultSlot) return true
   // Check if slot has any content
-  return defaultSlot.length === 0 || 
+  return (
+    defaultSlot.length === 0 ||
     (defaultSlot.length === 1 && !defaultSlot[0].children && !defaultSlot[0].type)
+  )
 })
 
 // Handle hover states for interactive mode
@@ -134,7 +142,7 @@ const handleMouseLeave = () => {
 <style scoped>
 /* 🎨 Palette: Base card styles with smooth transitions */
 .content-card {
-  transition: 
+  transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     border-color 0.2s ease;
@@ -150,14 +158,14 @@ const handleMouseLeave = () => {
 .content-card.content-card--interactive:hover,
 .content-card.content-card--hovered {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.08),
     0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .content-card.content-card--interactive:active {
   transform: translateY(0) scale(0.995);
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.06),
     0 1px 2px rgba(0, 0, 0, 0.04);
   transition-duration: 0.1s;
@@ -166,7 +174,7 @@ const handleMouseLeave = () => {
 /* 🎨 Palette: Focus ring for keyboard navigation */
 .content-card:focus-within {
   outline: none;
-  box-shadow: 
+  box-shadow:
     0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25),
     0 4px 12px rgba(0, 0, 0, 0.08);
 }
@@ -273,7 +281,8 @@ const handleMouseLeave = () => {
 }
 
 @keyframes emptyFloat {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -327,7 +336,7 @@ const handleMouseLeave = () => {
 
 .dark .content-card.content-card--interactive:hover,
 .dark .content-card.content-card--hovered {
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.2),
     0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -335,34 +344,36 @@ const handleMouseLeave = () => {
 /* 🎨 Palette: Reduced motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   .content-card {
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
   }
-  
+
   .content-card.content-card--interactive:hover,
   .content-card.content-card--hovered {
     transform: none;
   }
-  
+
   .content-card.content-card--interactive:active {
     transform: scale(0.99);
   }
-  
+
   .shimmer-line {
     animation: none;
     background: var(--n-skeleton-color, rgba(128, 128, 128, 0.12));
   }
-  
+
   .empty-icon {
     animation: none;
   }
-  
+
   .fade-enter-active,
   .fade-leave-active,
   .fade-scale-enter-active,
   .fade-scale-leave-active {
     transition: opacity 0.15s ease;
   }
-  
+
   .fade-scale-enter-from {
     transform: none;
   }
@@ -375,7 +386,7 @@ const handleMouseLeave = () => {
     outline-offset: 2px;
     box-shadow: none;
   }
-  
+
   .shimmer-line {
     background: var(--n-text-color-disabled, #999);
   }

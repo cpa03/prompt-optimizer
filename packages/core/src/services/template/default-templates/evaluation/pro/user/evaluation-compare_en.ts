@@ -4,7 +4,7 @@
  * Compare effectiveness of original and optimized user prompts with variables
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-compare',
@@ -99,7 +99,7 @@ improvements should be **specific and actionable** suggestions:
 - ✓ Point out how to further optimize variable utilization
 - ✓ Suggest improving variable and static text coordination
 - ✓ Suggest adding handling logic for variable values
-- ✓ Point out structure or expression issues that can still be improved`
+- ✓ Point out structure or expression issues that can still be improved`,
     },
     {
       role: 'user',
@@ -134,8 +134,8 @@ improvements should be **specific and actionable** suggestions:
 
 ---
 
-Please compare and evaluate the effectiveness difference between original and optimized prompts, determine if optimization brought substantial improvement, and provide specific suggestions for further improvement, with particular focus on variable utilization.`
-    }
+Please compare and evaluate the effectiveness difference between original and optimized prompts, determine if optimization brought substantial improvement, and provide specific suggestions for further improvement, with particular focus on variable utilization.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -144,7 +144,7 @@ Please compare and evaluate the effectiveness difference between original and op
     description: 'Compare effectiveness of original and optimized user prompts with variables',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'compare', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'compare', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

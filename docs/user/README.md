@@ -5,24 +5,29 @@
 ## 📖 用户手册
 
 ### 桌面版
+
 - [桌面用户手册](./desktop-user-manual.md) - 桌面版完整使用指南
 
 ### Web版
+
 - [快速开始](./quick-start.md) - 5分钟快速上手
 - [上下文模式指南](./context-mode.md) - 上下文模式（多消息/变量）使用说明
 - [Context Mode Guide (English)](./context-mode_en.md) - Context Mode usage guide (Multi-message/Variable)
 
 ### 模型配置
+
 - [多自定义模型配置指南](./multi-custom-models.md) - 配置无限数量自定义模型的完整指南
 - [Multiple Custom Models Guide (English)](./multi-custom-models_en.md) - Complete guide for configuring unlimited custom models
 
 ### MCP 服务器
+
 - [MCP 服务器用户指南](./mcp-server.md) - MCP 服务器部署和使用完整指南
 - [MCP Server User Guide (English)](./mcp-server_en.md) - Complete MCP server deployment and usage guide
 
 ## 🚀 部署指南
 
 ### 自部署
+
 - [Vercel部署指南（中文）](./deployment/vercel.md) - 在Vercel上部署Web版
 - [Vercel部署指南（英文）](./deployment/vercel_en.md) - Vercel deployment guide (English)
 
@@ -42,6 +47,7 @@
 ## 📝 反馈建议
 
 我们欢迎您的反馈和建议：
+
 - 功能建议
 - 使用体验反馈
 - 文档改进建议

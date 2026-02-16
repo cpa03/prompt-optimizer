@@ -24,12 +24,12 @@ describe('DashScopeImageAdapter', () => {
       enabled: true,
       connectionConfig: {
         apiKey: 'test-api-key',
-        baseURL: 'https://dashscope.aliyuncs.com'
+        baseURL: 'https://dashscope.aliyuncs.com',
       },
       paramOverrides: {},
       // Self-contained fields are required by ImageModelConfig but adapter only needs a subset.
       provider: adapter.getProvider(),
-      model: adapter.buildDefaultModel('qwen-image-edit-plus')
+      model: adapter.buildDefaultModel('qwen-image-edit-plus'),
     }
 
     const request: ImageRequest = {
@@ -38,24 +38,25 @@ describe('DashScopeImageAdapter', () => {
       count: 1,
       inputImage: {
         b64: 'aGVsbG8=',
-        mimeType: 'image/png'
-      }
+        mimeType: 'image/png',
+      },
     }
 
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        output: {
-          choices: [
-            {
-              message: {
-                content: [{ image: 'https://example.com/edited.png' }]
-              }
-            }
-          ]
-        },
-        usage: { image_count: 1 }
-      })
+      json: () =>
+        Promise.resolve({
+          output: {
+            choices: [
+              {
+                message: {
+                  content: [{ image: 'https://example.com/edited.png' }],
+                },
+              },
+            ],
+          },
+          usage: { image_count: 1 },
+        }),
     })
 
     await adapter.generate(request, config)
@@ -64,7 +65,7 @@ describe('DashScopeImageAdapter', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        body: expect.stringMatching(/data:image\/png;base64,aGVsbG8=/)
+        body: expect.stringMatching(/data:image\/png;base64,aGVsbG8=/),
       })
     )
   })

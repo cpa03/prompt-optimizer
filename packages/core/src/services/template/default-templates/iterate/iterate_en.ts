@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const template: Template = {
   id: 'iterate',
@@ -50,7 +50,7 @@ Your job is to modify the original prompt according to the user's optimization r
 
 ## Output Requirements
 Output ONLY the updated prompt, maintain original format, do not add explanations.
-`
+`,
     },
     {
       role: 'user',
@@ -61,17 +61,18 @@ Optimization requirements:
 {{iterateInput}}
 
 Please modify the original prompt based on the optimization requirements (refer to the above examples, integrate requirements into the prompt):
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
     lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (fixed value, built-in templates are immutable)
     author: 'System',
-    description: 'Suitable for improving an existing prompt by integrating specific optimization requirements',
+    description:
+      'Suitable for improving an existing prompt by integrating specific optimization requirements',
     templateType: 'iterate',
     language: 'en',
-    tags: ['iterate', 'optimize']
+    tags: ['iterate', 'optimize'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

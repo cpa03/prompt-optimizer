@@ -47,4 +47,3 @@ export interface TemplateSelectOption extends SelectOption<Template> {
   /** 原始模板配置 */
   raw: Template
 }
-

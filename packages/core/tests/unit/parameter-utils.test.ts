@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   mergeOverrides,
   splitOverridesBySchema,
-  validateOverrides
+  validateOverrides,
 } from '../../src/services/model/parameter-utils'
 import type { UnifiedParameterDefinition } from '../../src/services/model/parameter-schema'
 
@@ -12,24 +12,24 @@ const schema: UnifiedParameterDefinition[] = [
     type: 'number',
     minValue: 0,
     maxValue: 2,
-    defaultValue: 1
+    defaultValue: 1,
   },
   {
     name: 'max_tokens',
     type: 'integer',
     minValue: 1,
-    maxValue: 40000
+    maxValue: 40000,
   },
   {
     name: 'stopSequences',
     type: 'string',
-    tags: ['string-array']
+    tags: ['string-array'],
   },
   {
     name: 'mode',
     type: 'string',
-    allowedValues: ['fast', 'standard']
-  }
+    allowedValues: ['fast', 'standard'],
+  },
 ]
 
 describe('parameter-utils', () => {
@@ -46,7 +46,7 @@ describe('parameter-utils', () => {
       includeDefaults: true,
       customOverrides: { custom_key: 'foo', temperature: 0.4 },
       builtInOverrides: { temperature: 0.7, max_tokens: 1000 },
-      requestOverrides: { temperature: 0.9 }
+      requestOverrides: { temperature: 0.9 },
     })
 
     expect(merged.temperature).toBe(0.9)
@@ -58,8 +58,8 @@ describe('parameter-utils', () => {
   it('omits unsafe custom keys and empty values', () => {
     const merged = mergeOverrides({
       schema,
-      customOverrides: { '__proto__': 'bad', empty: '' },
-      builtInOverrides: { temperature: '' }
+      customOverrides: { __proto__: 'bad', empty: '' },
+      builtInOverrides: { temperature: '' },
     })
     expect(merged).toEqual({})
   })
@@ -67,7 +67,7 @@ describe('parameter-utils', () => {
   it('validates overrides against schema', () => {
     const { errors, warnings } = validateOverrides({
       schema,
-      overrides: { temperature: 3, stopSequences: ['ok', 123], unknown: 1 }
+      overrides: { temperature: 3, stopSequences: ['ok', 123], unknown: 1 },
     })
 
     expect(errors.length).toBe(2)
@@ -81,7 +81,7 @@ describe('parameter-utils', () => {
     const { errors } = validateOverrides({
       schema,
       overrides: undefined,
-      customOverrides: { apiKey: 'secret' }
+      customOverrides: { apiKey: 'secret' },
     })
     expect(errors.length).toBe(1)
     expect(errors[0].parameterName).toBe('apiKey')

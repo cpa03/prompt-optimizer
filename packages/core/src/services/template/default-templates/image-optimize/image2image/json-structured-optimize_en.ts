@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image2image-json-structured-optimize_en',
@@ -39,7 +39,7 @@ You may use this as a reference (not mandatory):
 
 ## Safety
 If the input contains inappropriate content, replace/soften it to a compliant variant while keeping the intent usable.
-`
+`,
     },
     {
       role: 'user',
@@ -51,16 +51,17 @@ Requirements:
 
 Img2img description:
 {{originalPrompt}}
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1736208000000,
     author: 'System',
-    description: 'Strict JSON output template for img2img; generic and freely extensible schema with preserve/change guidance',
+    description:
+      'Strict JSON output template for img2img; generic and freely extensible schema with preserve/change guidance',
     templateType: 'image2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

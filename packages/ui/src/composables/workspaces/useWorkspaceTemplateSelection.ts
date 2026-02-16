@@ -48,7 +48,7 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
     get: () => sessionStore.selectedTemplateId ?? '',
     set: (value: string) => {
       sessionStore.updateTemplate(value || null)
-    }
+    },
   })
 
   // 迭代模板 ID（双向绑定）
@@ -56,7 +56,7 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
     get: () => sessionStore.selectedIterateTemplateId ?? '',
     set: (value: string) => {
       sessionStore.updateIterateTemplate(value || null)
-    }
+    },
   })
 
   // 刷新优化模板列表
@@ -83,7 +83,7 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
       }
 
       const currentId = selectedTemplateId.value
-      const found = currentId ? templates.find(t => t.id === currentId) || null : null
+      const found = currentId ? templates.find((t) => t.id === currentId) || null : null
       if (found) {
         selectedTemplate.value = found
         return
@@ -100,7 +100,11 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
       }
     } catch (error) {
       if (token !== optimizeTemplateResolveToken) return
-      console.error('[useWorkspaceTemplateSelection] refreshOptimizeTemplates failed:', error instanceof Error ? error.message : String(error), error)
+      console.error(
+        '[useWorkspaceTemplateSelection] refreshOptimizeTemplates failed:',
+        error instanceof Error ? error.message : String(error),
+        error
+      )
       templateOptions.value = []
       selectedTemplate.value = null
     }
@@ -130,7 +134,7 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
       }
 
       const currentId = selectedIterateTemplateId.value
-      const found = currentId ? templates.find(t => t.id === currentId) || null : null
+      const found = currentId ? templates.find((t) => t.id === currentId) || null : null
       if (found) {
         selectedIterateTemplate.value = found
         return
@@ -147,7 +151,11 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
       }
     } catch (error) {
       if (token !== iterateTemplateResolveToken) return
-      console.error('[useWorkspaceTemplateSelection] refreshIterateTemplates failed:', error instanceof Error ? error.message : String(error), error)
+      console.error(
+        '[useWorkspaceTemplateSelection] refreshIterateTemplates failed:',
+        error instanceof Error ? error.message : String(error),
+        error
+      )
       iterateTemplateOptions.value = []
       selectedIterateTemplate.value = null
     }
@@ -195,6 +203,6 @@ export function useWorkspaceTemplateSelection<T extends WorkspaceTemplateSession
     selectedTemplate,
     selectedIterateTemplate,
     refreshOptimizeTemplates,
-    refreshIterateTemplates
+    refreshIterateTemplates,
   }
 }

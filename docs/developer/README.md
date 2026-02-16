@@ -13,12 +13,15 @@
 ## 📱 平台开发指南
 
 ### 桌面端
+
 - [桌面开发指南](./desktop-developer-guide.md) - Electron桌面应用开发
 
 ### Web端
+
 - Web开发指南（待创建） - Web应用开发说明
 
 ### 浏览器插件
+
 - 插件开发指南（待创建） - Chrome扩展开发
 
 ## 📚 API文档

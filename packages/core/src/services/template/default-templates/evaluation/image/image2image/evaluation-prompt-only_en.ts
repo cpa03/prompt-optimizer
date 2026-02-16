@@ -5,7 +5,7 @@
  * Unified output structure: score + improvements + patchPlan + summary
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-image-image2image-prompt-only',
@@ -71,7 +71,7 @@ export const template: Template = {
   - instruction: Brief description of issue and fix
 - **summary**: One-line evaluation conclusion (required)
 
-Output JSON only, no additional explanation.`
+Output JSON only, no additional explanation.`,
     },
     {
       role: 'user',
@@ -87,17 +87,18 @@ Output JSON only, no additional explanation.`
 
 ---
 
-Please evaluate the current image-to-image prompt{{#hasOriginalPrompt}} and compare with the original version{{/hasOriginalPrompt}}.`
-    }
+Please evaluate the current image-to-image prompt{{#hasOriginalPrompt}} and compare with the original version{{/hasOriginalPrompt}}.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: Date.now(),
     author: 'System',
-    description: 'Direct evaluation of image-to-image prompt quality, unified output with improvements + patchPlan',
+    description:
+      'Direct evaluation of image-to-image prompt quality, unified output with improvements + patchPlan',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'image', 'image2image']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'image', 'image2image'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

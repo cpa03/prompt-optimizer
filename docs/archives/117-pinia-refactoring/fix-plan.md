@@ -9,6 +9,7 @@
 **决策**：以 `getPiniaServices()` 为唯一业务入口
 
 **理由**（Codex + Claude 共识）：
+
 - 当前代码已经全部使用 `getPiniaServices()`
 - 函数式风格更符合 Vue 3 Composition API
 - 测试更简单（无需处理 this 上下文）
@@ -19,7 +20,7 @@
 
 #### 1. 修改 `packages/ui/src/plugins/pinia-services-plugin.ts`
 
-```typescript
+````typescript
 /**
  * Pinia 插件：注入 $services 到所有 Store
  *
@@ -81,11 +82,11 @@ declare module 'pinia' {
     $services: AppServices | null
   }
 }
-```
+````
 
 #### 2. 完善 `packages/ui/src/plugins/pinia.ts`
 
-```typescript
+````typescript
 /**
  * 获取 Pinia 服务实例
  *
@@ -128,7 +129,7 @@ declare module 'pinia' {
 export function getPiniaServices(): AppServices | null {
   return servicesRef.value
 }
-```
+````
 
 **时间估计**：30分钟
 **风险评估**：低（仅修改文档和注释）
@@ -157,12 +158,13 @@ afterEach(() => {
 ```
 
 **配置 Vitest**（`packages/ui/vitest.config.ts`）：
+
 ```typescript
 export default defineConfig({
   test: {
-    setupFiles: ['./tests/setup.ts'],  // ✅ 添加这一行
+    setupFiles: ['./tests/setup.ts'], // ✅ 添加这一行
     // ... 其他配置
-  }
+  },
 })
 ```
 
@@ -170,7 +172,7 @@ export default defineConfig({
 
 **文件**：`packages/ui/tests/utils/pinia-test-helpers.ts`（新建）
 
-```typescript
+````typescript
 import { createPinia, type Pinia } from 'pinia'
 import { createApp } from 'vue'
 import { setPiniaServices } from '../../src/plugins/pinia'
@@ -185,7 +187,7 @@ export function createPreferenceServiceStub(
   overrides: Partial<IPreferenceService> = {}
 ): IPreferenceService {
   return {
-    get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+    get: async <T>(_key: string, defaultValue: T) => defaultValue,
     set: async () => {},
     delete: async () => {},
     keys: async () => [],
@@ -222,9 +224,7 @@ export function createPreferenceServiceStub(
  * })
  * ```
  */
-export function createTestPinia(
-  servicesOverrides: Partial<AppServices> = {}
-): {
+export function createTestPinia(servicesOverrides: Partial<AppServices> = {}): {
   pinia: Pinia
   services: AppServices
   cleanup: () => void
@@ -296,18 +296,19 @@ export async function withMockPiniaServices(
     cleanup()
   }
 }
-```
+````
 
 #### 3. 更新现有测试用例（示例）
 
 **修改前**（`packages/ui/tests/unit/pinia-services-plugin.test.ts`）：
+
 ```typescript
 it('allows session store to persist via preferenceService', async () => {
   const set = vi.fn<IPreferenceService['set']>().mockResolvedValue(undefined)
   const preferenceService = createPreferenceServiceStub({ set })
   const services = { preferenceService } as unknown as AppServices
 
-  setPiniaServices(services)  // ⚠️ 手动设置
+  setPiniaServices(services) // ⚠️ 手动设置
 
   const servicesRef = shallowRef<AppServices | null>(services)
   const pinia = createPinia()
@@ -324,6 +325,7 @@ it('allows session store to persist via preferenceService', async () => {
 ```
 
 **修改后**（使用 helper）：
+
 ```typescript
 import { createTestPinia, createPreferenceServiceStub } from '../utils/pinia-test-helpers'
 
@@ -331,7 +333,7 @@ it('allows session store to persist via preferenceService', async () => {
   const set = vi.fn<IPreferenceService['set']>().mockResolvedValue(undefined)
 
   const { pinia, services } = createTestPinia({
-    preferenceService: createPreferenceServiceStub({ set })
+    preferenceService: createPreferenceServiceStub({ set }),
   })
 
   const store = useBasicUserSession(pinia)
@@ -344,6 +346,7 @@ it('allows session store to persist via preferenceService', async () => {
 ```
 
 **或使用 withMockPiniaServices**（更简洁）：
+
 ```typescript
 import { withMockPiniaServices, createPreferenceServiceStub } from '../utils/pinia-test-helpers'
 
@@ -375,7 +378,7 @@ it('allows session store to persist via preferenceService', async () => {
 
 #### 修改 `packages/ui/src/composables/variable/useTemporaryVariables.ts`
 
-```typescript
+````typescript
 import { readonly, type Ref } from 'vue'
 import { storeToRefs, getActivePinia } from 'pinia'
 import { useTemporaryVariablesStore } from '../../stores/temporaryVariables'
@@ -414,8 +417,8 @@ export function useTemporaryVariables(): TemporaryVariablesManager {
   if (!activePinia) {
     throw new Error(
       '[useTemporaryVariables] Pinia not installed or no active pinia instance. ' +
-      'Make sure you have called installPinia(app) before using this composable, ' +
-      'and you are calling it within a component setup or after app is mounted.'
+        'Make sure you have called installPinia(app) before using this composable, ' +
+        'and you are calling it within a component setup or after app is mounted.'
     )
   }
 
@@ -423,9 +426,7 @@ export function useTemporaryVariables(): TemporaryVariablesManager {
   const { temporaryVariables } = storeToRefs(store)
 
   return {
-    temporaryVariables: readonly(temporaryVariables) as Readonly<
-      Ref<Record<string, string>>
-    >,
+    temporaryVariables: readonly(temporaryVariables) as Readonly<Ref<Record<string, string>>>,
     setVariable: store.setVariable,
     getVariable: store.getVariable,
     deleteVariable: store.deleteVariable,
@@ -436,9 +437,10 @@ export function useTemporaryVariables(): TemporaryVariablesManager {
     batchDelete: store.batchDelete,
   }
 }
-```
+````
 
 **可选升级**（如果有非组件上下文需求）：
+
 ```typescript
 /**
  * @param pinia - 可选的 Pinia 实例（用于非组件上下文）
@@ -450,7 +452,7 @@ export function useTemporaryVariables(pinia?: Pinia): TemporaryVariablesManager 
   if (!targetPinia) {
     throw new Error(
       '[useTemporaryVariables] Pinia not installed or no active pinia instance. ' +
-      'Either call installPinia(app) first, or provide a pinia instance explicitly.'
+        'Either call installPinia(app) first, or provide a pinia instance explicitly.'
     )
   }
 
@@ -480,12 +482,13 @@ module.exports = {
         patterns: [
           {
             group: ['**/stores', '**/stores/index'],
-            message: '请直接导入具体的 store 文件，避免 barrel exports 循环依赖。例如：import { useSessionManager } from "@/stores/session/useSessionManager"'
-          }
-        ]
-      }
-    ]
-  }
+            message:
+              '请直接导入具体的 store 文件，避免 barrel exports 循环依赖。例如：import { useSessionManager } from "@/stores/session/useSessionManager"',
+          },
+        ],
+      },
+    ],
+  },
 }
 ```
 
@@ -505,7 +508,7 @@ const PREFIX_PATTERN = /^(system|user):(.+)$/
 for (const [key, chainId] of Object.entries(persistedMap)) {
   const match = key.match(PREFIX_PATTERN)
   if (match) {
-    const messageId = match[2]  // ✅ 保留完整的 messageId
+    const messageId = match[2] // ✅ 保留完整的 messageId
     messageChainMap.value.set(messageId, chainId)
   } else {
     // 已经是新格式，直接使用

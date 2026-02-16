@@ -110,7 +110,7 @@ describe('useSmartVariableValueGeneration (single variable inference)', () => {
           currentValue: 'Existing',
         },
       ],
-      'test-eval-model',
+      'test-eval-model'
     )
   })
 })

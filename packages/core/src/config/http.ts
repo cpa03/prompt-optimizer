@@ -14,13 +14,13 @@ export const MIME_TYPES = {
     webp: 'image/webp',
     svg: 'image/svg+xml',
   },
-  
+
   // Convenience exports for backward compatibility
   PNG: 'image/png',
   JPEG: 'image/jpeg',
   GIF: 'image/gif',
   WEBP: 'image/webp',
-  
+
   // Application types
   application: {
     json: 'application/json',
@@ -28,7 +28,7 @@ export const MIME_TYPES = {
     formUrlEncoded: 'application/x-www-form-urlencoded',
     octetStream: 'application/octet-stream',
   },
-  
+
   // Text types
   text: {
     plain: 'text/plain',
@@ -36,27 +36,27 @@ export const MIME_TYPES = {
     css: 'text/css',
     javascript: 'text/javascript',
   },
-} as const;
+} as const
 
 export const HTTP_HEADERS = {
   json: {
     'Content-Type': MIME_TYPES.application.json,
   },
-  
+
   image: {
     png: {
       'Content-Type': MIME_TYPES.image.png,
     },
   },
-  
+
   authorization: (token: string) => ({
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
   }),
-  
+
   apiKey: (key: string, headerName: string = 'Authorization') => ({
     [headerName]: key,
   }),
-} as const;
+} as const
 
 export const HTTP_METHODS = {
   GET: 'GET',
@@ -64,7 +64,7 @@ export const HTTP_METHODS = {
   PUT: 'PUT',
   DELETE: 'DELETE',
   PATCH: 'PATCH',
-} as const;
+} as const
 
 export const HTTP_STATUS = {
   OK: 200,
@@ -77,4 +77,4 @@ export const HTTP_STATUS = {
   TOO_MANY_REQUESTS: 429,
   SERVER_ERROR: 500,
   SERVICE_UNAVAILABLE: 503,
-} as const;
+} as const

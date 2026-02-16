@@ -14,7 +14,7 @@ export const EVALUATION_ERROR_CODES = {
   TEMPLATE_NOT_FOUND: 'error.evaluation.template_not_found',
   PARSE_ERROR: 'error.evaluation.parse',
   EXECUTION_ERROR: 'error.evaluation.execution',
-} as const;
+} as const
 
 // LLM errors | LLM错误
 export const LLM_ERROR_CODES = {
@@ -31,7 +31,7 @@ export const LLM_ERROR_CODES = {
   TEST_FAILED: 'error.llm.test_failed',
   MODEL_KEY_REQUIRED: 'error.llm.model_key_required',
   INPUT_TOO_LONG: 'error.llm.input_too_long',
-} as const;
+} as const
 
 // History errors | 历史记录错误
 export const HISTORY_ERROR_CODES = {
@@ -40,13 +40,13 @@ export const HISTORY_ERROR_CODES = {
   RECORD_NOT_FOUND: 'error.history.record_not_found',
   STORAGE_ERROR: 'error.history.storage',
   VALIDATION_ERROR: 'error.history.validation',
-} as const;
+} as const
 
 // Compare errors | 对比错误
 export const COMPARE_ERROR_CODES = {
   VALIDATION_ERROR: 'error.compare.validation',
   CALCULATION_ERROR: 'error.compare.calculation',
-} as const;
+} as const
 
 // Storage errors | 存储错误
 export const STORAGE_ERROR_CODES = {
@@ -56,13 +56,13 @@ export const STORAGE_ERROR_CODES = {
   CLEAR_ERROR: 'error.storage.clear',
   CONFIG_ERROR: 'error.storage.config',
   LOCK_ERROR: 'error.storage.lock',
-} as const;
+} as const
 
 // Model errors | 模型错误
 export const MODEL_ERROR_CODES = {
   VALIDATION_ERROR: 'error.model.validation',
   CONFIG_ERROR: 'error.model.config',
-} as const;
+} as const
 
 // Template errors | 模板错误
 export const TEMPLATE_ERROR_CODES = {
@@ -71,7 +71,7 @@ export const TEMPLATE_ERROR_CODES = {
   VALIDATION_ERROR: 'error.template.validation',
   CACHE_ERROR: 'error.template.cache',
   STORAGE_ERROR: 'error.template.storage',
-} as const;
+} as const
 
 // Context errors | 上下文错误
 export const CONTEXT_ERROR_CODES = {
@@ -82,7 +82,7 @@ export const CONTEXT_ERROR_CODES = {
   INVALID_STORE: 'error.context.invalid_store',
   STORAGE_ERROR: 'error.context.storage',
   ELECTRON_API_UNAVAILABLE: 'error.context.electron_api_unavailable',
-} as const;
+} as const
 
 // Prompt errors | 提示词错误
 export const PROMPT_ERROR_CODES = {
@@ -90,7 +90,7 @@ export const PROMPT_ERROR_CODES = {
   ITERATION_ERROR: 'error.prompt.iteration',
   TEST_ERROR: 'error.prompt.test',
   SERVICE_DEPENDENCY_ERROR: 'error.prompt.service_dependency',
-} as const;
+} as const
 
 // Variable extraction errors | 变量提取错误
 export const VARIABLE_EXTRACTION_ERROR_CODES = {
@@ -98,7 +98,7 @@ export const VARIABLE_EXTRACTION_ERROR_CODES = {
   MODEL_NOT_FOUND: 'error.variable_extraction.model_not_found',
   PARSE_ERROR: 'error.variable_extraction.parse',
   EXECUTION_ERROR: 'error.variable_extraction.execution',
-} as const;
+} as const
 
 // Variable value generation errors | 变量值生成错误
 export const VARIABLE_VALUE_GENERATION_ERROR_CODES = {
@@ -106,7 +106,7 @@ export const VARIABLE_VALUE_GENERATION_ERROR_CODES = {
   MODEL_NOT_FOUND: 'error.variable_value_generation.model_not_found',
   PARSE_ERROR: 'error.variable_value_generation.parse',
   EXECUTION_ERROR: 'error.variable_value_generation.execution',
-} as const;
+} as const
 
 // Favorite errors | 收藏错误
 export const FAVORITE_ERROR_CODES = {
@@ -120,7 +120,7 @@ export const FAVORITE_ERROR_CODES = {
   TAG_NOT_FOUND: 'error.favorite.tag_not_found',
   MIGRATION_ERROR: 'error.favorite.migration',
   IMPORT_EXPORT_ERROR: 'error.favorite.import_export',
-} as const;
+} as const
 
 // Image errors | 图像错误
 export const IMAGE_ERROR_CODES = {
@@ -151,16 +151,17 @@ export const IMAGE_ERROR_CODES = {
   INPUT_IMAGE_TOO_LARGE: 'error.image.input_image_too_large',
   MODEL_NOT_SUPPORT_TEXT2IMAGE: 'error.image.model_not_support_text2image',
   MODEL_NOT_SUPPORT_IMAGE2IMAGE: 'error.image.model_not_support_image2image',
-  MODEL_ONLY_SUPPORTS_IMAGE2IMAGE_NEED_INPUT: 'error.image.model_only_supports_image2image_need_input',
+  MODEL_ONLY_SUPPORTS_IMAGE2IMAGE_NEED_INPUT:
+    'error.image.model_only_supports_image2image_need_input',
   GENERATION_FAILED: 'error.image.generation_failed',
-} as const;
+} as const
 
 // Import/export errors | 导入导出错误
 export const IMPORT_EXPORT_ERROR_CODES = {
   EXPORT_FAILED: 'error.import_export.export_failed',
   IMPORT_FAILED: 'error.import_export.import_failed',
   VALIDATION_ERROR: 'error.import_export.validation',
-} as const;
+} as const
 
 // Data manager errors | 数据管理错误
 export const DATA_ERROR_CODES = {
@@ -169,12 +170,12 @@ export const DATA_ERROR_CODES = {
   IMPORT_PARTIAL_FAILED: 'error.data.import_partial_failed',
   EXPORT_FAILED: 'error.data.export_failed',
   ELECTRON_API_UNAVAILABLE: 'error.data.electron_api_unavailable',
-} as const;
+} as const
 
 // Core/internal errors | 核心/内部错误
 export const CORE_ERROR_CODES = {
   IPC_SERIALIZATION_FAILED: 'error.core.ipc_serialization_failed',
-} as const;
+} as const
 
 // Export all error codes | 导出所有错误代码
 export const ERROR_CODES = {
@@ -194,30 +195,27 @@ export const ERROR_CODES = {
   IMPORT_EXPORT: IMPORT_EXPORT_ERROR_CODES,
   DATA: DATA_ERROR_CODES,
   CORE: CORE_ERROR_CODES,
-} as const;
+} as const
 
 export type ErrorCode =
-  | typeof EVALUATION_ERROR_CODES[keyof typeof EVALUATION_ERROR_CODES]
-  | typeof LLM_ERROR_CODES[keyof typeof LLM_ERROR_CODES]
-  | typeof HISTORY_ERROR_CODES[keyof typeof HISTORY_ERROR_CODES]
-  | typeof COMPARE_ERROR_CODES[keyof typeof COMPARE_ERROR_CODES]
-  | typeof STORAGE_ERROR_CODES[keyof typeof STORAGE_ERROR_CODES]
-  | typeof MODEL_ERROR_CODES[keyof typeof MODEL_ERROR_CODES]
-  | typeof TEMPLATE_ERROR_CODES[keyof typeof TEMPLATE_ERROR_CODES]
-  | typeof CONTEXT_ERROR_CODES[keyof typeof CONTEXT_ERROR_CODES]
-  | typeof PROMPT_ERROR_CODES[keyof typeof PROMPT_ERROR_CODES]
-  | typeof VARIABLE_EXTRACTION_ERROR_CODES[keyof typeof VARIABLE_EXTRACTION_ERROR_CODES]
-  | typeof VARIABLE_VALUE_GENERATION_ERROR_CODES[keyof typeof VARIABLE_VALUE_GENERATION_ERROR_CODES]
-  | typeof FAVORITE_ERROR_CODES[keyof typeof FAVORITE_ERROR_CODES]
-  | typeof IMAGE_ERROR_CODES[keyof typeof IMAGE_ERROR_CODES]
-  | typeof IMPORT_EXPORT_ERROR_CODES[keyof typeof IMPORT_EXPORT_ERROR_CODES]
-  | typeof DATA_ERROR_CODES[keyof typeof DATA_ERROR_CODES]
-  | typeof CORE_ERROR_CODES[keyof typeof CORE_ERROR_CODES];
+  | (typeof EVALUATION_ERROR_CODES)[keyof typeof EVALUATION_ERROR_CODES]
+  | (typeof LLM_ERROR_CODES)[keyof typeof LLM_ERROR_CODES]
+  | (typeof HISTORY_ERROR_CODES)[keyof typeof HISTORY_ERROR_CODES]
+  | (typeof COMPARE_ERROR_CODES)[keyof typeof COMPARE_ERROR_CODES]
+  | (typeof STORAGE_ERROR_CODES)[keyof typeof STORAGE_ERROR_CODES]
+  | (typeof MODEL_ERROR_CODES)[keyof typeof MODEL_ERROR_CODES]
+  | (typeof TEMPLATE_ERROR_CODES)[keyof typeof TEMPLATE_ERROR_CODES]
+  | (typeof CONTEXT_ERROR_CODES)[keyof typeof CONTEXT_ERROR_CODES]
+  | (typeof PROMPT_ERROR_CODES)[keyof typeof PROMPT_ERROR_CODES]
+  | (typeof VARIABLE_EXTRACTION_ERROR_CODES)[keyof typeof VARIABLE_EXTRACTION_ERROR_CODES]
+  | (typeof VARIABLE_VALUE_GENERATION_ERROR_CODES)[keyof typeof VARIABLE_VALUE_GENERATION_ERROR_CODES]
+  | (typeof FAVORITE_ERROR_CODES)[keyof typeof FAVORITE_ERROR_CODES]
+  | (typeof IMAGE_ERROR_CODES)[keyof typeof IMAGE_ERROR_CODES]
+  | (typeof IMPORT_EXPORT_ERROR_CODES)[keyof typeof IMPORT_EXPORT_ERROR_CODES]
+  | (typeof DATA_ERROR_CODES)[keyof typeof DATA_ERROR_CODES]
+  | (typeof CORE_ERROR_CODES)[keyof typeof CORE_ERROR_CODES]
 
 /**
  * i18n interpolation params for error messages.
  */
-export type ErrorParams = Record<
-  string,
-  string | number | boolean | null | undefined
->;
+export type ErrorParams = Record<string, string | number | boolean | null | undefined>

@@ -1,12 +1,12 @@
-import { createLLMService, ModelManager, LocalStorageProvider } from '../../../src/index.js';
-import { expect, describe, it, beforeAll } from 'vitest';
-import dotenv from 'dotenv';
-import path from 'path';
+import { createLLMService, ModelManager, LocalStorageProvider } from '../../../src/index.js'
+import { expect, describe, it, beforeAll } from 'vitest'
+import dotenv from 'dotenv'
+import path from 'path'
 
 // 加载环境变量
 beforeAll(() => {
-  dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
-});
+  dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+})
 
 const RUN_REAL_API = process.env.RUN_REAL_API === '1'
 
@@ -18,7 +18,7 @@ describe.skipIf(!RUN_REAL_API)('Tool Calls Real API Integration Tests', () => {
     'zhipu',
     'openrouter',
     'dashscope',
-    'modelscope'
+    'modelscope',
   ])
 
   const createServices = async () => {
@@ -52,19 +52,19 @@ describe.skipIf(!RUN_REAL_API)('Tool Calls Real API Integration Tests', () => {
         properties: {
           location: {
             type: 'string',
-            description: 'The location to get weather for (e.g., "Beijing", "New York")'
+            description: 'The location to get weather for (e.g., "Beijing", "New York")',
           },
           unit: {
             type: 'string',
             enum: ['celsius', 'fahrenheit'],
             description: 'Temperature unit',
-            default: 'celsius'
-          }
+            default: 'celsius',
+          },
         },
-        required: ['location']
-      }
-    }
-  };
+        required: ['location'],
+      },
+    },
+  }
 
   const calculatorTool = {
     type: 'function',
@@ -76,73 +76,70 @@ describe.skipIf(!RUN_REAL_API)('Tool Calls Real API Integration Tests', () => {
         properties: {
           expression: {
             type: 'string',
-            description: 'Mathematical expression to evaluate (e.g., "2 + 3 * 4")'
-          }
+            description: 'Mathematical expression to evaluate (e.g., "2 + 3 * 4")',
+          },
         },
-        required: ['expression']
-      }
-    }
-  };
+        required: ['expression'],
+      },
+    },
+  }
 
   describe('OpenAI Compatible API Tool Calls', () => {
     it('should handle tool calls with OpenAI compatible API', async () => {
       const { modelManager, llmService } = await createServices()
-      const modelId = await pickEnabledModelId(
-        modelManager,
-        (m) => OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
+      const modelId = await pickEnabledModelId(modelManager, (m) =>
+        OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
       )
 
       if (!modelId) return
 
       const messages = [
-        { role: 'system', content: 'You are a helpful assistant that can get weather information and perform calculations. When users ask about weather or math, use the appropriate tools.' },
-        { role: 'user', content: 'What is the weather like in Beijing, and what is 15 * 24?' }
-      ];
+        {
+          role: 'system',
+          content:
+            'You are a helpful assistant that can get weather information and perform calculations. When users ask about weather or math, use the appropriate tools.',
+        },
+        { role: 'user', content: 'What is the weather like in Beijing, and what is 15 * 24?' },
+      ]
 
-      const tools = [weatherTool, calculatorTool];
-      let toolCallsReceived = [];
-      let responseContent = '';
+      const tools = [weatherTool, calculatorTool]
+      let toolCallsReceived = []
+      let responseContent = ''
 
       const result = await new Promise((resolve, reject) => {
-        llmService.sendMessageStreamWithTools(
-          messages,
-          modelId,
-          tools,
-          {
-            onToken: (token) => {
-              responseContent += token;
-            },
-            onToolCall: (toolCall) => {
-              toolCallsReceived.push(toolCall);
-            },
-            onComplete: (response) => {
-              resolve({ content: responseContent, toolCalls: toolCallsReceived, response });
-            },
-            onError: reject
-          }
-        );
-      });
+        llmService.sendMessageStreamWithTools(messages, modelId, tools, {
+          onToken: (token) => {
+            responseContent += token
+          },
+          onToolCall: (toolCall) => {
+            toolCallsReceived.push(toolCall)
+          },
+          onComplete: (response) => {
+            resolve({ content: responseContent, toolCalls: toolCallsReceived, response })
+          },
+          onError: reject,
+        })
+      })
 
       // 验证响应
-      expect(result).toBeDefined();
-      expect(typeof result.content).toBe('string');
+      expect(result).toBeDefined()
+      expect(typeof result.content).toBe('string')
 
       // 验证工具调用（如果有的话）
       if (result.toolCalls.length > 0) {
-        result.toolCalls.forEach(toolCall => {
-          expect(toolCall).toHaveProperty('id');
-          expect(toolCall.type).toBe('function');
-          expect(toolCall.function).toHaveProperty('name');
-          expect(toolCall.function).toHaveProperty('arguments');
-          expect(['get_weather', 'calculate']).toContain(toolCall.function.name);
-          
-          // 验证参数是有效的JSON
-          expect(() => JSON.parse(toolCall.function.arguments)).not.toThrow();
-        });
-      }
+        result.toolCalls.forEach((toolCall) => {
+          expect(toolCall).toHaveProperty('id')
+          expect(toolCall.type).toBe('function')
+          expect(toolCall.function).toHaveProperty('name')
+          expect(toolCall.function).toHaveProperty('arguments')
+          expect(['get_weather', 'calculate']).toContain(toolCall.function.name)
 
-    }, 30000);
-  });
+          // 验证参数是有效的JSON
+          expect(() => JSON.parse(toolCall.function.arguments)).not.toThrow()
+        })
+      }
+    }, 30000)
+  })
 
   describe('Gemini API Tool Calls', () => {
     it('should handle tool calls with Gemini API', async () => {
@@ -151,108 +148,96 @@ describe.skipIf(!RUN_REAL_API)('Tool Calls Real API Integration Tests', () => {
       if (!modelId) return
 
       const messages = [
-        { role: 'system', content: 'You are a helpful assistant that can get weather information and perform calculations. When users ask about weather or math, use the appropriate tools.' },
-        { role: 'user', content: 'Please tell me the weather in Shanghai and calculate 25 + 17' }
-      ];
+        {
+          role: 'system',
+          content:
+            'You are a helpful assistant that can get weather information and perform calculations. When users ask about weather or math, use the appropriate tools.',
+        },
+        { role: 'user', content: 'Please tell me the weather in Shanghai and calculate 25 + 17' },
+      ]
 
-      const tools = [weatherTool, calculatorTool];
-      let toolCallsReceived = [];
-      let responseContent = '';
+      const tools = [weatherTool, calculatorTool]
+      let toolCallsReceived = []
+      let responseContent = ''
 
       const result = await new Promise((resolve, reject) => {
-        llmService.sendMessageStreamWithTools(
-          messages,
-          modelId,
-          tools,
-          {
-            onToken: (token) => {
-              responseContent += token;
-            },
-            onToolCall: (toolCall) => {
-              toolCallsReceived.push(toolCall);
-            },
-            onComplete: (response) => {
-              resolve({ content: responseContent, toolCalls: toolCallsReceived, response });
-            },
-            onError: reject
-          }
-        );
-      });
+        llmService.sendMessageStreamWithTools(messages, modelId, tools, {
+          onToken: (token) => {
+            responseContent += token
+          },
+          onToolCall: (toolCall) => {
+            toolCallsReceived.push(toolCall)
+          },
+          onComplete: (response) => {
+            resolve({ content: responseContent, toolCalls: toolCallsReceived, response })
+          },
+          onError: reject,
+        })
+      })
 
       // 验证响应
-      expect(result).toBeDefined();
-      expect(typeof result.content).toBe('string');
+      expect(result).toBeDefined()
+      expect(typeof result.content).toBe('string')
 
       // 验证工具调用（如果有的话）
       if (result.toolCalls.length > 0) {
-        result.toolCalls.forEach(toolCall => {
-          expect(toolCall).toHaveProperty('id');
-          expect(toolCall.type).toBe('function');
-          expect(toolCall.function).toHaveProperty('name');
-          expect(toolCall.function).toHaveProperty('arguments');
-          expect(['get_weather', 'calculate']).toContain(toolCall.function.name);
-          
-          // 验证参数是有效的JSON
-          expect(() => JSON.parse(toolCall.function.arguments)).not.toThrow();
-        });
-      }
+        result.toolCalls.forEach((toolCall) => {
+          expect(toolCall).toHaveProperty('id')
+          expect(toolCall.type).toBe('function')
+          expect(toolCall.function).toHaveProperty('name')
+          expect(toolCall.function).toHaveProperty('arguments')
+          expect(['get_weather', 'calculate']).toContain(toolCall.function.name)
 
-    }, 30000);
-  });
+          // 验证参数是有效的JSON
+          expect(() => JSON.parse(toolCall.function.arguments)).not.toThrow()
+        })
+      }
+    }, 30000)
+  })
 
   describe('Tool Call Format Validation', () => {
     it('should generate valid tool call IDs and formats', async () => {
       const { modelManager, llmService } = await createServices()
       const modelId =
-        (await pickEnabledModelId(
-          modelManager,
-          (m) => OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
+        (await pickEnabledModelId(modelManager, (m) =>
+          OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
         )) ?? (await pickEnabledModelId(modelManager, (m) => m.providerMeta?.id === 'gemini'))
 
       if (!modelId) return
 
-      const messages = [
-        { role: 'user', content: 'What is the weather in Tokyo?' }
-      ];
+      const messages = [{ role: 'user', content: 'What is the weather in Tokyo?' }]
 
-      const tools = [weatherTool];
-      let toolCallsReceived = [];
+      const tools = [weatherTool]
+      let toolCallsReceived = []
 
       await new Promise((resolve, reject) => {
-        llmService.sendMessageStreamWithTools(
-          messages,
-          modelId,
-          tools,
-          {
-            onToken: () => {}, // 忽略token
-            onToolCall: (toolCall) => {
-              toolCallsReceived.push(toolCall);
-              
-              // 验证工具调用格式
-              expect(toolCall.id).toMatch(/^call_\d+_[a-z0-9]+$/);
-              expect(toolCall.type).toBe('function');
-              expect(toolCall.function.name).toBe('get_weather');
-              
-              const args = JSON.parse(toolCall.function.arguments);
-              expect(args).toHaveProperty('location');
-              expect(typeof args.location).toBe('string');
-              expect(args.location.toLowerCase()).toContain('tokyo');
-            },
-            onComplete: resolve,
-            onError: reject
-          }
-        );
-      });
+        llmService.sendMessageStreamWithTools(messages, modelId, tools, {
+          onToken: () => {}, // 忽略token
+          onToolCall: (toolCall) => {
+            toolCallsReceived.push(toolCall)
 
-    }, 30000);
-  });
+            // 验证工具调用格式
+            expect(toolCall.id).toMatch(/^call_\d+_[a-z0-9]+$/)
+            expect(toolCall.type).toBe('function')
+            expect(toolCall.function.name).toBe('get_weather')
+
+            const args = JSON.parse(toolCall.function.arguments)
+            expect(args).toHaveProperty('location')
+            expect(typeof args.location).toBe('string')
+            expect(args.location.toLowerCase()).toContain('tokyo')
+          },
+          onComplete: resolve,
+          onError: reject,
+        })
+      })
+    }, 30000)
+  })
 
   describe('Complex Tool Scenarios', () => {
     it('should handle multiple tools in single request', async () => {
       const { modelManager, llmService } = await createServices()
-      const modelId = await pickEnabledModelId(
-        modelManager,
-        (m) => OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
+      const modelId = await pickEnabledModelId(modelManager, (m) =>
+        OPENAI_COMPATIBLE_PROVIDERS.has(m.providerMeta?.id)
       )
 
       if (!modelId) return
@@ -266,67 +251,68 @@ describe.skipIf(!RUN_REAL_API)('Tool Calls Real API Integration Tests', () => {
             type: 'object',
             properties: {
               query: { type: 'string', description: 'Search query' },
-              category: { 
-                type: 'string', 
+              category: {
+                type: 'string',
                 enum: ['news', 'articles', 'reports'],
-                description: 'Content category'
+                description: 'Content category',
               },
-              limit: { 
-                type: 'integer', 
-                minimum: 1, 
+              limit: {
+                type: 'integer',
+                minimum: 1,
                 maximum: 100,
                 default: 10,
-                description: 'Number of results to return'
-              }
+                description: 'Number of results to return',
+              },
             },
-            required: ['query']
-          }
-        }
-      };
+            required: ['query'],
+          },
+        },
+      }
 
       const messages = [
-        { role: 'system', content: 'You have access to weather data, calculator, and database search. Use appropriate tools for user requests.' },
-        { role: 'user', content: 'Search for news about AI, get weather for London, and calculate 45 * 12' }
-      ];
+        {
+          role: 'system',
+          content:
+            'You have access to weather data, calculator, and database search. Use appropriate tools for user requests.',
+        },
+        {
+          role: 'user',
+          content: 'Search for news about AI, get weather for London, and calculate 45 * 12',
+        },
+      ]
 
-      const tools = [weatherTool, calculatorTool, complexTool];
-      let toolCallsReceived = [];
-      let responseContent = '';
+      const tools = [weatherTool, calculatorTool, complexTool]
+      let toolCallsReceived = []
+      let responseContent = ''
 
       const result = await new Promise((resolve, reject) => {
-        llmService.sendMessageStreamWithTools(
-          messages,
-          modelId,
-          tools,
-          {
-            onToken: (token) => {
-              responseContent += token;
-            },
-            onToolCall: (toolCall) => {
-              toolCallsReceived.push(toolCall);
-            },
-            onComplete: (response) => {
-              resolve({ content: responseContent, toolCalls: toolCallsReceived });
-            },
-            onError: reject
-          }
-        );
-      });
+        llmService.sendMessageStreamWithTools(messages, modelId, tools, {
+          onToken: (token) => {
+            responseContent += token
+          },
+          onToolCall: (toolCall) => {
+            toolCallsReceived.push(toolCall)
+          },
+          onComplete: (response) => {
+            resolve({ content: responseContent, toolCalls: toolCallsReceived })
+          },
+          onError: reject,
+        })
+      })
 
-      expect(result).toBeDefined();
+      expect(result).toBeDefined()
 
       // 验证工具调用的多样性
       if (result.toolCalls.length > 0) {
-        const toolNames = result.toolCalls.map(tc => tc.function.name);
-        const uniqueTools = [...new Set(toolNames)];
-        
-        result.toolCalls.forEach(toolCall => {
-          expect(['get_weather', 'calculate', 'search_database']).toContain(toolCall.function.name);
-          const args = JSON.parse(toolCall.function.arguments);
-          expect(args).toBeDefined();
-        });
-      }
+        const toolNames = result.toolCalls.map((tc) => tc.function.name)
+        const uniqueTools = [...new Set(toolNames)]
 
-    }, 45000);
-  });
-});
+        result.toolCalls.forEach((toolCall) => {
+          expect(['get_weather', 'calculate', 'search_database']).toContain(toolCall.function.name)
+          const args = JSON.parse(toolCall.function.arguments)
+          expect(args).toBeDefined()
+        })
+      }
+    }, 45000)
+  })
+})

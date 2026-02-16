@@ -6,7 +6,7 @@ import type {
   ImageModel,
   ImageRequest,
   ImageResult,
-  ImageModelConfig
+  ImageModelConfig,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
@@ -15,7 +15,7 @@ import {
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
   getTestPrompt,
-  getGeminiDefaultParameterValues
+  getGeminiDefaultParameterValues,
 } from '../../../config'
 
 export class GeminiImageAdapter extends AbstractImageProviderAdapter {
@@ -33,9 +33,9 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -46,37 +46,41 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       {
         id: GEMINI_MODELS.GEMINI_25_FLASH_IMAGE,
         name: getModelDisplayName(GEMINI_MODELS.GEMINI_25_FLASH_IMAGE),
-        description: 'Google Gemini 2.5 Flash 图像生成模型（Nano Banana），支持文生图、图生图和多图输入',
+        description:
+          'Google Gemini 2.5 Flash 图像生成模型（Nano Banana），支持文生图、图生图和多图输入',
         providerId: 'gemini',
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
-        parameterDefinitions: [],  // Gemini 不需要用户配置参数
-        defaultParameterValues: defaultParams
+        parameterDefinitions: [], // Gemini 不需要用户配置参数
+        defaultParameterValues: defaultParams,
       },
       {
         id: GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW,
         name: getModelDisplayName(GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW),
-        description: 'Google Gemini 3 Pro 高级图像生成模型（Nano Banana Pro），支持高分辨率输出和高级文本渲染',
+        description:
+          'Google Gemini 3 Pro 高级图像生成模型（Nano Banana Pro），支持高分辨率输出和高级文本渲染',
         providerId: 'gemini',
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
         parameterDefinitions: [],
-        defaultParameterValues: defaultParams
-      }
+        defaultParameterValues: defaultParams,
+      },
     ]
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: getTestPrompt('gemini', 'text2image'),
-        count: 1
+        count: 1,
       }
     }
 
@@ -85,9 +89,9 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         prompt: getTestPrompt('gemini', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: MIME_TYPES.PNG
+          mimeType: MIME_TYPES.PNG,
         },
-        count: 1
+        count: 1,
       }
     }
 
@@ -103,7 +107,10 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
     return getGeminiDefaultParameterValues()
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const rawBaseUrl = config.connectionConfig?.baseURL?.trim() || ''
     const normalizedBaseUrl = rawBaseUrl ? this.normalizeBaseUrl(rawBaseUrl) : ''
 
@@ -111,8 +118,8 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       ? new GoogleGenAI({
           apiKey: config.connectionConfig?.apiKey,
           httpOptions: {
-            baseUrl: normalizedBaseUrl
-          }
+            baseUrl: normalizedBaseUrl,
+          },
         })
       : new GoogleGenAI({ apiKey: config.connectionConfig?.apiKey })
 
@@ -125,9 +132,9 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
         {
           inlineData: {
             mimeType: request.inputImage.mimeType || MIME_TYPES.PNG,
-            data: request.inputImage.b64
-          }
-        }
+            data: request.inputImage.b64,
+          },
+        },
       ]
     } else {
       // 文生图：直接使用文本
@@ -138,7 +145,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
       // 调用 Gemini API
       const response = await genAI.models.generateContent({
         model: config.modelId,
-        contents
+        contents,
       })
 
       // 解析响应
@@ -165,7 +172,7 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           resultImages.push({
             b64: imageData,
             mimeType,
-            url: dataUrl
+            url: dataUrl,
           })
         }
       }
@@ -182,8 +189,8 @@ export class GeminiImageAdapter extends AbstractImageProviderAdapter {
           modelId: config.modelId,
           configId: config.id,
           finishReason: candidate.finishReason,
-          usage: response.usageMetadata
-        }
+          usage: response.usageMetadata,
+        },
       }
     } catch (error) {
       if (error instanceof ImageError) {

@@ -42,13 +42,14 @@
     <template v-if="result && result.values.length > 0" #footer>
       <NFlex justify="space-between" align="center" style="width: 100%">
         <NText depth="3">
-          {{ t('test.variableValueGeneration.selected') }}: {{ selectedKeys.length }} / {{ editableValues.length }}
+          {{ t('test.variableValueGeneration.selected') }}: {{ selectedKeys.length }} /
+          {{ editableValues.length }}
         </NText>
         <!-- 键盘快捷键提示 -->
         <NFlex align="center" :size="8" class="keyboard-hints">
           <NText depth="3" :style="{ fontSize: '12px' }">
             <span class="kbd-shortcut">Enter</span> {{ t('common.apply') }}
-            <span class="kbd-shortcut" style="margin-left: 8px;">Esc</span> {{ t('common.cancel') }}
+            <span class="kbd-shortcut" style="margin-left: 8px">Esc</span> {{ t('common.cancel') }}
           </NText>
         </NFlex>
       </NFlex>
@@ -70,7 +71,10 @@ import {
   type DataTableColumns,
 } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
-import type { VariableValueGenerationResponse, GeneratedVariableValue } from '@prompt-optimizer/core'
+import type {
+  VariableValueGenerationResponse,
+  GeneratedVariableValue,
+} from '@prompt-optimizer/core'
 import { UI_DIMENSIONS, SPACING } from '../../config/constants'
 
 type RowKey = string | number
@@ -199,9 +203,7 @@ const handleConfirm = () => {
   }
 
   // 获取选中的变量值对象
-  const selectedValues = editableValues.value.filter((v) =>
-    selectedKeys.value.includes(v.name)
-  )
+  const selectedValues = editableValues.value.filter((v) => selectedKeys.value.includes(v.name))
 
   emit('confirm', selectedValues)
 }
@@ -255,7 +257,8 @@ const handleKeydown = (e: KeyboardEvent) => {
   border: 1px solid var(--n-border-color);
   border-radius: 4px;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 /* 深色模式适配 */

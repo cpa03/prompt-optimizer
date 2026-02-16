@@ -65,12 +65,12 @@ let scrollContainer: HTMLElement | Window = window
  */
 const getScrollContainer = (): HTMLElement | Window => {
   if (!props.container) return window
-  
+
   if (typeof props.container === 'string') {
     const element = document.querySelector(props.container) as HTMLElement
     return element || window
   }
-  
+
   return props.container
 }
 
@@ -97,11 +97,11 @@ const handleScroll = () => {
  */
 const scrollToTop = () => {
   const behavior = props.smooth ? 'smooth' : 'auto'
-  
+
   if (scrollContainer === window) {
     window.scrollTo({ top: 0, behavior })
   } else {
-    (scrollContainer as HTMLElement).scrollTo({ top: 0, behavior })
+    ;(scrollContainer as HTMLElement).scrollTo({ top: 0, behavior })
   }
 }
 
@@ -162,7 +162,7 @@ onUnmounted(() => {
 
 .scroll-to-top-btn:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.2),
     0 4px 8px rgba(0, 0, 0, 0.15);
 }
@@ -181,7 +181,8 @@ onUnmounted(() => {
 }
 
 @keyframes bounce-up {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -214,20 +215,20 @@ onUnmounted(() => {
 /* Focus visible styles for accessibility */
 .scroll-to-top-btn:focus-visible {
   outline: none;
-  box-shadow: 
+  box-shadow:
     0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3),
     0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Dark mode adjustments */
 .dark .scroll-to-top-btn {
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.4),
     0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .dark .scroll-to-top-btn:hover {
-  box-shadow: 
+  box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.5),
     0 4px 8px rgba(0, 0, 0, 0.4);
 }
@@ -247,24 +248,24 @@ onUnmounted(() => {
   .scroll-to-top-btn {
     transition: opacity 0.2s ease;
   }
-  
+
   .scroll-to-top-btn:hover {
     transform: none;
   }
-  
+
   .scroll-icon {
     transition: none;
   }
-  
+
   .scroll-to-top-btn:hover .scroll-icon {
     animation: none;
   }
-  
+
   .scroll-to-top-enter-active,
   .scroll-to-top-leave-active {
     transition: opacity 0.2s ease;
   }
-  
+
   .scroll-to-top-enter-from,
   .scroll-to-top-leave-to {
     transform: none;

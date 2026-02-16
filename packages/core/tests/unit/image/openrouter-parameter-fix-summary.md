@@ -5,17 +5,21 @@
 通过仔细分析 OpenRouter 文档，发现之前的参数配置不正确：
 
 ### ❌ 错误的参数
+
 - `max_tokens: 1000` - 用于文本生成，不适用于图像生成
 - `temperature: 0.7` - 用于文本生成，不适用于图像生成
 - `outputMimeType: 'image/png'` - OpenRouter不支持此参数
 
 ### ✅ 正确的参数
+
 根据文档，OpenRouter图像生成只需要：
+
 - `modalities: ["image", "text"]` - 必需参数，指定输出模式
 
 ## 修正内容
 
 ### 1. 适配器参数定义
+
 ```typescript
 parameterDefinitions: [
   {
@@ -24,12 +28,13 @@ parameterDefinitions: [
     descriptionKey: 'params.modalities.description',
     type: 'string',
     defaultValue: '["image", "text"]',
-    allowedValues: ['["image", "text"]', '["text", "image"]']
-  }
+    allowedValues: ['["image", "text"]', '["text", "image"]'],
+  },
 ]
 ```
 
 ### 2. 默认参数值
+
 ```typescript
 defaultParameterValues: {
   modalities: ['image', 'text']
@@ -37,6 +42,7 @@ defaultParameterValues: {
 ```
 
 ### 3. API请求格式
+
 ```typescript
 const payload = {
   model: config.modelId,
@@ -47,6 +53,7 @@ const payload = {
 ```
 
 ### 4. 默认配置更新
+
 ```typescript
 'image-openrouter-gemini': buildConfig(
   'image-openrouter-gemini',

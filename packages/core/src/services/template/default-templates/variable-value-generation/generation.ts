@@ -4,7 +4,7 @@
  * 使用 LLM 根据提示词上下文智能推测变量值
  */
 
-import type { Template, MessageTemplate } from '../../../types';
+import type { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'variable-value-generation',
@@ -64,7 +64,7 @@ export const template: Template = {
 - 如果变量已有当前值,可参考但不必照搬
 - 生成的值应该是具体的、可直接使用的字符串
 - 如果某个变量难以推测,提供一个通用的占位值,并在reason中说明
-- 只输出 JSON,不添加额外解释`
+- 只输出 JSON,不添加额外解释`,
     },
     {
       role: 'user',
@@ -80,8 +80,8 @@ export const template: Template = {
 
 共 {{variableCount}} 个变量。
 
-请根据提示词上下文,为每个变量智能推测合理的示例值。`
-    }
+请根据提示词上下文,为每个变量智能推测合理的示例值。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -90,7 +90,7 @@ export const template: Template = {
     description: 'AI智能变量值生成 - 根据提示词上下文推测变量值',
     templateType: 'variable-value-generation',
     language: 'zh',
-    tags: ['variable-generation', 'intelligent', 'testing']
+    tags: ['variable-generation', 'intelligent', 'testing'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

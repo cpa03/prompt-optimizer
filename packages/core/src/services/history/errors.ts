@@ -3,17 +3,17 @@
  * 历史记录基础错误
  */
 
-import { HISTORY_ERROR_CODES, type ErrorParams } from '../../constants/error-codes';
+import { HISTORY_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 
 export class HistoryError extends Error {
-  public readonly code: string;
-  public readonly params?: ErrorParams;
+  public readonly code: string
+  public readonly params?: ErrorParams
 
   constructor(code: string, params?: ErrorParams, message?: string) {
-    super(message ? `[${code}] ${message}` : `[${code}]`);
-    this.name = 'HistoryError';
-    this.code = code;
-    this.params = params ?? (message ? { details: message } : undefined);
+    super(message ? `[${code}] ${message}` : `[${code}]`)
+    this.name = 'HistoryError'
+    this.code = code
+    this.params = params ?? (message ? { details: message } : undefined)
   }
 }
 
@@ -23,8 +23,8 @@ export class HistoryError extends Error {
  */
 export class HistoryNotFoundError extends HistoryError {
   constructor(id: string) {
-    super(HISTORY_ERROR_CODES.NOT_FOUND, { context: id });
-    this.name = 'HistoryNotFoundError';
+    super(HISTORY_ERROR_CODES.NOT_FOUND, { context: id })
+    this.name = 'HistoryNotFoundError'
   }
 }
 
@@ -34,8 +34,8 @@ export class HistoryNotFoundError extends HistoryError {
  */
 export class HistoryChainError extends HistoryError {
   constructor(message: string) {
-    super(HISTORY_ERROR_CODES.CHAIN_ERROR, undefined, message);
-    this.name = 'HistoryChainError';
+    super(HISTORY_ERROR_CODES.CHAIN_ERROR, undefined, message)
+    this.name = 'HistoryChainError'
   }
 }
 
@@ -49,8 +49,8 @@ export class RecordNotFoundError extends HistoryError {
     public recordId: string
   ) {
     // i18n expects {details} for record_not_found
-    super(HISTORY_ERROR_CODES.RECORD_NOT_FOUND, { details: message }, message);
-    this.name = 'RecordNotFoundError';
+    super(HISTORY_ERROR_CODES.RECORD_NOT_FOUND, { details: message }, message)
+    this.name = 'RecordNotFoundError'
   }
 }
 
@@ -69,8 +69,8 @@ export class HistoryStorageError extends HistoryError {
     public operation: 'read' | 'write' | 'delete' | 'init' | 'storage'
   ) {
     // i18n expects {details} for storage
-    super(HISTORY_ERROR_CODES.STORAGE_ERROR, { details: message }, message);
-    this.name = 'HistoryStorageError';
+    super(HISTORY_ERROR_CODES.STORAGE_ERROR, { details: message }, message)
+    this.name = 'HistoryStorageError'
   }
 }
 
@@ -83,7 +83,7 @@ export class RecordValidationError extends HistoryError {
     message: string,
     public errors: string[]
   ) {
-    super(HISTORY_ERROR_CODES.VALIDATION_ERROR, undefined, message);
-    this.name = 'RecordValidationError';
+    super(HISTORY_ERROR_CODES.VALIDATION_ERROR, undefined, message)
+    this.name = 'RecordValidationError'
   }
-} 
+}

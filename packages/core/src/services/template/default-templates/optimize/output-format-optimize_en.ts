@@ -1,4 +1,4 @@
-import { Template } from '../../types';
+import { Template } from '../../types'
 
 export const template: Template = {
   id: 'output-format-optimize',
@@ -102,7 +102,7 @@ Please optimize and expand the following prompt based on the above template, ens
     author: 'System',
     description: 'Suitable for most scenarios with format requirements',
     templateType: 'optimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

@@ -6,7 +6,7 @@ const toast = {
   error: vi.fn(),
   warning: vi.fn(),
   info: vi.fn(),
-  loading: vi.fn()
+  loading: vi.fn(),
 }
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -14,13 +14,13 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
 vi.mock('../../src/composables/ui/useToast', () => ({
-  useToast: () => toast
+  useToast: () => toast,
 }))
 
 import type { AppServices } from '../../src/types/services'
@@ -34,7 +34,7 @@ describe('ContextUser tester (integration)', () => {
       expect(req.modelKey).toBe('test-model-1')
       expect(req.variables).toMatchObject({
         base: '1',
-        extra: '2'
+        extra: '2',
       })
       handlers.onToken('A')
       handlers.onToken('B')
@@ -43,14 +43,14 @@ describe('ContextUser tester (integration)', () => {
     })
 
     const services = ref({
-      promptService: { testCustomConversationStream }
+      promptService: { testCustomConversationStream },
     } as unknown as AppServices)
 
     const selectedTestModel = ref('test-model-1')
     const variableManager = {
       variableManager: ref({
-        resolveAllVariables: () => ({ base: '1' })
-      })
+        resolveAllVariables: () => ({ base: '1' }),
+      }),
     } as any
 
     const tester = useContextUserTester(services, selectedTestModel, variableManager)
@@ -63,4 +63,3 @@ describe('ContextUser tester (integration)', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 })
-

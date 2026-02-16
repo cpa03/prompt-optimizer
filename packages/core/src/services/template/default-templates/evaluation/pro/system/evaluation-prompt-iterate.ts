@@ -5,7 +5,7 @@
  * 统一输出结构：score + improvements + patchPlan + summary
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-multi-prompt-iterate',
@@ -91,7 +91,7 @@ export const template: Template = {
   - instruction：简洁说明问题和修复方案
 - **summary**：一句话总结评估结论（必填）
 
-只输出 JSON，不添加额外解释。`
+只输出 JSON，不添加额外解释。`,
     },
     {
       role: 'user',
@@ -117,8 +117,8 @@ export const template: Template = {
 
 ---
 
-请评估当前消息的质量{{#hasOriginalPrompt}}，并与原始版本对比{{/hasOriginalPrompt}}。迭代需求仅作为理解修改背景的参考。`
-    }
+请评估当前消息的质量{{#hasOriginalPrompt}}，并与原始版本对比{{/hasOriginalPrompt}}。迭代需求仅作为理解修改背景的参考。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -127,7 +127,7 @@ export const template: Template = {
     description: '评估多消息对话中单条消息的质量，统一输出 improvements + patchPlan',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'prompt-iterate', 'scoring', 'pro', 'system', 'multi-message']
+    tags: ['evaluation', 'prompt-iterate', 'scoring', 'pro', 'system', 'multi-message'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

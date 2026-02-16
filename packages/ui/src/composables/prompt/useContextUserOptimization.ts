@@ -7,7 +7,7 @@ import type {
   Template,
   PromptRecord,
   PromptRecordChain,
-  OptimizationRequest
+  OptimizationRequest,
 } from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 
@@ -39,12 +39,24 @@ export interface UseContextUserOptimization {
 
   // 方法
   optimize: () => Promise<void>
-  iterate: (payload: { originalPrompt: string, optimizedPrompt: string, iterateInput: string }) => Promise<void>
+  iterate: (payload: {
+    originalPrompt: string
+    optimizedPrompt: string
+    iterateInput: string
+  }) => Promise<void>
   switchVersion: (version: PromptChain['versions'][number]) => Promise<void>
-  switchToV0: (version: PromptChain['versions'][number]) => Promise<void>  // 🆕 V0 切换
-  loadFromHistory: (payload: { rootPrompt?: string, chain: PromptChain, record: PromptRecord }) => void
-  saveLocalEdit: (payload: { optimizedPrompt: string; note?: string; source?: 'patch' | 'manual' }) => Promise<void>
-  handleAnalyze: () => void  // 🆕 分析功能
+  switchToV0: (version: PromptChain['versions'][number]) => Promise<void> // 🆕 V0 切换
+  loadFromHistory: (payload: {
+    rootPrompt?: string
+    chain: PromptChain
+    record: PromptRecord
+  }) => void
+  saveLocalEdit: (payload: {
+    optimizedPrompt: string
+    note?: string
+    source?: 'patch' | 'manual'
+  }) => Promise<void>
+  handleAnalyze: () => void // 🆕 分析功能
 }
 
 /**
@@ -134,62 +146,61 @@ export function useContextUserOptimization(
       try {
         // 构建优化请求
         const request: OptimizationRequest = {
-          optimizationMode: 'user',  // ContextUser 固定为 user 模式
+          optimizationMode: 'user', // ContextUser 固定为 user 模式
           targetPrompt: state.prompt,
           templateId: selectedTemplate.value.id,
-          modelKey: selectedOptimizeModel.value
+          modelKey: selectedOptimizeModel.value,
         }
 
         // 使用流式优化 API
-        await promptService.value!.optimizePromptStream(
-          request,
-          {
-            onToken: (token: string) => {
-              state.optimizedPrompt += token
-            },
-            onReasoningToken: (reasoningToken: string) => {
-              state.optimizedReasoning += reasoningToken
-            },
-            onComplete: async () => {
-              if (!selectedTemplate.value) return
+        await promptService.value!.optimizePromptStream(request, {
+          onToken: (token: string) => {
+            state.optimizedPrompt += token
+          },
+          onReasoningToken: (reasoningToken: string) => {
+            state.optimizedReasoning += reasoningToken
+          },
+          onComplete: async () => {
+            if (!selectedTemplate.value) return
 
-              try {
-                // 创建历史记录
-                const recordData = {
-                  id: uuidv4(),
-                  originalPrompt: state.prompt,
-                  optimizedPrompt: state.optimizedPrompt,
-                  type: 'contextUserOptimize' as const,  // ContextUser 专用类型
-                  modelKey: selectedOptimizeModel.value,
-                  templateId: selectedTemplate.value.id,
-                  timestamp: Date.now(),
-                  metadata: {
-                    optimizationMode: 'user' as const,
-                    functionMode: 'pro' as const  // ContextUser 属于 pro 模式
-                  }
-                }
-
-                const newRecord = await historyManager.value!.createNewChain(recordData)
-
-                state.currentChainId = newRecord.chainId
-                state.currentVersions = newRecord.versions
-                state.currentVersionId = newRecord.currentRecord.id
-
-                toast.success(t('toast.success.optimizeSuccess'))
-              } catch (error: unknown) {
-                console.error('创建历史记录失败:', error)
-                toast.error('创建历史记录失败: ' + getI18nErrorMessage(error, t('toast.error.optimizeFailed')))
-              } finally {
-                state.isOptimizing = false
+            try {
+              // 创建历史记录
+              const recordData = {
+                id: uuidv4(),
+                originalPrompt: state.prompt,
+                optimizedPrompt: state.optimizedPrompt,
+                type: 'contextUserOptimize' as const, // ContextUser 专用类型
+                modelKey: selectedOptimizeModel.value,
+                templateId: selectedTemplate.value.id,
+                timestamp: Date.now(),
+                metadata: {
+                  optimizationMode: 'user' as const,
+                  functionMode: 'pro' as const, // ContextUser 属于 pro 模式
+                },
               }
-            },
-            onError: (error: Error) => {
-              console.error(t('toast.error.optimizeProcessFailed'), error)
-              toast.error(getI18nErrorMessage(error, t('toast.error.optimizeFailed')))
+
+              const newRecord = await historyManager.value!.createNewChain(recordData)
+
+              state.currentChainId = newRecord.chainId
+              state.currentVersions = newRecord.versions
+              state.currentVersionId = newRecord.currentRecord.id
+
+              toast.success(t('toast.success.optimizeSuccess'))
+            } catch (error: unknown) {
+              console.error('创建历史记录失败:', error)
+              toast.error(
+                '创建历史记录失败: ' + getI18nErrorMessage(error, t('toast.error.optimizeFailed'))
+              )
+            } finally {
               state.isOptimizing = false
             }
-          }
-        )
+          },
+          onError: (error: Error) => {
+            console.error(t('toast.error.optimizeProcessFailed'), error)
+            toast.error(getI18nErrorMessage(error, t('toast.error.optimizeFailed')))
+            state.isOptimizing = false
+          },
+        })
       } catch (error: unknown) {
         console.error(t('toast.error.optimizeFailed'), error)
         toast.error(getI18nErrorMessage(error, t('toast.error.optimizeFailed')))
@@ -199,17 +210,15 @@ export function useContextUserOptimization(
     },
 
     // 迭代优化
-    iterate: async (
-      {
-        originalPrompt,
-        optimizedPrompt: lastOptimizedPrompt,
-        iterateInput,
-      }: {
-        originalPrompt: string,
-        optimizedPrompt: string,
-        iterateInput: string,
-      },
-    ) => {
+    iterate: async ({
+      originalPrompt,
+      optimizedPrompt: lastOptimizedPrompt,
+      iterateInput,
+    }: {
+      originalPrompt: string
+      optimizedPrompt: string
+      iterateInput: string
+    }) => {
       // 🔧 修复：迭代模板实际上不需要 originalPrompt，只需要 lastOptimizedPrompt 和 iterateInput
       // 移除 !originalPrompt 检查，允许用户直接在工作区编辑后迭代
       if (!lastOptimizedPrompt || state.isIterating) return
@@ -255,7 +264,7 @@ export function useContextUserOptimization(
                   optimizedPrompt: state.optimizedPrompt,
                   iterationNote: iterateInput,
                   modelKey: selectedOptimizeModel.value,
-                  templateId: selectedIterateTemplate.value.id
+                  templateId: selectedIterateTemplate.value.id,
                 }
 
                 const updatedChain = await historyManager.value!.addIteration(iterationData)
@@ -275,9 +284,9 @@ export function useContextUserOptimization(
               console.error('[Iterate] 迭代失败:', error)
               toast.error(t('toast.error.iterateFailed'))
               state.isIterating = false
-            }
+            },
           },
-          selectedIterateTemplate.value.id,
+          selectedIterateTemplate.value.id
         )
       } catch (error: unknown) {
         console.error('[Iterate] 迭代失败:', error)
@@ -345,7 +354,15 @@ export function useContextUserOptimization(
      * @param payload.chain - 提示链数据（包含所有版本）
      * @param payload.record - 当前选中的提示记录
      */
-    loadFromHistory: ({ rootPrompt, chain, record }: { rootPrompt?: string; chain: PromptChain; record: PromptRecord }) => {
+    loadFromHistory: ({
+      rootPrompt,
+      chain,
+      record,
+    }: {
+      rootPrompt?: string
+      chain: PromptChain
+      record: PromptRecord
+    }) => {
       state.prompt = rootPrompt || record.originalPrompt || ''
       state.optimizedPrompt = record.optimizedPrompt || ''
       state.optimizedReasoning = ''
@@ -358,7 +375,15 @@ export function useContextUserOptimization(
      * 保存本地修改为一个新版本（不触发 LLM）
      * - 用于"直接修复"与手动编辑后的显式保存
      */
-    saveLocalEdit: async ({ optimizedPrompt, note, source }: { optimizedPrompt: string; note?: string; source?: 'patch' | 'manual' }) => {
+    saveLocalEdit: async ({
+      optimizedPrompt,
+      note,
+      source,
+    }: {
+      optimizedPrompt: string
+      note?: string
+      source?: 'patch' | 'manual'
+    }) => {
       try {
         if (!historyManager.value) throw new Error('History service unavailable')
         if (!optimizedPrompt) return
@@ -386,7 +411,7 @@ export function useContextUserOptimization(
               functionMode: 'pro' as const,
               localEdit: true,
               localEditSource: source || 'manual',
-            }
+            },
           }
           const newRecord = await historyManager.value.createNewChain(recordData)
           state.currentChainId = newRecord.chainId
@@ -407,7 +432,7 @@ export function useContextUserOptimization(
             functionMode: 'pro' as const,
             localEdit: true,
             localEditSource: source || 'manual',
-          }
+          },
         })
 
         state.currentVersions = updatedChain.versions
@@ -445,7 +470,7 @@ export function useContextUserOptimization(
       state.currentVersions = [virtualV0]
       state.currentVersionId = virtualV0Id
       state.optimizedPrompt = state.prompt
-    }
+    },
   })
 
   // 同步 selectedTemplate 和 selectedIterateTemplate

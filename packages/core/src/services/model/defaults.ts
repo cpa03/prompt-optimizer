@@ -1,22 +1,22 @@
-import type { TextModelConfig } from './types';
-import type { ITextAdapterRegistry } from '../llm/types';
-import { TextAdapterRegistry } from '../llm/adapters/registry';
-import { getEnvVar } from '../../utils/environment';
-import { generateDynamicModels } from './model-utils';
-import { PROVIDER_ENV_KEYS, OLLAMA_CONFIG, MODEL_DEFAULTS } from '../../config';
+import type { TextModelConfig } from './types'
+import type { ITextAdapterRegistry } from '../llm/types'
+import { TextAdapterRegistry } from '../llm/adapters/registry'
+import { getEnvVar } from '../../utils/environment'
+import { generateDynamicModels } from './model-utils'
+import { PROVIDER_ENV_KEYS, OLLAMA_CONFIG, MODEL_DEFAULTS } from '../../config'
 
 /**
  * Provider ID -> 环境变量 key 映射
  * 新增 Provider 只需在此添加一行
  */
-const LOCAL_PROVIDER_ENV_KEYS = PROVIDER_ENV_KEYS;
+const LOCAL_PROVIDER_ENV_KEYS = PROVIDER_ENV_KEYS
 
 /**
  * 获取所有内置模型的 ID 列表
  * 包括 PROVIDER_ENV_KEYS 中的所有 Provider 和 'custom'
  */
 export function getBuiltinModelIds(): string[] {
-  return [...Object.keys(LOCAL_PROVIDER_ENV_KEYS), 'custom'];
+  return [...Object.keys(LOCAL_PROVIDER_ENV_KEYS), 'custom']
 }
 
 /**
@@ -28,20 +28,22 @@ export function getBuiltinModelIds(): string[] {
  *
  * @param registry 可选，文本适配器注册表（用于依赖注入和测试）
  */
-export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<string, TextModelConfig> {
-  const adapterRegistry = registry || new TextAdapterRegistry();
-  const result: Record<string, TextModelConfig> = {};
+export function getDefaultTextModels(
+  registry?: ITextAdapterRegistry
+): Record<string, TextModelConfig> {
+  const adapterRegistry = registry || new TextAdapterRegistry()
+  const result: Record<string, TextModelConfig> = {}
 
   // 批量生成标准 Provider 配置
   for (const [providerId, envKey] of Object.entries(LOCAL_PROVIDER_ENV_KEYS)) {
-    const adapter = adapterRegistry.getAdapter(providerId);
-    const provider = adapter.getProvider();
-    const models = adapter.getModels();
-    const defaultModel = models[0] || adapter.buildDefaultModel(providerId);
-    const apiKey = getEnvVar(envKey).trim();
+    const adapter = adapterRegistry.getAdapter(providerId)
+    const provider = adapter.getProvider()
+    const models = adapter.getModels()
+    const defaultModel = models[0] || adapter.buildDefaultModel(providerId)
+    const apiKey = getEnvVar(envKey).trim()
 
     // 使用模型的默认参数值初始化 paramOverrides
-    const defaultParamValues = defaultModel.defaultParameterValues || {};
+    const defaultParamValues = defaultModel.defaultParameterValues || {}
 
     result[providerId] = {
       id: provider.id,
@@ -51,23 +53,23 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
       modelMeta: defaultModel,
       connectionConfig: {
         apiKey,
-        baseURL: provider.defaultBaseURL
+        baseURL: provider.defaultBaseURL,
       },
       paramOverrides: { ...defaultParamValues },
-      customParamOverrides: {}
-    };
+      customParamOverrides: {},
+    }
   }
 
   // Custom 单独处理（baseURL 和 model 来自环境变量）
-  const openaiAdapter = adapterRegistry.getAdapter('openai');
-  const customApiKey = getEnvVar('VITE_CUSTOM_API_KEY').trim();
-  const customBaseURL = getEnvVar('VITE_CUSTOM_API_BASE_URL');
-  const customModelId = getEnvVar('VITE_CUSTOM_API_MODEL') || MODEL_DEFAULTS.customModelId;
+  const openaiAdapter = adapterRegistry.getAdapter('openai')
+  const customApiKey = getEnvVar('VITE_CUSTOM_API_KEY').trim()
+  const customBaseURL = getEnvVar('VITE_CUSTOM_API_BASE_URL')
+  const customModelId = getEnvVar('VITE_CUSTOM_API_MODEL') || MODEL_DEFAULTS.customModelId
   const customModelMeta = {
     ...openaiAdapter.buildDefaultModel(customModelId),
     name: customModelId,
-    description: 'Custom model via OpenAI-compatible API'
-  };
+    description: 'Custom model via OpenAI-compatible API',
+  }
 
   result.custom = {
     id: 'custom',
@@ -77,13 +79,13 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
     modelMeta: customModelMeta,
     connectionConfig: {
       apiKey: customApiKey,
-      baseURL: customBaseURL || OLLAMA_CONFIG.defaultBaseURL
+      baseURL: customBaseURL || OLLAMA_CONFIG.defaultBaseURL,
     },
     paramOverrides: { ...(customModelMeta.defaultParameterValues || {}) },
-    customParamOverrides: {}
-  };
+    customParamOverrides: {},
+  }
 
-  return result;
+  return result
 }
 
 /**
@@ -93,17 +95,17 @@ export function getDefaultTextModels(registry?: ITextAdapterRegistry): Record<st
  */
 export function getAllModels(registry?: ITextAdapterRegistry): Record<string, TextModelConfig> {
   // 生成静态模型配置
-  const staticModels = getDefaultTextModels(registry);
+  const staticModels = getDefaultTextModels(registry)
 
   // 生成动态自定义模型（现在返回 TextModelConfig 格式）
-  const dynamicModels = generateDynamicModels();
+  const dynamicModels = generateDynamicModels()
 
   // 合并静态模型和动态模型
   return {
     ...staticModels,
-    ...dynamicModels
-  };
+    ...dynamicModels,
+  }
 }
 
 // 直接导出所有模型配置（保持向后兼容）
-export const defaultModels = getAllModels();
+export const defaultModels = getAllModels()

@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-analytical-optimize',
@@ -131,7 +131,7 @@ def process_data(data):
 6. 保持与原消息相同的语言
 7. 保持与对话上下文一致的风格
 8. 双花括号变量占位符必须原样保留
-9. 简单消息不要添加复杂分析框架`
+9. 简单消息不要添加复杂分析框架`,
     },
     {
       role: 'user',
@@ -155,8 +155,8 @@ def process_data(data):
 内容：{{#contentTooLong}}{{contentPreview}}...（完整内容见上文第{{index}}条）{{/contentTooLong}}{{^contentTooLong}}{{content}}{{/contentTooLong}}
 {{/selectedMessage}}
 
-请根据分析型优化原则和示例，直接输出优化后的消息内容：`
-    }
+请根据分析型优化原则和示例，直接输出优化后的消息内容：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -166,7 +166,7 @@ def process_data(data):
     templateType: 'conversationMessageOptimize',
     language: 'zh',
     variant: 'context',
-    tags: ['context', 'message', 'optimize', 'analytical']
+    tags: ['context', 'message', 'optimize', 'analytical'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

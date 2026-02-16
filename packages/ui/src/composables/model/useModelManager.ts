@@ -23,7 +23,7 @@ export interface ModelManagerHooks {
  */
 export function useModelManager(
   services: Ref<AppServices | null>,
-  modelSelectRefs: ModelSelectRefsHooks,
+  modelSelectRefs: ModelSelectRefsHooks
 ): ModelManagerHooks {
   const toast = useToast()
   const { t } = useI18n()
@@ -77,7 +77,7 @@ export function useModelManager(
         await state.initModelSelection()
       }
     },
-    { immediate: true },
+    { immediate: true }
   )
 
   return state

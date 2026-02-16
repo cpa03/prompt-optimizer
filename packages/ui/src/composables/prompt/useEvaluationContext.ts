@@ -53,7 +53,7 @@ export function useEvaluationContext(): UseEvaluationReturn {
   if (!evaluation) {
     throw new Error(
       '[useEvaluationContext] 必须在提供了评估上下文的组件树中使用。' +
-      '请确保父组件调用了 provideEvaluation()。'
+        '请确保父组件调用了 provideEvaluation()。'
     )
   }
   return evaluation

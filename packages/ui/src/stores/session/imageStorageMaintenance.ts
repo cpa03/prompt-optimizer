@@ -1,4 +1,8 @@
-import { DJB2_HASH_SEED, type IImageStorageService, type IPreferenceService } from '@prompt-optimizer/core'
+import {
+  DJB2_HASH_SEED,
+  type IImageStorageService,
+  type IPreferenceService,
+} from '@prompt-optimizer/core'
 
 // Session snapshot keys (single source of truth)
 export const IMAGE_TEXT2IMAGE_SESSION_KEY = 'session/v1/image-text2image'
@@ -13,7 +17,7 @@ export function queueImageStorageMaintenance<T>(job: () => Promise<T>): Promise<
   const next = maintenanceChain.then(job)
   maintenanceChain = next.then(
     () => undefined,
-    () => undefined,
+    () => undefined
   )
   return next
 }
@@ -90,7 +94,7 @@ function collectImageRefIds(value: unknown, out: Set<string>) {
 }
 
 async function collectReferencedImageIds(
-  preferenceService: IPreferenceService,
+  preferenceService: IPreferenceService
 ): Promise<Set<string>> {
   const referenced = new Set<string>()
 
@@ -119,13 +123,11 @@ async function collectReferencedImageIds(
 
 async function runImageStorageGcNow(
   preferenceService: IPreferenceService,
-  imageStorageService: IImageStorageService,
+  imageStorageService: IImageStorageService
 ) {
   const referenced = await collectReferencedImageIds(preferenceService)
   const allMetadata = await imageStorageService.listAllMetadata()
-  const orphanIds = allMetadata
-    .map((m) => m.id)
-    .filter((id) => !referenced.has(id))
+  const orphanIds = allMetadata.map((m) => m.id).filter((id) => !referenced.has(id))
 
   if (orphanIds.length === 0) return
   await imageStorageService.deleteImages(orphanIds)
@@ -144,7 +146,7 @@ let pendingGcServices: {
 export function scheduleImageStorageGc(
   preferenceService: IPreferenceService,
   imageStorageService: IImageStorageService,
-  opts?: { delayMs?: number },
+  opts?: { delayMs?: number }
 ) {
   pendingGcServices = { preferenceService, imageStorageService }
 

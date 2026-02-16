@@ -25,11 +25,13 @@ docker logs -f --tail 100 prompt-optimizer
 #### 常见启动错误
 
 **错误1：端口被占用**
+
 ```
 Error starting userland proxy: listen tcp4 0.0.0.0:8081: bind: address already in use
 ```
 
 解决方案：
+
 ```bash
 # 查找占用端口的进程
 netstat -tulpn | grep :8081
@@ -41,11 +43,13 @@ docker run -d -p 3000:80 linshen/prompt-optimizer
 ```
 
 **错误2：镜像拉取失败**
+
 ```
 Error response from daemon: pull access denied for linshen/prompt-optimizer
 ```
 
 解决方案：
+
 ```bash
 # 使用国内镜像源
 docker pull registry.cn-guangzhou.aliyuncs.com/prompt-optimizer/prompt-optimizer:latest
@@ -64,11 +68,13 @@ sudo systemctl restart docker
 ```
 
 **错误3：权限问题**
+
 ```
 Got permission denied while trying to connect to the Docker daemon socket
 ```
 
 解决方案：
+
 ```bash
 # 将用户添加到docker组
 sudo usermod -aG docker $USER
@@ -99,6 +105,7 @@ docker exec -it prompt-optimizer nslookup google.com
 #### 网络配置问题
 
 **问题：无法访问外部API**
+
 ```bash
 # 检查防火墙设置
 sudo ufw status
@@ -110,6 +117,7 @@ docker network inspect bridge
 ```
 
 **问题：容器间无法通信**
+
 ```bash
 # 检查自定义网络
 docker network create prompt-network
@@ -124,6 +132,7 @@ docker exec -it container1 ping container2
 #### HTTP访问异常
 
 **问题：404 Not Found**
+
 ```bash
 # 检查Nginx配置（如果使用）
 docker exec -it prompt-nginx nginx -t
@@ -133,6 +142,7 @@ docker exec -it prompt-optimizer cat /app/dist/index.html
 ```
 
 **问题：502 Bad Gateway**
+
 ```bash
 # 检查上游服务状态
 docker exec -it prompt-nginx curl http://prompt-optimizer:80
@@ -142,6 +152,7 @@ docker exec -it prompt-nginx cat /etc/nginx/nginx.conf
 ```
 
 **问题：SSL证书错误**
+
 ```bash
 # 检查证书有效性
 openssl x509 -in ./ssl/cert.pem -text -noout
@@ -179,7 +190,7 @@ services:
       - NODE_ENV=development
       - DEBUG=*
       - LOG_LEVEL=debug
-    command: ["sh", "-c", "npm start -- --verbose"]
+    command: ['sh', '-c', 'npm start -- --verbose']
     # 或者进入调试模式
     # command: ["tail", "-f", "/dev/null"]
 ```
@@ -251,7 +262,7 @@ docker exec -it prompt-optimizer iostat -x 1
 
 #### 内存优化
 
-```bash
+````bash
 # 设置内存限制
 docker run -d -p 8081:80 \
   --memory="1g" \
@@ -269,7 +280,7 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-```
+````
 
 #### CPU优化
 
@@ -347,17 +358,17 @@ http {
     gzip_vary on;
     gzip_min_length 1024;
     gzip_types text/plain text/css application/json application/javascript;
-    
+
     # 开启缓存
-    proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=app_cache:10m max_size=1g 
+    proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=app_cache:10m max_size=1g
                      inactive=60m use_temp_path=off;
-    
+
     # 连接池优化
     upstream prompt-optimizer {
         server prompt-optimizer:80;
         keepalive 32;
     }
-    
+
     server {
         # 静态资源缓存
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
@@ -471,13 +482,13 @@ LOG_FILE="/var/log/prompt-optimizer-performance.log"
 
 while true; do
     TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-    
+
     # 获取容器统计信息
     STATS=$(docker stats --no-stream --format "table {{.CPUPerc}},{{.MemUsage}},{{.NetIO}},{{.BlockIO}}" $CONTAINER_NAME 2>/dev/null)
-    
+
     if [ $? -eq 0 ]; then
         echo "[$TIMESTAMP] $STATS" >> $LOG_FILE
-        
+
         # 检查CPU使用率是否超过80%
         CPU_USAGE=$(echo $STATS | cut -d',' -f1 | sed 's/%//')
         if (( $(echo "$CPU_USAGE > 80" | bc -l) )); then
@@ -486,7 +497,7 @@ while true; do
     else
         echo "[$TIMESTAMP] ERROR: Container not found or not running" >> $LOG_FILE
     fi
-    
+
     sleep 60
 done
 ```
@@ -504,23 +515,23 @@ echo "🚨 执行应急响应程序..."
 # 1. 立即检查服务状态
 if ! curl -sf http://localhost:8081/health >/dev/null 2>&1; then
     echo "❌ 服务不可用，开始应急处理"
-    
+
     # 2. 快速重启
     docker compose restart prompt-optimizer
     sleep 30
-    
+
     # 3. 再次检查
     if curl -sf http://localhost:8081/health >/dev/null 2>&1; then
         echo "✅ 快速重启成功"
         exit 0
     fi
-    
+
     # 4. 完整重建
     echo "尝试完整重建..."
     docker compose down
     docker compose up -d
     sleep 60
-    
+
     # 5. 最终检查
     if curl -sf http://localhost:8081/health >/dev/null 2>&1; then
         echo "✅ 完整重建成功"
@@ -549,16 +560,16 @@ docker logs prompt-optimizer --since="1h" | grep -i error > $ALERT_FILE
 if [ -s $ALERT_FILE ]; then
     echo "发现错误日志："
     cat $ALERT_FILE
-    
+
     # 分析错误类型并给出建议
     if grep -q "ECONNREFUSED" $ALERT_FILE; then
         echo "建议：检查网络连接和上游服务状态"
     fi
-    
+
     if grep -q "out of memory" $ALERT_FILE; then
         echo "建议：增加内存限制或优化内存使用"
     fi
-    
+
     if grep -q "permission denied" $ALERT_FILE; then
         echo "建议：检查文件权限和用户配置"
     fi
@@ -568,5 +579,6 @@ fi
 ---
 
 **相关链接**：
+
 - [基础部署](docker-basic.md) - Docker单容器快速部署
 - [高级配置](docker-advanced.md) - Docker Compose高级配置和安全设置

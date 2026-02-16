@@ -5,18 +5,18 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { 
-  PROVIDER_URLS, 
-  IMAGE_SIZE_PRESETS, 
+import {
+  PROVIDER_URLS,
+  IMAGE_SIZE_PRESETS,
   MIME_TYPES,
   PROVIDER_API_KEY_URLS,
   getTestPrompt,
   getOpenAIParameterDefinitions,
-  getOpenAIDefaultParameterValues
+  getOpenAIDefaultParameterValues,
 } from '../../../config'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
@@ -38,9 +38,9 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -54,19 +54,21 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: getOpenAIParameterDefinitions(),
-        defaultParameterValues: getOpenAIDefaultParameterValues()
-      }
+        defaultParameterValues: getOpenAIDefaultParameterValues(),
+      },
     ]
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: getTestPrompt('openai', 'text2image'),
-        count: 1
+        count: 1,
       }
     }
 
@@ -75,9 +77,9 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         prompt: getTestPrompt('openai', 'image2image'),
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: MIME_TYPES.image.png
+          mimeType: MIME_TYPES.image.png,
         },
-        count: 1
+        count: 1,
       }
     }
 
@@ -93,7 +95,10 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     return getOpenAIDefaultParameterValues()
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const hasInputImage = !!request.inputImage
 
     if (hasInputImage) {
@@ -105,7 +110,10 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     }
   }
 
-  private async generateImage(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  private async generateImage(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const merged: Record<string, any> = {
       model: config.modelId,
       prompt: request.prompt,
@@ -114,7 +122,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       stream: false,
       // 合并参数覆盖（先合并，后强制覆盖）
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
     // 隐藏并固定多图相关参数
     delete (merged as any).n
@@ -124,16 +132,19 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     return this.parseImageResponse(response, config)
   }
 
-  private async generateImageEdit(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  private async generateImageEdit(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     if (!request.inputImage) {
       throw new ImageError(IMAGE_ERROR_CODES.IMAGE2IMAGE_INPUT_IMAGE_REQUIRED)
     }
@@ -168,10 +179,10 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/edits', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
         // 不设置Content-Type，让浏览器自动设置multipart/form-data边界
       },
-      body: formData
+      body: formData,
     })
 
     return this.parseImageResponse(response, config)
@@ -193,7 +204,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
       return {
         b64: item.b64_json,
         mimeType: MIME_TYPES.PNG,
-        url: dataUrl
+        url: dataUrl,
       }
     })
 
@@ -204,8 +215,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
         providerId: 'openai',
         modelId: config.modelId,
         configId: config.id,
-        usage: response.usage
-      }
+        usage: response.usage,
+      },
     }
   }
 

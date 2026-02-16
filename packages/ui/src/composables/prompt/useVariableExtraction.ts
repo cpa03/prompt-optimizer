@@ -10,10 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { getI18nErrorMessage } from '../../utils/error'
 import type { AppServices } from '../../types/services'
 import { VARIABLE_VALIDATION, isValidVariableName } from '../../types/variable'
-import type {
-  VariableExtractionResponse,
-  ExtractedVariable,
-} from '@prompt-optimizer/core'
+import type { VariableExtractionResponse, ExtractedVariable } from '@prompt-optimizer/core'
 
 /**
  * 变量提取 Composable 返回类型
@@ -107,10 +104,7 @@ export function useVariableExtraction(
   /**
    * 将提示词中的变量值替换为 {{变量名}} 格式
    */
-  const replaceVariablesInPrompt = (
-    prompt: string,
-    variables: ExtractedVariable[]
-  ): string => {
+  const replaceVariablesInPrompt = (prompt: string, variables: ExtractedVariable[]): string => {
     let result = prompt
 
     // 按出现位置从后往前排序，避免替换时位置错乱
@@ -129,9 +123,7 @@ export function useVariableExtraction(
       const index = findOccurrenceIndex(result, originalText, occurrence)
       if (index !== -1) {
         result =
-          result.substring(0, index) +
-          placeholder +
-          result.substring(index + originalText.length)
+          result.substring(0, index) + placeholder + result.substring(index + originalText.length)
       }
     }
 
@@ -141,11 +133,7 @@ export function useVariableExtraction(
   /**
    * 查找文本第 N 次出现的索引位置
    */
-  const findOccurrenceIndex = (
-    text: string,
-    searchText: string,
-    occurrence: number
-  ): number => {
+  const findOccurrenceIndex = (text: string, searchText: string, occurrence: number): number => {
     let count = 0
     let index = -1
 

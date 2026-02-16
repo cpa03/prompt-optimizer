@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-iterate',
@@ -34,7 +34,7 @@ export const template: Template = {
 
 ## 输出
 - 直接输出“迭代后的完整提示词文本”
-`
+`,
     },
     {
       role: 'user',
@@ -44,18 +44,19 @@ export const template: Template = {
 {{iterateInput}}
 
 请基于以上信息，输出迭代后的提示词文本：
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: '在保持核心意图的前提下，结合上下文与工具信息对现有提示词进行针对性、小步快迭的优化',
+    description:
+      '在保持核心意图的前提下，结合上下文与工具信息对现有提示词进行针对性、小步快迭的优化',
     templateType: 'contextIterate',
     language: 'zh',
     variant: 'context',
-    tags: ['context', 'iterate']
+    tags: ['context', 'iterate'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

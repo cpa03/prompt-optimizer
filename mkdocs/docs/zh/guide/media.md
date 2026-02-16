@@ -1,6 +1,7 @@
 # 媒体示例（图片与视频）
 
 > 规范要点：
+>
 > - 图片优先使用 GitHub 托管，并固定到 tag/commit；必要时才内置到仓库。
 > - 视频统一外链（YouTube/Vimeo/Cloudflare Stream 等）。
 
@@ -23,7 +24,14 @@
 示例（YouTube iframe，占位 ID 请替换）：
 
 ```html
-<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" title="YouTube video" frameborder="0" allowfullscreen></iframe>
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/VIDEO_ID"
+  title="YouTube video"
+  frameborder="0"
+  allowfullscreen
+></iframe>
 ```
 
 > 提示：如果平台受限，请在文档中同时提供直达链接，或提供多平台备选链接。

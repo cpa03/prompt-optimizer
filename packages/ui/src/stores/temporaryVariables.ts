@@ -77,5 +77,5 @@ export const useTemporaryVariablesStore = defineStore(
       batchSet,
       batchDelete,
     }
-  },
+  }
 )

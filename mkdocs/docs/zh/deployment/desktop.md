@@ -16,18 +16,21 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ## 📋 系统要求
 
 ### Windows 系统
+
 - Windows 10/11 (64位)
 - 至少 4GB 内存
 - 100MB 可用磁盘空间
 - Visual C++ Redistributable（通常已预装）
 
 ### macOS 系统
+
 - macOS 10.15+ (Catalina及以上)
 - Intel 或 Apple Silicon 处理器
 - 至少 4GB 内存
 - 100MB 可用磁盘空间
 
 ### Linux 系统
+
 - Ubuntu 18.04+ / Debian 10+
 - 或其他主流Linux发行版
 - X11 或 Wayland 显示服务器
@@ -42,11 +45,13 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ### 安装包类型说明
 
 #### 推荐：安装程序版本（支持自动更新）
+
 - **Windows**: `Prompt-Optimizer-Setup-[版本].exe`
-- **macOS**: `Prompt-Optimizer-[版本].dmg` 
+- **macOS**: `Prompt-Optimizer-[版本].dmg`
 - **Linux**: `Prompt-Optimizer-[版本].AppImage`
 
 #### 备选：压缩包版本（免安装）
+
 - **Windows**: `Prompt-Optimizer-[版本]-win.zip`
 - **macOS**: `Prompt-Optimizer-[版本]-mac.zip`
 - **Linux**: `Prompt-Optimizer-[版本]-linux.zip`
@@ -54,10 +59,12 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ### Windows 安装详细步骤
 
 #### 1. 下载安装程序
+
 - 从GitHub Releases下载 `Prompt-Optimizer-Setup-[版本].exe`
 - 确保从官方渠道下载，避免安全风险
 
 #### 2. 运行安装程序
+
 ```bash
 # 如果遇到Windows安全提示：
 # 1. 点击"更多信息"
@@ -67,6 +74,7 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ```
 
 #### 3. 完成安装
+
 - 安装完成后应用会自动启动
 - 桌面和开始菜单会创建快捷方式
 - 首次启动可能需要几秒钟加载时间
@@ -74,12 +82,14 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 #### 4. 常见问题处理
 
 **安装失败**：
+
 ```bash
 # 以管理员权限运行安装程序
 # 右键点击安装包 -> "以管理员身份运行"
 ```
 
 **缺少运行库**：
+
 ```bash
 # 下载并安装Visual C++ Redistributable
 # 链接：https://aka.ms/vs/17/release/vc_redist.x64.exe
@@ -88,15 +98,18 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ### macOS 安装详细步骤
 
 #### 1. 下载和挂载
+
 - 下载 `.dmg` 安装包
 - 双击挂载磁盘镜像
 
 #### 2. 安装应用
+
 - 将 Prompt Optimizer 拖拽到 Applications 文件夹
 - 等待复制完成
 - 弹出磁盘镜像
 
 #### 3. 首次启动
+
 ```bash
 # 如果出现"无法打开"提示：
 # 方法1：按住Control键点击应用图标 -> 选择"打开" -> "打开"
@@ -104,6 +117,7 @@ Prompt Optimizer 桌面应用是功能最完整、体验最佳的版本，提供
 ```
 
 #### 4. 权限设置
+
 - 首次启动可能需要授予网络访问权限
 - 在"安全性与隐私"中允许应用运行
 - 如需要，在"隐私"设置中允许网络访问
@@ -160,6 +174,7 @@ sudo pacman -S gtk3 libnotify nss libxss libxtst xdg-utils at-spi2-atk
 ### 完整功能支持
 
 桌面版支持所有Web版功能：
+
 - **基础优化功能** - 完整的提示词优化能力
 - **高级变量管理** - 复杂变量系统和上下文管理
 - **工具调用功能** - Function Calling完整支持
@@ -169,6 +184,7 @@ sudo pacman -S gtk3 libnotify nss libxss libxtst xdg-utils at-spi2-atk
 ### 桌面专属特性
 
 #### 无限制API访问
+
 ```javascript
 // 支持任意API端点，无跨域限制
 API Base URL: http://localhost:11434/v1  // Ollama
@@ -179,6 +195,7 @@ API Base URL: http://192.168.1.100:1234/v1  // 局域网服务
 #### 本地模型完美集成
 
 **Ollama配置示例**：
+
 ```javascript
 模型提供商: Custom
 API Base URL: http://localhost:11434/v1
@@ -187,6 +204,7 @@ API密钥: dummy_key (任意值，Ollama不需要)
 ```
 
 **LM Studio配置**：
+
 ```javascript
 API Base URL: http://localhost:1234/v1
 模型名称: 根据LM Studio中加载的模型填写
@@ -194,6 +212,7 @@ API密钥: lm-studio (或任意值)
 ```
 
 **Xinference配置**：
+
 ```javascript
 API Base URL: http://localhost:9997/v1
 模型名称: 部署的具体模型名称
@@ -203,6 +222,7 @@ API密钥: 根据Xinference配置填写
 #### 高级网络配置
 
 **HTTP/HTTPS代理支持**：
+
 ```bash
 # 在设置->网络中配置代理
 HTTP代理: http://proxy.company.com:8080
@@ -211,6 +231,7 @@ HTTPS代理: https://proxy.company.com:8080
 ```
 
 **自定义请求头**：
+
 ```javascript
 // 支持自定义HTTP请求头
 Authorization: Bearer custom-token
@@ -223,6 +244,7 @@ User-Agent: CustomPromptOptimizer/1.0
 ### 初次配置向导
 
 #### 1. 模型配置
+
 ```bash
 启动应用 -> 设置 -> 模型管理
 1. 点击"添加模型"
@@ -233,12 +255,14 @@ User-Agent: CustomPromptOptimizer/1.0
 ```
 
 #### 2. 界面个性化
+
 - **主题设置**：日间模式、夜间模式、跟随系统
 - **字体调整**：字体大小、字体族选择
 - **语言设置**：中文、英文界面切换
 - **布局配置**：侧边栏位置、面板大小
 
 #### 3. 高级设置
+
 - **网络代理**：HTTP/HTTPS代理配置
 - **自动更新**：启用/禁用自动更新检查
 - **数据存储**：本地数据存储位置
@@ -247,6 +271,7 @@ User-Agent: CustomPromptOptimizer/1.0
 ### 数据管理
 
 #### 数据存储位置
+
 ```bash
 Windows: %APPDATA%\prompt-optimizer\
 # 实际路径示例：C:\Users\用户名\AppData\Roaming\prompt-optimizer\
@@ -259,6 +284,7 @@ Linux: ~/.config/prompt-optimizer/
 ```
 
 #### 数据文件结构
+
 ```
 prompt-optimizer/
 ├── config.json          # 应用配置
@@ -270,6 +296,7 @@ prompt-optimizer/
 ```
 
 #### 数据备份策略
+
 ```bash
 # 方法1：使用应用内导出功能
 设置 -> 数据管理 -> 导出所有数据
@@ -291,11 +318,13 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 桌面版具有智能更新系统（仅安装程序版本）：
 
 #### 自动检查
+
 - **启动时检查** - 每次启动检查是否有新版本
 - **定期检查** - 每24小时后台检查一次
 - **手动检查** - 设置中可手动检查更新
 
 #### 更新策略
+
 ```javascript
 // 更新设置选项
 自动下载更新: 是/否
@@ -306,6 +335,7 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 ### 更新流程详解
 
 #### 1. 检测阶段
+
 ```bash
 # 应用会检查GitHub Releases API
 检查URL: https://api.github.com/repos/linshenkx/prompt-optimizer/releases/latest
@@ -315,19 +345,21 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 ```
 
 #### 2. 下载阶段
+
 - 后台下载更新包到临时目录
 - 显示下载进度和速度
 - 支持断点续传和重试机制
 - 验证下载文件的完整性和签名
 
 #### 3. 安装阶段
+
 ```bash
 # Windows
 临时目录: %TEMP%\prompt-optimizer-update\
 安装方式: 运行新的安装程序覆盖安装
 重启方式: 自动关闭应用并重新启动
 
-# macOS  
+# macOS
 临时目录: /tmp/prompt-optimizer-update/
 安装方式: 替换Applications中的应用包
 重启方式: 重新启动应用
@@ -339,6 +371,7 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 ```
 
 #### 4. 异常处理
+
 - **更新失败自动回滚** - 保留原版本可用性
 - **网络中断重试机制** - 自动重试下载
 - **手动更新备选方案** - 提供下载链接手动更新
@@ -350,6 +383,7 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 #### 应用启动问题
 
 **问题：应用无法启动**
+
 ```bash
 # 解决方案1：检查运行库
 下载并安装: Microsoft Visual C++ Redistributable
@@ -364,6 +398,7 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 ```
 
 **问题：闪退或崩溃**
+
 ```bash
 # 检查日志文件
 路径: %APPDATA%\prompt-optimizer\logs\
@@ -378,6 +413,7 @@ cp -r ~/.config/prompt-optimizer/* $BACKUP_DIR/
 #### 网络连接问题
 
 **问题：无法连接API**
+
 ```bash
 # 检查防火墙设置
 控制面板 -> 系统和安全 -> Windows Defender防火墙
@@ -397,6 +433,7 @@ cmd -> nslookup api.openai.com
 #### 安全和权限问题
 
 **问题："无法打开，因为无法验证开发者"**
+
 ```bash
 # 解决方案1：临时允许
 按住Control键点击应用 -> 打开 -> 打开
@@ -411,6 +448,7 @@ sudo spctl --master-enable
 ```
 
 **问题：网络权限被拒绝**
+
 ```bash
 # 授予网络访问权限
 系统偏好设置 -> 安全性与隐私 -> 隐私 -> 完全磁盘访问
@@ -426,6 +464,7 @@ sudo rm -rf ~/Library/Application Support/prompt-optimizer/
 #### AppImage运行问题
 
 **问题：AppImage无法运行**
+
 ```bash
 # 安装FUSE支持
 sudo apt install fuse libfuse2  # Ubuntu/Debian
@@ -440,6 +479,7 @@ chmod +x Prompt-Optimizer-*.AppImage
 ```
 
 **问题：缺少系统库**
+
 ```bash
 # 安装必需的依赖包
 # Ubuntu/Debian
@@ -455,6 +495,7 @@ sudo pacman -S gtk3 libnotify nss libxss libxtst at-spi2-atk
 #### 显示和主题问题
 
 **问题：界面显示异常**
+
 ```bash
 # 检查显示服务器
 echo $XDG_SESSION_TYPE  # 应该显示 x11 或 wayland
@@ -473,6 +514,7 @@ export GDK_BACKEND=x11
 ### 性能优化建议
 
 #### 1. 硬件加速配置
+
 ```bash
 # 启用GPU加速（如果支持）
 设置 -> 高级 -> 硬件加速: 启用
@@ -484,6 +526,7 @@ export GDK_BACKEND=x11
 ```
 
 #### 2. 网络优化
+
 ```bash
 # 配置连接超时
 设置 -> 网络 -> 请求超时: 30秒
@@ -496,6 +539,7 @@ export GDK_BACKEND=x11
 ### 工作流程优化
 
 #### 1. 快捷键配置
+
 ```bash
 # 常用快捷键（可自定义）
 Ctrl+N: 新建优化任务
@@ -506,6 +550,7 @@ F11: 全屏模式
 ```
 
 #### 2. 模板管理
+
 - 创建常用场景的模板库
 - 使用变量系统提高复用性
 - 定期整理和更新模板内容
@@ -514,5 +559,6 @@ F11: 全屏模式
 ---
 
 **相关链接**：
+
 - [Chrome插件](extension.md) - 浏览器插件版本使用指南
 - [故障排除](../help/troubleshooting.md) - 更多问题解决方案

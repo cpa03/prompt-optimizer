@@ -292,7 +292,7 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
    * 更新某一列（variant）的版本/模型配置
    */
   const updateTestVariant = (id: TestVariantId, patch: Partial<Omit<TestVariantConfig, 'id'>>) => {
-    const idx = testVariants.value.findIndex(v => v.id === id)
+    const idx = testVariants.value.findIndex((v) => v.id === id)
     if (idx < 0) return
     const prev = testVariants.value[idx]
     const next: TestVariantConfig = { ...prev, ...patch, id }
@@ -422,10 +422,7 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
         isCompareMode: isCompareMode.value,
         lastActiveAt: lastActiveAt.value,
       }
-      await $services.preferenceService.set(
-        'session/v1/basic-user',
-        sessionState
-      )
+      await $services.preferenceService.set('session/v1/basic-user', sessionState)
     } catch (error) {
       console.error('[BasicUserSession] 保存会话失败:', error)
     }
@@ -443,10 +440,7 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
     }
 
     try {
-      const saved = await $services.preferenceService.get<unknown>(
-        'session/v1/basic-user',
-        null
-      )
+      const saved = await $services.preferenceService.get<unknown>('session/v1/basic-user', null)
 
       if (saved) {
         const parsed =
@@ -465,17 +459,22 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
         const defaultState = createDefaultState()
         const coerceVersionValue = (value: unknown): TestPanelVersionValue | null => {
           if (value === 'latest') return 'latest'
-          if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return Math.floor(value)
+          if (typeof value === 'number' && Number.isFinite(value) && value >= 0)
+            return Math.floor(value)
           return null
         }
 
-        const legacyModelKey = typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
+        const legacyModelKey =
+          typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
 
         // variant results (v2): 优先从 saved 读取；否则从旧 testResults 迁移 a/b
         const savedVariantResults = (parsed as Partial<BasicUserSessionState>).testVariantResults
-        const savedFingerprint = (parsed as Partial<BasicUserSessionState>).testVariantLastRunFingerprint
+        const savedFingerprint = (parsed as Partial<BasicUserSessionState>)
+          .testVariantLastRunFingerprint
         const nextVariantResults: TestVariantResults = { ...defaultState.testVariantResults }
-        const nextFingerprint: TestVariantLastRunFingerprint = { ...defaultState.testVariantLastRunFingerprint }
+        const nextFingerprint: TestVariantLastRunFingerprint = {
+          ...defaultState.testVariantLastRunFingerprint,
+        }
 
         const coerceVariantResult = (value: unknown): TestVariantResult | null => {
           if (!value || typeof value !== 'object') return null
@@ -494,10 +493,14 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
           }
         } else if (parsed.testResults) {
           // legacy: 仅 a/b
-          if (typeof parsed.testResults.originalResult === 'string') nextVariantResults.a.result = parsed.testResults.originalResult
-          if (typeof parsed.testResults.originalReasoning === 'string') nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
-          if (typeof parsed.testResults.optimizedResult === 'string') nextVariantResults.b.result = parsed.testResults.optimizedResult
-          if (typeof parsed.testResults.optimizedReasoning === 'string') nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
+          if (typeof parsed.testResults.originalResult === 'string')
+            nextVariantResults.a.result = parsed.testResults.originalResult
+          if (typeof parsed.testResults.originalReasoning === 'string')
+            nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
+          if (typeof parsed.testResults.optimizedResult === 'string')
+            nextVariantResults.b.result = parsed.testResults.optimizedResult
+          if (typeof parsed.testResults.optimizedReasoning === 'string')
+            nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
         }
 
         if (savedFingerprint && typeof savedFingerprint === 'object') {
@@ -512,13 +515,18 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
 
         // layout
         const savedLayout = (parsed as Partial<BasicUserSessionState>).layout
-        const savedLeftRaw = savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
-          ? savedLayout.mainSplitLeftPct
-          : defaultState.layout.mainSplitLeftPct
+        const savedLeftRaw =
+          savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
+            ? savedLayout.mainSplitLeftPct
+            : defaultState.layout.mainSplitLeftPct
         const savedLeft = Math.min(50, Math.max(25, Math.round(savedLeftRaw)))
-        const savedCols = savedLayout && (savedLayout.testColumnCount === 2 || savedLayout.testColumnCount === 3 || savedLayout.testColumnCount === 4)
-          ? savedLayout.testColumnCount
-          : defaultState.layout.testColumnCount
+        const savedCols =
+          savedLayout &&
+          (savedLayout.testColumnCount === 2 ||
+            savedLayout.testColumnCount === 3 ||
+            savedLayout.testColumnCount === 4)
+            ? savedLayout.testColumnCount
+            : defaultState.layout.testColumnCount
         layout.value = {
           mainSplitLeftPct: savedLeft,
           testColumnCount: savedCols,
@@ -548,12 +556,18 @@ export const useBasicUserSession = defineStore('basicUserSession', () => {
             {
               id: 'a',
               version: coerceVersionValue(originalSaved?.version) ?? 0,
-              modelKey: typeof originalSaved?.modelKey === 'string' ? originalSaved.modelKey : legacyModelKey,
+              modelKey:
+                typeof originalSaved?.modelKey === 'string'
+                  ? originalSaved.modelKey
+                  : legacyModelKey,
             },
             {
               id: 'b',
               version: coerceVersionValue(optimizedSaved?.version) ?? 'latest',
-              modelKey: typeof optimizedSaved?.modelKey === 'string' ? optimizedSaved.modelKey : legacyModelKey,
+              modelKey:
+                typeof optimizedSaved?.modelKey === 'string'
+                  ? optimizedSaved.modelKey
+                  : legacyModelKey,
             },
             { id: 'c', version: 'latest', modelKey: legacyModelKey },
             { id: 'd', version: 'latest', modelKey: legacyModelKey },

@@ -26,7 +26,7 @@ VITE_CUSTOM_API_MODEL_<suffix>=your-model-name     # Required
 
 ### Configuration Requirements
 
-- **Suffix**: Only letters (a-z, A-Z), numbers (0-9), underscores (_), hyphens (-), maximum 50 characters
+- **Suffix**: Only letters (a-z, A-Z), numbers (0-9), underscores (\_), hyphens (-), maximum 50 characters
 - **API_KEY**: Required for API authentication
 - **BASE_URL**: Required, API service base URL
 - **MODEL**: Required, specific model name
@@ -147,9 +147,9 @@ services:
   prompt-optimizer:
     image: linshen/prompt-optimizer:latest
     env_file:
-      - .env  # Read environment variables from .env file
+      - .env # Read environment variables from .env file
     ports:
-      - "8081:80"
+      - '8081:80'
     restart: unless-stopped
 ```
 
@@ -167,18 +167,19 @@ MCP server supports all custom model configurations and automatically maps envir
 
 The system automatically converts suffix names to friendly display names:
 
-| Suffix | Display Name |
-|--------|--------------|
-| `qwen25` | Qwen25 |
+| Suffix         | Display Name |
+| -------------- | ------------ |
+| `qwen25`       | Qwen25       |
 | `claude_local` | Claude Local |
-| `my_model_v2` | My Model V2 |
-| `test123` | Test123 |
+| `my_model_v2`  | My Model V2  |
+| `test123`      | Test123      |
 
 ## Advanced Configuration
 
 ### Suffix Naming Best Practices
 
 **Recommended**:
+
 - `ollama` - Local Ollama service
 - `claude` - Claude API
 - `qwen25` - Qwen 2.5 model
@@ -186,6 +187,7 @@ The system automatically converts suffix names to friendly display names:
 - `dev_model` - Development environment model
 
 **Not Recommended**:
+
 - `model.v1` - Contains dots
 - `my model` - Contains spaces
 - `test@api` - Contains special characters
@@ -213,6 +215,7 @@ The system automatically validates configurations:
 #### Q: Custom model not appearing in interface?
 
 A: Check the following:
+
 1. All three environment variables configured correctly
 2. Suffix name follows naming rules
 3. No conflicts with built-in model names
@@ -221,6 +224,7 @@ A: Check the following:
 #### Q: Model connection test fails?
 
 A: Verify:
+
 1. BASE_URL is accessible
 2. API_KEY is valid
 3. MODEL name exists in the service
@@ -229,6 +233,7 @@ A: Verify:
 #### Q: How to check if configuration is loaded correctly?
 
 A: Check browser console or application logs for:
+
 ```
 [scanCustomModelEnvVars] Found X valid custom models: [model1, model2, ...]
 [generateDynamicModels] Generated model: custom_modelname (Display Name)
@@ -257,6 +262,7 @@ A: Yes, custom models support all features including prompt optimization, compar
 ### Q: How to configure models for different environments?
 
 A: Use different suffixes for different environments:
+
 ```bash
 # Production
 VITE_CUSTOM_API_KEY_prod=prod-key

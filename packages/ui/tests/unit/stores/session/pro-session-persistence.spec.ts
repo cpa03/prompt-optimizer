@@ -10,7 +10,7 @@ describe('Session stores (pro) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -20,13 +20,18 @@ describe('Session stores (pro) persistence', () => {
         importData: async () => {},
         getDataType: async () => 'preference',
         validateData: async () => true,
-      } as any
+      } as any,
     })
 
     const store = useProMultiMessageSession(pinia)
     store.updateConversationMessages([{ id: 'm1', role: 'user', content: 'c1' }] as any)
     store.selectMessage('m1')
-    store.updateOptimizedResult({ optimizedPrompt: 'o', reasoning: 'r', chainId: 'c', versionId: 'v' })
+    store.updateOptimizedResult({
+      optimizedPrompt: 'o',
+      reasoning: 'r',
+      chainId: 'c',
+      versionId: 'v',
+    })
     store.setMessageChainMap({ m1: 'c' })
     store.updateTemplate('tpl')
     store.updateIterateTemplate('tpl-iter')
@@ -39,7 +44,9 @@ describe('Session stores (pro) persistence', () => {
 
     const raw = lastCall?.[1]
     const saved =
-      typeof raw === 'string' ? JSON.parse(raw || '{}') : (raw as Record<string, unknown> | undefined) || {}
+      typeof raw === 'string'
+        ? JSON.parse(raw || '{}')
+        : (raw as Record<string, unknown> | undefined) || {}
     expect(saved).toMatchObject({
       selectedMessageId: 'm1',
       optimizedPrompt: 'o',
@@ -72,7 +79,7 @@ describe('Session stores (pro) persistence', () => {
         importData: async () => {},
         getDataType: async () => 'preference',
         validateData: async () => true,
-      } as any
+      } as any,
     })
 
     const store = useProVariableSession(pinia)

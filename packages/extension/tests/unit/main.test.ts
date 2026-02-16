@@ -4,9 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 vi.mock('vue', () => ({
   createApp: vi.fn(() => ({
     use: vi.fn(),
-    mount: vi.fn()
+    mount: vi.fn(),
   })),
-  watch: vi.fn()
+  watch: vi.fn(),
 }))
 
 vi.mock('@prompt-optimizer/ui', () => ({
@@ -16,13 +16,13 @@ vi.mock('@prompt-optimizer/ui', () => ({
     global: {
       t: vi.fn((key: string) => key),
       locale: {
-        value: 'zh-CN'
-      }
-    }
+        value: 'zh-CN',
+      },
+    },
   },
   router: {
-    isReady: vi.fn(() => Promise.resolve())
-  }
+    isReady: vi.fn(() => Promise.resolve()),
+  },
 }))
 
 describe('Extension App Main', () => {
@@ -33,10 +33,10 @@ describe('Extension App Main', () => {
       value: {
         title: '',
         documentElement: {
-          setAttribute: vi.fn()
-        }
+          setAttribute: vi.fn(),
+        },
       },
-      writable: true
+      writable: true,
     })
   })
 

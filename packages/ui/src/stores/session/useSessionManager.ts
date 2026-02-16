@@ -33,9 +33,9 @@ import { TIME_CONSTANTS } from '../../config/constants'
 export type SubModeKey =
   | 'basic-system'
   | 'basic-user'
-  | 'pro-multi'       // Pro-多消息模式
-  | 'pro-variable'    // Pro-变量模式
-  | 'image-text2image'  // 文生图
+  | 'pro-multi' // Pro-多消息模式
+  | 'pro-variable' // Pro-变量模式
+  | 'image-text2image' // 文生图
   | 'image-image2image' // 图生图
 
 /**
@@ -316,7 +316,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
       for (const key of keys) {
         await restoreSubModeSession(key)
         // Yield to the event loop to keep the UI responsive and reduce long-task pressure.
-        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
+        await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
       }
       hasRestoredAllSessions.value = true
     })()
@@ -343,7 +343,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
         return
       }
       // 等待 50ms 后重试
-      await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_RETRY_DELAY_MS))
+      await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.SESSION_RETRY_DELAY_MS))
     }
 
     // ⚠️ 记录是否是我获得的锁（防御性编程）
@@ -366,7 +366,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
       ]
       for (const key of keys) {
         await _saveSubModeSessionUnsafe(key)
-        await new Promise(resolve => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
+        await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
       }
     } catch (error) {
       console.error('[SessionManager] 保存所有会话失败:', error)

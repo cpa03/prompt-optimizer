@@ -4,7 +4,7 @@ import {
   addProMultiUserMessage,
   selectProMultiMessageForOptimization,
   clickProMultiOptimizeButton,
-  expectOptimizedResultNotEmpty
+  expectOptimizedResultNotEmpty,
 } from '../helpers/optimize'
 import { EXTENDED_ANALYSIS_TEST_TIMEOUT, WORKSPACE_VISIBLE } from '../constants/timeouts'
 
@@ -17,7 +17,9 @@ test.describe('Pro Multi - 提示词优化', () => {
     await navigateToMode(page, 'pro', 'multi')
 
     // 初始状态：未选择消息时应该显示空提示（我们为它加了稳定 testid）
-    await expect(page.getByTestId('pro-multi-empty-select-message')).toBeVisible({ timeout: WORKSPACE_VISIBLE })
+    await expect(page.getByTestId('pro-multi-empty-select-message')).toBeVisible({
+      timeout: WORKSPACE_VISIBLE,
+    })
 
     // 1) 添加一条用户消息
     await addProMultiUserMessage(page, '请帮我写一个项目周报，包含进度、风险、下周计划')

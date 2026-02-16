@@ -75,7 +75,7 @@ const applyNavigation = (
 
   if (to && typeof to === 'object' && 'path' in to && typeof to.path === 'string') {
     const nextQuery = (to as { query?: unknown }).query
-    const query = (nextQuery && typeof nextQuery === 'object' ? (nextQuery as LocationQuery) : {})
+    const query = nextQuery && typeof nextQuery === 'object' ? (nextQuery as LocationQuery) : {}
     currentRoute.value = makeRoute(to.path, query)
     return
   }
@@ -102,9 +102,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -169,23 +170,23 @@ describe('useAppPromptGardenImport', () => {
       replace,
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(
-        JSON.stringify({
-          schema: 'prompt-garden.prompt.v1',
-          schemaVersion: 1,
-          optimizerTarget: { subModeKey: 'basic-system' },
-          prompt: { format: 'text', text: 'IMPORTED' },
-          variables: [],
-        }),
-        {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(
+          JSON.stringify({
+            schema: 'prompt-garden.prompt.v1',
+            schemaVersion: 1,
+            optimizerTarget: { subModeKey: 'basic-system' },
+            prompt: { format: 'text', text: 'IMPORTED' },
+            variables: [],
+          }),
+          {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          }
+        )
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -246,9 +247,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -348,14 +350,14 @@ describe('useAppPromptGardenImport', () => {
       ],
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(JSON.stringify(v1Payload), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(JSON.stringify(v1Payload), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -444,9 +446,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -522,20 +525,17 @@ describe('useAppPromptGardenImport', () => {
         format: 'text',
         text: 'Hello {{name}}',
       },
-      variables: [
-        { name: 'name', defaultValue: 'Alice' },
-        { name: 'tone' },
-      ],
+      variables: [{ name: 'name', defaultValue: 'Alice' }, { name: 'tone' }],
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(JSON.stringify(v1Payload), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(JSON.stringify(v1Payload), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -600,9 +600,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -674,14 +675,14 @@ describe('useAppPromptGardenImport', () => {
       },
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(JSON.stringify(v1Payload), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(JSON.stringify(v1Payload), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -722,9 +723,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -789,14 +791,14 @@ describe('useAppPromptGardenImport', () => {
       },
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(JSON.stringify(v1Payload), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(JSON.stringify(v1Payload), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -844,9 +846,10 @@ describe('useAppPromptGardenImport', () => {
     })
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -899,23 +902,23 @@ describe('useAppPromptGardenImport', () => {
       replace,
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(
-        JSON.stringify({
-          schema: 'prompt-garden.prompt.v1',
-          schemaVersion: 1,
-          optimizerTarget: { subModeKey: 'image-text2image' },
-          prompt: { format: 'text', text: 'Draw a {{season}} {{style}} landscape' },
-          variables: [{ name: 'season' }, { name: 'style' }],
-        }),
-        {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        }
-      )
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(
+          JSON.stringify({
+            schema: 'prompt-garden.prompt.v1',
+            schemaVersion: 1,
+            optimizerTarget: { subModeKey: 'image-text2image' },
+            prompt: { format: 'text', text: 'Draw a {{season}} {{style}} landscape' },
+            variables: [{ name: 'season' }, { name: 'style' }],
+          }),
+          {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          }
+        )
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -973,9 +976,10 @@ describe('useAppPromptGardenImport', () => {
     })
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -1042,24 +1046,24 @@ describe('useAppPromptGardenImport', () => {
       },
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async (input) => {
-      const url = String(input)
-      if (url === 'http://garden.local/api/prompt-source/NB-I2I-001') {
-        return new Response(JSON.stringify(v1Payload), {
-          status: 200,
-          headers: { 'content-type': 'application/json' },
-        })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async (input) => {
+        const url = String(input)
+        if (url === 'http://garden.local/api/prompt-source/NB-I2I-001') {
+          return new Response(JSON.stringify(v1Payload), {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+          })
+        }
+        if (url === inputAssetUrl) {
+          return new Response(new Uint8Array([0, 1, 2, 3]), {
+            status: 200,
+            headers: { 'content-type': 'image/png' },
+          })
+        }
+        throw new Error(`Unexpected fetch URL: ${url}`)
       }
-      if (url === inputAssetUrl) {
-        return new Response(new Uint8Array([0, 1, 2, 3]), {
-          status: 200,
-          headers: { 'content-type': 'image/png' },
-        })
-      }
-      throw new Error(`Unexpected fetch URL: ${url}`)
-    })
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()
@@ -1102,9 +1106,10 @@ describe('useAppPromptGardenImport', () => {
     const { pinia } = createTestPinia()
 
     // Avoid console.warn from useToast (tests fail on console.warn).
-    const createReactive = (): MessageReactive => ({
-      destroy: () => {},
-    } as unknown as MessageReactive)
+    const createReactive = (): MessageReactive =>
+      ({
+        destroy: () => {},
+      }) as unknown as MessageReactive
     setGlobalMessageApi({
       success: vi.fn(() => createReactive()),
       error: vi.fn(() => createReactive()),
@@ -1166,14 +1171,14 @@ describe('useAppPromptGardenImport', () => {
       variables: [],
     }
 
-    const fetchMock = vi.fn<
-      (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
-    >(async () => {
-      return new Response(JSON.stringify(v1Payload), {
-        status: 200,
-        headers: { 'content-type': 'application/json' },
-      })
-    })
+    const fetchMock = vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>(
+      async () => {
+        return new Response(JSON.stringify(v1Payload), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        })
+      }
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const scope = effectScope()

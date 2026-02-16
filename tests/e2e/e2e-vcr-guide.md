@@ -3,6 +3,7 @@
 ## 问题分析
 
 当前 E2E 测试每次都发送真实的 LLM 请求：
+
 - ⏱️ 测试速度慢（等待 LLM 响应 20-60 秒）
 - 💰 费用问题（API 调用成本）
 - ⚠️ 不稳定（网络问题、API 限流）
@@ -60,8 +61,8 @@ export async function setupE2EVCR(
   } = {}
 ) {
   const {
-    mode = process.env.E2E_VCR_MODE as VCRMode || 'auto',
-    fixtureDir = 'tests/e2e/fixtures/llm-responses'
+    mode = (process.env.E2E_VCR_MODE as VCRMode) || 'auto',
+    fixtureDir = 'tests/e2e/fixtures/llm-responses',
   } = options
 
   // 在 replay 模式下拦截 API 请求
@@ -79,7 +80,7 @@ export async function setupE2EVCR(
           await route.fulfill({
             status: 200,
             contentType: 'application/json',
-            body: JSON.stringify(response)
+            body: JSON.stringify(response),
           })
         } else if (mode === 'auto') {
           // auto 模式：fixture 不存在时调用真实 API
@@ -88,8 +89,7 @@ export async function setupE2EVCR(
         } else {
           // replay 模式：fixture 不存在时失败
           throw new Error(
-            `Fixture not found: ${fixtureName}\n` +
-            `Run with E2E_VCR_MODE=record to create it.`
+            `Fixture not found: ${fixtureName}\n` + `Run with E2E_VCR_MODE=record to create it.`
           )
         }
       } catch (error) {
@@ -116,7 +116,7 @@ export async function setupE2EVCR(
       await route.fulfill({
         status: response.status(),
         contentType: response.headers()['content-type'],
-        body: JSON.stringify(responseData)
+        body: JSON.stringify(responseData),
       })
     })
   }
@@ -145,10 +145,7 @@ function getFixtureNameFromRequest(request: any): string {
 /**
  * 加载 fixture
  */
-async function loadFixture(
-  fixtureName: string,
-  fixtureDir: string
-): Promise<any | null> {
+async function loadFixture(fixtureName: string, fixtureDir: string): Promise<any | null> {
   const fs = await import('fs/promises')
   const path = await import('path')
 
@@ -165,11 +162,7 @@ async function loadFixture(
 /**
  * 保存 fixture
  */
-async function saveFixture(
-  fixtureName: string,
-  data: any,
-  fixtureDir: string
-): Promise<void> {
+async function saveFixture(fixtureName: string, data: any, fixtureDir: string): Promise<void> {
   const fs = await import('fs/promises')
   const path = await import('path')
 
@@ -179,11 +172,7 @@ async function saveFixture(
   await fs.mkdir(path.dirname(fixturePath), { recursive: true })
 
   // 保存 fixture
-  await fs.writeFile(
-    fixturePath,
-    JSON.stringify(data, null, 2),
-    'utf-8'
-  )
+  await fs.writeFile(fixturePath, JSON.stringify(data, null, 2), 'utf-8')
 }
 ```
 
@@ -201,7 +190,7 @@ export const test = base.extend<{ page: Page }>({
 
     // 🔧 设置 VCR
     await setupE2EVCR(page, {
-      mode: process.env.E2E_VCR_MODE as any || 'auto'
+      mode: (process.env.E2E_VCR_MODE as any) || 'auto',
     })
 
     try {
@@ -209,7 +198,7 @@ export const test = base.extend<{ page: Page }>({
     } finally {
       // ... 清理代码 ...
     }
-  }
+  },
 })
 ```
 
@@ -300,11 +289,13 @@ E2E_VCR_MODE=live pnpm exec playwright test tests/e2e/analysis/basic-system.spec
 使用 MSW (Mock Service Worker) 在浏览器端拦截请求。
 
 **优点**：
+
 - 更强大的 mock 能力
 - 支持 fixture 管理
 - 可以模拟网络延迟、错误等
 
 **缺点**：
+
 - 需要额外依赖
 - 配置更复杂
 
@@ -324,10 +315,10 @@ E2E_VCR_MODE=live pnpm exec playwright test tests/e2e/analysis/basic-system.spec
 
 ## 测试速度对比
 
-| 模式 | 单个测试时长 | 4 个测试总时长 | API 调用次数 |
-|------|------------|--------------|------------|
-| Live (当前) | ~20s | ~80s | 4 次 |
-| Replay (VCR) | ~3s | ~12s | 0 次 |
-| Record (首次) | ~20s | ~80s | 4 次（创建 fixtures）|
+| 模式          | 单个测试时长 | 4 个测试总时长 | API 调用次数          |
+| ------------- | ------------ | -------------- | --------------------- |
+| Live (当前)   | ~20s         | ~80s           | 4 次                  |
+| Replay (VCR)  | ~3s          | ~12s           | 0 次                  |
+| Record (首次) | ~20s         | ~80s           | 4 次（创建 fixtures） |
 
 **使用 VCR 后，测试速度提升 6-7 倍！**

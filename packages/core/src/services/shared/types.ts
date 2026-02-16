@@ -9,11 +9,11 @@
  */
 export interface ConnectionSchema {
   /** 必需字段，如 ['apiKey'] */
-  required: string[];
+  required: string[]
   /** 可选字段，如 ['baseURL', 'timeout', 'region'] */
-  optional: string[];
+  optional: string[]
   /** 字段类型约束 */
-  fieldTypes: Record<string, 'string' | 'number' | 'boolean'>;
+  fieldTypes: Record<string, 'string' | 'number' | 'boolean'>
 }
 
 /**
@@ -22,27 +22,27 @@ export interface ConnectionSchema {
  */
 export interface BaseProvider {
   /** Provider 唯一标识，如 'openai', 'gemini' */
-  readonly id: string;
+  readonly id: string
   /** 显示名称，如 'OpenAI', 'Google Gemini' */
-  readonly name: string;
+  readonly name: string
   /** 描述信息 */
-  readonly description?: string;
+  readonly description?: string
   /**
    * 浏览器环境是否会被 CORS 限制（无法直接请求该 API）。
    * - true: Web 端可能因 CORS 被浏览器拦截，建议使用 Desktop 或自行配置代理
    * - false/undefined: 未标记为 CORS 限制（不代表一定可用，仍可能受网络/鉴权等影响）
    */
-  readonly corsRestricted?: boolean;
+  readonly corsRestricted?: boolean
   /** 是否必须提供 API Key */
-  readonly requiresApiKey: boolean;
+  readonly requiresApiKey: boolean
   /** 默认 API 地址 */
-  readonly defaultBaseURL: string;
+  readonly defaultBaseURL: string
   /** 是否支持动态获取模型列表 */
-  readonly supportsDynamicModels: boolean;
+  readonly supportsDynamicModels: boolean
   /** 连接参数结构定义 */
-  readonly connectionSchema?: ConnectionSchema;
+  readonly connectionSchema?: ConnectionSchema
   /** API Key 获取页面 URL（可选）*/
-  readonly apiKeyUrl?: string;
+  readonly apiKeyUrl?: string
 }
 
 /**
@@ -51,13 +51,13 @@ export interface BaseProvider {
  */
 export interface BaseModel {
   /** 模型唯一标识，如 'gpt-4', 'dall-e-3' */
-  readonly id: string;
+  readonly id: string
   /** 显示名称 */
-  readonly name: string;
+  readonly name: string
   /** 模型描述 */
-  readonly description?: string;
+  readonly description?: string
   /** 所属 Provider ID */
-  readonly providerId: string;
+  readonly providerId: string
   /** 默认参数值 */
-  readonly defaultParameterValues?: Record<string, unknown>;
+  readonly defaultParameterValues?: Record<string, unknown>
 }

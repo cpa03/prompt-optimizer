@@ -1,403 +1,416 @@
 <template>
+  <div class="basic-user-workspace" data-testid="workspace" data-mode="basic-user">
     <div
-        class="basic-user-workspace"
-        data-testid="workspace"
-        data-mode="basic-user"
+      ref="splitRootRef"
+      class="basic-user-split"
+      :style="{ gridTemplateColumns: `${mainSplitLeftPct}% 12px 1fr` }"
     >
-        <div
-            ref="splitRootRef"
-            class="basic-user-split"
-            :style="{ gridTemplateColumns: `${mainSplitLeftPct}% 12px 1fr` }"
-        >
-            <!-- 左侧：优化区域 -->
-            <div class="split-pane" style="min-width: 0; height: 100%; overflow: hidden;">
-                <NFlex
-                    vertical
-                    :style="{ overflow: 'auto', height: '100%', minHeight: 0 }"
-                    size="medium"
-                >
-                <!-- 输入控制区域（可折叠） -->
-                <NCard :style="{ flexShrink: 0 }">
-                    <!-- 折叠态：只显示标题栏 -->
-                    <NFlex
-                        v-if="isInputPanelCollapsed"
-                        justify="space-between"
-                        align="center"
+      <!-- 左侧：优化区域 -->
+      <div class="split-pane" style="min-width: 0; height: 100%; overflow: hidden">
+        <NFlex vertical :style="{ overflow: 'auto', height: '100%', minHeight: 0 }" size="medium">
+          <!-- 输入控制区域（可折叠） -->
+          <NCard :style="{ flexShrink: 0 }">
+            <!-- 折叠态：只显示标题栏 -->
+            <NFlex v-if="isInputPanelCollapsed" justify="space-between" align="center">
+              <NFlex align="center" :size="8">
+                <NText :depth="1" style="font-size: 18px; font-weight: 500">
+                  {{ t('promptOptimizer.originalPrompt') }}
+                </NText>
+                <NText v-if="promptModel" depth="3" style="font-size: 12px">
+                  {{ promptSummary }}
+                </NText>
+              </NFlex>
+              <NButton
+                type="tertiary"
+                size="small"
+                ghost
+                round
+                @click="isInputPanelCollapsed = false"
+                :title="t('common.expand')"
+              >
+                <template #icon>
+                  <NIcon>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
                     >
-                        <NFlex align="center" :size="8">
-                            <NText :depth="1" style="font-size: 18px; font-weight: 500">
-                                {{ t('promptOptimizer.originalPrompt') }}
-                            </NText>
-                            <NText
-                                v-if="promptModel"
-                                depth="3"
-                                style="font-size: 12px;"
-                            >
-                                {{ promptSummary }}
-                            </NText>
-                        </NFlex>
-                        <NButton
-                            type="tertiary"
-                            size="small"
-                            ghost
-                            round
-                            @click="isInputPanelCollapsed = false"
-                            :title="t('common.expand')"
-                        >
-                            <template #icon>
-                                <NIcon>
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </NIcon>
-                            </template>
-                        </NButton>
-                    </NFlex>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </NIcon>
+                </template>
+              </NButton>
+            </NFlex>
 
-                    <!-- 展开态：完整输入面板 -->
-                    <InputPanelUI
-                        v-else
-                        v-model="promptModel"
-                        test-id-prefix="basic-user"
-                        :selected-model="selectedOptimizeModelKeyModel"
-                        :label="t('promptOptimizer.originalPrompt')"
-                        :placeholder="t('promptOptimizer.placeholder')"
-                        :model-label="t('promptOptimizer.optimizeModel')"
-                        :template-label="t('promptOptimizer.templateLabel')"
-                        :button-text="t('promptOptimizer.optimize')"
-                        :loading-text="t('common.loading')"
-                        :loading="unwrappedLogicProps.isOptimizing"
-                        :disabled="unwrappedLogicProps.isOptimizing"
-                        :show-preview="false"
-                        :show-analyze-button="true"
-                        :analyze-loading="analyzing"
-                        @submit="logic.handleOptimize"
-                        @analyze="handleAnalyze"
-                        @configModel="handleOpenModelManager"
-                    >
-                        <!-- 模型选择 -->
-                        <template #model-select>
-                            <SelectWithConfig
-                                v-model="selectedOptimizeModelKeyModel"
-                                :options="modelSelection.textModelOptions"
-                                :getPrimary="OptionAccessors.getPrimary"
-                                :getSecondary="OptionAccessors.getSecondary"
-                                :getValue="OptionAccessors.getValue"
-                                @config="handleOpenModelManager"
-                            />
-                        </template>
+            <!-- 展开态：完整输入面板 -->
+            <InputPanelUI
+              v-else
+              v-model="promptModel"
+              test-id-prefix="basic-user"
+              :selected-model="selectedOptimizeModelKeyModel"
+              :label="t('promptOptimizer.originalPrompt')"
+              :placeholder="t('promptOptimizer.placeholder')"
+              :model-label="t('promptOptimizer.optimizeModel')"
+              :template-label="t('promptOptimizer.templateLabel')"
+              :button-text="t('promptOptimizer.optimize')"
+              :loading-text="t('common.loading')"
+              :loading="unwrappedLogicProps.isOptimizing"
+              :disabled="unwrappedLogicProps.isOptimizing"
+              :show-preview="false"
+              :show-analyze-button="true"
+              :analyze-loading="analyzing"
+              @submit="logic.handleOptimize"
+              @analyze="handleAnalyze"
+              @configModel="handleOpenModelManager"
+            >
+              <!-- 模型选择 -->
+              <template #model-select>
+                <SelectWithConfig
+                  v-model="selectedOptimizeModelKeyModel"
+                  :options="modelSelection.textModelOptions"
+                  :getPrimary="OptionAccessors.getPrimary"
+                  :getSecondary="OptionAccessors.getSecondary"
+                  :getValue="OptionAccessors.getValue"
+                  @config="handleOpenModelManager"
+                />
+              </template>
 
-                        <!-- 模板选择 -->
-                        <template #template-select>
-                            <SelectWithConfig
-                                v-model="selectedTemplateIdModel"
-                                :options="templateSelection.templateOptions"
-                                :getPrimary="OptionAccessors.getPrimary"
-                                :getSecondary="OptionAccessors.getSecondary"
-                                :getValue="OptionAccessors.getValue"
-                                @config="() => handleOpenTemplateManager('userOptimize')"
-                            />
-                        </template>
+              <!-- 模板选择 -->
+              <template #template-select>
+                <SelectWithConfig
+                  v-model="selectedTemplateIdModel"
+                  :options="templateSelection.templateOptions"
+                  :getPrimary="OptionAccessors.getPrimary"
+                  :getSecondary="OptionAccessors.getSecondary"
+                  :getValue="OptionAccessors.getValue"
+                  @config="() => handleOpenTemplateManager('userOptimize')"
+                />
+              </template>
 
-                        <!-- 标题栏折叠按钮 -->
-                        <template #header-extra>
-                            <NButton
-                                type="tertiary"
-                                size="small"
-                                ghost
-                                round
-                                @click="isInputPanelCollapsed = true"
-                                :title="t('common.collapse')"
-                            >
-                                <template #icon>
-                                    <NIcon>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-                                        </svg>
-                                    </NIcon>
-                                </template>
-                            </NButton>
-                        </template>
-                    </InputPanelUI>
-                </NCard>
-
-                <!-- 优化工作区 -->
-                <NCard
-                    :style="{ flex: 1, minHeight: `${COMPONENT_CONSTANTS.WORKSPACE.PANEL_MIN_HEIGHT}px`, overflow: 'hidden' }"
-                    content-style="height: 100%; max-height: 100%; overflow: hidden;"
+              <!-- 标题栏折叠按钮 -->
+              <template #header-extra>
+                <NButton
+                  type="tertiary"
+                  size="small"
+                  ghost
+                  round
+                  @click="isInputPanelCollapsed = true"
+                  :title="t('common.collapse')"
                 >
-                    <PromptPanelUI
-                        test-id="basic-user"
-                        ref="promptPanelRef"
-                        v-model:optimized-prompt="optimizedPromptModel"
-                        :reasoning="unwrappedLogicProps.optimizedReasoning"
-                        :original-prompt="promptModel"
-                        :is-optimizing="unwrappedLogicProps.isOptimizing"
-                        :is-iterating="unwrappedLogicProps.isIterating"
-                        v-model:selected-iterate-template="selectedIterateTemplate"
-                        :versions="unwrappedLogicProps.currentVersions"
-                        :current-version-id="unwrappedLogicProps.currentVersionId"
-                        optimization-mode="user"
-                        :advanced-mode-enabled="false"
-                        :show-preview="false"
-                        @iterate="handleIterate"
-                        @openTemplateManager="handleOpenTemplateManager"
-                        @switchVersion="logic.handleSwitchVersion"
-                        @save-favorite="handleSaveFavorite"
+                  <template #icon>
+                    <NIcon>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                      </svg>
+                    </NIcon>
+                  </template>
+                </NButton>
+              </template>
+            </InputPanelUI>
+          </NCard>
+
+          <!-- 优化工作区 -->
+          <NCard
+            :style="{
+              flex: 1,
+              minHeight: `${COMPONENT_CONSTANTS.WORKSPACE.PANEL_MIN_HEIGHT}px`,
+              overflow: 'hidden',
+            }"
+            content-style="height: 100%; max-height: 100%; overflow: hidden;"
+          >
+            <PromptPanelUI
+              test-id="basic-user"
+              ref="promptPanelRef"
+              v-model:optimized-prompt="optimizedPromptModel"
+              :reasoning="unwrappedLogicProps.optimizedReasoning"
+              :original-prompt="promptModel"
+              :is-optimizing="unwrappedLogicProps.isOptimizing"
+              :is-iterating="unwrappedLogicProps.isIterating"
+              v-model:selected-iterate-template="selectedIterateTemplate"
+              :versions="unwrappedLogicProps.currentVersions"
+              :current-version-id="unwrappedLogicProps.currentVersionId"
+              optimization-mode="user"
+              :advanced-mode-enabled="false"
+              :show-preview="false"
+              @iterate="handleIterate"
+              @openTemplateManager="handleOpenTemplateManager"
+              @switchVersion="logic.handleSwitchVersion"
+              @save-favorite="handleSaveFavorite"
+              @apply-improvement="handleApplyImprovement"
+              @apply-patch="handleApplyPatch"
+              @save-local-edit="handleSaveLocalEdit"
+            />
+          </NCard>
+        </NFlex>
+      </div>
+
+      <div
+        class="split-divider"
+        role="separator"
+        tabindex="0"
+        :aria-valuemin="25"
+        :aria-valuemax="50"
+        :aria-valuenow="mainSplitLeftPct"
+        @pointerdown="onSplitPointerDown"
+        @keydown="onSplitKeydown"
+      />
+
+      <!-- 右侧：测试区域 -->
+      <div
+        ref="testPaneRef"
+        class="split-pane"
+        style="min-width: 0; height: 100%; overflow: hidden"
+      >
+        <NFlex vertical :style="{ height: '100%', gap: '12px' }">
+          <!-- 顶部：列数与全局操作 -->
+          <NCard size="small" :style="{ flexShrink: 0 }">
+            <div class="test-area-top">
+              <NFlex align="center" :size="8" :wrap="false" style="min-width: 0">
+                <NText :depth="2" class="test-area-label"> {{ t('test.layout.columns') }}： </NText>
+                <NRadioGroup
+                  v-model:value="testColumnCountModel"
+                  size="small"
+                  :disabled="isAnyVariantRunning"
+                >
+                  <NRadioButton :value="2">2</NRadioButton>
+                  <NRadioButton :value="3">3</NRadioButton>
+                  <NRadioButton :value="4" :disabled="!canUseFourColumns">4</NRadioButton>
+                </NRadioGroup>
+              </NFlex>
+
+              <NFlex align="center" justify="end" :size="8" :wrap="false">
+                <NButton
+                  type="primary"
+                  size="small"
+                  :loading="isAnyVariantRunning"
+                  :disabled="isAnyVariantRunning"
+                  @click="runAllVariants"
+                  :data-testid="'basic-user-test-run-all'"
+                >
+                  {{ t('test.layout.runAll') }}
+                </NButton>
+
+                <template
+                  v-if="
+                    testColumnCountModel === 2 && hasVariantResult('a') && hasVariantResult('b')
+                  "
+                >
+                  <EvaluationScoreBadge
+                    v-if="hasCompareEvaluation || isEvaluatingCompare"
+                    :score="compareScore"
+                    :level="compareScoreLevel"
+                    :loading="isEvaluatingCompare"
+                    :result="compareEvaluationResult"
+                    type="compare"
+                    size="small"
+                    @show-detail="() => showDetail('compare')"
+                    @apply-improvement="handleApplyImprovement"
+                    @apply-patch="handleApplyPatch"
+                  />
+                  <NButton
+                    v-else
+                    quaternary
+                    size="small"
+                    :disabled="isEvaluatingCompare"
+                    @click="() => handleEvaluate('compare')"
+                  >
+                    {{ t('evaluation.compareEvaluate') }}
+                  </NButton>
+                </template>
+              </NFlex>
+            </div>
+          </NCard>
+
+          <!-- 配置区：与结果列对齐 -->
+          <NCard size="small" :style="{ flexShrink: 0 }">
+            <div class="variant-deck" :style="{ gridTemplateColumns: testGridTemplateColumns }">
+              <div v-for="id in activeVariantIds" :key="id" class="variant-cell">
+                <div class="variant-cell__controls">
+                  <NTag size="small" :bordered="false" class="variant-cell__label">
+                    {{ getVariantLabel(id) }}
+                  </NTag>
+                  <NTag
+                    v-if="isVariantStale(id)"
+                    size="small"
+                    type="warning"
+                    :bordered="false"
+                    class="variant-cell__stale"
+                  >
+                    {{ t('test.layout.stale') }}
+                  </NTag>
+                  <NSelect
+                    :value="variantVersionModels[id].value"
+                    :options="versionOptions"
+                    size="small"
+                    :disabled="variantRunning[id] || isAnyVariantRunning"
+                    :data-testid="getVariantVersionTestId(id)"
+                    @update:value="
+                      (value) => {
+                        variantVersionModels[id].value = value
+                      }
+                    "
+                    style="width: 92px"
+                  />
+                  <div class="variant-cell__model">
+                    <SelectWithConfig
+                      :data-testid="getVariantModelTestId(id)"
+                      :model-value="variantModelKeyModels[id].value"
+                      @update:model-value="
+                        (value) => {
+                          variantModelKeyModels[id].value = String(value ?? '')
+                        }
+                      "
+                      :options="modelSelection.textModelOptions"
+                      :getPrimary="OptionAccessors.getPrimary"
+                      :getSecondary="OptionAccessors.getSecondary"
+                      :getValue="OptionAccessors.getValue"
+                      @config="handleOpenModelManager"
+                      style="min-width: 0; width: 100%"
+                    />
+                  </div>
+
+                  <NTooltip trigger="hover">
+                    <template #trigger>
+                      <NButton
+                        type="primary"
+                        size="small"
+                        circle
+                        :loading="variantRunning[id]"
+                        :disabled="isAnyVariantRunning && !variantRunning[id]"
+                        @click="() => runVariant(id)"
+                        :data-testid="getVariantRunTestId(id)"
+                      >
+                        <template #icon>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="16"
+                            height="16"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </template>
+                      </NButton>
+                    </template>
+                    {{ t('test.layout.runThisColumn') }}
+                  </NTooltip>
+                </div>
+
+                <!-- 单列评估入口移动到输出列工具栏（见 OutputDisplay slot） -->
+              </div>
+            </div>
+          </NCard>
+
+          <!-- 结果区：多列网格（无横向滚动） -->
+          <div class="variant-results-wrap">
+            <div class="variant-results" :style="{ gridTemplateColumns: testGridTemplateColumns }">
+              <NCard
+                v-for="id in activeVariantIds"
+                :key="id"
+                size="small"
+                class="variant-result-card"
+                content-style="padding: 0; height: 100%; max-height: 100%; overflow: hidden;"
+              >
+                <OutputDisplay
+                  :test-id="getVariantOutputTestId(id)"
+                  :content="getVariantResult(id).result"
+                  :reasoning="getVariantResult(id).reasoning"
+                  :streaming="variantRunning[id]"
+                  :enableCopy="true"
+                  :enableFullscreen="true"
+                  :enableEdit="false"
+                  :enableDiff="false"
+                  :enableFavorite="false"
+                  reasoningMode="hide"
+                  mode="readonly"
+                  :style="{ height: '100%', minHeight: '0' }"
+                >
+                  <template #toolbar-right-extra>
+                    <div v-if="id === 'a' && hasVariantResult('a')" class="output-evaluation-entry">
+                      <EvaluationScoreBadge
+                        v-if="hasOriginalEvaluation || isEvaluatingOriginal"
+                        :score="originalScore"
+                        :level="originalScoreLevel"
+                        :loading="isEvaluatingOriginal"
+                        :result="originalEvaluationResult"
+                        type="original"
+                        size="small"
+                        @show-detail="() => showDetail('original')"
+                        @evaluate="() => handleEvaluate('original')"
                         @apply-improvement="handleApplyImprovement"
                         @apply-patch="handleApplyPatch"
-                        @save-local-edit="handleSaveLocalEdit"
-                    />
-                </NCard>
-                </NFlex>
-            </div>
-
-            <div
-                class="split-divider"
-                role="separator"
-                tabindex="0"
-                :aria-valuemin="25"
-                :aria-valuemax="50"
-                :aria-valuenow="mainSplitLeftPct"
-                @pointerdown="onSplitPointerDown"
-                @keydown="onSplitKeydown"
-            />
-
-            <!-- 右侧：测试区域 -->
-            <div ref="testPaneRef" class="split-pane" style="min-width: 0; height: 100%; overflow: hidden;">
-                <NFlex vertical :style="{ height: '100%', gap: '12px' }">
-                    <!-- 顶部：列数与全局操作 -->
-                    <NCard size="small" :style="{ flexShrink: 0 }">
-                        <div class="test-area-top">
-                            <NFlex align="center" :size="8" :wrap="false" style="min-width: 0;">
-                                <NText :depth="2" class="test-area-label">
-                                    {{ t('test.layout.columns') }}：
-                                </NText>
-                                <NRadioGroup
-                                    v-model:value="testColumnCountModel"
-                                    size="small"
-                                    :disabled="isAnyVariantRunning"
-                                >
-                                    <NRadioButton :value="2">2</NRadioButton>
-                                    <NRadioButton :value="3">3</NRadioButton>
-                                    <NRadioButton :value="4" :disabled="!canUseFourColumns">4</NRadioButton>
-                                </NRadioGroup>
-                            </NFlex>
-
-                            <NFlex align="center" justify="end" :size="8" :wrap="false">
-                                <NButton
-                                    type="primary"
-                                    size="small"
-                                    :loading="isAnyVariantRunning"
-                                    :disabled="isAnyVariantRunning"
-                                    @click="runAllVariants"
-                                    :data-testid="'basic-user-test-run-all'"
-                                >
-                                    {{ t('test.layout.runAll') }}
-                                </NButton>
-
-                                <template v-if="testColumnCountModel === 2 && hasVariantResult('a') && hasVariantResult('b')">
-                                    <EvaluationScoreBadge
-                                        v-if="hasCompareEvaluation || isEvaluatingCompare"
-                                        :score="compareScore"
-                                        :level="compareScoreLevel"
-                                        :loading="isEvaluatingCompare"
-                                        :result="compareEvaluationResult"
-                                        type="compare"
-                                        size="small"
-                                        @show-detail="() => showDetail('compare')"
-                                        @apply-improvement="handleApplyImprovement"
-                                        @apply-patch="handleApplyPatch"
-                                    />
-                                    <NButton
-                                        v-else
-                                        quaternary
-                                        size="small"
-                                        :disabled="isEvaluatingCompare"
-                                        @click="() => handleEvaluate('compare')"
-                                    >
-                                        {{ t('evaluation.compareEvaluate') }}
-                                    </NButton>
-                                </template>
-                            </NFlex>
-                        </div>
-                    </NCard>
-
-                    <!-- 配置区：与结果列对齐 -->
-                    <NCard size="small" :style="{ flexShrink: 0 }">
-                        <div class="variant-deck" :style="{ gridTemplateColumns: testGridTemplateColumns }">
-                            <div
-                                v-for="id in activeVariantIds"
-                                :key="id"
-                                class="variant-cell"
-                            >
-                                <div class="variant-cell__controls">
-                                    <NTag size="small" :bordered="false" class="variant-cell__label">
-                                        {{ getVariantLabel(id) }}
-                                    </NTag>
-                                    <NTag
-                                        v-if="isVariantStale(id)"
-                                        size="small"
-                                        type="warning"
-                                        :bordered="false"
-                                        class="variant-cell__stale"
-                                    >
-                                        {{ t('test.layout.stale') }}
-                                    </NTag>
-                                    <NSelect
-                                        :value="variantVersionModels[id].value"
-                                        :options="versionOptions"
-                                        size="small"
-                                        :disabled="variantRunning[id] || isAnyVariantRunning"
-                                        :data-testid="getVariantVersionTestId(id)"
-                                        @update:value="(value) => { variantVersionModels[id].value = value }"
-                                        style="width: 92px"
-                                    />
-                                    <div class="variant-cell__model">
-                                        <SelectWithConfig
-                                            :data-testid="getVariantModelTestId(id)"
-                                            :model-value="variantModelKeyModels[id].value"
-                                            @update:model-value="(value) => { variantModelKeyModels[id].value = String(value ?? '') }"
-                                            :options="modelSelection.textModelOptions"
-                                            :getPrimary="OptionAccessors.getPrimary"
-                                            :getSecondary="OptionAccessors.getSecondary"
-                                            :getValue="OptionAccessors.getValue"
-                                            @config="handleOpenModelManager"
-                                            style="min-width: 0; width: 100%;"
-                                        />
-                                    </div>
-
-                                    <NTooltip trigger="hover">
-                                        <template #trigger>
-                                            <NButton
-                                                type="primary"
-                                                size="small"
-                                                circle
-                                                :loading="variantRunning[id]"
-                                                :disabled="isAnyVariantRunning && !variantRunning[id]"
-                                                @click="() => runVariant(id)"
-                                                :data-testid="getVariantRunTestId(id)"
-                                            >
-                                                <template #icon>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-                                                        <path d="M8 5v14l11-7z" />
-                                                    </svg>
-                                                </template>
-                                            </NButton>
-                                        </template>
-                                        {{ t('test.layout.runThisColumn') }}
-                                    </NTooltip>
-                                </div>
-
-                                <!-- 单列评估入口移动到输出列工具栏（见 OutputDisplay slot） -->
-                            </div>
-                        </div>
-                    </NCard>
-
-                    <!-- 结果区：多列网格（无横向滚动） -->
-                    <div class="variant-results-wrap">
-                        <div class="variant-results" :style="{ gridTemplateColumns: testGridTemplateColumns }">
-                            <NCard
-                                v-for="id in activeVariantIds"
-                                :key="id"
-                                size="small"
-                                class="variant-result-card"
-                                content-style="padding: 0; height: 100%; max-height: 100%; overflow: hidden;"
-                            >
-                                <OutputDisplay
-                                    :test-id="getVariantOutputTestId(id)"
-                                    :content="getVariantResult(id).result"
-                                    :reasoning="getVariantResult(id).reasoning"
-                                    :streaming="variantRunning[id]"
-                                    :enableCopy="true"
-                                    :enableFullscreen="true"
-                                    :enableEdit="false"
-                                    :enableDiff="false"
-                                    :enableFavorite="false"
-                                    reasoningMode="hide"
-                                    mode="readonly"
-                                    :style="{ height: '100%', minHeight: '0' }"
-                                >
-                                  <template #toolbar-right-extra>
-                                    <div
-                                      v-if="id === 'a' && hasVariantResult('a')"
-                                      class="output-evaluation-entry"
-                                    >
-                                      <EvaluationScoreBadge
-                                        v-if="hasOriginalEvaluation || isEvaluatingOriginal"
-                                        :score="originalScore"
-                                        :level="originalScoreLevel"
-                                        :loading="isEvaluatingOriginal"
-                                        :result="originalEvaluationResult"
-                                        type="original"
-                                        size="small"
-                                        @show-detail="() => showDetail('original')"
-                                        @evaluate="() => handleEvaluate('original')"
-                                        @apply-improvement="handleApplyImprovement"
-                                        @apply-patch="handleApplyPatch"
-                                      />
-                                      <NButton
-                                        v-else
-                                        size="small"
-                                        quaternary
-                                        :disabled="isEvaluatingOriginal"
-                                        @click="() => handleEvaluate('original')"
-                                      >
-                                        {{ t('evaluation.evaluate') }}
-                                      </NButton>
-                                    </div>
-
-                                    <div
-                                      v-else-if="id === 'b' && hasVariantResult('b')"
-                                      class="output-evaluation-entry"
-                                    >
-                                      <EvaluationScoreBadge
-                                        v-if="hasOptimizedEvaluation || isEvaluatingOptimized"
-                                        :score="optimizedScore"
-                                        :level="optimizedScoreLevel"
-                                        :loading="isEvaluatingOptimized"
-                                        :result="optimizedEvaluationResult"
-                                        type="optimized"
-                                        size="small"
-                                        @show-detail="() => showDetail('optimized')"
-                                        @evaluate="() => handleEvaluate('optimized')"
-                                        @apply-improvement="handleApplyImprovement"
-                                        @apply-patch="handleApplyPatch"
-                                      />
-                                      <NButton
-                                        v-else
-                                        size="small"
-                                        quaternary
-                                        :disabled="isEvaluatingOptimized"
-                                        @click="() => handleEvaluate('optimized')"
-                                      >
-                                        {{ t('evaluation.evaluate') }}
-                                      </NButton>
-                                    </div>
-                                  </template>
-                                </OutputDisplay>
-                            </NCard>
-                        </div>
+                      />
+                      <NButton
+                        v-else
+                        size="small"
+                        quaternary
+                        :disabled="isEvaluatingOriginal"
+                        @click="() => handleEvaluate('original')"
+                      >
+                        {{ t('evaluation.evaluate') }}
+                      </NButton>
                     </div>
-                </NFlex>
-            </div>
-        </div>
 
-        <EvaluationPanel
-            v-model:show="evaluation.isPanelVisible.value"
-            :is-evaluating="panelProps.isEvaluating"
-            :result="panelProps.result"
-            :stream-content="panelProps.streamContent"
-            :error="panelProps.error"
-            :current-type="panelProps.currentType"
-            :score-level="panelProps.scoreLevel"
-            @re-evaluate="evaluationHandler.handleReEvaluate"
-            @apply-local-patch="handleApplyPatch"
-            @apply-improvement="handleApplyImprovement"
-            @clear="handleClearEvaluation"
-            @retry="evaluationHandler.handleReEvaluate"
-        />
+                    <div
+                      v-else-if="id === 'b' && hasVariantResult('b')"
+                      class="output-evaluation-entry"
+                    >
+                      <EvaluationScoreBadge
+                        v-if="hasOptimizedEvaluation || isEvaluatingOptimized"
+                        :score="optimizedScore"
+                        :level="optimizedScoreLevel"
+                        :loading="isEvaluatingOptimized"
+                        :result="optimizedEvaluationResult"
+                        type="optimized"
+                        size="small"
+                        @show-detail="() => showDetail('optimized')"
+                        @evaluate="() => handleEvaluate('optimized')"
+                        @apply-improvement="handleApplyImprovement"
+                        @apply-patch="handleApplyPatch"
+                      />
+                      <NButton
+                        v-else
+                        size="small"
+                        quaternary
+                        :disabled="isEvaluatingOptimized"
+                        @click="() => handleEvaluate('optimized')"
+                      >
+                        {{ t('evaluation.evaluate') }}
+                      </NButton>
+                    </div>
+                  </template>
+                </OutputDisplay>
+              </NCard>
+            </div>
+          </div>
+        </NFlex>
+      </div>
     </div>
+
+    <EvaluationPanel
+      v-model:show="evaluation.isPanelVisible.value"
+      :is-evaluating="panelProps.isEvaluating"
+      :result="panelProps.result"
+      :stream-content="panelProps.streamContent"
+      :error="panelProps.error"
+      :current-type="panelProps.currentType"
+      :score-level="panelProps.scoreLevel"
+      @re-evaluate="evaluationHandler.handleReEvaluate"
+      @apply-local-patch="handleApplyPatch"
+      @apply-improvement="handleApplyImprovement"
+      @clear="handleClearEvaluation"
+      @retry="evaluationHandler.handleReEvaluate"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -417,7 +430,18 @@
  * - templateType 为 'userOptimize'（而非 'optimize'）
  * - optimizationMode 为 'user'（而非 'system'）
  */
- import { ref, reactive, computed, toRef, inject, onMounted, onUnmounted, watch, nextTick, type Ref } from 'vue'
+import {
+  ref,
+  reactive,
+  computed,
+  toRef,
+  inject,
+  onMounted,
+  onUnmounted,
+  watch,
+  nextTick,
+  type Ref,
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 import '../../styles/workspace-common.css'
 import { useToast } from '../../composables/ui/useToast'
@@ -433,7 +457,18 @@ import { useWorkspaceModelSelection } from '../../composables/workspaces/useWork
 import { useWorkspaceTemplateSelection } from '../../composables/workspaces/useWorkspaceTemplateSelection'
 import { useEvaluationHandler } from '../../composables/prompt/useEvaluationHandler'
 import { provideEvaluation } from '../../composables/prompt/useEvaluationContext'
-import { NButton, NCard, NFlex, NIcon, NText, NSelect, NRadioGroup, NRadioButton, NTooltip, NTag } from 'naive-ui'
+import {
+  NButton,
+  NCard,
+  NFlex,
+  NIcon,
+  NText,
+  NSelect,
+  NRadioGroup,
+  NRadioButton,
+  NTooltip,
+  NTag,
+} from 'naive-ui'
 import InputPanelUI from '../InputPanel.vue'
 import PromptPanelUI from '../PromptPanel.vue'
 import OutputDisplay from '../OutputDisplay.vue'
@@ -442,7 +477,11 @@ import SelectWithConfig from '../SelectWithConfig.vue'
 import { OptionAccessors } from '../../utils/data-transformer'
 import type { AppServices } from '../../types/services'
 import type { IteratePayload } from '../../types/workspace'
-import { applyPatchOperationsToText, type PatchOperation, type Template } from '@prompt-optimizer/core'
+import {
+  applyPatchOperationsToText,
+  type PatchOperation,
+  type Template,
+} from '@prompt-optimizer/core'
 import { useElementSize } from '@vueuse/core'
 import { COMPONENT_CONSTANTS } from '../../config/constants'
 
@@ -452,7 +491,10 @@ const toast = useToast()
 // 服务注入
 const injectedServices = inject<Ref<AppServices | null>>('services')
 const services = injectedServices ?? ref<AppServices | null>(null)
-const appOpenModelManager = inject<((tab?: 'text' | 'image' | 'function') => void) | null>('openModelManager', null)
+const appOpenModelManager = inject<((tab?: 'text' | 'image' | 'function') => void) | null>(
+  'openModelManager',
+  null
+)
 const appOpenTemplateManager = inject<((type?: string) => void) | null>('openTemplateManager', null)
 
 // Session store（单一真源）
@@ -547,7 +589,7 @@ const logic = useBasicWorkspaceLogic({
   },
   onLocalEditComplete: (_chain) => {
     window.dispatchEvent(new CustomEvent('prompt-optimizer:history-refresh'))
-  }
+  },
 })
 
 // 模型选择
@@ -567,12 +609,12 @@ const selectedIterateTemplate = computed<Template | null>({
   set: (value) => {
     templateSelection.selectedIterateTemplateId.value = value?.id ?? ''
     templateSelection.selectedIterateTemplate.value = value ?? null
-  }
+  },
 })
 
 const getVariant = (id: TestVariantId): TestVariantConfig | undefined => {
   const list = session.testVariants as unknown as TestVariantConfig[]
-  return Array.isArray(list) ? list.find(v => v.id === id) : undefined
+  return Array.isArray(list) ? list.find((v) => v.id === id) : undefined
 }
 
 // 测试列数（2/3/4）
@@ -581,53 +623,55 @@ const testColumnCountModel = computed<TestColumnCount>({
     const raw = session.layout.testColumnCount
     return raw === 2 || raw === 3 || raw === 4 ? raw : 2
   },
-  set: (value) => session.setTestColumnCount(value)
+  set: (value) => session.setTestColumnCount(value),
 })
 
 // 测试列选择（先保持 A/B 两列，后续再扩展到 4 列）
 const originalTestVersionModel = computed<TestPanelVersionValue>({
   get: () => getVariant('a')?.version ?? 0,
-  set: (value) => session.updateTestVariant('a', { version: value })
+  set: (value) => session.updateTestVariant('a', { version: value }),
 })
 
 const optimizedTestVersionModel = computed<TestPanelVersionValue>({
   get: () => getVariant('b')?.version ?? 'latest',
-  set: (value) => session.updateTestVariant('b', { version: value })
+  set: (value) => session.updateTestVariant('b', { version: value }),
 })
 
 const originalTestModelKeyModel = computed<string>({
   get: () => getVariant('a')?.modelKey ?? '',
-  set: (value) => session.updateTestVariant('a', { modelKey: value })
+  set: (value) => session.updateTestVariant('a', { modelKey: value }),
 })
 
 const optimizedTestModelKeyModel = computed<string>({
   get: () => getVariant('b')?.modelKey ?? '',
-  set: (value) => session.updateTestVariant('b', { modelKey: value })
+  set: (value) => session.updateTestVariant('b', { modelKey: value }),
 })
 
 // C/D 两列（仅在 3/4 列模式下显示）
 const variantCTestVersionModel = computed<TestPanelVersionValue>({
   get: () => getVariant('c')?.version ?? 'latest',
-  set: (value) => session.updateTestVariant('c', { version: value })
+  set: (value) => session.updateTestVariant('c', { version: value }),
 })
 
 const variantDTestVersionModel = computed<TestPanelVersionValue>({
   get: () => getVariant('d')?.version ?? 'latest',
-  set: (value) => session.updateTestVariant('d', { version: value })
+  set: (value) => session.updateTestVariant('d', { version: value }),
 })
 
 const variantCTestModelKeyModel = computed<string>({
   get: () => getVariant('c')?.modelKey ?? '',
-  set: (value) => session.updateTestVariant('c', { modelKey: value })
+  set: (value) => session.updateTestVariant('c', { modelKey: value }),
 })
 
 const variantDTestModelKeyModel = computed<string>({
   get: () => getVariant('d')?.modelKey ?? '',
-  set: (value) => session.updateTestVariant('d', { modelKey: value })
+  set: (value) => session.updateTestVariant('d', { modelKey: value }),
 })
 
 const ALL_VARIANT_IDS: TestVariantId[] = ['a', 'b', 'c', 'd']
-const activeVariantIds = computed<TestVariantId[]>(() => ALL_VARIANT_IDS.slice(0, testColumnCountModel.value))
+const activeVariantIds = computed<TestVariantId[]>(() =>
+  ALL_VARIANT_IDS.slice(0, testColumnCountModel.value)
+)
 
 // template 中使用：variantVersionModels[id] / variantModelKeyModels[id]
 const variantVersionModels = {
@@ -650,17 +694,17 @@ const versionOptions = computed(() => {
   const versions = logic.currentVersions.value || []
 
   const sortedVersions = versions
-    .map(v => v.version)
+    .map((v) => v.version)
     .filter((v): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 1)
     .slice()
     .sort((a, b) => a - b)
 
   const latest = sortedVersions.length ? sortedVersions[sortedVersions.length - 1] : null
-  const middle = latest ? sortedVersions.filter(v => v < latest) : []
+  const middle = latest ? sortedVersions.filter((v) => v < latest) : []
 
   return [
     { label: t('test.layout.original'), value: 0 },
-    ...middle.map(v => ({ label: `v${v}`, value: v })),
+    ...middle.map((v) => ({ label: `v${v}`, value: v })),
     { label: t('test.layout.latest'), value: 'latest' },
   ]
 })
@@ -673,7 +717,7 @@ watch(
   (opts) => {
     const fallback = opts?.[0]?.value || ''
     if (!fallback) return
-    const keys = new Set((opts || []).map(o => o.value))
+    const keys = new Set((opts || []).map((o) => o.value))
 
     const legacy = logic.selectedTestModelKey.value
     const seed = legacy && keys.has(legacy) ? legacy : fallback
@@ -704,7 +748,9 @@ watch(
   { immediate: true }
 )
 
-const testGridTemplateColumns = computed(() => `repeat(${testColumnCountModel.value}, minmax(0, 1fr))`)
+const testGridTemplateColumns = computed(
+  () => `repeat(${testColumnCountModel.value}, minmax(0, 1fr))`
+)
 
 type ResolvedTestPrompt = { text: string; resolvedVersion: number }
 
@@ -727,7 +773,7 @@ const resolveTestPrompt = (selection: TestPanelVersionValue): ResolvedTestPrompt
     return { text: latest.optimizedPrompt || '', resolvedVersion: latest.version }
   }
 
-  const target = versions.find(v => v.version === selection)
+  const target = versions.find((v) => v.version === selection)
   if (target) {
     return { text: target.optimizedPrompt || '', resolvedVersion: target.version }
   }
@@ -737,7 +783,9 @@ const resolveTestPrompt = (selection: TestPanelVersionValue): ResolvedTestPrompt
 }
 
 const resolvedOriginalTestPrompt = computed(() => resolveTestPrompt(originalTestVersionModel.value))
-const resolvedOptimizedTestPrompt = computed(() => resolveTestPrompt(optimizedTestVersionModel.value))
+const resolvedOptimizedTestPrompt = computed(() =>
+  resolveTestPrompt(optimizedTestVersionModel.value)
+)
 
 // ==================== 测试区：多列 variant（最多 4 列） ====================
 
@@ -753,9 +801,11 @@ const variantRunning = reactive<Record<TestVariantId, boolean>>({
 
 const variantLastRunFingerprint = session.testVariantLastRunFingerprint
 
-const isAnyVariantRunning = computed(() => activeVariantIds.value.some((id) => !!variantRunning[id]))
+const isAnyVariantRunning = computed(() =>
+  activeVariantIds.value.some((id) => !!variantRunning[id])
+)
 
-const getVariantLabel = (id: TestVariantId) => ({ a: 'A', b: 'B', c: 'C', d: 'D' }[id])
+const getVariantLabel = (id: TestVariantId) => ({ a: 'A', b: 'B', c: 'C', d: 'D' })[id]
 
 const getVariantVersionTestId = (id: TestVariantId) => {
   if (id === 'a') return 'basic-user-test-original-version-select'
@@ -806,7 +856,10 @@ const getVariantTestInput = (id: TestVariantId): VariantTestInput | null => {
 
   const resolved = resolveTestPrompt(variantVersionModels[id].value)
   if (!resolved.text?.trim()) {
-    const key = resolved.resolvedVersion === 0 ? 'test.error.noOriginalPrompt' : 'test.error.noOptimizedPrompt'
+    const key =
+      resolved.resolvedVersion === 0
+        ? 'test.error.noOriginalPrompt'
+        : 'test.error.noOptimizedPrompt'
     toast.error(t(key))
     return null
   }
@@ -976,29 +1029,37 @@ const unwrappedLogicProps = computed(() => ({
   testResultsOriginalResult: logic.testResults.value?.originalResult || '',
   testResultsOriginalReasoning: logic.testResults.value?.originalReasoning || '',
   testResultsOptimizedResult: logic.testResults.value?.optimizedResult || '',
-  testResultsOptimizedReasoning: logic.testResults.value?.optimizedReasoning || ''
+  testResultsOptimizedReasoning: logic.testResults.value?.optimizedReasoning || '',
 }))
 
 // 🔧 为 v-model 创建解包的 computed（支持双向绑定）
 const promptModel = computed({
   get: () => logic.prompt.value,
-  set: (value) => { logic.prompt.value = value }
+  set: (value) => {
+    logic.prompt.value = value
+  },
 })
 
 const optimizedPromptModel = computed({
   get: () => logic.optimizedPrompt.value,
-  set: (value) => { logic.optimizedPrompt.value = value }
+  set: (value) => {
+    logic.optimizedPrompt.value = value
+  },
 })
 
 // 🔧 为 SelectWithConfig 的 v-model 创建解包的 computed
 const selectedOptimizeModelKeyModel = computed({
   get: () => logic.selectedOptimizeModelKey.value,
-  set: (value) => { logic.selectedOptimizeModelKey.value = value }
+  set: (value) => {
+    logic.selectedOptimizeModelKey.value = value
+  },
 })
 
 const selectedTemplateIdModel = computed({
   get: () => logic.selectedTemplateId.value,
-  set: (value) => { logic.selectedTemplateId.value = value }
+  set: (value) => {
+    logic.selectedTemplateId.value = value
+  },
 })
 
 // 评估处理器
@@ -1013,8 +1074,12 @@ const evaluationHandler = useEvaluationHandler({
   optimizedPrompt: computed(() => resolvedOptimizedTestPrompt.value.text),
   testContent: logic.testContent,
   testResults: testResultsComputed,
-  evaluationModelKey: computed(() =>
-    optimizedTestModelKeyModel.value || originalTestModelKeyModel.value || logic.selectedTestModelKey.value || ''
+  evaluationModelKey: computed(
+    () =>
+      optimizedTestModelKeyModel.value ||
+      originalTestModelKeyModel.value ||
+      logic.selectedTestModelKey.value ||
+      ''
   ),
   functionMode: computed(() => 'basic'),
   subMode: computed(() => 'user'),
@@ -1022,9 +1087,9 @@ const evaluationHandler = useEvaluationHandler({
   currentIterateRequirement: computed(() => {
     const versionId = logic.currentVersionId.value
     if (!versionId || !logic.currentVersions.value) return ''
-    const currentVersion = logic.currentVersions.value.find(v => v.id === versionId)
+    const currentVersion = logic.currentVersions.value.find((v) => v.id === versionId)
     return currentVersion?.iterationNote || ''
-  })
+  }),
 })
 
 // 提供评估上下文
@@ -1112,10 +1177,9 @@ const handleSaveLocalEdit = async (payload: { note?: string }) => {
 }
 
 // 保存收藏（从顶层 App 注入）
-const globalHandleSaveFavorite = inject<((data: { content: string; originalContent?: string }) => void) | null>(
-  'handleSaveFavorite',
-  null
-)
+const globalHandleSaveFavorite = inject<
+  ((data: { content: string; originalContent?: string }) => void) | null
+>('handleSaveFavorite', null)
 
 const handleSaveFavorite = () => {
   if (!globalHandleSaveFavorite) {
@@ -1125,7 +1189,7 @@ const handleSaveFavorite = () => {
 
   const data = {
     content: logic.optimizedPrompt.value || logic.prompt.value,
-    originalContent: logic.prompt.value
+    originalContent: logic.prompt.value,
   }
 
   if (!data.content && !data.originalContent) {
@@ -1168,7 +1232,10 @@ onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('basic-workspace-refresh-text-models', refreshTextModelsHandler)
     window.removeEventListener('basic-workspace-refresh-templates', refreshTemplatesHandler)
-    window.removeEventListener('basic-workspace-refresh-iterate-select', refreshIterateSelectHandler)
+    window.removeEventListener(
+      'basic-workspace-refresh-iterate-select',
+      refreshIterateSelectHandler
+    )
   }
 })
 
@@ -1189,97 +1256,100 @@ const refreshIterateSelectHandler = async () => {
 }
 
 // chainId 变化时加载版本
-watch(() => session.chainId, async (newChainId) => {
-  if (newChainId) {
-    await logic.loadVersions()
-  } else {
-    logic.currentVersions.value = []
-    logic.currentChainId.value = ''
-    logic.currentVersionId.value = ''
+watch(
+  () => session.chainId,
+  async (newChainId) => {
+    if (newChainId) {
+      await logic.loadVersions()
+    } else {
+      logic.currentVersions.value = []
+      logic.currentChainId.value = ''
+      logic.currentVersionId.value = ''
+    }
   }
-})
+)
 
 defineExpose({
   promptPanelRef,
   openIterateDialog: (initialContent?: string) => {
     promptPanelRef.value?.openIterateDialog?.(initialContent)
-  }
+  },
 })
 </script>
 
 <style scoped>
 .basic-user-workspace {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .basic-user-split {
-    display: grid;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .split-pane {
-    min-height: 0;
+  min-height: 0;
 }
 
 /* Note: .test-area-top, .test-area-label, .variant-deck, .split-divider styles are defined in workspace-common.css */
 
 .variant-cell {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .variant-cell__controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .variant-cell__label {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .variant-cell__stale {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 .variant-cell__model {
-    /* 让模型选择不要无限拉伸：保持紧凑，避免把右侧按钮/布局挤散 */
-    flex: 0 1 220px;
-    max-width: 220px;
-    min-width: 0;
+  /* 让模型选择不要无限拉伸：保持紧凑，避免把右侧按钮/布局挤散 */
+  flex: 0 1 220px;
+  max-width: 220px;
+  min-width: 0;
 }
 
 .output-evaluation-entry {
-    display: flex;
-    align-items: center;
-    white-space: nowrap;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 /* Note: .variant-results-wrap, .variant-results styles are defined in workspace-common.css */
 
 .variant-result-card {
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .variant-result-card :deep(.n-card__content) {
-    height: 100%;
-    max-height: 100%;
-    overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 </style>

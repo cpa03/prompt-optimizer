@@ -14,7 +14,7 @@ import type {
   StreamHandlers,
   ParameterDefinition,
   ToolDefinition,
-  ToolCall
+  ToolCall,
 } from '../types'
 
 // 定义新版 SDK 需要的类型（SDK 可能通过主导出提供）
@@ -44,8 +44,8 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
-    }
+      maxContextLength: 1000000,
+    },
   },
   {
     id: GEMINI_MODELS.GEMINI_25_PRO,
@@ -54,8 +54,8 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
-    }
+      maxContextLength: 1000000,
+    },
   },
   {
     id: GEMINI_MODELS.GEMINI_3_PRO_PREVIEW,
@@ -64,9 +64,9 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000
-    }
-  }
+      maxContextLength: 1000000,
+    },
+  },
 ]
 
 /**
@@ -103,9 +103,9 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -122,14 +122,14 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }
@@ -147,16 +147,16 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
           ? {
               apiKey,
               httpOptions: {
-                baseUrl: customBaseURL
-              }
+                baseUrl: customBaseURL,
+              },
             }
           : { apiKey }
       )
 
       const modelsPager = await genAI.models.list({
         config: {
-          pageSize: API_CONSTRAINTS.DEFAULT_PAGE_SIZE // Use centralized constant
-        }
+          pageSize: API_CONSTRAINTS.DEFAULT_PAGE_SIZE, // Use centralized constant
+        },
       })
 
       const dynamicModels: TextModel[] = []
@@ -173,17 +173,20 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
           capabilities: {
             supportsTools: true,
             supportsReasoning: false,
-            maxContextLength: model.inputTokenLimit || 1000000
+            maxContextLength: model.inputTokenLimit || 1000000,
           },
           parameterDefinitions: this.getParameterDefinitions(model.name || ''),
-          defaultParameterValues: this.getDefaultParameterValues(model.name || '')
+          defaultParameterValues: this.getDefaultParameterValues(model.name || ''),
         })
       }
 
       // 如果动态获取失败，返回静态列表
       return dynamicModels.length > 0 ? dynamicModels : this.getModels()
     } catch (error) {
-      console.error('[GeminiAdapter] Failed to fetch models dynamically, falling back to static list:', error)
+      console.error(
+        '[GeminiAdapter] Failed to fetch models dynamically, falling back to static list:',
+        error
+      )
       return this.getModels()
     }
   }
@@ -207,7 +210,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         maxValue: 2,
         min: 0,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'topP',
@@ -221,7 +224,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         maxValue: 1,
         min: 0,
         max: 1,
-        step: 0.01
+        step: 0.01,
       },
       {
         name: 'topK',
@@ -233,7 +236,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         default: 1,
         minValue: 1,
         min: 1,
-        step: 1
+        step: 1,
       },
       {
         name: 'maxOutputTokens',
@@ -246,7 +249,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         minValue: 1,
         min: 1,
         unitKey: 'params.tokens.unit',
-        step: 1
+        step: 1,
       },
       {
         name: 'candidateCount',
@@ -260,7 +263,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         maxValue: 8,
         min: 1,
         max: 8,
-        step: 1
+        step: 1,
       },
       {
         name: 'stopSequences',
@@ -269,7 +272,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         description: 'Stop sequences for generation',
         type: 'string',
         defaultValue: [],
-        tags: ['string-array']
+        tags: ['string-array'],
       },
       {
         name: 'thinkingBudget',
@@ -284,7 +287,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         min: 0,
         max: 8192,
         unitKey: 'params.tokens.unit',
-        step: 1
+        step: 1,
       },
       {
         name: 'includeThoughts',
@@ -292,8 +295,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.includeThoughts.description',
         description: 'Include thinking process in response (Gemini 2.5+)',
         type: 'boolean',
-        defaultValue: false
-      }
+        defaultValue: false,
+      },
     ]
   }
 
@@ -323,8 +326,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         ? {
             apiKey,
             httpOptions: {
-              baseUrl: customBaseURL
-            }
+              baseUrl: customBaseURL,
+            },
           }
         : { apiKey }
     )
@@ -349,8 +352,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       topK,
       candidateCount,
       stopSequences,
-      thinkingBudget,      // 思考预算（token数）
-      includeThoughts,      // 是否包含思考过程
+      thinkingBudget, // 思考预算（token数）
+      includeThoughts, // 是否包含思考过程
       ...otherParams
     } = params
 
@@ -419,7 +422,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     const functionDeclarations: FunctionDeclaration[] = tools.map((tool) => ({
       name: tool.function.name,
       description: tool.function.description,
-      parameters: tool.function.parameters
+      parameters: tool.function.parameters,
     }))
 
     return [{ functionDeclarations }]
@@ -441,8 +444,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       type: 'function' as const,
       function: {
         name: fc.name || '',
-        arguments: JSON.stringify(fc.args || {})
-      }
+        arguments: JSON.stringify(fc.args || {}),
+      },
     }))
   }
 
@@ -460,12 +463,12 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       if (msg.role === 'user') {
         formattedContents.push({
           role: 'user',
-          parts: [{ text: msg.content }]
+          parts: [{ text: msg.content }],
         })
       } else if (msg.role === 'assistant') {
         formattedContents.push({
           role: 'model', // Gemini 使用 'model' 而非 'assistant'
-          parts: [{ text: msg.content }]
+          parts: [{ text: msg.content }],
         })
       }
       // 跳过 system 消息，它们会在 systemInstruction 中处理
@@ -485,7 +488,10 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
    * @returns LLM响应
    * @throws SDK原始错误（保留完整堆栈）
    */
-  protected async doSendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse> {
+  protected async doSendMessage(
+    messages: Message[],
+    config: TextModelConfig
+  ): Promise<LLMResponse> {
     // 提取系统消息
     const systemMessages = messages.filter((msg) => msg.role === MESSAGE_ROLES.SYSTEM)
     const systemInstruction =
@@ -499,8 +505,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       return {
         content: '',
         metadata: {
-          model: config.modelMeta.id
-        }
+          model: config.modelMeta.id,
+        },
       }
     }
 
@@ -520,7 +526,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       const response = await client.models.generateContent({
         model: config.modelMeta.id,
         contents,
-        config: generationConfig
+        config: generationConfig,
       })
 
       // 提取文本内容和思考内容
@@ -567,8 +573,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         reasoning,
         metadata: {
           model: config.modelMeta.id,
-          finishReason: response.candidates?.[0]?.finishReason
-        }
+          finishReason: response.candidates?.[0]?.finishReason,
+        },
       }
     } catch (error) {
       console.error('[GeminiAdapter] API call failed:', error)
@@ -603,8 +609,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       const response: LLMResponse = {
         content: '',
         metadata: {
-          model: config.modelMeta.id
-        }
+          model: config.modelMeta.id,
+        },
       }
 
       callbacks.onComplete(response)
@@ -627,7 +633,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       const responseStream = await client.models.generateContentStream({
         model: config.modelMeta.id,
         contents,
-        config: generationConfig
+        config: generationConfig,
       })
 
       let accumulatedContent = ''
@@ -673,8 +679,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         content: accumulatedContent,
         reasoning: accumulatedReasoning || undefined,
         metadata: {
-          model: config.modelMeta.id
-        }
+          model: config.modelMeta.id,
+        },
       }
 
       callbacks.onComplete(response)
@@ -712,7 +718,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     if (conversationMessages.length === 0) {
       const response: LLMResponse = {
         content: '',
-        metadata: { model: config.modelMeta.id }
+        metadata: { model: config.modelMeta.id },
       }
       callbacks.onComplete(response)
       return
@@ -740,7 +746,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       const responseStream = await client.models.generateContentStream({
         model: config.modelMeta.id,
         contents,
-        config: generationConfig
+        config: generationConfig,
       })
 
       let accumulatedContent = ''
@@ -771,9 +777,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
             if ((part as any).thought) {
               const rawThought = (part as any).text ?? (part as any).thought
               if (rawThought !== undefined) {
-                const thoughtStr = typeof rawThought === 'string'
-                  ? rawThought
-                  : JSON.stringify(rawThought)
+                const thoughtStr =
+                  typeof rawThought === 'string' ? rawThought : JSON.stringify(rawThought)
 
                 accumulatedReasoning += thoughtStr
 
@@ -792,8 +797,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         reasoning: accumulatedReasoning || undefined,
         toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
         metadata: {
-          model: config.modelMeta.id
-        }
+          model: config.modelMeta.id,
+        },
       }
 
       callbacks.onComplete(response)

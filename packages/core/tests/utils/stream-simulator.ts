@@ -48,10 +48,7 @@ export class StreamSimulator {
   private jitterProbability: number
   private jitterMaxDelay: number
 
-  constructor(
-    chunks: StreamChunk[],
-    options: StreamSimulatorOptions = {}
-  ) {
+  constructor(chunks: StreamChunk[], options: StreamSimulatorOptions = {}) {
     this.chunks = chunks
     this.timeScale = options.timeScale ?? 1.0
     this.jitterProbability = options.jitterProbability ?? 0
@@ -140,7 +137,7 @@ export class StreamSimulator {
         } catch (error) {
           controller.error(error)
         }
-      }
+      },
     })
   }
 
@@ -159,7 +156,7 @@ export class StreamSimulator {
         }
 
         this.push(JSON.stringify(value) + '\n')
-      }
+      },
     })
   }
 
@@ -169,14 +166,14 @@ export class StreamSimulator {
   private sleep(ms: number): Promise<void> {
     if (ms <= 0) return Promise.resolve()
     if (ms < 1) return Promise.resolve()
-    return new Promise(resolve => setTimeout(resolve, ms))
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 
   /**
    * 获取完整内容（所有 chunks 拼接）
    */
   getFullContent(): string {
-    return this.chunks.map(chunk => chunk.content).join('')
+    return this.chunks.map((chunk) => chunk.content).join('')
   }
 
   /**
@@ -291,6 +288,6 @@ export async function measureStreamPerformance(
     actualDuration,
     expectedDuration,
     chunksPerSecond: (chunkCount / actualDuration) * 1000,
-    averageChunkDelay: actualDuration / chunkCount
+    averageChunkDelay: actualDuration / chunkCount,
   }
 }

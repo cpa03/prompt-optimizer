@@ -1,15 +1,15 @@
-import Dexie, { type Table } from 'dexie';
-import { IStorageProvider } from './types';
-import { StorageError } from './errors';
-import { STORAGE_CONFIG } from '../../config/core-config';
+import Dexie, { type Table } from 'dexie'
+import { IStorageProvider } from './types'
+import { StorageError } from './errors'
+import { STORAGE_CONFIG } from '../../config/core-config'
 
 /**
  * 数据表接口定义
  */
 interface StorageRecord {
-  key: string;
-  value: string;
-  timestamp?: number;
+  key: string
+  value: string
+  timestamp?: number
 }
 
 /**
@@ -22,35 +22,35 @@ interface StorageRecord {
 function getDatabaseName(): string {
   // 测试环境：从 window 对象读取测试数据库名称
   if (typeof window !== 'undefined') {
-    const testDbName = (window as any).__TEST_DB_NAME__;
+    const testDbName = (window as any).__TEST_DB_NAME__
     if (testDbName) {
-      return testDbName;
+      return testDbName
     }
   }
 
   // 生产环境：使用固定名称
-  return 'PromptOptimizerDB';
+  return 'PromptOptimizerDB'
 }
 
 /**
  * Dexie 数据库类
  */
 class PromptOptimizerDB extends Dexie {
-  storage!: Table<StorageRecord, string>;
+  storage!: Table<StorageRecord, string>
 
   constructor() {
-    super(getDatabaseName());
+    super(getDatabaseName())
 
     // 定义数据库结构
     this.version(1).stores({
-      storage: 'key, value, timestamp'
-    });
+      storage: 'key, value, timestamp',
+    })
   }
 }
 
 /**
  * 基于 Dexie 的存储提供器实现
- * 
+ *
  * 相比 LocalStorageProvider 的优势：
  * - 更大的存储容量（几GB vs 5MB）
  * - 原生事务支持，更好的并发安全
@@ -58,26 +58,29 @@ class PromptOptimizerDB extends Dexie {
  * - 更好的查询性能
  */
 export class DexieStorageProvider implements IStorageProvider {
-  private db: PromptOptimizerDB;
-  private dbOpened: Promise<void>;
-  
+  private db: PromptOptimizerDB
+  private dbOpened: Promise<void>
+
   // 用于原子操作的锁机制
-  private keyLocks = new Map<string, Promise<void>>();
+  private keyLocks = new Map<string, Promise<void>>()
 
   constructor() {
-    this.db = new PromptOptimizerDB();
-    this.dbOpened = this.db.open().then(() => undefined).catch((error) => {
-      console.error('Failed to open Dexie database:', error);
-      // 抛出错误以使所有后续操作失败
-      throw error;
-    });
+    this.db = new PromptOptimizerDB()
+    this.dbOpened = this.db
+      .open()
+      .then(() => undefined)
+      .catch((error) => {
+        console.error('Failed to open Dexie database:', error)
+        // 抛出错误以使所有后续操作失败
+        throw error
+      })
   }
 
   /**
    * 确保数据库已打开
    */
   private async initialize(): Promise<void> {
-    await this.dbOpened;
+    await this.dbOpened
   }
 
   /**
@@ -92,14 +95,14 @@ export class DexieStorageProvider implements IStorageProvider {
    * 获取存储项
    */
   async getItem(key: string): Promise<string | null> {
-    await this.initialize();
-    
+    await this.initialize()
+
     try {
-      const record = await this.db.storage.get(key);
-      return record?.value ?? null;
+      const record = await this.db.storage.get(key)
+      return record?.value ?? null
     } catch (error) {
-      console.error(`获取存储项失败 (${key}):`, error);
-      throw new StorageError(`Failed to get item: ${key}`, 'read');
+      console.error(`获取存储项失败 (${key}):`, error)
+      throw new StorageError(`Failed to get item: ${key}`, 'read')
     }
   }
 
@@ -107,17 +110,17 @@ export class DexieStorageProvider implements IStorageProvider {
    * 设置存储项
    */
   async setItem(key: string, value: string): Promise<void> {
-    await this.initialize();
-    
+    await this.initialize()
+
     try {
       await this.db.storage.put({
         key,
         value,
-        timestamp: Date.now()
-      });
+        timestamp: Date.now(),
+      })
     } catch (error) {
-      console.error(`设置存储项失败 (${key}):`, error);
-      throw new StorageError(`Failed to set item: ${key}`, 'write');
+      console.error(`设置存储项失败 (${key}):`, error)
+      throw new StorageError(`Failed to set item: ${key}`, 'write')
     }
   }
 
@@ -125,13 +128,13 @@ export class DexieStorageProvider implements IStorageProvider {
    * 删除存储项
    */
   async removeItem(key: string): Promise<void> {
-    await this.initialize();
-    
+    await this.initialize()
+
     try {
-      await this.db.storage.delete(key);
+      await this.db.storage.delete(key)
     } catch (error) {
-      console.error(`删除存储项失败 (${key}):`, error);
-      throw new StorageError(`Failed to remove item: ${key}`, 'delete');
+      console.error(`删除存储项失败 (${key}):`, error)
+      throw new StorageError(`Failed to remove item: ${key}`, 'delete')
     }
   }
 
@@ -139,13 +142,13 @@ export class DexieStorageProvider implements IStorageProvider {
    * 清空所有存储
    */
   async clearAll(): Promise<void> {
-    await this.initialize();
-    
+    await this.initialize()
+
     try {
-      await this.db.storage.clear();
+      await this.db.storage.clear()
     } catch (error) {
-      console.error('清空存储失败:', error);
-      throw new StorageError('Failed to clear storage', 'clear');
+      console.error('清空存储失败:', error)
+      throw new StorageError('Failed to clear storage', 'clear')
     }
   }
 
@@ -153,25 +156,22 @@ export class DexieStorageProvider implements IStorageProvider {
    * 原子更新操作
    * 使用 Dexie 的事务机制确保原子性，带重试和降级机制
    */
-  async atomicUpdate<T>(
-    key: string,
-    updateFn: (currentValue: T | null) => T
-  ): Promise<void> {
-    await this.initialize();
+  async atomicUpdate<T>(key: string, updateFn: (currentValue: T | null) => T): Promise<void> {
+    await this.initialize()
 
     // 获取键级别的锁
-    const lockKey = `atomic_${key}`;
+    const lockKey = `atomic_${key}`
     if (this.keyLocks.has(lockKey)) {
-      await this.keyLocks.get(lockKey);
+      await this.keyLocks.get(lockKey)
     }
 
-    const lockPromise = this._performAtomicUpdateWithRetry(key, updateFn);
-    this.keyLocks.set(lockKey, lockPromise);
+    const lockPromise = this._performAtomicUpdateWithRetry(key, updateFn)
+    this.keyLocks.set(lockKey, lockPromise)
 
     try {
-      await lockPromise;
+      await lockPromise
     } finally {
-      this.keyLocks.delete(lockKey);
+      this.keyLocks.delete(lockKey)
     }
   }
 
@@ -179,19 +179,19 @@ export class DexieStorageProvider implements IStorageProvider {
    * 隐藏式数据更新 - 内部使用原子更新实现
    * 实现 IStorageProvider 接口要求
    */
-  async updateData<T>(
-    key: string,
-    modifier: (currentValue: T | null) => T
-  ): Promise<void> {
+  async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
     // 直接使用内部的原子更新实现
-    await this.atomicUpdate(key, modifier);
+    await this.atomicUpdate(key, modifier)
   }
 
   /**
    * 类型守卫：检查是否为Error对象
    */
   private isError(error: unknown): error is Error {
-    return error instanceof Error || (typeof error === 'object' && error !== null && 'name' in error && 'message' in error);
+    return (
+      error instanceof Error ||
+      (typeof error === 'object' && error !== null && 'name' in error && 'message' in error)
+    )
   }
 
   /**
@@ -202,33 +202,36 @@ export class DexieStorageProvider implements IStorageProvider {
     updateFn: (currentValue: T | null) => T,
     maxRetries: number = STORAGE_CONFIG.retry.maxAttempts
   ): Promise<void> {
-    let lastError: Error | null = null;
+    let lastError: Error | null = null
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        await this._performAtomicUpdate(key, updateFn);
-        return; // 成功，直接返回
+        await this._performAtomicUpdate(key, updateFn)
+        return // 成功，直接返回
       } catch (error) {
-        lastError = error as Error;
-        console.warn(`原子更新尝试 ${attempt}/${maxRetries} 失败 (${key}):`, error);
+        lastError = error as Error
+        console.warn(`原子更新尝试 ${attempt}/${maxRetries} 失败 (${key}):`, error)
 
         // 如果是事务错误且还有重试机会，等待一段时间后重试
         if (this.isError(error) && error.name === 'PrematureCommitError' && attempt < maxRetries) {
-          const delay = Math.min(STORAGE_CONFIG.retry.baseDelayMs * Math.pow(2, attempt - 1), STORAGE_CONFIG.retry.maxDelayMs);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          continue;
+          const delay = Math.min(
+            STORAGE_CONFIG.retry.baseDelayMs * Math.pow(2, attempt - 1),
+            STORAGE_CONFIG.retry.maxDelayMs
+          )
+          await new Promise((resolve) => setTimeout(resolve, delay))
+          continue
         }
 
         // 如果是最后一次尝试或非事务错误，尝试降级到简单更新
         if (attempt === maxRetries) {
-          console.warn(`所有重试失败，尝试降级到简单更新 (${key})`);
+          console.warn(`所有重试失败，尝试降级到简单更新 (${key})`)
           try {
-            await this._performSimpleUpdate(key, updateFn);
-            console.log(`降级更新成功 (${key})`);
-            return;
+            await this._performSimpleUpdate(key, updateFn)
+            console.log(`降级更新成功 (${key})`)
+            return
           } catch (fallbackError) {
-            console.error(`降级更新也失败 (${key}):`, fallbackError);
-            throw lastError; // 抛出原始错误
+            console.error(`降级更新也失败 (${key}):`, fallbackError)
+            throw lastError // 抛出原始错误
           }
         }
       }
@@ -249,23 +252,21 @@ export class DexieStorageProvider implements IStorageProvider {
   ): Promise<void> {
     try {
       // 读取当前值
-      const currentRecord = await this.db.storage.get(key);
-      const currentValue = currentRecord?.value
-        ? JSON.parse(currentRecord.value) as T
-        : null;
+      const currentRecord = await this.db.storage.get(key)
+      const currentValue = currentRecord?.value ? (JSON.parse(currentRecord.value) as T) : null
 
       // 应用更新函数
-      const newValue = updateFn(currentValue);
+      const newValue = updateFn(currentValue)
 
       // 直接写入新值（不使用事务）
       await this.db.storage.put({
         key,
         value: JSON.stringify(newValue),
-        timestamp: Date.now()
-      });
+        timestamp: Date.now(),
+      })
     } catch (error) {
-      console.error(`简单更新失败 (${key}):`, error);
-      throw new StorageError(`Failed to perform simple update: ${key}`, 'write');
+      console.error(`简单更新失败 (${key}):`, error)
+      throw new StorageError(`Failed to perform simple update: ${key}`, 'write')
     }
   }
 
@@ -281,81 +282,81 @@ export class DexieStorageProvider implements IStorageProvider {
       await this.db.transaction('rw', this.db.storage, async (tx) => {
         try {
           // 读取当前值
-          const currentRecord = await tx.table('storage').get(key);
-          const currentValue = currentRecord?.value
-            ? JSON.parse(currentRecord.value) as T
-            : null;
+          const currentRecord = await tx.table('storage').get(key)
+          const currentValue = currentRecord?.value ? (JSON.parse(currentRecord.value) as T) : null
 
           // 应用更新函数 - 确保同步执行
-          const newValue = updateFn(currentValue);
+          const newValue = updateFn(currentValue)
 
           // 写入新值
           await tx.table('storage').put({
             key,
             value: JSON.stringify(newValue),
-            timestamp: Date.now()
-          });
+            timestamp: Date.now(),
+          })
         } catch (innerError) {
           // 事务内部错误，让事务回滚
-          console.error(`事务内部操作失败 (${key}):`, innerError);
-          throw innerError;
+          console.error(`事务内部操作失败 (${key}):`, innerError)
+          throw innerError
         }
-      });
+      })
     } catch (error) {
-      console.error(`原子更新失败 (${key}):`, error);
+      console.error(`原子更新失败 (${key}):`, error)
 
       // 如果是Dexie事务错误，提供更详细的错误信息
       if (this.isError(error) && error.name === 'PrematureCommitError') {
         throw new StorageError(
           `Database transaction error for key ${key}: ${error.message}. Please try again.`,
-          'write',
-        );
+          'write'
+        )
       }
 
-      throw new StorageError(`Failed to perform atomic update: ${key}`, 'write');
+      throw new StorageError(`Failed to perform atomic update: ${key}`, 'write')
     }
   }
 
   /**
    * 批量更新操作
    */
-  async batchUpdate(operations: Array<{
-    key: string;
-    operation: 'set' | 'remove';
-    value?: string;
-  }>): Promise<void> {
-    await this.initialize();
+  async batchUpdate(
+    operations: Array<{
+      key: string
+      operation: 'set' | 'remove'
+      value?: string
+    }>
+  ): Promise<void> {
+    await this.initialize()
 
     try {
       await this.db.transaction('rw', this.db.storage, async () => {
-        const updates: Array<StorageRecord> = [];
-        const deletions: string[] = [];
+        const updates: Array<StorageRecord> = []
+        const deletions: string[] = []
 
         for (const { key, operation, value } of operations) {
           if (operation === 'set' && value !== undefined) {
             updates.push({
               key,
               value,
-              timestamp: Date.now()
-            });
+              timestamp: Date.now(),
+            })
           } else if (operation === 'remove') {
-            deletions.push(key);
+            deletions.push(key)
           }
         }
 
         // 批量写入
         if (updates.length > 0) {
-          await this.db.storage.bulkPut(updates);
+          await this.db.storage.bulkPut(updates)
         }
 
         // 批量删除
         if (deletions.length > 0) {
-          await this.db.storage.bulkDelete(deletions);
+          await this.db.storage.bulkDelete(deletions)
         }
-      });
+      })
     } catch (error) {
-      console.error('批量更新失败:', error);
-      throw new StorageError('Failed to perform batch update', 'write');
+      console.error('批量更新失败:', error)
+      throw new StorageError('Failed to perform batch update', 'write')
     }
   }
 
@@ -363,37 +364,32 @@ export class DexieStorageProvider implements IStorageProvider {
    * 获取存储统计信息
    */
   async getStorageInfo(): Promise<{
-    itemCount: number;
-    estimatedSize: number;
-    lastUpdated: number | null;
+    itemCount: number
+    estimatedSize: number
+    lastUpdated: number | null
   }> {
-    await this.initialize();
+    await this.initialize()
 
     try {
-      const itemCount = await this.db.storage.count();
-      const lastRecord = await this.db.storage
-        .orderBy('timestamp')
-        .last();
+      const itemCount = await this.db.storage.count()
+      const lastRecord = await this.db.storage.orderBy('timestamp').last()
 
       // 估算存储大小（粗略计算）
-      const allRecords = await this.db.storage.toArray();
-      const estimatedSize = allRecords.reduce(
-        (total, record) => total + record.value.length,
-        0
-      );
+      const allRecords = await this.db.storage.toArray()
+      const estimatedSize = allRecords.reduce((total, record) => total + record.value.length, 0)
 
       return {
         itemCount,
         estimatedSize,
-        lastUpdated: lastRecord?.timestamp ?? null
-      };
+        lastUpdated: lastRecord?.timestamp ?? null,
+      }
     } catch (error) {
-      console.error('获取存储信息失败:', error);
+      console.error('获取存储信息失败:', error)
       return {
         itemCount: 0,
         estimatedSize: 0,
-        lastUpdated: null
-      };
+        lastUpdated: null,
+      }
     }
   }
 
@@ -401,20 +397,20 @@ export class DexieStorageProvider implements IStorageProvider {
    * 导出所有数据（用于备份）
    */
   async exportAll(): Promise<Record<string, string>> {
-    await this.initialize();
+    await this.initialize()
 
     try {
-      const allRecords = await this.db.storage.toArray();
-      const result: Record<string, string> = {};
+      const allRecords = await this.db.storage.toArray()
+      const result: Record<string, string> = {}
 
-      allRecords.forEach(record => {
-        result[record.key] = record.value;
-      });
+      allRecords.forEach((record) => {
+        result[record.key] = record.value
+      })
 
-      return result;
+      return result
     } catch (error) {
-      console.error('导出数据失败:', error);
-      throw new StorageError('Failed to export data', 'read');
+      console.error('导出数据失败:', error)
+      throw new StorageError('Failed to export data', 'read')
     }
   }
 
@@ -422,19 +418,19 @@ export class DexieStorageProvider implements IStorageProvider {
    * 导入数据（用于恢复）
    */
   async importAll(data: Record<string, string>): Promise<void> {
-    await this.initialize();
+    await this.initialize()
 
     try {
       const records: StorageRecord[] = Object.entries(data).map(([key, value]) => ({
         key,
         value,
-        timestamp: Date.now()
-      }));
+        timestamp: Date.now(),
+      }))
 
-      await this.db.storage.bulkPut(records);
+      await this.db.storage.bulkPut(records)
     } catch (error) {
-      console.error('导入数据失败:', error);
-      throw new StorageError('Failed to import data', 'write');
+      console.error('导入数据失败:', error)
+      throw new StorageError('Failed to import data', 'write')
     }
   }
 
@@ -443,9 +439,9 @@ export class DexieStorageProvider implements IStorageProvider {
    */
   async close(): Promise<void> {
     try {
-      await this.db.close();
+      await this.db.close()
     } catch (error) {
-      console.error('关闭数据库失败:', error);
+      console.error('关闭数据库失败:', error)
     }
   }
-} 
+}

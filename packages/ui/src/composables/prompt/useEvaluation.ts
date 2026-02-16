@@ -292,12 +292,13 @@ export function useEvaluation(
   const hasPromptIterateResult = computed(() => state['prompt-iterate'].result !== null)
 
   // ===== 通用计算属性 =====
-  const isAnyEvaluating = computed(() =>
-    state.original.isEvaluating ||
-    state.optimized.isEvaluating ||
-    state.compare.isEvaluating ||
-    state['prompt-only'].isEvaluating ||
-    state['prompt-iterate'].isEvaluating
+  const isAnyEvaluating = computed(
+    () =>
+      state.original.isEvaluating ||
+      state.optimized.isEvaluating ||
+      state.compare.isEvaluating ||
+      state['prompt-only'].isEvaluating ||
+      state['prompt-iterate'].isEvaluating
   )
 
   const activeResult = computed(() => {

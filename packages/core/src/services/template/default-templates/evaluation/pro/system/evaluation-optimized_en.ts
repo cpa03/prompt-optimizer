@@ -4,7 +4,7 @@
  * Evaluate the effectiveness of optimized message in multi-message conversation
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-multi-optimized',
@@ -103,7 +103,7 @@ improvements should be **generic** improvements, such as:
 - ✓ Further enhance message clarity
 - ✓ Optimize message structure
 - ✓ Improve connection with context
-- ✓ Add generic constraints or requirements`
+- ✓ Add generic constraints or requirements`,
     },
     {
       role: 'user',
@@ -135,8 +135,8 @@ improvements should be **generic** improvements, such as:
 
 ---
 
-Please strictly evaluate the effectiveness of the optimized message and provide generic suggestions for further improvement.`
-    }
+Please strictly evaluate the effectiveness of the optimized message and provide generic suggestions for further improvement.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -145,7 +145,7 @@ Please strictly evaluate the effectiveness of the optimized message and provide 
     description: 'Evaluate effectiveness of optimized message in multi-message conversation',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'system', 'multi-message']
+    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'system', 'multi-message'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

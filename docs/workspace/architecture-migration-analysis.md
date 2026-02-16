@@ -11,12 +11,14 @@
 ## 🎯 核心目标
 
 ### 要解决的问题
+
 1. **P0 Bug 根因**: `logic.testResults?.originalResult` 遗漏 `.value`，导致 UI 显示问题
 2. **架构不统一**: Basic/Context/Image 三种模式使用不同的状态管理模式
 3. **响应式陷阱**: Logic 层返回"对象属性中的 ComputedRef"，容易被误用
 4. **维护成本高**: 多种模式并存，代码风格不一致
 
 ### 理想架构（目标态）
+
 ```
 Component (直接消费 store)
     ↓
@@ -32,6 +34,7 @@ Pinia Session Store (单一真源)
 ### 1. Basic 模式（部分修复，未迁移）
 
 #### 当前状态
+
 ```
 BasicSystemWorkspace.vue / BasicUserWorkspace.vue
     ↓
@@ -43,6 +46,7 @@ useBasicSystemSession / useBasicUserSession (Pinia Store)
 #### 代码证据
 
 **Logic 层仍在使用** (`packages/ui/src/composables/workspaces/useBasicWorkspaceLogic.ts`):
+
 ```typescript
 // ✅ P0 Bug 已修复：testResults getter 不再返回临时对象
 const testResults = computed<BasicSessionStore['testResults']>({
@@ -52,21 +56,21 @@ const testResults = computed<BasicSessionStore['testResults']>({
   },
   set: (value) => {
     sessionStore.updateTestResults(value)
-  }
+  },
 })
 
 // ❌ 但 Logic 层仍然返回大量 computed 包装
 export function useBasicWorkspaceLogic(options) {
   return {
     // 状态代理（所有都是 ComputedRef）
-    prompt,              // ComputedRef<string>
-    optimizedPrompt,     // ComputedRef<string>
-    testResults,         // ComputedRef<TestResults | null>
-    testContent,         // ComputedRef<string>
+    prompt, // ComputedRef<string>
+    optimizedPrompt, // ComputedRef<string>
+    testResults, // ComputedRef<TestResults | null>
+    testContent, // ComputedRef<string>
 
     // 过程态
-    isOptimizing,        // Ref<boolean>
-    isTestingOriginal,   // Ref<boolean>
+    isOptimizing, // Ref<boolean>
+    isTestingOriginal, // Ref<boolean>
 
     // 业务方法
     handleOptimize,
@@ -78,12 +82,13 @@ export function useBasicWorkspaceLogic(options) {
 ```
 
 **组件消费方式** (`BasicSystemWorkspace.vue:323-365`):
+
 ```typescript
 const logic = useBasicWorkspaceLogic({
   services,
   sessionStore: session,
   optimizationMode: 'system',
-  promptRecordType: 'optimize'
+  promptRecordType: 'optimize',
 })
 
 // ✅ P0 Bug 已修复：组件中正确使用 .value
@@ -94,17 +99,20 @@ const hasOptimizedResult = computed(() => !!logic.testResults.value?.optimizedRe
 #### 分析
 
 **已完成的工作**:
+
 - ✅ P0 Bug 已修复（组件中正确使用 `.value`）
 - ✅ Logic 层的 `testResults` getter 不再返回临时对象
 - ✅ Session Store 使用独立 ref（不再是 `state.xxx`）
 
 **未完成的迁移**:
+
 - ❌ Logic 层仍然存在（19KB，597 行代码）
 - ❌ Logic 层仍然返回大量 ComputedRef 包装
 - ❌ 组件仍然通过 `logic.xxx` 访问状态，而非直接访问 `session.xxx`
 - ❌ 业务逻辑（handleOptimize/handleTest）仍在 Logic 层，未抽离为独立 Operations
 
 **为什么没有迁移？**
+
 1. **短期止血优先**: P0 Bug 已通过修复组件消费方式解决，不影响功能
 2. **迁移成本高**: 需要重构组件 + 创建 Operations + 测试验证
 3. **风险控制**: 当前架构虽不理想，但已稳定运行
@@ -114,6 +122,7 @@ const hasOptimizedResult = computed(() => !!logic.testResults.value?.optimizedRe
 ### 2. Context 模式（Tester composable 主导）
 
 #### 当前状态
+
 ```
 ContextSystemWorkspace.vue
     ↓
@@ -125,15 +134,17 @@ useConversationTester (reactive 状态树 + 业务逻辑)
 #### 代码证据
 
 **Tester composable** (`ContextSystemWorkspace.vue:461`):
+
 ```typescript
 const conversationTester = useConversationTester(
   services,
-  optimizationContext,
+  optimizationContext
   // ... 其他参数
 )
 ```
 
 **Tester 内部使用 reactive 状态树**:
+
 ```typescript
 // useConversationTester 内部（推测）
 const state = reactive({
@@ -147,11 +158,13 @@ const state = reactive({
 #### 分析
 
 **问题**:
+
 - ❌ Tester composable 既管理临时态，又管理持久化状态
 - ❌ reactive 状态树与 Session Store 可能存在状态分裂
 - ❌ 组件难以直接访问 Session Store（被 Tester 封装了）
 
 **迁移指南建议**:
+
 ```typescript
 // 目标架构
 useContextWorkspaceOperations (对外接口)
@@ -166,6 +179,7 @@ Session Store (持久化状态的唯一真源)
 ### 3. Image 模式（已接近目标架构）
 
 #### 当前状态
+
 ```
 ImageText2ImageWorkspace.vue
     ↓
@@ -177,6 +191,7 @@ ImageStorageService (图像数据存储)
 #### 代码证据
 
 **Session Store** (`useImageText2ImageSession.ts:41-56`):
+
 ```typescript
 export const useImageText2ImageSession = defineStore('imageText2ImageSession', () => {
   // ✅ 使用独立 ref，符合 Pinia 最佳实践
@@ -208,6 +223,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 ```
 
 **图像存储分离** (`ImageStorageService`):
+
 ```typescript
 // ✅ base64 数据存储在独立的 IndexedDB
 // ✅ Session Store 只存储 ImageRef
@@ -220,12 +236,14 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 #### 分析
 
 **优点**:
+
 - ✅ 最接近目标架构（Store + Operations）
 - ✅ Session Store 使用独立 ref
 - ✅ 数据分离合理（图像数据 vs 元数据）
 - ✅ 组件可以直接访问 store
 
 **缺点**:
+
 - ⚠️ 业务逻辑可能直接写在组件中（未抽离 Operations）
 - ⚠️ 组件可能会膨胀（2205 行）
 
@@ -238,12 +256,14 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 **目标**: 建立护栏和规范
 
 **具体任务**:
+
 1. ✅ **已完成**: 组件消费规则文档（通过 Bug 修复总结）
 2. ❌ **未完成**: ESLint 规则（禁止 computed 返回临时对象）
 3. ❌ **未完成**: Operations 模板/示例
 4. ❌ **未完成**: 迁移 checklist
 
 **为什么没做？**
+
 - P0 Bug 已通过局部修复解决
 - 护栏建设需要团队协调
 - 投入产出比不高（当前架构已稳定）
@@ -255,6 +275,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 **目标**: Logic → Operations
 
 **迁移步骤**（指南描述）:
+
 ```typescript
 // Step 1: 创建新的 Operations composable
 export function useBasicWorkspaceOperations(options) {
@@ -283,15 +304,16 @@ const hasOriginalResult = computed(() => !!session.testResults?.originalResult)
 
 **当前 vs 目标对比**:
 
-| 维度 | 当前（Logic 层） | 目标（Operations） |
-|------|-----------------|-------------------|
-| 状态访问 | `logic.testResults.value` | `session.testResults` |
-| 状态类型 | ComputedRef | 原生 Ref |
-| 业务逻辑 | Logic 层内部 | Operations 独立 |
-| 组件绑定 | `logic.handleOptimize` | `ops.handleOptimize` |
-| 响应式陷阱 | 易漏 `.value` | 直接访问 store，无陷阱 |
+| 维度       | 当前（Logic 层）          | 目标（Operations）     |
+| ---------- | ------------------------- | ---------------------- |
+| 状态访问   | `logic.testResults.value` | `session.testResults`  |
+| 状态类型   | ComputedRef               | 原生 Ref               |
+| 业务逻辑   | Logic 层内部              | Operations 独立        |
+| 组件绑定   | `logic.handleOptimize`    | `ops.handleOptimize`   |
+| 响应式陷阱 | 易漏 `.value`             | 直接访问 store，无陷阱 |
 
 **为什么没迁移？**
+
 1. **当前方案已可用**: P0 Bug 已修复，功能正常
 2. **迁移成本高**: 需要重构 2 个组件 + 创建新 Operations + 回归测试
 3. **风险大**: Basic 模式是核心功能，迁移失败影响面大
@@ -315,12 +337,14 @@ const hasOriginalResult = computed(() => !!session.testResults?.originalResult)
 **实际修复**: 局部修复组件消费方式
 
 **修复前** (`BasicSystemWorkspace.vue`):
+
 ```typescript
 // ❌ 错误：logic.testResults 是 ComputedRef，漏了 .value
 const hasOriginalResult = computed(() => !!logic.testResults?.originalResult)
 ```
 
 **修复后** (`BasicSystemWorkspace.vue:365`):
+
 ```typescript
 // ✅ 正确：显式使用 .value
 const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResult)
@@ -336,11 +360,13 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **实际情况**: Logic 层提供了价值
 
 **Logic 层的优点**:
+
 1. ✅ **代码复用**: BasicSystem/BasicUser 共享同一套业务逻辑（597 行）
 2. ✅ **状态封装**: 隔离了 Session Store 的实现细节
 3. ✅ **职责清晰**: 组件专注于 UI，Logic 专注于业务逻辑
 
 **Logic 层的缺点**:
+
 1. ❌ **响应式陷阱**: 返回对象属性中的 ComputedRef，容易漏 `.value`
 2. ❌ **间接层**: 增加了一层抽象，调试时需要跟踪多层
 3. ❌ **与 Pinia 范式不符**: Pinia 推荐直接消费 store
@@ -353,6 +379,7 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **实际情况**: 存在多重阻力
 
 **阻力来源**:
+
 1. **功能已稳定**: P0 Bug 已修复，没有紧迫的业务驱动
 2. **投入产出比低**: 迁移需要数周时间，收益主要是"代码更优雅"
 3. **回归风险**: Basic 模式是核心功能，迁移失败影响大
@@ -368,11 +395,13 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **保持现状，不强制迁移**
 
 **理由**:
+
 1. P0 Bug 已修复，功能正常
 2. 当前架构虽不完美，但已稳定运行
 3. 迁移的性价比不高
 
 **可选优化**:
+
 - ✅ 补充组件消费规则文档（防止再次漏 `.value`）
 - ✅ 添加 ESLint 规则提醒（warn 级别）
 - ✅ 补充单元测试（防回归）
@@ -384,6 +413,7 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **逐步迁移，按优先级排序**
 
 **优先级**:
+
 1. **Context 模式** (优先级最高)
    - 原因：Tester composable 状态管理混乱，存在状态分裂风险
    - 收益：统一架构，提高可维护性
@@ -403,6 +433,7 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **建立规范，新代码遵循 Store + Operations**
 
 **策略**:
+
 1. **新功能强制使用**: 所有新增功能必须使用 Store + Operations
 2. **旧代码按需重构**: 只在修改旧代码时顺便重构
 3. **建立最佳实践**: 提供 Operations 模板和示例
@@ -416,11 +447,13 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 
 **文档性质**: 长期愿景，非强制执行计划
 **实际价值**:
+
 - ✅ 提供了架构改进的方向
 - ✅ 总结了当前架构的问题
 - ✅ 设计了详细的迁移方案
 
 **但实际上**:
+
 - ❌ Phase 1-5 完全未开始
 - ❌ Logic 层仍在使用
 - ❌ 三种模式仍然使用不同架构
@@ -430,6 +463,7 @@ const hasOriginalResult = computed(() => !!logic.testResults.value?.originalResu
 **答案**: 不强制，按需渐进
 
 **理由**:
+
 1. P0 Bug 已通过最小化修改解决
 2. 当前架构已稳定，功能正常
 3. 迁移的投入产出比不高
@@ -453,11 +487,11 @@ Context 模式优先迁移（中期）
 
 ### 当前三种模式对比
 
-| 模式 | 架构 | 是否需要迁移 | 优先级 |
-|------|------|-------------|--------|
-| Basic | Store → Logic → Component | 可选 | 低 |
-| Context | Tester → Component | 建议迁移 | 高 |
-| Image | Store → Component | 补充优化 | 中 |
+| 模式    | 架构                      | 是否需要迁移 | 优先级 |
+| ------- | ------------------------- | ------------ | ------ |
+| Basic   | Store → Logic → Component | 可选         | 低     |
+| Context | Tester → Component        | 建议迁移     | 高     |
+| Image   | Store → Component         | 补充优化     | 中     |
 
 ### 关键代码位置
 

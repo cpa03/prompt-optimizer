@@ -19,7 +19,7 @@
 │   ├── 布局锚点策略 (高级模式按钮固定)
 │   ├── 功能分区设计 (核心区 + 辅助区)
 │   └── 响应式容器 (NSpace with wrap)
-├── 组件层  
+├── 组件层
 │   ├── ActionButtonUI (统一按钮组件)
 │   ├── LanguageSwitchDropdown (新语言切换)
 │   └── ThemeToggleUI (主题切换复用)
@@ -36,6 +36,7 @@
 ### Problem 1: 跨模式按钮位移
 
 **问题现象**:
+
 ```vue
 <!-- 问题代码：条件渲染导致布局不稳定 -->
 <ActionButtonUI v-if="advancedModeEnabled" icon="📊" text="变量管理" />
@@ -43,11 +44,13 @@
 ```
 
 **问题分析**:
+
 - 变量管理按钮的条件显示/隐藏导致后续按钮位置变化
 - 用户在模式切换时感受到视觉跳动，影响操作连贯性
 - 缺乏稳定的布局基准点
 
 **解决方案 - 布局锚点策略**:
+
 ```vue
 <!-- 解决方案：锚点按钮策略 -->
 <!-- 变量管理按钮：条件显示，但放在锚点前 -->
@@ -72,19 +75,24 @@
 ### Problem 2: 组件样式不一致
 
 **问题现象**:
+
 ```vue
 <!-- 问题代码：混合使用不同组件 -->
 <ActionButtonUI type="default" size="medium" />
-<NButton>GitHub</NButton>  <!-- 样式不一致 -->
-<ThemeToggleUI />  <!-- 视觉权重不协调 -->
+<NButton>GitHub</NButton>
+<!-- 样式不一致 -->
+<ThemeToggleUI />
+<!-- 视觉权重不协调 -->
 ```
 
 **问题分析**:
+
 - 导航栏中混用ActionButtonUI和NButton导致样式不统一
 - 核心功能和辅助功能缺乏视觉层级区分
 - 组件属性配置不标准化
 
 **解决方案 - 组件统一和分层**:
+
 ```vue
 <!-- 核心功能区：标准按钮样式 -->
 <ActionButtonUI
@@ -111,12 +119,14 @@
 ```
 
 **配置规范**:
+
 - **核心功能**: `type="default"`, `size="medium"`, `ghost=false`
 - **辅助功能**: `type="quaternary"`, `size="small"`, `ghost=true`
 
 ### Problem 3: 语言切换扩展性差
 
 **问题现象**:
+
 ```vue
 <!-- 问题代码：简单按钮切换 -->
 <NButton @click="toggleLanguage">
@@ -125,18 +135,17 @@
 ```
 
 **问题分析**:
+
 - 只支持中英文二元切换，无法扩展到更多语言
 - 切换逻辑硬编码，不便于维护
 - 缺乏语言选项的视觉呈现
 
 **解决方案 - LanguageSwitchDropdown组件**:
+
 ```vue
 <!-- components/LanguageSwitchDropdown.vue -->
 <template>
-  <NDropdown 
-    :options="languageOptions"
-    @select="handleLanguageSelect"
-  >
+  <NDropdown :options="languageOptions" @select="handleLanguageSelect">
     <NButton quaternary>
       <template #icon>
         <span class="text-lg">🌐</span>
@@ -149,7 +158,7 @@
 // 可扩展的语言配置
 const languageOptions = computed(() => [
   { key: 'zh-CN', label: '简体中文' },
-  { key: 'en-US', label: 'English' }
+  { key: 'en-US', label: 'English' },
   // 未来可轻松添加更多语言
 ])
 
@@ -168,6 +177,7 @@ const handleLanguageSelect = async (key: string) => {
 ```
 
 **技术特点**:
+
 - 基于Naive UI NDropdown实现专业下拉选择
 - 配置驱动的语言选项，易于扩展
 - 完整的错误处理和持久化支持
@@ -177,6 +187,7 @@ const handleLanguageSelect = async (key: string) => {
 ### 阶段一：组件基础建设 (Tasks 1-4)
 
 **Step 1.1: 创建LanguageSwitchDropdown组件**
+
 ```bash
 # 文件创建
 touch packages/ui/src/components/LanguageSwitchDropdown.vue
@@ -188,6 +199,7 @@ touch packages/ui/src/components/LanguageSwitchDropdown.vue
 ```
 
 **Step 1.2: 组件导出配置**
+
 ```typescript
 // packages/ui/src/index.ts
 export { default as LanguageSwitchDropdown } from './components/LanguageSwitchDropdown.vue'
@@ -195,6 +207,7 @@ export { default as LanguageSwitchDropdown } from './components/LanguageSwitchDr
 ```
 
 **Step 1.3: 偏好设置集成**
+
 ```typescript
 // 在组件中集成偏好设置服务
 const preferences = inject('preferenceService')
@@ -204,24 +217,18 @@ await preferences?.setLanguage(newLanguage)
 ### 阶段二：布局优化改造 (Tasks 5-8)
 
 **Step 2.1: 布局分析和重新设计**
+
 ```vue
 <!-- 原始布局问题分析 -->
-现有问题：
-1. 条件渲染导致位置不稳定
-2. 按钮顺序不符合用户认知习惯
-3. 缺乏功能重要性的视觉区分
+现有问题： 1. 条件渲染导致位置不稳定 2. 按钮顺序不符合用户认知习惯 3. 缺乏功能重要性的视觉区分
 
 <!-- 优化后的布局设计 -->
-核心功能区（左侧）：
-[变量管理*] [🚀高级模式] [📝模板] [📜历史] [⚙️模型] [💾数据]
-
-辅助功能区（右侧）：
-[🎨主题] [GitHub] [🌐语言] [🔄更新*]
-
-注：*表示条件显示
+核心功能区（左侧）： [变量管理*] [🚀高级模式] [📝模板] [📜历史] [⚙️模型] [💾数据]
+辅助功能区（右侧）： [🎨主题] [GitHub] [🌐语言] [🔄更新*] 注：*表示条件显示
 ```
 
 **Step 2.2: 锚点按钮实施**
+
 ```vue
 <!-- 关键实现：高级模式按钮作为锚点 -->
 <ActionButtonUI
@@ -240,6 +247,7 @@ await preferences?.setLanguage(newLanguage)
 ### 阶段三：响应式适配 (Tasks 11-13)
 
 **Step 3.1: 响应式策略设计**
+
 ```typescript
 // ActionButton组件内置响应式特性
 // 自动应用max-md:hidden类隐藏文字
@@ -247,8 +255,9 @@ await preferences?.setLanguage(newLanguage)
 ```
 
 **Step 3.2: 容器响应式配置**
+
 ```vue
-<NSpace 
+<NSpace
   :size="[8, 4]"      // 水平8px，垂直4px间距
   align="center"       // 垂直居中对齐
   wrap                 // 允许换行避免溢出
@@ -260,6 +269,7 @@ await preferences?.setLanguage(newLanguage)
 ### 阶段四：架构清理 (Tasks 20-21)
 
 **Step 4.1: App.vue架构统一**
+
 ```bash
 # 关键决策：Extension使用Web的App.vue
 cp packages/web/src/App.vue packages/extension/src/App.vue
@@ -267,6 +277,7 @@ cp packages/web/src/App.vue packages/extension/src/App.vue
 ```
 
 **Step 4.2: 废弃组件清理**
+
 ```bash
 # 删除废弃组件
 rm packages/ui/src/components/AdvancedModeToggle.vue
@@ -283,11 +294,13 @@ rm packages/ui/src/components/LanguageSwitch.vue
 **错误信息**: `Type '"quaternary"' is not assignable to type`
 
 **调试步骤**:
+
 1. 检查ActionButton组件的type属性定义
 2. 发现Props接口中缺少'quaternary'类型
 3. 更新type联合类型定义
 
 **解决代码**:
+
 ```typescript
 // ActionButton.vue
 interface Props {
@@ -301,14 +314,16 @@ interface Props {
 **问题现象**: 主题切换图标颜色被CSS覆盖
 
 **调试分析**:
+
 ```css
 /* 问题：currentColor覆盖了图标颜色 */
 .icon {
-  color: currentColor;  /* 导致主题图标失去颜色 */
+  color: currentColor; /* 导致主题图标失去颜色 */
 }
 ```
 
 **解决方案**:
+
 ```vue
 <template>
   <NIcon :style="iconStyle">
@@ -318,7 +333,7 @@ interface Props {
 
 <script>
 const iconStyle = computed(() => ({
-  color: isColored ? '#eab308' : undefined  // 直接样式属性
+  color: isColored ? '#eab308' : undefined, // 直接样式属性
 }))
 </script>
 ```
@@ -330,11 +345,14 @@ const iconStyle = computed(() => ({
 **问题分析**: 复杂的箭函数在浏览器evaluate中失败
 
 **解决策略**:
+
 ```javascript
 // 原始问题代码（复杂）
 const result = await page.evaluate(() => {
   const buttons = Array.from(document.querySelectorAll('[data-button-type]'))
-  return buttons.map(btn => ({ /* 复杂对象构建 */ }))
+  return buttons.map((btn) => ({
+    /* 复杂对象构建 */
+  }))
 })
 
 // 简化解决方案
@@ -348,15 +366,16 @@ const result = await page.evaluate(() => {
 ### 跨模式布局稳定性测试
 
 **测试方法**: Playwright自动化测试
+
 ```javascript
 // 测试脚本核心逻辑
 test('模式切换时按钮位置保持稳定', async ({ page }) => {
   // 1. 记录高级模式按钮初始位置
   const initialPosition = await page.locator('[data-testid="advanced-mode"]').boundingBox()
-  
+
   // 2. 切换到高级模式
   await page.locator('[data-testid="advanced-mode"]').click()
-  
+
   // 3. 验证按钮位置未变化
   const newPosition = await page.locator('[data-testid="advanced-mode"]').boundingBox()
   expect(newPosition.x).toBe(initialPosition.x)
@@ -376,6 +395,7 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 | Desktop | 1920×1080 | 完整显示 | ✅ 通过 |
 
 **关键验证点**:
+
 - 按钮功能完整性：所有尺寸下按钮均可正常点击
 - 视觉层级保持：核心功能和辅助功能区分明确
 - 布局无溢出：最小宽度下无水平滚动
@@ -383,6 +403,7 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 ### 性能影响测试
 
 **测试指标**:
+
 - **页面加载时间**: 250ms (优秀)
 - **内存占用**: 66.65MB (稳定)
 - **组件渲染**: 无性能回归
@@ -392,13 +413,15 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 ### 主题兼容性测试
 
 **测试范围**: 5种内置主题
+
 - Light Theme ✅
-- Dark Theme ✅  
+- Dark Theme ✅
 - Blue Theme ✅
 - Green Theme ✅
 - Purple Theme ✅
 
 **验证内容**:
+
 - 按钮颜色适配正确
 - 下拉菜单主题一致
 - 图标显示清晰可见
@@ -409,12 +432,14 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 
 **挑战**: Extension和Web使用不同的App.vue维护成本高
 
-**解决思路**: 
+**解决思路**:
+
 1. 分析两个App.vue的差异点
 2. 确认Web版本功能更完整
 3. 直接复制覆盖，实现统一架构
 
 **实施风险控制**:
+
 - 保留原Extension App.vue作为备份
 - 验证Extension环境下功能完整性
 - 确认跨平台兼容性无问题
@@ -424,11 +449,13 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 **挑战**: 如何在条件渲染的情况下保持布局稳定
 
 **创新方案**: 布局锚点策略
+
 - 选择视觉权重适中的按钮作为锚点
 - 锚点按钮始终渲染，状态通过样式区分
 - 条件按钮放在锚点前方，不影响锚点位置
 
-**方案验证**: 
+**方案验证**:
+
 - 理论分析：锚点后的按钮位置不受影响
 - 实际测试：用户操作流畅性显著提升
 - 长期维护：代码逻辑清晰，易于理解
@@ -438,16 +465,18 @@ test('模式切换时按钮位置保持稳定', async ({ page }) => {
 **挑战**: LanguageSwitchDropdown需要平衡简洁性和扩展性
 
 **设计原则**:
+
 - **配置驱动**: 语言选项通过数组配置，易于扩展
 - **服务集成**: 自动集成偏好设置和i18n服务
 - **错误处理**: 完整的异常捕获和用户反馈机制
 
 **接口设计**:
+
 ```typescript
 interface LanguageOption {
-  key: string        // locale代码 (e.g., 'zh-CN')
-  label: string      // 显示名称 (e.g., '简体中文')
-  flag?: string      // 可选的国旗图标
+  key: string // locale代码 (e.g., 'zh-CN')
+  label: string // 显示名称 (e.g., '简体中文')
+  flag?: string // 可选的国旗图标
 }
 ```
 

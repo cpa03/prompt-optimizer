@@ -23,9 +23,9 @@ const MODELSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: false, // 未验证 ModelScope 的工具调用兼容性
       supportsReasoning: false,
-      maxContextLength: 131072
-    }
-  }
+      maxContextLength: 131072,
+    },
+  },
 ]
 
 /**
@@ -56,9 +56,9 @@ export class ModelScopeAdapter extends OpenAIAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -72,14 +72,14 @@ export class ModelScopeAdapter extends OpenAIAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }

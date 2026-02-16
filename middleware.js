@@ -1,4 +1,4 @@
-import { COOKIE_CONFIG } from './scripts/config/constants.js';
+import { COOKIE_CONFIG } from './scripts/config/constants.js'
 
 export const config = {
   matcher: [
@@ -8,46 +8,46 @@ export const config = {
      * - 静态文件 (以 . 结尾)
      * - 其他静态资源
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|assets/|.*\\.).*)' 
+    '/((?!api|_next/static|_next/image|favicon.ico|assets/|.*\\.).*)',
   ],
-};
+}
 
 export default function middleware(request) {
-  const url = new URL(request.url);
-  const pathname = url.pathname;
+  const url = new URL(request.url)
+  const pathname = url.pathname
 
   // 访问环境变量
-  const accessPassword = process.env.ACCESS_PASSWORD;
-  
+  const accessPassword = process.env.ACCESS_PASSWORD
+
   // 如果没有设置密码，直接允许访问
   if (!accessPassword) {
-    return; // 什么都不返回，表示继续处理请求
+    return // 什么都不返回，表示继续处理请求
   }
 
   // 检查认证状态
-  const cookieHeader = request.headers.get('cookie');
-  let authenticated = false;
-  
+  const cookieHeader = request.headers.get('cookie')
+  let authenticated = false
+
   if (cookieHeader) {
-    const cookies = cookieHeader.split(';');
-    const accessTokenCookie = cookies.find(cookie => 
+    const cookies = cookieHeader.split(';')
+    const accessTokenCookie = cookies.find((cookie) =>
       cookie.trim().startsWith(`${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=`)
-    );
-    
+    )
+
     if (accessTokenCookie) {
-      const accessToken = accessTokenCookie.split('=')[1];
-      authenticated = accessToken === accessPassword;
+      const accessToken = accessTokenCookie.split('=')[1]
+      authenticated = accessToken === accessPassword
     }
   }
-  
+
   // 如果已认证，允许访问
   if (authenticated) {
-    return; // 什么都不返回，表示继续处理请求
+    return // 什么都不返回，表示继续处理请求
   }
 
   // 获取浏览器语言设置
-  const acceptLanguage = request.headers.get('accept-language') || '';
-  const preferChinese = acceptLanguage.includes('zh');
+  const acceptLanguage = request.headers.get('accept-language') || ''
+  const preferChinese = acceptLanguage.includes('zh')
 
   // 未认证，返回认证页面
   return new Response(generateAuthPage(preferChinese), {
@@ -56,7 +56,7 @@ export default function middleware(request) {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': COOKIE_CONFIG.CACHE_CONTROL,
     },
-  });
+  })
 }
 
 function generateAuthPage(isChinese = true) {
@@ -69,9 +69,11 @@ function generateAuthPage(isChinese = true) {
     passwordPlaceholder: isChinese ? '请输入访问密码' : 'Enter access password',
     submitButton: isChinese ? '验证并访问' : 'Verify & Access',
     loading: isChinese ? '验证中，请稍候...' : 'Verifying, please wait...',
-    footer: isChinese ? '安全访问控制 | Powered by Vercel' : 'Secure Access Control | Powered by Vercel',
+    footer: isChinese
+      ? '安全访问控制 | Powered by Vercel'
+      : 'Secure Access Control | Powered by Vercel',
     errorNetwork: isChinese ? '网络错误，请重试' : 'Network error, please try again',
-  };
+  }
 
   return `
 <!DOCTYPE html>
@@ -321,5 +323,5 @@ function generateAuthPage(isChinese = true) {
         });
     </script>
 </body>
-</html>`;
-} 
+</html>`
+}

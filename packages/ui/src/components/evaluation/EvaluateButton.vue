@@ -1,11 +1,7 @@
 <template>
   <NTooltip :disabled="hasAnyResult" :delay="500">
     <template #trigger>
-      <NDropdown
-        trigger="click"
-        :options="evaluationOptions"
-        @select="handleSelect"
-      >
+      <NDropdown trigger="click" :options="evaluationOptions" @select="handleSelect">
         <NButton
           :disabled="!hasAnyResult || isEvaluating"
           :loading="isEvaluating"
@@ -35,17 +31,21 @@ import type { EvaluationType } from '@prompt-optimizer/core'
 // 使用一个简单的 SVG 图标作为图表图标
 const ChartIcon = {
   render() {
-    return h('svg', {
-      xmlns: 'http://www.w3.org/2000/svg',
-      viewBox: '0 0 24 24',
-      width: '1em',
-      height: '1em',
-      fill: 'currentColor',
-    }, [
-      h('path', {
-        d: 'M3 3v18h18v-2H5V3H3zm4 14h2v-5H7v5zm4 0h2V8h-2v9zm4 0h2v-7h-2v7zm4 0h2V5h-2v12z',
-      }),
-    ])
+    return h(
+      'svg',
+      {
+        xmlns: 'http://www.w3.org/2000/svg',
+        viewBox: '0 0 24 24',
+        width: '1em',
+        height: '1em',
+        fill: 'currentColor',
+      },
+      [
+        h('path', {
+          d: 'M3 3v18h18v-2H5V3H3zm4 14h2v-5H7v5zm4 0h2V8h-2v9zm4 0h2v-7h-2v7zm4 0h2V5h-2v12z',
+        }),
+      ]
+    )
   },
 }
 
@@ -145,7 +145,8 @@ const handleSelect = (key: string) => {
 }
 
 @keyframes pulse-icon {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }

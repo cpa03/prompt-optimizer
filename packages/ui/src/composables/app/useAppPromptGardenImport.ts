@@ -39,7 +39,7 @@ const SUPPORTED_KEYS: ReadonlyArray<SupportedSubModeKey> = [
   'pro-multi',
   'pro-variable',
   'image-text2image',
-  'image-image2image'
+  'image-image2image',
 ]
 
 const isSupportedKey = (value: string | null | undefined): value is SupportedSubModeKey => {
@@ -88,7 +88,7 @@ const parseKeyFromCurrentPath = (path: string): SupportedSubModeKey | null => {
 const resolveTargetKey = (
   query: LocationQuery,
   fallbackPath: string,
-  suggestedKey?: string | null,
+  suggestedKey?: string | null
 ): SupportedSubModeKey => {
   const explicitKey = getQueryString(query, 'subModeKey')
   if (isSupportedKey(explicitKey)) return explicitKey
@@ -129,7 +129,7 @@ const getTemporaryVariablesSession = (
     proVariableSession: ProVariableSessionApi
     imageText2ImageSession: ImageText2ImageSessionApi
     imageImage2ImageSession: ImageImage2ImageSessionApi
-  },
+  }
 ): TemporaryVariablesSessionApi | null => {
   switch (targetKey) {
     case 'pro-multi':
@@ -155,7 +155,7 @@ const ensureImportedTemporaryVariables = (
   },
   opts: {
     variables: ImportedVariable[]
-  },
+  }
 ) => {
   const session = getTemporaryVariablesSession(targetKey, api)
 
@@ -212,11 +212,10 @@ const normalizeImportedConversationMessages = (input: unknown): ConversationMess
     if (!content) continue
 
     const id =
-      typeof item.id === 'string' && item.id.trim()
-        ? item.id.trim()
-        : generateImportedMessageId()
+      typeof item.id === 'string' && item.id.trim() ? item.id.trim() : generateImportedMessageId()
 
-    const originalContent = typeof item.originalContent === 'string' ? item.originalContent : content
+    const originalContent =
+      typeof item.originalContent === 'string' ? item.originalContent : content
 
     out.push({
       id,
@@ -256,8 +255,8 @@ const fetchPromptFromGarden = async (opts: {
   const resp = await fetch(url, {
     method: 'GET',
     headers: {
-      Accept: 'application/json'
-    }
+      Accept: 'application/json',
+    },
   })
 
   if (!resp.ok) {
@@ -286,9 +285,10 @@ const fetchPromptFromGarden = async (opts: {
     }
 
     const prompt = isPlainObject(data.prompt) ? data.prompt : null
-    const format = prompt && (prompt.format === 'text' || prompt.format === 'messages')
-      ? (prompt.format as 'text' | 'messages')
-      : null
+    const format =
+      prompt && (prompt.format === 'text' || prompt.format === 'messages')
+        ? (prompt.format as 'text' | 'messages')
+        : null
     if (!format) {
       throw new Error('Missing prompt.format')
     }
@@ -325,8 +325,10 @@ const fetchPromptFromGarden = async (opts: {
     interface AssetsData {
       examples?: unknown[]
     }
-    
-    const assets: AssetsData | null = isPlainObject(data.assets) ? (data.assets as AssetsData) : null
+
+    const assets: AssetsData | null = isPlainObject(data.assets)
+      ? (data.assets as AssetsData)
+      : null
     const rawExamples: unknown[] = assets && Array.isArray(assets.examples) ? assets.examples : []
     const examples = rawExamples
       .map((ex): { id?: string; parameters?: Record<string, string>; inputImages?: string[] } => {
@@ -372,7 +374,10 @@ const fetchPromptFromGarden = async (opts: {
           inputImages,
         }
       })
-      .filter((ex) => Boolean(ex.parameters) || (Array.isArray(ex.inputImages) && ex.inputImages.length > 0))
+      .filter(
+        (ex) =>
+          Boolean(ex.parameters) || (Array.isArray(ex.inputImages) && ex.inputImages.length > 0)
+      )
 
     return {
       optimizerTargetKey,
@@ -409,7 +414,9 @@ const resolveGardenUrl = (opts: { gardenBaseUrl: string | null; url: string }): 
   }
 }
 
-const fetchImageAsBase64 = async (absoluteUrl: string): Promise<{ b64: string; mimeType: string } | null> => {
+const fetchImageAsBase64 = async (
+  absoluteUrl: string
+): Promise<{ b64: string; mimeType: string } | null> => {
   const resp = await fetch(absoluteUrl, { method: 'GET' })
   if (!resp.ok) {
     throw new Error(`Example image request failed: ${resp.status}`)
@@ -456,7 +463,7 @@ const fetchImageAsBase64 = async (absoluteUrl: string): Promise<{ b64: string; m
 
 const pickImportedExample = (
   examples: FetchedPrompt['examples'],
-  exampleId: string | null,
+  exampleId: string | null
 ): FetchedPrompt['examples'][number] | null => {
   if (!Array.isArray(examples) || examples.length === 0) return null
   const id = (exampleId || '').trim()
@@ -467,14 +474,18 @@ const pickImportedExample = (
   return examples[0] || null
 }
 
-const clearSessionForExternalImport = (targetKey: SupportedSubModeKey, api: {
-  basicSystemSession: BasicSystemSessionApi
-  basicUserSession: BasicUserSessionApi
-  proVariableSession: ProVariableSessionApi
-  imageText2ImageSession: ImageText2ImageSessionApi
-  imageImage2ImageSession: ImageImage2ImageSessionApi
-  optimizerCurrentVersions: Ref<PromptRecordChain['versions']>
-}, content: string) => {
+const clearSessionForExternalImport = (
+  targetKey: SupportedSubModeKey,
+  api: {
+    basicSystemSession: BasicSystemSessionApi
+    basicUserSession: BasicUserSessionApi
+    proVariableSession: ProVariableSessionApi
+    imageText2ImageSession: ImageText2ImageSessionApi
+    imageImage2ImageSession: ImageImage2ImageSessionApi
+    optimizerCurrentVersions: Ref<PromptRecordChain['versions']>
+  },
+  content: string
+) => {
   const resetCommon = (session: {
     updateOptimizedResult: (payload: {
       optimizedPrompt: string
@@ -489,7 +500,7 @@ const clearSessionForExternalImport = (targetKey: SupportedSubModeKey, api: {
       optimizedPrompt: '',
       reasoning: '',
       chainId: '',
-      versionId: ''
+      versionId: '',
     })
     if (session.evaluationResults !== undefined) {
       session.evaluationResults = createDefaultEvaluationResults()
@@ -708,7 +719,11 @@ export function useAppPromptGardenImport(options: AppPromptGardenImportOptions) 
             }
           }
 
-          if (targetKey === 'image-image2image' && Array.isArray(importedExample.inputImages) && importedExample.inputImages.length > 0) {
+          if (
+            targetKey === 'image-image2image' &&
+            Array.isArray(importedExample.inputImages) &&
+            importedExample.inputImages.length > 0
+          ) {
             const inputUrl = resolveGardenUrl({
               gardenBaseUrl,
               url: importedExample.inputImages[0],
@@ -721,7 +736,9 @@ export function useAppPromptGardenImport(options: AppPromptGardenImportOptions) 
                 }
               } catch (e) {
                 console.warn('[PromptGardenImport] Failed to load example input image:', e)
-                toast.warning('示例输入图加载失败（请检查 Prompt Garden /prompt-assets 的 CORS 配置）')
+                toast.warning(
+                  '示例输入图加载失败（请检查 Prompt Garden /prompt-assets 的 CORS 配置）'
+                )
               }
             }
           }

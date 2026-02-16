@@ -5,7 +5,7 @@
  * Unified output: score + improvements + patchPlan + summary
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-system-prompt-only',
@@ -69,7 +69,7 @@ export const template: Template = {
   - instruction: Brief description of issue and fix
 - **summary**: One-line evaluation conclusion
 
-Output JSON only, no additional explanation.`
+Output JSON only, no additional explanation.`,
     },
     {
       role: 'user',
@@ -85,8 +85,8 @@ Output JSON only, no additional explanation.`
 
 ---
 
-Please evaluate the current system prompt{{#hasOriginalPrompt}} and compare with the original{{/hasOriginalPrompt}}.`
-    }
+Please evaluate the current system prompt{{#hasOriginalPrompt}} and compare with the original{{/hasOriginalPrompt}}.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -95,7 +95,7 @@ Please evaluate the current system prompt{{#hasOriginalPrompt}} and compare with
     description: 'Evaluate system prompt quality with unified improvements + patchPlan output',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'basic', 'system']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'basic', 'system'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

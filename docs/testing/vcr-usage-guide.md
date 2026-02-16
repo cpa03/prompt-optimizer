@@ -79,18 +79,17 @@ const response = await withVCR(
 
 ## 故障排查
 
-1) `Fixture not found`
+1. `Fixture not found`
 
 - 说明当前处于回放路径但缺少 fixture。
 - 解决：运行 `pnpm test:record` 生成 fixture，并将 `packages/core/tests/fixtures/` 纳入提交。
 
-2) `Real LLM is disabled. Cannot record fixture.`
+2. `Real LLM is disabled. Cannot record fixture.`
 
 - 说明正在录制，但未启用真实 API。
 - 解决：运行 `pnpm test:record`（已自动设置 `ENABLE_REAL_LLM=true`），并确保 `.env.local` 中配置了对应 API Key。
 
-3) 回放时出现“未拦截请求”错误
+3. 回放时出现“未拦截请求”错误
 
 - `pnpm test:replay` 会以更严格的方式运行，任何未被 fixtures/MSW 覆盖的请求都应视为失败。
 - 解决：补齐对应 fixture 或补齐拦截/handlers；避免测试静默访问网络。
-

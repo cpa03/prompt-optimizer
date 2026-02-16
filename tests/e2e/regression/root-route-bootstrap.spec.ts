@@ -2,9 +2,7 @@ import { test, expect } from '../fixtures'
 import { TIMEOUTS } from '../constants/timeouts'
 
 async function waitForWorkspace(page: any, mode: string) {
-  const workspace = page
-    .locator(`[data-testid="workspace"][data-mode="${mode}"]`)
-    .first()
+  const workspace = page.locator(`[data-testid="workspace"][data-mode="${mode}"]`).first()
   await expect(workspace).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.WORKSPACE_BOOTSTRAP })
 }
 

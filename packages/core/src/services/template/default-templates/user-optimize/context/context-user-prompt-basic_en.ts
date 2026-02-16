@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-user-prompt-basic',
@@ -39,14 +39,14 @@ Output Requirements
 - Preserve original intent/style; make minimal sufficient refinements: explicit scope, parameters, format, and acceptance criteria.
 - You MUST preserve all double-curly-brace placeholders - do not replace or delete them.
 - Output ONLY the refined user prompt, no explanations, no code fences.
-`
+`,
     },
     {
       role: 'user',
       content: `Original user prompt:
 {{originalPrompt}}
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -56,8 +56,7 @@ Output Requirements
     templateType: 'contextUserOptimize',
     language: 'en',
     variant: 'context',
-    tags: ['context','user','optimize','basic']
+    tags: ['context', 'user', 'optimize', 'basic'],
   },
-  isBuiltin: true
-};
-
+  isBuiltin: true,
+}

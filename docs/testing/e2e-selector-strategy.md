@@ -3,12 +3,14 @@
 ## 问题分析
 
 ### 当前问题
+
 1. **依赖文本内容**：受国际化影响，需要维护多语言正则表达式
 2. **按钮位置不明确**：页面可能有多个同名按钮
 3. **XPath 脆弱**：组件结构变化会导致失败
 4. **不同模式 UI 不同**：Basic/Pro/Image 模式的界面结构完全不同
 
 ### 示例：当前定位方式
+
 ```typescript
 // ❌ 问题 1：依赖文本
 page.getByText(/Original Prompt|原始提示词|原始提示/i)
@@ -25,6 +27,7 @@ title.locator('xpath=ancestor::*[contains(@class,"n-card")][1]')
 ## 解决方案：使用 `data-testid` 属性
 
 ### 方案概述
+
 为关键 UI 元素添加 `data-testid` 属性，提供稳定、语言无关的定位标识。
 
 ### 实施步骤
@@ -32,11 +35,13 @@ title.locator('xpath=ancestor::*[contains(@class,"n-card")][1]')
 #### 步骤 1：在组件中添加 `data-testid`
 
 **命名规范**：
+
 ```
 data-testid="{模式}-{功能}-{元素类型}"
 ```
 
 **示例**：
+
 - `basic-system-input-panel` - Basic System 模式的输入面板
 - `basic-system-analyze-button` - Basic System 模式的分析按钮
 - `basic-user-analyze-button` - Basic User 模式的分析按钮
@@ -83,11 +88,7 @@ data-testid="{模式}-{功能}-{元素类型}"
       :data-testid="testIdPrefix + '-input'"
       ...
     />
-    <NInput
-      v-else
-      :data-testid="testIdPrefix + '-input'"
-      ...
-    />
+    <NInput v-else :data-testid="testIdPrefix + '-input'" ... />
 
     <!-- 操作按钮区域 -->
     <NSpace>
@@ -122,7 +123,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   // ... 现有默认值
-  testIdPrefix: 'input-panel'
+  testIdPrefix: 'input-panel',
 })
 </script>
 ```
@@ -142,10 +143,7 @@ const props = withDefaults(defineProps<Props>(), {
     />
 
     <!-- 评估分数徽章 -->
-    <EvaluationScoreBadge
-      data-testid="basic-system-score-badge"
-      :score="evaluationScore"
-    />
+    <EvaluationScoreBadge data-testid="basic-system-score-badge" :score="evaluationScore" />
   </div>
 </template>
 ```
@@ -162,10 +160,7 @@ const props = withDefaults(defineProps<Props>(), {
       @analyze="handleAnalyze"
     />
 
-    <EvaluationScoreBadge
-      data-testid="basic-user-score-badge"
-      :score="evaluationScore"
-    />
+    <EvaluationScoreBadge data-testid="basic-user-score-badge" :score="evaluationScore" />
   </div>
 </template>
 ```
@@ -183,10 +178,7 @@ const props = withDefaults(defineProps<Props>(), {
       <NSpin :size="spinSize" data-testid="score-loading" />
     </template>
     <template v-else-if="score !== null && score !== undefined">
-      <span
-        class="score-value"
-        data-testid="score-value"
-      >{{ score }}</span>
+      <span class="score-value" data-testid="score-value">{{ score }}</span>
     </template>
   </div>
 </template>
@@ -207,11 +199,7 @@ import { expect, type Page } from '@playwright/test'
  * @param mode 模式前缀（如 'basic-system', 'basic-user'）
  * @param value 提示词内容
  */
-export async function fillOriginalPrompt(
-  page: Page,
-  mode: string,
-  value: string
-): Promise<void> {
+export async function fillOriginalPrompt(page: Page, mode: string, value: string): Promise<void> {
   const input = page.locator(`[data-testid="${mode}-input"]`)
   await expect(input).toBeVisible({ timeout: 15000 })
 
@@ -248,10 +236,7 @@ export async function clickAnalyzeButton(page: Page, mode: string): Promise<void
  * @param mode 模式前缀（可选，用于更精确定位）
  * @returns 分数（0-100）
  */
-export async function getEvaluationScore(
-  page: Page,
-  mode?: string
-): Promise<number> {
+export async function getEvaluationScore(page: Page, mode?: string): Promise<number> {
   const badgeSelector = mode
     ? `[data-testid="${mode}-score-badge"]`
     : '[data-testid="evaluation-score-badge"]'
@@ -300,7 +285,7 @@ import {
   fillOriginalPrompt,
   clickAnalyzeButton,
   getEvaluationScore,
-  verifyAnalyzeButtonDisabledWhenEmpty
+  verifyAnalyzeButtonDisabledWhenEmpty,
 } from '../helpers/analysis'
 
 const MODE = 'basic-system'
@@ -341,6 +326,7 @@ test.describe('Basic System - 提示词分析', () => {
 ## 优势对比
 
 ### 修改前 ❌
+
 ```typescript
 // 依赖文本，易受国际化影响
 const card = page.getByText(/Original Prompt|原始提示词/i)
@@ -351,6 +337,7 @@ const ancestor = card.locator('xpath=ancestor::*[contains(@class,"n-card")]')
 ```
 
 ### 修改后 ✅
+
 ```typescript
 // 稳定、语言无关
 await fillOriginalPrompt(page, 'basic-system', '测试内容')
@@ -359,6 +346,7 @@ const score = await getEvaluationScore(page, 'basic-system')
 ```
 
 ### 关键优势
+
 1. ✅ **语言无关**：不受国际化影响
 2. ✅ **精确定位**：通过 testIdPrefix 区分不同模式
 3. ✅ **稳定性高**：不依赖 DOM 结构和样式类
@@ -370,6 +358,7 @@ const score = await getEvaluationScore(page, 'basic-system')
 ## 实施计划
 
 ### Phase 1：核心组件（高优先级）
+
 - [x] ~~创建优化方案文档~~
 - [ ] `InputPanel.vue` - 添加 `testIdPrefix` prop 和 data-testid
 - [ ] `BasicSystemWorkspace.vue` - 传递 testIdPrefix="basic-system"
@@ -380,11 +369,13 @@ const score = await getEvaluationScore(page, 'basic-system')
 - [ ] 运行测试验证
 
 ### Phase 2：Pro 模式（中优先级）
+
 - [ ] `ContextSystemWorkspace.vue` - 添加 data-testid
 - [ ] `ContextUserWorkspace.vue` - 添加 data-testid
 - [ ] 设计并实现 Pro 模式的测试
 
 ### Phase 3：Image 模式（低优先级）
+
 - [ ] `ImageText2ImageWorkspace.vue` - 添加 data-testid
 - [ ] `ImageImage2ImageWorkspace.vue` - 添加 data-testid
 - [ ] 创建评估模板后实现测试

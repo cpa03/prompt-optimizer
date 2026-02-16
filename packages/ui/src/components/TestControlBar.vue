@@ -2,19 +2,11 @@
   <div class="tcb-root">
     <!-- 左侧：标签 + 模型下拉 + 可选 tags（tags 断点隐藏，且不允许挤压右侧控件） -->
     <NSpace class="tcb-left" align="center" :size="12" :wrap="false">
-      <NText :depth="2" strong class="tcb-label">
-        {{ modelLabel }}：
-      </NText>
+      <NText :depth="2" strong class="tcb-label"> {{ modelLabel }}： </NText>
       <div class="tcb-model-select">
         <slot name="model-select"></slot>
       </div>
-      <NTag
-        v-if="modelName"
-        class="tcb-tags"
-        size="small"
-        type="primary"
-        :bordered="false"
-      >
+      <NTag v-if="modelName" class="tcb-tags" size="small" type="primary" :bordered="false">
         <NEllipsis :style="{ maxWidth: '180px' }">
           {{ modelName }}
         </NEllipsis>
@@ -103,7 +95,7 @@ withDefaults(defineProps<Props>(), {
   primaryActionLoading: false,
   buttonSize: 'medium',
   compareToggleTestId: undefined,
-  primaryActionTestId: undefined
+  primaryActionTestId: undefined,
 })
 
 const emit = defineEmits<{
@@ -200,12 +192,7 @@ const handlePrimaryAction = () => {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.25),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
   animation: shimmer 1.5s infinite;
 }
 

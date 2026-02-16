@@ -56,7 +56,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColorPressed: '#374151',
         clearColor: 'rgba(79, 89, 102, 0.2)',
         clearColorHover: 'rgba(79, 89, 102, 0.28)',
-        clearColorPressed: 'rgba(79, 89, 102, 0.36)'
+        clearColorPressed: 'rgba(79, 89, 102, 0.36)',
       },
       Button: {
         textColorPrimary: '#f9fafb',
@@ -83,7 +83,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         colorPressed: '#d9dce2',
         border: '1px solid #e5e7eb',
         borderHover: '1px solid #d5d7dc',
-        borderPressed: '1px solid #c4c7cd'
+        borderPressed: '1px solid #c4c7cd',
       },
       Input: {
         color: '#f7f8fa',
@@ -107,7 +107,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         boxShadowFocus: '0 0 0 2px rgba(75, 85, 99, 0.12)',
         caretColor: '#4b5563',
         suffixTextColor: '#6b7280',
-        prefixTextColor: '#6b7280'
+        prefixTextColor: '#6b7280',
       },
       Card: {
         color: '#ffffff',
@@ -120,7 +120,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColor: '#9ca3af',
         closeIconColorHover: '#6b7280',
         closeIconColorPressed: '#4b5563',
-        boxShadow: '0 12px 28px rgba(15, 23, 42, 0.08)'
+        boxShadow: '0 12px 28px rgba(15, 23, 42, 0.08)',
       },
       Tabs: {
         tabColor: '#f3f4f6',
@@ -131,7 +131,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         tabTextColorBarActive: '#1f2933',
         tabTextColorCard: '#6b7280',
         tabTextColorCardActive: '#1f2933',
-        barColor: '#d1d5db'
+        barColor: '#d1d5db',
       },
       Radio: {
         buttonBorderColor: '#e5e7eb',
@@ -139,7 +139,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         buttonColor: '#f4f5f7',
         buttonColorActive: '#dfe2e7',
         buttonTextColor: '#6b7280',
-        buttonTextColorActive: '#1f2933'
+        buttonTextColorActive: '#1f2933',
       },
       Dropdown: {
         color: '#ffffff',
@@ -148,13 +148,13 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         optionTextColorActive: '#1f2933',
         optionColorHover: '#f1f2f5',
         optionColorActive: '#e6e8ec',
-        borderColor: '#e5e7eb'
-      }
-    }
+        borderColor: '#e5e7eb',
+      },
+    },
   },
 
   dark: {
-    id: 'dark', 
+    id: 'dark',
     name: '夜间模式',
     naiveTheme: darkTheme,
     themeOverrides: {
@@ -171,8 +171,8 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         errorColorHover: '#dc2626',
         errorColorPressed: '#b91c1c',
         errorColorSuppl: '#7f1d1d',
-      }
-    }
+      },
+    },
   },
 
   blue: {
@@ -207,7 +207,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColorPressed: '#134c98',
         clearColor: 'rgba(31, 107, 209, 0.25)',
         clearColorHover: 'rgba(31, 107, 209, 0.35)',
-        clearColorPressed: 'rgba(31, 107, 209, 0.45)'
+        clearColorPressed: 'rgba(31, 107, 209, 0.45)',
       },
       Button: {
         textColorPrimary: '#ffffff',
@@ -234,7 +234,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         colorPressed: '#cfe1ff',
         border: '1px solid #c0d8f6',
         borderHover: '1px solid #aaccf2',
-        borderPressed: '1px solid #97bfec'
+        borderPressed: '1px solid #97bfec',
       },
       Input: {
         color: '#ffffff',
@@ -258,7 +258,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         boxShadowFocus: '0 0 0 2px rgba(31, 107, 209, 0.2)',
         caretColor: '#1f6bd1',
         suffixTextColor: '#4a6c91',
-        prefixTextColor: '#4a6c91'
+        prefixTextColor: '#4a6c91',
       },
       Card: {
         color: '#f6faff',
@@ -271,7 +271,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColor: '#6f88aa',
         closeIconColorHover: '#2c5e9b',
         closeIconColorPressed: '#214a7d',
-        boxShadow: '0 16px 36px rgba(15, 47, 85, 0.12)'
+        boxShadow: '0 16px 36px rgba(15, 47, 85, 0.12)',
       },
       Tabs: {
         tabColor: '#eaf3ff',
@@ -282,7 +282,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         tabTextColorBarActive: '#0f2f55',
         tabTextColorCard: '#4a6c91',
         tabTextColorCardActive: '#0f2f55',
-        barColor: '#8fb9ec'
+        barColor: '#8fb9ec',
       },
       Radio: {
         buttonBorderColor: '#b2cef2',
@@ -290,7 +290,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         buttonColor: '#eaf3ff',
         buttonColorActive: '#d2e5ff',
         buttonTextColor: '#4a6c91',
-        buttonTextColorActive: '#0f2f55'
+        buttonTextColorActive: '#0f2f55',
       },
       Dropdown: {
         color: '#ffffff',
@@ -299,9 +299,9 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         optionTextColorActive: '#0f2f55',
         optionColorHover: '#e1efff',
         optionColorActive: '#cfe1ff',
-        borderColor: '#b2cef2'
-      }
-    }
+        borderColor: '#b2cef2',
+      },
+    },
   },
 
   classic: {
@@ -345,7 +345,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         clearColorHover: 'rgba(123, 106, 88, 0.3)',
         clearColorPressed: 'rgba(123, 106, 88, 0.4)',
         boxShadow1: '0 6px 20px rgba(87, 69, 55, 0.08)',
-        boxShadow2: '0 12px 32px rgba(87, 69, 55, 0.12)'
+        boxShadow2: '0 12px 32px rgba(87, 69, 55, 0.12)',
       },
       Button: {
         textColorPrimary: '#3f382f',
@@ -372,7 +372,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         colorPressed: '#e1d6c7',
         border: '1px solid #e3d7c7',
         borderHover: '1px solid #d8ccba',
-        borderPressed: '1px solid #cbbca5'
+        borderPressed: '1px solid #cbbca5',
       },
       Input: {
         color: '#f8f4ee',
@@ -396,7 +396,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         boxShadowFocus: '0 0 0 2px rgba(123, 106, 88, 0.16)',
         caretColor: '#7b6a58',
         suffixTextColor: '#8a7c6c',
-        prefixTextColor: '#8a7c6c'
+        prefixTextColor: '#8a7c6c',
       },
       Card: {
         color: '#fefcf8',
@@ -409,7 +409,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColor: '#8f8376',
         closeIconColorHover: '#6e6256',
         closeIconColorPressed: '#5a4f45',
-        boxShadow: '0 12px 32px rgba(87, 69, 55, 0.12)'
+        boxShadow: '0 12px 32px rgba(87, 69, 55, 0.12)',
       },
       Tabs: {
         tabColor: '#f1ece4',
@@ -420,7 +420,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         tabTextColorBarActive: '#4d453c',
         tabTextColorCard: '#6a6156',
         tabTextColorCardActive: '#3f382f',
-        barColor: '#d2c5b5'
+        barColor: '#d2c5b5',
       },
       Radio: {
         buttonBorderColor: '#e3d7c7',
@@ -428,7 +428,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         buttonColor: '#f6f1ea',
         buttonColorActive: '#d7ccbc',
         buttonTextColor: '#6a6156',
-        buttonTextColorActive: '#3f382f'
+        buttonTextColorActive: '#3f382f',
       },
       Dropdown: {
         color: '#fefcf8',
@@ -437,9 +437,9 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         optionTextColorActive: '#3f382f',
         optionColorHover: '#ede3d6',
         optionColorActive: '#e1d6c7',
-        borderColor: '#e3d7c7'
-      }
-    }
+        borderColor: '#e3d7c7',
+      },
+    },
   },
 
   green: {
@@ -490,7 +490,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         errorColor: '#ff6b6b',
         errorColorHover: '#f05252',
         errorColorPressed: '#c73f3f',
-        errorColorSuppl: '#4d2020'
+        errorColorSuppl: '#4d2020',
       },
       Button: {
         textColorPrimary: '#0f342b',
@@ -517,7 +517,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         colorPressed: '#184638',
         border: '1px solid rgba(63, 210, 180, 0.28)',
         borderHover: '1px solid rgba(63, 210, 180, 0.4)',
-        borderPressed: '1px solid rgba(63, 210, 180, 0.52)'
+        borderPressed: '1px solid rgba(63, 210, 180, 0.52)',
       },
       Input: {
         color: '#1d5240',
@@ -541,7 +541,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         boxShadowFocus: '0 0 0 2px rgba(87, 228, 200, 0.16)',
         loadingColor: '#57e4c8',
         suffixTextColor: 'rgba(233, 251, 244, 0.8)',
-        prefixTextColor: 'rgba(233, 251, 244, 0.8)'
+        prefixTextColor: 'rgba(233, 251, 244, 0.8)',
       },
       Card: {
         color: '#174737',
@@ -554,7 +554,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColor: 'rgba(233, 251, 244, 0.7)',
         closeIconColorHover: '#c5efe0',
         closeIconColorPressed: '#e9fbf4',
-        boxShadow: '0 18px 40px rgba(9, 32, 23, 0.45)'
+        boxShadow: '0 18px 40px rgba(9, 32, 23, 0.45)',
       },
       Tabs: {
         tabColor: '#1b4f3d',
@@ -565,7 +565,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         tabTextColorBarActive: '#e9fbf4',
         tabTextColorCard: 'rgba(233, 251, 244, 0.7)',
         tabTextColorCardActive: '#e9fbf4',
-        barColor: 'rgba(63, 210, 180, 0.6)'
+        barColor: 'rgba(63, 210, 180, 0.6)',
       },
       Radio: {
         buttonBorderColor: 'rgba(63, 210, 180, 0.32)',
@@ -573,7 +573,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         buttonColor: '#1b4f3d',
         buttonColorActive: '#20614a',
         buttonTextColor: 'rgba(233, 251, 244, 0.7)',
-        buttonTextColorActive: '#e9fbf4'
+        buttonTextColorActive: '#e9fbf4',
       },
       Dropdown: {
         color: '#174737',
@@ -582,9 +582,9 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         optionTextColorActive: '#0f342b',
         optionColorHover: '#1f5f49',
         optionColorActive: '#236b52',
-        borderColor: 'rgba(63, 210, 180, 0.32)'
-      }
-    }
+        borderColor: 'rgba(63, 210, 180, 0.32)',
+      },
+    },
   },
 
   purple: {
@@ -635,7 +635,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         errorColor: '#ff7aa2',
         errorColorHover: '#f25c87',
         errorColorPressed: '#c1426a',
-        errorColorSuppl: '#4b1f32'
+        errorColorSuppl: '#4b1f32',
       },
       Button: {
         textColorPrimary: '#1f1633',
@@ -662,7 +662,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         colorPressed: '#402d6c',
         border: '1px solid rgba(147, 111, 214, 0.3)',
         borderHover: '1px solid rgba(147, 111, 214, 0.42)',
-        borderPressed: '1px solid rgba(147, 111, 214, 0.55)'
+        borderPressed: '1px solid rgba(147, 111, 214, 0.55)',
       },
       Input: {
         color: '#342964',
@@ -686,7 +686,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         boxShadowFocus: '0 0 0 2px rgba(180, 123, 255, 0.2)',
         loadingColor: '#b47bff',
         suffixTextColor: 'rgba(245, 236, 255, 0.78)',
-        prefixTextColor: 'rgba(245, 236, 255, 0.78)'
+        prefixTextColor: 'rgba(245, 236, 255, 0.78)',
       },
       Card: {
         color: '#2a1f45',
@@ -699,7 +699,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         closeIconColor: 'rgba(225, 210, 255, 0.7)',
         closeIconColorHover: '#d6c3ff',
         closeIconColorPressed: '#f5ecff',
-        boxShadow: '0 18px 42px rgba(16, 8, 29, 0.45)'
+        boxShadow: '0 18px 42px rgba(16, 8, 29, 0.45)',
       },
       Tabs: {
         tabColor: '#342964',
@@ -710,7 +710,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         tabTextColorBarActive: '#f5ecff',
         tabTextColorCard: 'rgba(245, 236, 255, 0.75)',
         tabTextColorCardActive: '#f5ecff',
-        barColor: 'rgba(180, 123, 255, 0.6)'
+        barColor: 'rgba(180, 123, 255, 0.6)',
       },
       Radio: {
         buttonBorderColor: 'rgba(147, 111, 214, 0.35)',
@@ -718,7 +718,7 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         buttonColor: '#342964',
         buttonColorActive: '#403277',
         buttonTextColor: 'rgba(245, 236, 255, 0.78)',
-        buttonTextColorActive: '#fdf7ff'
+        buttonTextColorActive: '#fdf7ff',
       },
       Dropdown: {
         color: '#2a1f45',
@@ -727,28 +727,28 @@ export const naiveThemeConfigs: Record<string, ThemeConfig> = {
         optionTextColorActive: '#1f1633',
         optionColorHover: '#36275a',
         optionColorActive: '#42317a',
-        borderColor: 'rgba(147, 111, 214, 0.35)'
-      }
-    }
-  }
+        borderColor: 'rgba(147, 111, 214, 0.35)',
+      },
+    },
+  },
 }
 
 // 获取可用主题列表
 export const availableThemes = Object.values(naiveThemeConfigs)
 
 // 当前主题配置
-export const currentThemeConfig = computed(() => 
-  naiveThemeConfigs[currentThemeId.value] || naiveThemeConfigs.light
+export const currentThemeConfig = computed(
+  () => naiveThemeConfigs[currentThemeId.value] || naiveThemeConfigs.light
 )
 
 // 当前 Naive UI 主题
-export const currentNaiveTheme = computed<GlobalTheme | null>(() => 
-  currentThemeConfig.value.naiveTheme
+export const currentNaiveTheme = computed<GlobalTheme | null>(
+  () => currentThemeConfig.value.naiveTheme
 )
 
 // 当前主题覆盖配置
-export const currentThemeOverrides = computed<GlobalThemeOverrides>(() => 
-  currentThemeConfig.value.themeOverrides || {}
+export const currentThemeOverrides = computed<GlobalThemeOverrides>(
+  () => currentThemeConfig.value.themeOverrides || {}
 )
 
 const resolveAppliedThemeId = (selectedThemeId: string): string => {

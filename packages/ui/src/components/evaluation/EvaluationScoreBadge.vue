@@ -10,7 +10,11 @@
     <template #trigger>
       <div
         class="evaluation-score-badge"
-        :class="[sizeClass, levelClass, { clickable: !loading, loading, 'score-updating': isScoreUpdating }]"
+        :class="[
+          sizeClass,
+          levelClass,
+          { clickable: !loading, loading, 'score-updating': isScoreUpdating },
+        ]"
         :data-testid="`score-badge-${type}`"
         :data-eval-type="type"
         @click="handleClick"
@@ -21,10 +25,18 @@
           <NSpin :size="spinSize" data-testid="score-loading" />
         </template>
         <template v-else-if="score !== null && score !== undefined">
-          <span class="score-value" :class="{ 'score-pop': showScorePop }" data-testid="score-value">
+          <span
+            class="score-value"
+            :class="{ 'score-pop': showScorePop }"
+            data-testid="score-value"
+          >
             {{ displayScore }}
           </span>
-          <span v-if="showScoreChangeIndicator" class="score-change-indicator" :class="scoreChangeDirection">
+          <span
+            v-if="showScoreChangeIndicator"
+            class="score-change-indicator"
+            :class="scoreChangeDirection"
+          >
             {{ scoreChangeSymbol }}
           </span>
         </template>
@@ -105,14 +117,14 @@ const animateScoreChange = (from: number, to: number) => {
   const duration = TIME_CONSTANTS.ANIMATION_DURATION_SCORE // ms
   const startTime = performance.now()
   const diff = to - from
-  
+
   // Determine direction for indicator
   if (diff > 0) {
     scoreChangeDirection.value = 'up'
   } else if (diff < 0) {
     scoreChangeDirection.value = 'down'
   }
-  
+
   // Show change indicator briefly
   if (diff !== 0) {
     showScoreChangeIndicator.value = true
@@ -120,22 +132,22 @@ const animateScoreChange = (from: number, to: number) => {
       showScoreChangeIndicator.value = false
     }, TIME_CONSTANTS.ANIMATION_INDICATOR_DURATION)
   }
-  
+
   // Start update animation
   isScoreUpdating.value = true
   showScorePop.value = true
-  
+
   const easeOutQuart = (t: number): number => {
     return 1 - Math.pow(1 - t, 4)
   }
-  
+
   const step = (currentTime: number) => {
     const elapsed = currentTime - startTime
     const progress = Math.min(elapsed / duration, 1)
     const easedProgress = easeOutQuart(progress)
-    
+
     displayScore.value = Math.round(from + diff * easedProgress)
-    
+
     if (progress < 1) {
       requestAnimationFrame(step)
     } else {
@@ -147,23 +159,27 @@ const animateScoreChange = (from: number, to: number) => {
       }, TIME_CONSTANTS.ANIMATION_SHORT_DELAY)
     }
   }
-  
+
   requestAnimationFrame(step)
 }
 
 // Watch for score changes
-watch(() => props.score, (newScore, oldScore) => {
-  if (newScore !== null && newScore !== undefined) {
-    if (previousScore.value === null) {
-      // First render - just set the value
-      displayScore.value = newScore
-    } else if (oldScore !== newScore) {
-      // Score changed - animate
-      animateScoreChange(previousScore.value ?? oldScore ?? 0, newScore)
+watch(
+  () => props.score,
+  (newScore, oldScore) => {
+    if (newScore !== null && newScore !== undefined) {
+      if (previousScore.value === null) {
+        // First render - just set the value
+        displayScore.value = newScore
+      } else if (oldScore !== newScore) {
+        // Score changed - animate
+        animateScoreChange(previousScore.value ?? oldScore ?? 0, newScore)
+      }
+      previousScore.value = newScore
     }
-    previousScore.value = newScore
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // Popover 显示状态
 const popoverVisible = ref(false)
@@ -273,17 +289,17 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
 
 /* 尺寸 - using centralized constants */
 .size-small {
-  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.MIN_WIDTH')px;
-  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.HEIGHT')px;
-  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.PADDING_HORIZONTAL')px;
-  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.FONT_SIZE')px;
+  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.MIN_WIDTH') px;
+  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.HEIGHT') px;
+  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.PADDING_HORIZONTAL') px;
+  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.SMALL.FONT_SIZE') px;
 }
 
 .size-medium {
-  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.MIN_WIDTH')px;
-  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.HEIGHT')px;
-  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.PADDING_HORIZONTAL')px;
-  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.FONT_SIZE')px;
+  min-width: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.MIN_WIDTH') px;
+  height: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.HEIGHT') px;
+  padding: 0 v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.PADDING_HORIZONTAL') px;
+  font-size: v-bind('COMPONENT_CONSTANTS.EVALUATION_SCORE_BADGE.MEDIUM.FONT_SIZE') px;
 }
 
 /* 可点击状态 */
@@ -456,12 +472,12 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
     animation: none;
     transform: none;
   }
-  
+
   .evaluation-score-badge.score-updating {
     animation: none;
     box-shadow: none;
   }
-  
+
   .score-change-indicator,
   .score-change-indicator.up,
   .score-change-indicator.down {

@@ -1,6 +1,6 @@
 # Prompt Optimizer - Privacy Policy
 
-*Last Updated: February 1, 2025*
+_Last Updated: February 1, 2025_
 
 ## Introduction
 
@@ -13,6 +13,7 @@ Thank you for using the "Prompt Optimizer" Chrome extension (hereinafter referre
 ### Information We Do NOT Collect
 
 This extension does not collect, store, or transmit the following information:
+
 - Your personal identification information
 - Your browsing history
 - Content of websites you visit
@@ -25,6 +26,7 @@ As a pure client-side application, we do not operate any servers to collect or s
 ### Information Stored Locally
 
 This extension only stores the following information on your local device:
+
 - API keys you provide (stored encrypted)
 - Your extension settings and preferences
 - Prompt optimization history (only when you enable the history feature)
@@ -42,6 +44,7 @@ When you use this extension to optimize prompts, your prompt content is sent dir
 5. Are initiated and processed entirely within your browser
 
 **Important Notes:**
+
 - We have no servers to intercept, store, or process your API requests
 - All API requests are sent directly from your browser to the respective AI service provider, and responses are returned directly to your browser
 - Although this extension is a pure client-side application, the prompt optimization feature does require sending your prompt content to third-party AI service providers (such as OpenAI, Google, etc.)
@@ -50,6 +53,7 @@ When you use this extension to optimize prompts, your prompt content is sent dir
 ## Third-Party Services
 
 This extension may use the following third-party services:
+
 - **OpenAI API**: When you choose to use OpenAI models
 - **Google Gemini API**: When you choose to use Gemini models
 - **DeepSeek API**: When you choose to use DeepSeek models
@@ -60,6 +64,7 @@ Please note that these third-party services have their own privacy policies and 
 ## Data Security
 
 We take the following measures to protect your data:
+
 - Pure client-side architecture with no proprietary servers collecting data
 - All API keys are encrypted using browser secure storage mechanisms
 - All data transmissions are made directly over HTTPS encrypted connections
@@ -88,6 +93,7 @@ We may update this privacy policy from time to time. When we make significant ch
 ## Contact Us
 
 If you have any questions or suggestions about this privacy policy, please contact us through:
+
 - GitHub Issues: https://github.com/linshenkx/prompt-optimizer/issues
 
 ## Consent
@@ -98,7 +104,7 @@ By installing and using this extension, you confirm that you have read and agree
 
 # 提示词优化器 - 隐私政策
 
-*最后更新日期：2025年2月1日*
+_最后更新日期：2025年2月1日_
 
 ## 引言
 
@@ -111,6 +117,7 @@ By installing and using this extension, you confirm that you have read and agree
 ### 我们不收集的信息
 
 本扩展不会收集、存储或传输以下信息：
+
 - 您的个人身份信息
 - 您的浏览历史
 - 您访问的网站内容
@@ -123,6 +130,7 @@ By installing and using this extension, you confirm that you have read and agree
 ### 本地存储的信息
 
 本扩展仅在您的本地设备上存储以下信息：
+
 - 您自行提供的API密钥（经过加密存储）
 - 您的扩展设置和偏好
 - 提示词优化历史记录（仅当您启用历史记录功能时）
@@ -140,6 +148,7 @@ By installing and using this extension, you confirm that you have read and agree
 5. 完全在您的浏览器中发起和处理
 
 **重要说明：**
+
 - 我们没有服务器来拦截、存储或处理您的API请求
 - 所有API请求直接从您的浏览器发送到相应的AI服务提供商，并且响应直接返回到您的浏览器
 - 虽然本扩展是纯客户端应用，但优化提示词的功能确实需要将您的提示词内容发送到第三方AI服务提供商（如OpenAI、Google等）
@@ -148,6 +157,7 @@ By installing and using this extension, you confirm that you have read and agree
 ## 第三方服务
 
 本扩展可能使用以下第三方服务：
+
 - **OpenAI API**：当您选择使用OpenAI模型时
 - **Google Gemini API**：当您选择使用Gemini模型时
 - **DeepSeek API**：当您选择使用DeepSeek模型时
@@ -158,6 +168,7 @@ By installing and using this extension, you confirm that you have read and agree
 ## 数据安全
 
 我们采取以下措施保护您的数据：
+
 - 纯客户端架构，没有自有服务器收集数据
 - 所有API密钥都使用浏览器的安全存储机制进行加密存储
 - 所有数据传输都通过HTTPS加密连接直接进行
@@ -186,8 +197,9 @@ By installing and using this extension, you confirm that you have read and agree
 ## 联系我们
 
 如果您对本隐私政策有任何疑问或建议，请通过以下方式联系我们：
+
 - 通过GitHub Issues: https://github.com/linshenkx/prompt-optimizer/issues
 
 ## 同意
 
-通过安装和使用本扩展，您确认您已阅读并同意本隐私政策的条款。您也确认理解本扩展是纯客户端应用程序，在没有自有服务器参与的情况下运行，所有数据存储和管理都在您的本地浏览器中进行，但优化提示词的功能需要将您的提示词内容发送到第三方AI服务提供商。 
+通过安装和使用本扩展，您确认您已阅读并同意本隐私政策的条款。您也确认理解本扩展是纯客户端应用程序，在没有自有服务器参与的情况下运行，所有数据存储和管理都在您的本地浏览器中进行，但优化提示词的功能需要将您的提示词内容发送到第三方AI服务提供商。

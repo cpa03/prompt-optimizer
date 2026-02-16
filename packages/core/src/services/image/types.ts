@@ -8,8 +8,8 @@ export type { ConnectionSchema } from '../shared/types'
 // === 图像参数定义 ===
 
 export interface ImageParameterDefinition extends UnifiedParameterDefinition {
-  labelKey: string                // UI 文案 i18n key，如 "params.size.label"
-  descriptionKey: string          // UI 描述 i18n key，如 "params.size.description"
+  labelKey: string // UI 文案 i18n key，如 "params.size.label"
+  descriptionKey: string // UI 描述 i18n key，如 "params.size.description"
   allowedValueLabelKeys?: string[] // 枚举值的 i18n keys
 }
 
@@ -25,32 +25,32 @@ export interface ImageProvider extends BaseProvider {
 
 // 模型静态定义（由适配器提供）
 export interface ImageModel {
-  readonly id: string                    // 模型唯一标识，如 'dall-e-3', 'kolors'
-  readonly name: string                  // 显示名称，如 'DALL-E 3', 'Kolors'
-  readonly description?: string          // 模型描述
-  readonly providerId: string            // 所属 provider，如 'openai'
+  readonly id: string // 模型唯一标识，如 'dall-e-3', 'kolors'
+  readonly name: string // 显示名称，如 'DALL-E 3', 'Kolors'
+  readonly description?: string // 模型描述
+  readonly providerId: string // 所属 provider，如 'openai'
   readonly capabilities: {
-    text2image: boolean                  // 支持文本生图
-    image2image: boolean                 // 支持图生图
-    multiImage?: boolean                 // 支持多图输入（可选）
+    text2image: boolean // 支持文本生图
+    image2image: boolean // 支持图生图
+    multiImage?: boolean // 支持多图输入（可选）
   }
   readonly parameterDefinitions: readonly ImageParameterDefinition[] // 模型特定参数定义
-  readonly defaultParameterValues?: Record<string, unknown>          // 默认参数值
+  readonly defaultParameterValues?: Record<string, unknown> // 默认参数值
 }
 
 // 用户图像模型配置（Configuration层）
 export interface ImageModelConfig {
-  id: string                             // 配置唯一标识
-  name: string                           // 用户自定义名称
-  providerId: string                     // 引用的 provider
-  modelId: string                        // 引用的 model
-  enabled: boolean                       // 是否启用此配置
+  id: string // 配置唯一标识
+  name: string // 用户自定义名称
+  providerId: string // 引用的 provider
+  modelId: string // 引用的 model
+  enabled: boolean // 是否启用此配置
 
   // 连接配置（可选覆盖）
   connectionConfig?: {
-    apiKey?: string                      // API 密钥
-    baseURL?: string                     // 覆盖默认 API 地址
-    [key: string]: any                   // 支持其他连接参数（如 organization, region 等）
+    apiKey?: string // API 密钥
+    baseURL?: string // 覆盖默认 API 地址
+    [key: string]: any // 支持其他连接参数（如 organization, region 等）
   }
 
   // 参数覆盖（统一字段）
@@ -64,8 +64,8 @@ export interface ImageModelConfig {
   customParamOverrides?: Record<string, unknown>
 
   // 自包含数据（新增）
-  provider: ImageProvider              // 完整的提供商信息副本
-  model: ImageModel                    // 完整的模型信息副本
+  provider: ImageProvider // 完整的提供商信息副本
+  model: ImageModel // 完整的模型信息副本
 }
 
 // === 基础类型（请求/结果/进度） ===
@@ -77,9 +77,9 @@ export interface ImageInputRef {
 
 export interface ImageRequest {
   prompt: string
-  configId: string                        // 直接使用配置ID，简化调用
-  inputImage?: ImageInputRef               // 可选的输入图像
-  count?: number                           // 生成数量，默认 1
+  configId: string // 直接使用配置ID，简化调用
+  inputImage?: ImageInputRef // 可选的输入图像
+  count?: number // 生成数量，默认 1
   paramOverrides?: Record<string, unknown> // 临时参数覆盖，不影响保存的配置
 }
 
@@ -102,15 +102,15 @@ export interface ImageResultItem {
 }
 
 export interface ImageResult {
-  images: ImageResultItem[]                // 图像结果
-  text?: string                            // 新增：可选的文本输出（多模态）
+  images: ImageResultItem[] // 图像结果
+  text?: string // 新增：可选的文本输出（多模态）
   metadata?: {
-    providerId: string                     // 溯源：使用的 provider
-    modelId: string                        // 溯源：使用的 model
-    configId: string                       // 溯源：使用的配置
-    finishReason?: string                  // 完成原因
-    usage?: any                            // 使用统计
-    [key: string]: any                     // 扩展字段
+    providerId: string // 溯源：使用的 provider
+    modelId: string // 溯源：使用的 model
+    configId: string // 溯源：使用的配置
+    finishReason?: string // 完成原因
+    usage?: any // 使用统计
+    [key: string]: any // 扩展字段
   }
 }
 
@@ -142,7 +142,7 @@ export interface IImageModelManager extends IImportExportable {
 export interface IImageProviderAdapter {
   // 静态信息获取（编译时确定）
   getProvider(): ImageProvider
-  getModels(): ImageModel[]                // 静态模型列表，总是可用（用于离线/默认展示）
+  getModels(): ImageModel[] // 静态模型列表，总是可用（用于离线/默认展示）
 
   // 动态模型获取（允许空实现）
   getModelsAsync(connectionConfig: Record<string, any>): Promise<ImageModel[]>
@@ -205,25 +205,25 @@ export interface IImageService {
   getDynamicModels(providerId: string, connectionConfig: Record<string, any>): Promise<ImageModel[]>
 }
 
-
 // === 图像存储类型（分离存储支持）===
 
 /**
  * 图像元数据（轻量级，不含实际图像数据）
  */
 export interface ImageMetadata {
-  id: string                    // 唯一标识，格式：img_<timestamp>_<uuid>
-  width?: number               // 图像宽度（可选）
-  height?: number              // 图像高度（可选）
-  mimeType: string             // MIME类型：image/png, image/jpeg
-  sizeBytes: number            // 图像大小（字节）
-  createdAt: number            // 创建时间戳
-  accessedAt: number           // 最后访问时间戳（用于LRU）
-  source: 'generated' | 'uploaded'  // 来源：生成 vs 上传
-  metadata?: {                 // 关联的生成元数据
-    prompt?: string            // 生成提示词
-    modelId?: string           // 使用的模型
-    configId?: string          // 使用的配置
+  id: string // 唯一标识，格式：img_<timestamp>_<uuid>
+  width?: number // 图像宽度（可选）
+  height?: number // 图像高度（可选）
+  mimeType: string // MIME类型：image/png, image/jpeg
+  sizeBytes: number // 图像大小（字节）
+  createdAt: number // 创建时间戳
+  accessedAt: number // 最后访问时间戳（用于LRU）
+  source: 'generated' | 'uploaded' // 来源：生成 vs 上传
+  metadata?: {
+    // 关联的生成元数据
+    prompt?: string // 生成提示词
+    modelId?: string // 使用的模型
+    configId?: string // 使用的配置
   }
 }
 
@@ -232,11 +232,11 @@ export interface ImageMetadata {
  * 当 Session 持久化时，使用此类型替代完整的图像数据
  */
 export interface ImageRef {
-  id: string                   // 图像ID
-  _type: 'image-ref'          // 类型标记，用于区分引用和实际数据
-  b64?: never                 // 明确排除 base64 字段
-  url?: never                 // 明确排除 URL 字段
-  mimeType?: never            // 明确排除 mimeType 字段
+  id: string // 图像ID
+  _type: 'image-ref' // 类型标记，用于区分引用和实际数据
+  b64?: never // 明确排除 base64 字段
+  url?: never // 明确排除 URL 字段
+  mimeType?: never // 明确排除 mimeType 字段
 }
 
 /**
@@ -245,17 +245,17 @@ export interface ImageRef {
  */
 export interface FullImageData {
   metadata: ImageMetadata
-  data: string                 // base64编码的图像数据（不含data URL前缀）
+  data: string // base64编码的图像数据（不含data URL前缀）
 }
 
 /**
  * 图像存储配置
  */
 export interface ImageStorageConfig {
-  maxCacheSize?: number        // 最大缓存大小（字节），默认 50MB
-  maxAge?: number              // 最大保留时间（毫秒），默认 7天
-  maxCount?: number            // 最大图像数量，默认 100张
-  autoCleanupThreshold?: number  // 自动清理阈值（达到此比例时触发），默认 0.8
+  maxCacheSize?: number // 最大缓存大小（字节），默认 50MB
+  maxAge?: number // 最大保留时间（毫秒），默认 7天
+  maxCount?: number // 最大图像数量，默认 100张
+  autoCleanupThreshold?: number // 自动清理阈值（达到此比例时触发），默认 0.8
 }
 
 /**
@@ -264,7 +264,7 @@ export interface ImageStorageConfig {
  */
 export interface IImageStorageService {
   // 基础 CRUD 操作
-  saveImage(data: FullImageData): Promise<string>  // 返回图像ID
+  saveImage(data: FullImageData): Promise<string> // 返回图像ID
   getImage(id: string): Promise<FullImageData | null>
   getMetadata(id: string): Promise<ImageMetadata | null>
   deleteImage(id: string): Promise<void>
@@ -274,8 +274,8 @@ export interface IImageStorageService {
   clearAll(): Promise<void>
 
   // 清理策略
-  cleanupOldImages(): Promise<number>  // 返回清理的图像数量
-  enforceQuota(): Promise<void>        // 强制执行配额限制
+  cleanupOldImages(): Promise<number> // 返回清理的图像数量
+  enforceQuota(): Promise<void> // 强制执行配额限制
 
   // 查询和统计
   listAllMetadata(): Promise<ImageMetadata[]>
@@ -310,4 +310,3 @@ export function createImageRef(id: string): ImageRef {
 
 // 导出抽象基类
 export { AbstractImageProviderAdapter } from './adapters/abstract-adapter'
-

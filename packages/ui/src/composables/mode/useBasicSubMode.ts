@@ -29,7 +29,7 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
     singleton = {
       mode: ref<BasicSubMode>('system'),
       initialized: false,
-      initializing: null
+      initializing: null,
     }
   }
 
@@ -44,13 +44,8 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
 
     singleton!.initializing = (async () => {
       try {
-        const saved = await getPreference<BasicSubMode>(
-          UI_SETTINGS_KEYS.BASIC_SUB_MODE,
-          'system'
-        )
-        singleton!.mode.value = (saved === 'system' || saved === 'user')
-          ? saved
-          : 'system'
+        const saved = await getPreference<BasicSubMode>(UI_SETTINGS_KEYS.BASIC_SUB_MODE, 'system')
+        singleton!.mode.value = saved === 'system' || saved === 'user' ? saved : 'system'
 
         console.log(`[useBasicSubMode] 初始化完成，当前值: ${singleton!.mode.value}`)
 
@@ -91,6 +86,6 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
     setBasicSubMode,
     switchToSystem,
     switchToUser,
-    ensureInitialized
+    ensureInitialized,
   }
 }

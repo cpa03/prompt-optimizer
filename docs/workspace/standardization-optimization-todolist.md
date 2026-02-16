@@ -18,11 +18,13 @@
 #### 实施步骤
 
 1. **安装依赖**
+
    ```bash
    pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
    ```
 
 2. **创建配置文件** `.prettierrc.json`
+
    ```json
    {
      "semi": false,
@@ -37,6 +39,7 @@
    ```
 
 3. **创建忽略文件** `.prettierignore`
+
    ```
    dist/
    node_modules/
@@ -46,16 +49,15 @@
    ```
 
 4. **更新 ESLint 配置** `.eslintrc.json`
+
    ```json
    {
-     "extends": [
-       "eslint:recommended",
-       "plugin:prettier/recommended"
-     ]
+     "extends": ["eslint:recommended", "plugin:prettier/recommended"]
    }
    ```
 
 5. **添加 npm 脚本** `package.json`
+
    ```json
    {
      "scripts": {
@@ -66,6 +68,7 @@
    ```
 
 6. **配置 VS Code 自动格式化** `.vscode/settings.json`
+
    ```json
    {
      "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -117,6 +120,7 @@
 #### 需求分析
 
 当前问题：
+
 - 项目中大量使用裸 `console.log`，生产环境无法控制
 - 无法按模块/功能域过滤日志
 - 缺少性能监控（函数执行时间、API 调用耗时）
@@ -156,17 +160,31 @@ class Logger {
     }
   }
 
-  debug(message: string, ...args: unknown[]) { /* ... */ }
-  info(message: string, ...args: unknown[]) { /* ... */ }
-  warn(message: string, ...args: unknown[]) { /* ... */ }
-  error(message: string, ...args: unknown[]) { /* ... */ }
+  debug(message: string, ...args: unknown[]) {
+    /* ... */
+  }
+  info(message: string, ...args: unknown[]) {
+    /* ... */
+  }
+  warn(message: string, ...args: unknown[]) {
+    /* ... */
+  }
+  error(message: string, ...args: unknown[]) {
+    /* ... */
+  }
 
   // 性能监控
-  time(label: string) { /* ... */ }
-  timeEnd(label: string) { /* ... */ }
+  time(label: string) {
+    /* ... */
+  }
+  timeEnd(label: string) {
+    /* ... */
+  }
 
   // 创建子 logger
-  child(prefix: string): Logger { /* ... */ }
+  child(prefix: string): Logger {
+    /* ... */
+  }
 }
 
 // 使用示例
@@ -175,6 +193,7 @@ logger.info('切换模式', { from: 'basic-system', to: 'pro-user' })
 ```
 
 **优点**：
+
 - 零依赖，轻量级
 - 开发环境全日志，生产环境只显示警告和错误
 - 支持按模块创建子 logger
@@ -182,6 +201,7 @@ logger.info('切换模式', { from: 'basic-system', to: 'pro-user' })
 ##### 方案 B：使用第三方库
 
 推荐库：
+
 - **pino** - 高性能，JSON 格式（适合后端日志聚合）
 - **consola** - 美观，支持浏览器和 Node.js
 - **debug** - 经典轻量级，npm 下载量最高
@@ -197,6 +217,7 @@ logger.info('切换模式', { from: 'basic-system', to: 'pro-user' })
    - 开发/生产环境自动适配
 
 2. **创建预设 logger 实例**
+
    ```typescript
    // packages/ui/src/utils/loggers.ts
    export const sessionLogger = logger.child('[SessionManager]')
@@ -209,10 +230,11 @@ logger.info('切换模式', { from: 'basic-system', to: 'pro-user' })
    - 使用 ESLint 规则禁止直接使用 `console.log`
 
 4. **添加性能监控**
+
    ```typescript
    logger.time('session-restore')
    await restoreAllSessions()
-   logger.timeEnd('session-restore')  // 输出: session-restore: 145ms
+   logger.timeEnd('session-restore') // 输出: session-restore: 145ms
    ```
 
 5. **配置生产环境**
@@ -265,6 +287,6 @@ logger.info('切换模式', { from: 'basic-system', to: 'pro-user' })
 
 ## 更新日志
 
-| 日期 | 操作 | 说明 |
-|------|------|------|
+| 日期       | 操作     | 说明                     |
+| ---------- | -------- | ------------------------ |
 | 2025-01-08 | 创建文档 | 初始化标准化优化待办清单 |

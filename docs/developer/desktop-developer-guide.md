@@ -6,9 +6,9 @@
 
 ### 技术选型：为何选择 Electron？
 
--   **技术栈统一**: Electron 允许我们复用现有的 JavaScript/TypeScript 和 Vue 技术栈，无需引入 Rust (Tauri 方案) 等新技术，降低了团队的学习成本和开发门槛。
--   **最小化代码侵入**: 通过 Electron 的进程间通信（IPC）机制，我们可以实现一个无缝的 API 请求代理，仅需在 SDK 初始化时注入一个自定义的网络请求函数，对核心业务逻辑 (`packages/core`) 的侵入极小。
--   **生态成熟**: Electron 拥有庞大而成熟的社区和生态系统，为未来的功能扩展（如自动更新、系统通知）提供了强有力的保障。
+- **技术栈统一**: Electron 允许我们复用现有的 JavaScript/TypeScript 和 Vue 技术栈，无需引入 Rust (Tauri 方案) 等新技术，降低了团队的学习成本和开发门槛。
+- **最小化代码侵入**: 通过 Electron 的进程间通信（IPC）机制，我们可以实现一个无缝的 API 请求代理，仅需在 SDK 初始化时注入一个自定义的网络请求函数，对核心业务逻辑 (`packages/core`) 的侵入极小。
+- **生态成熟**: Electron 拥有庞大而成熟的社区和生态系统，为未来的功能扩展（如自动更新、系统通知）提供了强有力的保障。
 
 ## 2. 架构设计
 
@@ -59,12 +59,14 @@
 在纯Web应用中，UI和Core生活在同一个世界里（单进程），可以直接通信。但在Electron中，主进程和渲染进程是两个**完全隔离的操作系统进程**，拥有各自独立的内存空间。
 
 如果在UI层（渲染进程）直接调用 `createModelManager()`，会发生什么？
+
 - **数据孤岛**：会在渲染进程中创建一个**全新的、空白的**`ModelManager`实例。它与主进程中那个拥有真实数据的实例**互不相通**，导致数据永远无法同步。
 - **能力缺失**：`core`模块的部分功能（如未来要实现的文件读写）依赖于Node.js环境。渲染进程（基于Chromium）没有这些能力，调用相关功能将直接导致**应用崩溃**。
 
 #### 2. `ipcRenderer` 与 `ipcMain`：两个世界的电话
 
 进程间通信（IPC）是连接这两个隔离世界的唯一桥梁。
+
 - **`ipcRenderer`**: 安装在**渲染进程**的"电话"，专门用于向主进程"打电话"（发起请求）。
 - **`ipcMain`**: 安装在**主进程**的"总机"，专门用于"接电话"（处理请求）。
 
@@ -77,6 +79,7 @@
 `ElectronModelManagerProxy`这类代理类的核心作用是**"假装"自己是真正的 `ModelManager`**，从而让UI层的代码可以像以前一样无缝调用，无需关心背后复杂的跨进程通信。
 
 它的工作流程是一场精密的"拦截-转发-返回"：
+
 1. **UI调用**：UI调用`modelManager.getModels()`。
 2. **Proxy拦截**：实际上调用的是`ElectronModelManagerProxy`实例的同名方法。
 3. **Proxy转发**：该方法不包含业务逻辑，只负责通过`preload.js`暴露的`electronAPI`，最终调用`ipcRenderer.invoke('model-getModels')`。
@@ -89,9 +92,9 @@
 
 ### 系统要求
 
--   Windows 10/11, macOS, or Linux
--   Node.js 18+
--   pnpm 8+
+- Windows 10/11, macOS, or Linux
+- Node.js 18+
+- pnpm 8+
 
 ### 启动步骤
 
@@ -115,24 +118,24 @@ pnpm dev:desktop
 
 ```javascript
 // main.js - 主进程直接导入并使用 core 包
-const { 
-    createLLMService, 
-    createModelManager,
-    // ... 其他服务
-} = require('@prompt-optimizer/core');
+const {
+  createLLMService,
+  createModelManager,
+  // ... 其他服务
+} = require('@prompt-optimizer/core')
 
 // 在主进程启动时实例化服务
-let llmService;
+let llmService
 app.whenReady().then(() => {
-    // 此处需要一个适合 Node.js 的存储方案 (见下文)
-    const modelManager = createModelManager(/* ... */);
-    
-    // 创建一个在 Node.js 环境中运行的真实 LLMService 实例
-    llmService = createLLMService(modelManager);
-    
-    // 将服务实例传递给 IPC 设置函数
-    setupIPC(llmService);
-});
+  // 此处需要一个适合 Node.js 的存储方案 (见下文)
+  const modelManager = createModelManager(/* ... */)
+
+  // 创建一个在 Node.js 环境中运行的真实 LLMService 实例
+  llmService = createLLMService(modelManager)
+
+  // 将服务实例传递给 IPC 设置函数
+  setupIPC(llmService)
+})
 ```
 
 ### 高层 IPC 接口
@@ -142,40 +145,40 @@ app.whenReady().then(() => {
 ```javascript
 // main.js - 提供服务接口
 function setupIPC(llmService) {
-    ipcMain.handle('llm-testConnection', async (event, provider) => {
-        try {
-            await llmService.testConnection(provider);
-            return { success: true };
-        } catch (error) {
-            return { success: false, error: error.message };
-        }
-    });
-    // ... 其他接口的实现
+  ipcMain.handle('llm-testConnection', async (event, provider) => {
+    try {
+      await llmService.testConnection(provider)
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  })
+  // ... 其他接口的实现
 }
 
 // preload.js - 暴露服务接口
 contextBridge.exposeInMainWorld('electronAPI', {
-    llm: {
-        testConnection: (provider) => ipcRenderer.invoke('llm-testConnection', provider),
-        // ... 其他接口的暴露
-    }
-});
+  llm: {
+    testConnection: (provider) => ipcRenderer.invoke('llm-testConnection', provider),
+    // ... 其他接口的暴露
+  },
+})
 ```
 
 ### 存储策略
 
 由于渲染进程的 `IndexedDB` 在主进程 (Node.js) 中不可用，我们为桌面端设计了分阶段的存储方案：
 
--   **第一阶段 (当前实现):** 采用一个临时的**内存存储**方案。这使得新架构可以快速运行起来，但应用关闭后数据会丢失。
--   **第二阶段 (未来计划):** 实现一个**文件存储 (`FileStorageProvider`)**，将模型、模板等数据以 JSON 文件的形式持久化存储在用户本地磁盘上，充分利用桌面环境的优势。
+- **第一阶段 (当前实现):** 采用一个临时的**内存存储**方案。这使得新架构可以快速运行起来，但应用关闭后数据会丢失。
+- **第二阶段 (未来计划):** 实现一个**文件存储 (`FileStorageProvider`)**，将模型、模板等数据以 JSON 文件的形式持久化存储在用户本地磁盘上，充分利用桌面环境的优势。
 
 ## 5. 构建与部署
 
 ### 开发脚本
 
--   `pnpm dev:desktop`: 同时启动前端开发服务器和 Electron 应用，用于日常开发。
--   `pnpm build:web`: 仅构建前端 Web 应用，产物输出到 `packages/desktop/web-dist`。
--   `pnpm build:desktop`: 构建最终的可分发桌面应用程序（如 `.exe` 或 `.dmg`）。
+- `pnpm dev:desktop`: 同时启动前端开发服务器和 Electron 应用，用于日常开发。
+- `pnpm build:web`: 仅构建前端 Web 应用，产物输出到 `packages/desktop/web-dist`。
+- `pnpm build:desktop`: 构建最终的可分发桌面应用程序（如 `.exe` 或 `.dmg`）。
 
 ### 生产版本构建流程
 
@@ -198,8 +201,8 @@ pnpm build:desktop
     "productName": "Prompt Optimizer",
     "directories": { "output": "dist" },
     "files": [
-      "main.js", 
-      "preload.js", 
+      "main.js",
+      "preload.js",
       "web-dist/**/*", // 将构建好的前端应用打包进去
       "node_modules/**/*"
     ],
@@ -214,24 +217,27 @@ pnpm build:desktop
 ## 6. 故障排除
 
 **1. 应用启动失败或界面空白**
--   确保 `pnpm install` 已成功执行。
--   确认 `pnpm build:web` 是否成功执行，并且 `packages/desktop/web-dist` 目录已生成且内容不为空。
--   尝试清理并重新安装: `pnpm store prune && pnpm install`。
+
+- 确保 `pnpm install` 已成功执行。
+- 确认 `pnpm build:web` 是否成功执行，并且 `packages/desktop/web-dist` 目录已生成且内容不为空。
+- 尝试清理并重新安装: `pnpm store prune && pnpm install`。
 
 **2. Electron 安装不完整**
--   这通常是网络问题。可以尝试配置 `electron_mirror` 环境变量或手动安装。
--   手动安装命令:
-    ```bash
-    # (路径可能因 pnpm 版本而异)
-    cd node_modules/.pnpm/electron@<version>/node_modules/electron
-    node install.js
-    ```
+
+- 这通常是网络问题。可以尝试配置 `electron_mirror` 环境变量或手动安装。
+- 手动安装命令:
+  ```bash
+  # (路径可能因 pnpm 版本而异)
+  cd node_modules/.pnpm/electron@<version>/node_modules/electron
+  node install.js
+  ```
 
 **3. API 调用失败**
--   检查 API 密钥是否在桌面应用的 "模型管理" 页面中正确配置。
--   打开开发者工具 (`Ctrl+Shift+I`) 查看渲染进程的 `Console`。
--   **关键：** 由于核心 API 调用逻辑已移至主进程，请务必**检查启动桌面应用的终端（命令行窗口）中的日志输出**，那里会包含最直接的 `node-fetch` 错误信息。
--   确认网络连接正常。
+
+- 检查 API 密钥是否在桌面应用的 "模型管理" 页面中正确配置。
+- 打开开发者工具 (`Ctrl+Shift+I`) 查看渲染进程的 `Console`。
+- **关键：** 由于核心 API 调用逻辑已移至主进程，请务必**检查启动桌面应用的终端（命令行窗口）中的日志输出**，那里会包含最直接的 `node-fetch` 错误信息。
+- 确认网络连接正常。
 
 ## 7. 未来架构改进方向
 
@@ -252,4 +258,4 @@ pnpm build:desktop
 
 社区中成熟的`tRPC`框架也提供了类似的思路，其核心就是"零代码生成"的类型安全API层。我们可以借鉴其思想，甚至尝试将其集成到Electron的IPC机制中。
 
-采用此方案后，我们的开发流程将变得极为高效和安全，彻底消除手动维护IPC调用可能带来的所有潜在错误。 
+采用此方案后，我们的开发流程将变得极为高效和安全，彻底消除手动维护IPC调用可能带来的所有潜在错误。

@@ -7,7 +7,7 @@ const ROUTES: Array<{ name: string; hashPath: string }> = [
   { name: 'pro-multi', hashPath: '/#/pro/multi' },
   { name: 'pro-variable', hashPath: '/#/pro/variable' },
   { name: 'image-text2image', hashPath: '/#/image/text2image' },
-  { name: 'image-image2image', hashPath: '/#/image/image2image' }
+  { name: 'image-image2image', hashPath: '/#/image/image2image' },
 ]
 
 test.describe('P0 route smoke', () => {
@@ -18,13 +18,17 @@ test.describe('P0 route smoke', () => {
 
       // 应用初始化完成后再跳转到目标路由，避免 RootBootstrapRoute/globalSettings 初始化的竞态
       // 触发一次“默认路由跳转”后再进入目标路由，更稳定。
-      await expect(page.locator('.loading-container')).toHaveCount(0, { timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD })
+      await expect(page.locator('.loading-container')).toHaveCount(0, {
+        timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD,
+      })
 
       await page.goto(route.hashPath)
       await page.waitForLoadState('networkidle')
 
       // 等待应用进入 isReady（loading-container 会在未就绪时渲染）
-      await expect(page.locator('.loading-container')).toHaveCount(0, { timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD })
+      await expect(page.locator('.loading-container')).toHaveCount(0, {
+        timeout: TIMEOUTS.NAVIGATION.PAGE_LOAD,
+      })
 
       await expect(page).toHaveURL(new RegExp(`#${route.hashPath.replace('/#', '')}$`))
       await expect(page.locator('#app, [id="app"], main')).toBeAttached()

@@ -45,12 +45,15 @@ VariableAwareInput.vue (主组件)
 ### 1. 核心文件结构
 
 #### 📄 `useVariableDetection.ts` - 变量检测引擎
+
 **功能职责**:
+
 - 正则提取 `{{variable}}` 占位符
 - 变量分类逻辑 (全局/临时/预定义/缺失)
 - 变量位置信息追踪
 
 **核心接口**:
+
 ```typescript
 export interface DetectedVariable {
   name: string
@@ -62,21 +65,27 @@ export interface DetectedVariable {
 ```
 
 #### 📄 `codemirror-extensions.ts` - CodeMirror 扩展集合
+
 **功能职责**:
+
 - `variableHighlighter()` - 变量高亮渲染
 - `variableAutocompletion()` - 自动完成功能
 - `missingVariableTooltip()` - 缺失变量悬浮提示
 - `createThemeExtension()` - 主题适配
 
 #### 📄 `VariableAwareInput.vue` - 主组件重构
+
 **功能职责**:
+
 - CodeMirror 编辑器初始化和管理
 - 变量数据状态管理
 - 事件处理和数据绑定
 - 文本选择合法性校验与安全替换逻辑
 
 #### 🔒 Selection Safety Helpers（组件内）
+
 **新增职责**:
+
 - `validateSelection()`：阻止跨越 `{{ }}` 边界的非法选择
 - `countOccurrencesOutsideVariables()`：统计出现次数时自动忽略占位符内部的命中
 - `replaceAllOccurrencesOutsideVariables()`：批量替换时仅处理纯文本命中，保护已存在的变量占位符
@@ -86,17 +95,25 @@ export interface DetectedVariable {
 ### 2. 变量高亮系统
 
 #### 颜色方案设计
+
 ```css
-.cm-variable-global     { background: #e6f7ff; }    /* 全局变量 - 蓝色 */
-.cm-variable-temporary  { background: #f6ffed; }    /* 临时变量 - 绿色 */
-.cm-variable-predefined { background: #f9f0ff; }    /* 预定义变量 - 紫色 */
-.cm-variable-missing    {
-  background: #fff1f0;                           /* 缺失变量 - 红色 */
+.cm-variable-global {
+  background: #e6f7ff;
+} /* 全局变量 - 蓝色 */
+.cm-variable-temporary {
+  background: #f6ffed;
+} /* 临时变量 - 绿色 */
+.cm-variable-predefined {
+  background: #f9f0ff;
+} /* 预定义变量 - 紫色 */
+.cm-variable-missing {
+  background: #fff1f0; /* 缺失变量 - 红色 */
   text-decoration: underline wavy red;
 }
 ```
 
 #### 变量分类优先级
+
 1. **预定义变量** (最高优先级)
 2. **全局变量**
 3. **临时变量**
@@ -105,11 +122,13 @@ export interface DetectedVariable {
 ### 3. 自动完成系统
 
 #### 触发机制
+
 - 输入 `{{` 自动触发补全弹窗
 - 支持变量名、来源、值预览显示
 - 按优先级排序显示 (预定义 > 全局 > 临时)
 
 #### 补全内容结构
+
 ```typescript
 {
   label: variableName,           // 变量名
@@ -124,6 +143,7 @@ export interface DetectedVariable {
 ### 4. 缺失变量快捷添加
 
 #### 交互流程
+
 1. 用户悬停在缺失变量上
 2. 显示提示信息: "该变量尚未定义"
 3. 显示"添加到临时变量"按钮
@@ -137,12 +157,15 @@ export interface DetectedVariable {
 ### 1. CodeMirror 6 依赖管理
 
 #### 🚨 问题: 依赖安装位置错误
+
 **现象**:
+
 ```
 [vite]: Rollup failed to resolve import "codemirror" from "VariableAwareInput.vue"
 ```
 
 **解决方案**:
+
 ```bash
 # 在 packages/ui 目录下安装
 cd packages/ui
@@ -150,13 +173,16 @@ pnpm add codemirror @codemirror/state @codemirror/view @codemirror/language @cod
 ```
 
 #### 🚨 问题: 类型导入警告
+
 **现象**:
+
 ```
 "DecorationSet" is not exported by "@codemirror/view/dist/index.js"
 "CompletionResult" is not exported by "@codemirror/autocomplete/dist/index.js"
 ```
 
 **解决方案**:
+
 ```typescript
 // 错误的导入方式
 import { DecorationSet } from '@codemirror/view'
@@ -170,33 +196,38 @@ import type { CompletionResult } from '@codemirror/autocomplete'
 ### 2. Vue 事件传递链路
 
 #### 🚨 问题: 事件声明缺失
+
 **现象**:
+
 ```
 [Vue warn]: Extraneous non-emits event listeners (addMissingVariable) were passed to component
 ```
 
 **解决方案**: 在 `InputPanel.vue` 中正确声明事件
+
 ```typescript
 const emit = defineEmits<{
-  "add-missing-variable": [varName: string];
-}>();
+  'add-missing-variable': [varName: string]
+}>()
 
 // 添加事件处理函数
 const handleAddMissingVariable = (varName: string) => {
-  emit("add-missing-variable", varName);
-};
+  emit('add-missing-variable', varName)
+}
 
 // ContextUserWorkspace.vue
 const handleAddMissingVariable = (name: string) => {
-  temporaryVariables.value[name] = "";
-  emit("variable-change", name, "");
-};
+  temporaryVariables.value[name] = ''
+  emit('variable-change', name, '')
+}
 ```
 
 ### 3. CodeMirror 扩展集成
 
 #### 挑战: ViewPlugin 装饰器系统
+
 **解决方案**: 使用 RangeSetBuilder 高效管理装饰器
+
 ```typescript
 buildDecorations(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>()
@@ -220,9 +251,11 @@ buildDecorations(view: EditorView): DecorationSet {
 ### 4. 变量提取安全性回归
 
 #### 🚨 问题: 全部替换破坏变量名
+
 **现象**: 早期实现直接对全文正则替换，可能把 `{{customer_name}}` 中选中的 `customer` 替换为新变量名，导致占位符损坏。
 
 **解决方案**: 在组件内新增一组助手函数，保证所有统计和替换都忽略 `{{ }}` 内部的文本。
+
 ```typescript
 const validateSelection = (...) => { /* 检查是否跨越变量边界 */ }
 const countOccurrencesOutsideVariables = (...) => { /* 忽略占位符内部 */ }
@@ -242,10 +275,12 @@ if (data.replaceAll) {
 ## 📊 实际修改文件清单
 
 ### 新增文件
+
 - `packages/ui/src/components/variable-extraction/useVariableDetection.ts` — 变量解析与分类核心。
 - `packages/ui/src/components/variable-extraction/codemirror-extensions.ts` — CodeMirror 高亮、补全、提示扩展集合。
 
 ### 主要更新文件
+
 - `packages/ui/src/components/variable-extraction/VariableAwareInput.vue` — 替换为 CodeMirror 实现，并新增 Selection Safety Helpers。
 - `packages/ui/src/components/InputPanel.vue` — 转发 `add-missing-variable` 事件。
 - `packages/ui/src/components/context-mode/ContextUserWorkspace.vue` — 同步临时变量并处理新增/删除/清空事件。
@@ -254,6 +289,7 @@ if (data.replaceAll) {
 - `package.json`、`packages/ui/package.json` — 增补 CodeMirror 6 所需依赖。
 
 ### 依赖包
+
 ```json
 {
   "codemirror": "^6.0.2",
@@ -314,11 +350,13 @@ if (data.replaceAll) {
 ## 🚀 部署与测试
 
 ### 开发环境
+
 - **构建命令**: `pnpm dev:fresh`
 - **访问地址**: http://localhost:18184/
 - **测试路径**: 上下文-用户模式 → 用户提示词输入框
 
 ### 测试步骤
+
 1. 访问 http://localhost:18184/
 2. 切换到"上下文-用户"模式
 3. 在用户提示词输入框中输入包含变量的文本
@@ -331,11 +369,13 @@ if (data.replaceAll) {
 ## 🔮 后续优化建议
 
 ### 短期优化 (可选)
+
 1. **性能优化**: 大文档中的变量检测性能
 2. **交互优化**: 键盘快捷键支持
 3. **视觉优化**: 高亮颜色的深色模式适配
 
 ### 长期扩展 (可选)
+
 1. **变量验证**: 变量命名规范检查
 2. **变量统计**: 使用频率分析
 3. **批量操作**: 变量批量重命名/删除
@@ -345,12 +385,15 @@ if (data.replaceAll) {
 ## 📝 技术债务记录
 
 ### 已解决
+
 - ✅ CodeMirror 依赖安装位置问题
 - ✅ TypeScript 类型导入问题
 - ✅ Vue 事件声明问题
 
 ### 无遗留技术债务
+
 当前实现遵循以下最佳实践:
+
 - ✅ 单一职责原则
 - ✅ 依赖注入模式
 - ✅ 类型安全编程
@@ -362,16 +405,19 @@ if (data.replaceAll) {
 ## 🏆 项目价值
 
 ### 用户价值
+
 - **效率提升**: 变量可视化，减少错误
 - **体验优化**: 智能补全，快速输入
 - **易用性**: 一键添加缺失变量
 
 ### 技术价值
+
 - **架构升级**: 从原生 textarea 升级到专业代码编辑器
 - **可扩展性**: 模块化扩展系统，便于后续功能添加
 - **代码质量**: 类型安全、模块化、可测试
 
 ### 业务价值
+
 - **差异化**: 相比竞品更专业的变量管理体验
 - **用户留存**: 降低使用门槛，提升满意度
 - **功能完整**: 为后续高级功能奠定基础

@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-iterate-general',
@@ -32,7 +32,7 @@ export const template: Template = {
 - 直接输出新的“优化后图像提示词”（自然语言、纯文本）
 - 禁止添加任何前缀或解释；仅输出结果文本
 - 保持可读性与可执行性
-- 仅输出结果，不要解释过程`
+- 仅输出结果，不要解释过程`,
     },
     {
       role: 'user',
@@ -42,8 +42,8 @@ export const template: Template = {
 本次迭代方向：
 {{iterateInput}}
 
-请据此输出新的优化后图像提示词：`
-    }
+请据此输出新的优化后图像提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -51,7 +51,7 @@ export const template: Template = {
     author: 'System',
     description: '基于上一次优化结果进行小步可控的图像提示词迭代，保持风格连续与视觉意图',
     templateType: 'imageIterate',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

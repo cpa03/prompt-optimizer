@@ -4,7 +4,7 @@ import {
   ViewPlugin,
   ViewUpdate,
   hoverTooltip,
-  type DecorationSet
+  type DecorationSet,
 } from '@codemirror/view'
 import { RangeSetBuilder } from '@codemirror/state'
 import type { ThemeCommonVars } from 'naive-ui'
@@ -12,7 +12,7 @@ import {
   autocompletion,
   CompletionContext,
   type Completion,
-  type CompletionResult
+  type CompletionResult,
 } from '@codemirror/autocomplete'
 import type { DetectedVariable } from './useVariableDetection'
 import { COMPONENT_CONSTANTS } from '../../config/constants'
@@ -64,14 +64,14 @@ function parseColor(color: string | undefined | null): RgbTuple | null {
       return {
         r: Number.parseInt(hex[0] + hex[0], 16),
         g: Number.parseInt(hex[1] + hex[1], 16),
-        b: Number.parseInt(hex[2] + hex[2], 16)
+        b: Number.parseInt(hex[2] + hex[2], 16),
       }
     }
     if (hex.length === 6 || hex.length === 8) {
       return {
         r: Number.parseInt(hex.slice(0, 2), 16),
         g: Number.parseInt(hex.slice(2, 4), 16),
-        b: Number.parseInt(hex.slice(4, 6), 16)
+        b: Number.parseInt(hex.slice(4, 6), 16),
       }
     }
     return null
@@ -82,7 +82,7 @@ function parseColor(color: string | undefined | null): RgbTuple | null {
     return {
       r: Number.parseInt(rgbMatch[1], 10),
       g: Number.parseInt(rgbMatch[2], 10),
-      b: Number.parseInt(rgbMatch[3], 10)
+      b: Number.parseInt(rgbMatch[3], 10),
     }
   }
 
@@ -91,7 +91,9 @@ function parseColor(color: string | undefined | null): RgbTuple | null {
 
 function toHex({ r, g, b }: RgbTuple): string {
   const clamp = (value: number) => Math.max(0, Math.min(255, Math.round(value)))
-  return `#${clamp(r).toString(16).padStart(2, '0')}${clamp(g).toString(16).padStart(2, '0')}${clamp(b)
+  return `#${clamp(r).toString(16).padStart(2, '0')}${clamp(g).toString(16).padStart(2, '0')}${clamp(
+    b
+  )
     .toString(16)
     .padStart(2, '0')}`
 }
@@ -101,7 +103,7 @@ function mixColors(source: RgbTuple, target: RgbTuple, ratio: number): RgbTuple 
   return {
     r: source.r + (target.r - source.r) * resolved,
     g: source.g + (target.g - source.g) * resolved,
-    b: source.b + (target.b - source.b) * resolved
+    b: source.b + (target.b - source.b) * resolved,
   }
 }
 
@@ -163,9 +165,7 @@ const VARIABLE_VALID_REGEX = new RegExp(`^${VARIABLE_CHAR_CLASS}*$`, 'u')
  * - 预定义变量: 紫色
  * - 缺失变量: 红色
  */
-export function variableHighlighter(
-  getVariables: (doc: string) => DetectedVariable[]
-) {
+export function variableHighlighter(getVariables: (doc: string) => DetectedVariable[]) {
   return ViewPlugin.fromClass(
     class {
       decorations: DecorationSet
@@ -192,8 +192,8 @@ export function variableHighlighter(
               attributes: {
                 'data-variable-name': variable.name,
                 'data-variable-source': variable.source,
-                'data-variable-value': variable.value || ''
-              }
+                'data-variable-value': variable.value || '',
+              },
             })
             builder.add(variable.from, variable.to, decoration)
           }
@@ -203,7 +203,7 @@ export function variableHighlighter(
       }
     },
     {
-      decorations: (v) => v.decorations
+      decorations: (v) => v.decorations,
     }
   )
 }
@@ -241,7 +241,7 @@ export function variableAutocompletion(
               name,
               source: 'temporary',
               valuePreview: preview,
-              boost: 3
+              boost: 3,
             })
           )
         }
@@ -257,7 +257,7 @@ export function variableAutocompletion(
               name,
               source: 'global',
               valuePreview: preview,
-              boost: 2
+              boost: 2,
             })
           )
         }
@@ -265,9 +265,9 @@ export function variableAutocompletion(
         return {
           from: word.from + 2, // 跳过 {{
           options,
-          validFor: VARIABLE_VALID_REGEX
+          validFor: VARIABLE_VALID_REGEX,
         }
-      }
+      },
     ],
     // 自动完成配置
     activateOnTyping: true,
@@ -276,7 +276,7 @@ export function variableAutocompletion(
     optionClass: (completion) => {
       const source = (completion as VariableCompletionMeta).sourceType
       return source ? `variable-completion-${source}` : ''
-    }
+    },
   })
 }
 
@@ -301,7 +301,7 @@ export function createVariableCompletionOption({
   name,
   source,
   valuePreview,
-  boost
+  boost,
 }: CompletionOptionParams): Completion {
   const completion = {
     label: name,
@@ -326,10 +326,10 @@ export function createVariableCompletionOption({
       view.dispatch({
         changes: { from, to, insert: insertText },
         selection: {
-          anchor: from + insertText.length + existingClosings
-        }
+          anchor: from + insertText.length + existingClosings,
+        },
       })
-    }
+    },
   } as Completion & VariableCompletionMeta
 
   completion.sourceType = source
@@ -363,11 +363,12 @@ export function existingVariableTooltip(
 
     if (!isExisting) return null
 
-    const targetElement = element.classList?.contains('cm-variable-global') ||
-                         element.classList?.contains('cm-variable-temporary') ||
-                         element.classList?.contains('cm-variable-predefined')
-      ? element
-      : element.parentElement
+    const targetElement =
+      element.classList?.contains('cm-variable-global') ||
+      element.classList?.contains('cm-variable-temporary') ||
+      element.classList?.contains('cm-variable-predefined')
+        ? element
+        : element.parentElement
 
     if (!targetElement) return null
 
@@ -380,12 +381,11 @@ export function existingVariableTooltip(
     const accentColorMap: Record<string, string> = {
       global: theme.sourceGlobalColor || '#2080f0',
       temporary: theme.sourceTemporaryColor || '#18a058',
-      predefined: theme.sourcePredefinedColor || '#8a63d2'
+      predefined: theme.sourcePredefinedColor || '#8a63d2',
     }
 
     const accentColor = accentColorMap[varSource] || '#2080f0'
-    const surfaceOverlay =
-      theme.surfaceOverlay || withAlpha(theme.backgroundColor, 0.92, '#ffffff')
+    const surfaceOverlay = theme.surfaceOverlay || withAlpha(theme.backgroundColor, 0.92, '#ffffff')
     const shadow = theme.shadow || '0 12px 32px rgba(15, 23, 42, 0.18)'
 
     const text = view.state.doc.toString()
@@ -487,7 +487,7 @@ export function existingVariableTooltip(
         dom.appendChild(valueSection)
 
         return { dom }
-      }
+      },
     }
   })
 }
@@ -599,7 +599,7 @@ export function missingVariableTooltip(
         dom.appendChild(button)
 
         return { dom }
-      }
+      },
     }
   })
 }
@@ -619,7 +619,10 @@ export function createThemeExtension(
   const inputBackgroundColor = themeVars.inputColor ?? themeVars.cardColor ?? 'transparent'
 
   const readonlyBackgroundColor =
-    themeVars.inputColorDisabled ?? themeVars.inputColor ?? themeVars.cardColor ?? inputBackgroundColor
+    themeVars.inputColorDisabled ??
+    themeVars.inputColor ??
+    themeVars.cardColor ??
+    inputBackgroundColor
 
   const resolvedBackgroundColor = options.readonly ? readonlyBackgroundColor : inputBackgroundColor
 
@@ -637,7 +640,7 @@ export function createThemeExtension(
         themeVars.infoColorSuppl ?? themeVars.infoColor ?? themeVars.primaryColor,
         fallbackText,
         isDark
-      )} !important`
+      )} !important`,
     },
     temporary: {
       backgroundColor: withAlpha(
@@ -649,7 +652,7 @@ export function createThemeExtension(
         themeVars.successColorSuppl ?? themeVars.successColor ?? themeVars.primaryColor,
         fallbackText,
         isDark
-      )} !important`
+      )} !important`,
     },
     predefined: {
       backgroundColor: withAlpha(
@@ -661,7 +664,7 @@ export function createThemeExtension(
         themeVars.primaryColorSuppl ?? themeVars.primaryColor,
         fallbackText,
         isDark
-      )} !important`
+      )} !important`,
     },
     missing: {
       backgroundColor: withAlpha(
@@ -673,13 +676,13 @@ export function createThemeExtension(
         themeVars.errorColorSuppl ?? themeVars.errorColor,
         fallbackText,
         isDark
-      )} !important`
+      )} !important`,
     },
     activeLine: withAlpha(
-      isDark ? themeVars.textColor1 : themeVars.primaryColorSuppl ?? themeVars.primaryColor,
+      isDark ? themeVars.textColor1 : (themeVars.primaryColorSuppl ?? themeVars.primaryColor),
       isDark ? 0.12 : 0.08,
-      isDark ? 'rgba(255, 255, 255, 0.08)' : themeVars.hoverColor ?? 'rgba(0, 0, 0, 0.05)'
-    )
+      isDark ? 'rgba(255, 255, 255, 0.08)' : (themeVars.hoverColor ?? 'rgba(0, 0, 0, 0.05)')
+    ),
   }
 
   return EditorView.theme({
@@ -688,33 +691,33 @@ export function createThemeExtension(
       color: themeVars.textColor1,
       fontSize: '14px',
       fontFamily: 'inherit',
-      height: '100%'
+      height: '100%',
     },
     '.cm-content': {
       padding: '8px',
       caretColor: themeVars.primaryColor,
-      fontFamily: 'inherit'
+      fontFamily: 'inherit',
     },
     '.cm-cursor': {
-      borderLeftColor: themeVars.primaryColor
+      borderLeftColor: themeVars.primaryColor,
     },
     '.cm-selectionBackground, ::selection': {
-      backgroundColor: themeVars.primaryColorSuppl + '40' // 40% opacity
+      backgroundColor: themeVars.primaryColorSuppl + '40', // 40% opacity
     },
     '&.cm-focused .cm-selectionBackground, &.cm-focused ::selection': {
-      backgroundColor: themeVars.primaryColorSuppl + '60' // 60% opacity
+      backgroundColor: themeVars.primaryColorSuppl + '60', // 60% opacity
     },
     '.cm-activeLine': {
-      backgroundColor: highlightColors.activeLine
+      backgroundColor: highlightColors.activeLine,
     },
     '.cm-activeLineGutter': {
       backgroundColor: highlightColors.activeLine,
-      color: themeVars.textColor1
+      color: themeVars.textColor1,
     },
     '.cm-gutters': {
       backgroundColor: resolvedBackgroundColor,
       color: themeVars.textColor3,
-      border: 'none'
+      border: 'none',
     },
     // 变量高亮样式 - 根据主题动态调整背景色和文字颜色
     '.cm-variable-global': {
@@ -722,21 +725,21 @@ export function createThemeExtension(
       color: highlightColors.global.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     '.cm-variable-temporary': {
       backgroundColor: highlightColors.temporary.backgroundColor,
       color: highlightColors.temporary.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     '.cm-variable-predefined': {
       backgroundColor: highlightColors.predefined.backgroundColor,
       color: highlightColors.predefined.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500'
+      fontWeight: '500',
     },
     '.cm-variable-missing': {
       backgroundColor: highlightColors.missing.backgroundColor,
@@ -746,7 +749,7 @@ export function createThemeExtension(
       fontWeight: '500',
       textDecoration: 'underline wavy red',
       textDecorationThickness: '2px',
-      textUnderlineOffset: '2px'
-    }
+      textUnderlineOffset: '2px',
+    },
   })
 }

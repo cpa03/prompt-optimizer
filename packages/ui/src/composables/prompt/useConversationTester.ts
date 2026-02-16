@@ -2,7 +2,12 @@ import { reactive, type Ref } from 'vue'
 import { useToast } from '../ui/useToast'
 import { useI18n } from 'vue-i18n'
 import { getI18nErrorMessage } from '../../utils/error'
-import type { ToolDefinition, ToolCall, ToolCallResult, ConversationMessage } from '@prompt-optimizer/core'
+import type {
+  ToolDefinition,
+  ToolCall,
+  ToolCallResult,
+  ConversationMessage,
+} from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 import type { VariableManagerHooks } from './useVariableManager'
 import type { TestAreaPanelInstance } from '../../components/types/test-area'
@@ -75,7 +80,11 @@ export function useConversationTester(
       if (isCompareMode) {
         // 对比模式：并发测试原始和优化会话
         const originalTestPromise = state.testConversation('original', testVariables, testPanelRef)
-        const optimizedTestPromise = state.testConversation('optimized', testVariables, testPanelRef)
+        const optimizedTestPromise = state.testConversation(
+          'optimized',
+          testVariables,
+          testPanelRef
+        )
         await Promise.all([originalTestPromise, optimizedTestPromise])
       } else {
         // 单一模式：只测试优化后的会话
@@ -145,11 +154,12 @@ export function useConversationTester(
         // - 原始会话（original）：只有选中的消息使用 originalContent（V0），其他消息使用当前版本
         // - 优化会话（optimized）：所有消息都使用当前版本
         const messages: ConversationMessage[] = isOriginal
-          ? optimizationContext.value.map(msg => ({
+          ? optimizationContext.value.map((msg) => ({
               ...msg,
-              content: (selectedMessageId?.value && msg.id === selectedMessageId.value)
-                ? (msg.originalContent || msg.content)
-                : msg.content
+              content:
+                selectedMessageId?.value && msg.id === selectedMessageId.value
+                  ? msg.originalContent || msg.content
+                  : msg.content,
             }))
           : optimizationContext.value
 
@@ -168,10 +178,7 @@ export function useConversationTester(
             ...streamHandler,
             onToolCall: (toolCall: ToolCall) => {
               if (!hasTools) return
-              console.log(
-                `[useConversationTester] ${type} test tool call received:`,
-                toolCall
-              )
+              console.log(`[useConversationTester] ${type} test tool call received:`, toolCall)
               const toolCallResult: ToolCallResult = {
                 toolCall,
                 status: 'success',

@@ -1,10 +1,18 @@
 import { test, expect } from '../fixtures'
-import { TIMEOUTS } from '../constants/timeouts';
+import { TIMEOUTS } from '../constants/timeouts'
 import { navigateToMode } from '../helpers/common'
-import { fillOriginalPrompt, clickOptimizeButton, expectOptimizedResultNotEmpty } from '../helpers/optimize'
+import {
+  fillOriginalPrompt,
+  clickOptimizeButton,
+  expectOptimizedResultNotEmpty,
+} from '../helpers/optimize'
 import * as fs from 'fs/promises'
 import * as path from 'path'
-import { IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT, IMAGE_GENERATION_TEST_TIMEOUT, WORKSPACE_VISIBLE } from '../constants/timeouts'
+import {
+  IMAGE_GENERATION_WITH_UPLOAD_TEST_TIMEOUT,
+  IMAGE_GENERATION_TEST_TIMEOUT,
+  WORKSPACE_VISIBLE,
+} from '../constants/timeouts'
 
 const MODE = 'image-text2image' as const
 
@@ -24,7 +32,9 @@ async function openSelectAndWaitForVisibleOptions(page: any, select: any) {
 
   const ensureOpen = async () => {
     await select.click()
-    await expect.poll(async () => await visibleOptions.count(), { timeout: WORKSPACE_VISIBLE }).toBeGreaterThan(0)
+    await expect
+      .poll(async () => await visibleOptions.count(), { timeout: WORKSPACE_VISIBLE })
+      .toBeGreaterThan(0)
   }
 
   try {
@@ -70,7 +80,9 @@ test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
     await expectOptimizedResultNotEmpty(page, MODE)
 
     // 2) 确保列数为 2（避免默认列数变化导致额外请求，影响 VCR fixture 匹配）
-    const workspace = page.locator('[data-testid="workspace"][data-mode="image-text2image"]').first()
+    const workspace = page
+      .locator('[data-testid="workspace"][data-mode="image-text2image"]')
+      .first()
     // Naive UI 的 radio button 真实可点元素是 label；若 value=2 已默认选中，click 会因拦截重试而超时。
     await workspace.getByRole('radio', { name: '2' }).check()
 
@@ -91,18 +103,24 @@ test.describe('Image Text2Image - 生成（SiliconFlow）', () => {
 
     let originalSrc = ''
     await expect
-      .poll(async () => {
-        originalSrc = (await originalImg.getAttribute('src')) || ''
-        return originalSrc
-      }, { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
+      .poll(
+        async () => {
+          originalSrc = (await originalImg.getAttribute('src')) || ''
+          return originalSrc
+        },
+        { timeout: IMAGE_GENERATION_TEST_TIMEOUT }
+      )
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     let optimizedSrc = ''
     await expect
-      .poll(async () => {
-        optimizedSrc = (await optimizedImg.getAttribute('src')) || ''
-        return optimizedSrc
-      }, { timeout: IMAGE_GENERATION_TEST_TIMEOUT })
+      .poll(
+        async () => {
+          optimizedSrc = (await optimizedImg.getAttribute('src')) || ''
+          return optimizedSrc
+        },
+        { timeout: IMAGE_GENERATION_TEST_TIMEOUT }
+      )
       .toMatch(/^data:image\/(png|jpeg);base64,|^https?:\/\//)
 
     // 在 record 模式下保存一张样例图供 image2image 上传复用。

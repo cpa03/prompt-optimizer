@@ -9,10 +9,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
-      '@prompt-optimizer/ui': resolve(__dirname, '../ui')
+      '@prompt-optimizer/ui': resolve(__dirname, '../ui'),
     },
   },
-  base: './',  // 使用相对路径
+  base: './', // 使用相对路径
   build: {
     outDir: 'dist',
     minify: 'terser',
@@ -30,75 +30,77 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       input: {
-        popup: resolve(__dirname, 'index.html')
+        popup: resolve(__dirname, 'index.html'),
       },
       onwarn(warning, warn) {
         // Suppress dynamic import warnings - core is intentionally imported both ways
-        if (warning.code === 'DYNAMIC_IMPORT_VARIABLE' || 
-            (warning.message && warning.message.includes('dynamic import'))) {
-          return;
+        if (
+          warning.code === 'DYNAMIC_IMPORT_VARIABLE' ||
+          (warning.message && warning.message.includes('dynamic import'))
+        ) {
+          return
         }
         // Suppress currentInstance warning - it's a false positive from Vue internals
         if (warning.message && warning.message.includes('currentInstance')) {
-          return;
+          return
         }
-        warn(warning);
+        warn(warning)
       },
       output: {
         entryFileNames: `assets/[name].js`,
         chunkFileNames: `assets/[name]-[hash].js`,
         assetFileNames: (assetInfo) => {
           if (assetInfo.name === 'background.js') {
-            return 'background.js';
+            return 'background.js'
           }
-          return `assets/[name].[ext]`;
+          return `assets/[name].[ext]`
         },
         manualChunks(id) {
           // Split vendor libraries into separate chunks to reduce main bundle size
           if (id.includes('node_modules')) {
             // Vue ecosystem - core framework
             if (id.includes('vue/dist') || id.includes('vue-router') || id.includes('pinia')) {
-              return 'vendor-vue';
+              return 'vendor-vue'
             }
             // UI Frameworks
             if (id.includes('naive-ui')) {
-              return 'vendor-ui-naive';
+              return 'vendor-ui-naive'
             }
             // Element Plus
             if (id.includes('element-plus') || id.includes('@element-plus')) {
-              return 'vendor-ui-element';
+              return 'vendor-ui-element'
             }
             // Icons
             if (id.includes('@element-plus/icons') || id.includes('@vicons')) {
-              return 'vendor-icons';
+              return 'vendor-icons'
             }
             // CodeMirror - large editor library
             if (id.includes('@codemirror') || id.includes('codemirror')) {
-              return 'vendor-codemirror';
+              return 'vendor-codemirror'
             }
             // Utilities - small packages
             if (id.includes('lodash') || id.includes('dayjs') || id.includes('date-fns')) {
-              return 'vendor-utils';
+              return 'vendor-utils'
             }
             // Core package - our own code
             if (id.includes('@prompt-optimizer/core')) {
-              return 'core';
+              return 'core'
             }
             // Other node_modules go to vendor chunk
-            return 'vendor';
+            return 'vendor'
           }
-          
+
           // Split UI package components
           if (id.includes('@prompt-optimizer/ui')) {
             // Workspace components
             if (id.includes('Workspace')) {
-              return 'ui-workspace';
+              return 'ui-workspace'
             }
             // Other UI components
-            return 'ui-components';
+            return 'ui-components'
           }
-        }
-      }
+        },
+      },
     },
     chunkSizeWarningLimit: 3500, // Extension popup.js contains full app logic, allow larger chunks
     // Suppress dynamic import warnings - core is intentionally imported both ways
@@ -106,17 +108,17 @@ export default defineConfig({
     dynamicImportVarsOptions: {
       warnOnError: false,
     },
-    copyPublicDir: true
+    copyPublicDir: true,
   },
   server: {
     port: 5174,
-    https: {}
+    https: {},
   },
   define: {
     // Fix vue-i18n devtools error in production
-    '__INTLIFY_PROD_DEVTOOLS__': JSON.stringify(false),
-    '__INTLIFY_DROP_MESSAGE_COMPILER__': JSON.stringify(false),
-    '__VUE_I18N_FULL_INSTALL__': JSON.stringify(true),
-    '__VUE_I18N_LEGACY_API__': JSON.stringify(false)
-  }
-}) 
+    __INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
+    __INTLIFY_DROP_MESSAGE_COMPILER__: JSON.stringify(false),
+    __VUE_I18N_FULL_INSTALL__: JSON.stringify(true),
+    __VUE_I18N_LEGACY_API__: JSON.stringify(false),
+  },
+})

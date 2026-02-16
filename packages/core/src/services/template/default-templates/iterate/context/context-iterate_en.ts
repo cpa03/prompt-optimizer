@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-iterate',
@@ -39,7 +39,7 @@ export const template: Template = {
 
 ## Output
 - Output ONLY the iterated prompt text
-`
+`,
     },
     {
       role: 'user',
@@ -50,18 +50,19 @@ Iteration requirements:
 {{iterateInput}}
 
 Please output the iterated prompt text only:
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: 'Context-aware iteration: minimal changes with tool-aware constraints and verifiable outputs',
+    description:
+      'Context-aware iteration: minimal changes with tool-aware constraints and verifiable outputs',
     templateType: 'contextIterate',
     language: 'en',
     variant: 'context',
-    tags: ['context','iterate']
+    tags: ['context', 'iterate'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

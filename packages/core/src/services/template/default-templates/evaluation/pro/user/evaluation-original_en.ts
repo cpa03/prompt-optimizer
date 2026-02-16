@@ -4,7 +4,7 @@
  * Evaluate effectiveness of original user prompt with variables
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-original',
@@ -99,7 +99,7 @@ improvements should be **specific and actionable** suggestions:
 - ✓ Point out how to better utilize a specific variable
 - ✓ Suggest adjusting variable reference positions
 - ✓ Suggest adding constraints or explanations for variable values
-- ✓ Point out issues with variable and static text coordination`
+- ✓ Point out issues with variable and static text coordination`,
     },
     {
       role: 'user',
@@ -128,8 +128,8 @@ improvements should be **specific and actionable** suggestions:
 
 ---
 
-Please strictly evaluate the above test result and provide specific improvement suggestions for the user prompt, with particular focus on variable utilization.`
-    }
+Please strictly evaluate the above test result and provide specific improvement suggestions for the user prompt, with particular focus on variable utilization.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -138,7 +138,7 @@ Please strictly evaluate the above test result and provide specific improvement 
     description: 'Evaluate effectiveness of original user prompt with variables',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'original', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'original', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

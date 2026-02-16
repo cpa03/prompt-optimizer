@@ -5,23 +5,28 @@
 ## 基本信息
 
 ### 插件名称
+
 - **中文**：提示词优化器
 - **英文**：Prompt Optimizer
 
 ### 插件简短描述（132字符以内）
+
 - **中文**：智能提示词增强工具：一键优化、改进提示词质量，提升AI回复准确度。多模型支持(OpenAI/Gemini/DeepSeek)，纯客户端处理确保数据安全，无需中间服务器。
 - **英文**：Smart prompt enhancement tool: One-click optimization to improve prompt quality and AI response accuracy. Multi-model support (OpenAI/Gemini/DeepSeek), client-side processing for data security, no intermediary servers.
 
 ### 版本号
+
 1.0.0
 
 ### 支持语言
+
 - 简体中文
 - 英文（计划中）
 
 ## 详细描述
 
 ### 中文详细描述
+
 提示词优化器是一款专为AI对话体验提升设计的Chrome扩展，让您能够轻松优化提示词，获得更精准的AI回复。作为纯客户端应用，它不依赖任何自有服务器，所有数据存储和处理都在您的浏览器本地完成，仅在优化提示词时直接从您的浏览器调用AI服务提供商的API。
 
 **核心功能：**
@@ -62,6 +67,7 @@
 虽然本扩展是纯客户端应用，但优化提示词的功能需要调用第三方AI服务提供商的API。这些API调用直接从您的浏览器发起，不经过我们的服务器，但会将您的提示词内容发送到相应的AI服务提供商（如OpenAI、Google等）。
 
 ### 英文详细描述
+
 Prompt Optimizer is a Chrome extension designed to enhance your AI conversation experience, allowing you to easily optimize prompts for more accurate AI responses. As a pure client-side application, it operates without any proprietary servers, with all data storage and processing done locally in your browser, only directly calling AI service providers' APIs from your browser when optimizing prompts.
 
 **Core Features:**
@@ -105,12 +111,15 @@ While this extension is a pure client-side application, the prompt optimization 
 ## 分类和标签
 
 ### 主要类别
+
 生产力工具
 
 ### 次要类别
+
 写作工具
 
 ### 关键词标签
+
 - AI
 - 提示词
 - Prompt
@@ -125,19 +134,23 @@ While this extension is a pure client-side application, the prompt optimization 
 ## 图片资源
 
 ### 图标尺寸要求
+
 需准备以下尺寸的PNG格式图标：
+
 - 16x16
 - 32x32
 - 48x48
 - 128x128
 
 ### 截图要求
+
 - 至少提供1张截图（1280x800或640x400像素）
 - 推荐提供3-5张截图展示不同功能
 - 确保截图清晰展示插件的主要功能
 - 避免在截图中包含个人信息
 
 ### 宣传图片（可选）
+
 - 尺寸：1400x560像素
 - 格式：PNG或JPEG
 - 用途：在Chrome网上应用商店详情页顶部展示
@@ -145,12 +158,15 @@ While this extension is a pure client-side application, the prompt optimization 
 ## 其他必要信息
 
 ### 网站URL
+
 https://github.com/linshenkx/prompt-optimizer
 
 ### 支持页面URL
+
 https://github.com/linshenkx/prompt-optimizer/issues
 
 ### 隐私政策URL
+
 https://github.com/linshenkx/prompt-optimizer/blob/main/packages/extension/privacy-policy.md
 
 ## 提交清单
@@ -172,4 +188,4 @@ https://github.com/linshenkx/prompt-optimizer/blob/main/packages/extension/priva
 3. 所有图片资源要清晰、专业
 4. 隐私政策必须明确说明如何处理用户数据
 5. 测试所有功能，确保在不同环境下正常工作
-6. 版本更新时保持递增的版本号 
+6. 版本更新时保持递增的版本号

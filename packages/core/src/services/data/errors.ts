@@ -39,4 +39,3 @@ export class DataExportFailedError extends DataError {
     this.name = 'DataExportFailedError'
   }
 }
-

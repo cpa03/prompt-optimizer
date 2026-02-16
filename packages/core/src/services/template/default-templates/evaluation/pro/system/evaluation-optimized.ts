@@ -4,7 +4,7 @@
  * 评估优化后消息在多消息对话中的效果
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-multi-optimized',
@@ -103,7 +103,7 @@ improvements 应该是**通用性**改进，例如：
 - ✓ 进一步增强消息清晰度
 - ✓ 优化消息结构
 - ✓ 改善与上下文的衔接
-- ✓ 添加通用的约束或要求`
+- ✓ 添加通用的约束或要求`,
     },
     {
       role: 'user',
@@ -135,8 +135,8 @@ improvements 应该是**通用性**改进，例如：
 
 ---
 
-请严格评估优化后消息的效果，并给出进一步改进的通用性建议。`
-    }
+请严格评估优化后消息的效果，并给出进一步改进的通用性建议。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -145,7 +145,7 @@ improvements 应该是**通用性**改进，例如：
     description: '评估多消息对话中优化后消息的效果',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'system', 'multi-message']
+    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'system', 'multi-message'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

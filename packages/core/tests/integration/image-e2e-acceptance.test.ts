@@ -9,7 +9,7 @@ import type {
   ImageModel,
   ImageModelConfig,
   ImageRequest,
-  ImageResult
+  ImageResult,
 } from '../../src/services/image/types'
 import { IMAGE_ERROR_CODES } from '../../src/constants/error-codes'
 
@@ -20,7 +20,7 @@ const stubProvider: ImageProvider = {
   description: 'Stub provider for acceptance tests',
   requiresApiKey: false,
   defaultBaseURL: 'https://example.invalid',
-  supportsDynamicModels: false
+  supportsDynamicModels: false,
 }
 
 const stubModel: ImageModel = {
@@ -30,13 +30,15 @@ const stubModel: ImageModel = {
   providerId: 'test',
   capabilities: { text2image: true, image2image: false },
   parameterDefinitions: [],
-  defaultParameterValues: { outputMimeType: 'image/png' }
+  defaultParameterValues: { outputMimeType: 'image/png' },
 }
 
 const fakeAdapter: IImageProviderAdapter = {
   getProvider: () => stubProvider,
   getModels: () => [stubModel],
-  async getModelsAsync() { return [stubModel] },
+  async getModelsAsync() {
+    return [stubModel]
+  },
   buildDefaultModel(modelId: string) {
     return { ...stubModel, id: modelId, name: modelId }
   },
@@ -47,10 +49,10 @@ const fakeAdapter: IImageProviderAdapter = {
         providerId: config.providerId,
         modelId: config.modelId,
         configId: config.id,
-        finishReason: 'done'
-      }
+        finishReason: 'done',
+      },
     }
-  }
+  },
 }
 
 const stubRegistry: IImageAdapterRegistry = {
@@ -58,25 +60,35 @@ const stubRegistry: IImageAdapterRegistry = {
     if (providerId.toLowerCase() !== 'test') throw new Error(`未知提供商: ${providerId}`)
     return fakeAdapter
   },
-  getAllProviders() { return [stubProvider] },
+  getAllProviders() {
+    return [stubProvider]
+  },
   getStaticModels(providerId: string) {
     if (providerId.toLowerCase() !== 'test') return []
     return [stubModel]
   },
-  async getDynamicModels(providerId: string) { return this.getStaticModels(providerId) },
-  async getModels(providerId: string) { return this.getStaticModels(providerId) },
-  getAllStaticModels() { return [{ provider: stubProvider, model: stubModel }] },
-  supportsDynamicModels() { return false },
+  async getDynamicModels(providerId: string) {
+    return this.getStaticModels(providerId)
+  },
+  async getModels(providerId: string) {
+    return this.getStaticModels(providerId)
+  },
+  getAllStaticModels() {
+    return [{ provider: stubProvider, model: stubModel }]
+  },
+  supportsDynamicModels() {
+    return false
+  },
   validateProviderModel(providerId: string, modelId: string) {
     return providerId.toLowerCase() === 'test' && modelId === 'test-model'
-  }
+  },
 }
 
 // Mock defaults.ts 以避免在模块加载时执行 getDefaultImageModels()
 vi.mock('../../src/services/image-model/defaults', () => {
   return {
     getDefaultImageModels: () => ({}),
-    defaultImageModels: {}
+    defaultImageModels: {},
   }
 })
 
@@ -90,7 +102,7 @@ vi.mock('../../src/services/image/adapters/registry', () => {
     description: 'Stub provider for acceptance tests',
     requiresApiKey: false,
     defaultBaseURL: 'https://example.invalid',
-    supportsDynamicModels: false
+    supportsDynamicModels: false,
   }
 
   const mockStubModel = {
@@ -100,14 +112,18 @@ vi.mock('../../src/services/image/adapters/registry', () => {
     providerId: 'test',
     capabilities: { text2image: true, image2image: false },
     parameterDefinitions: [],
-    defaultParameterValues: { outputMimeType: 'image/png' }
+    defaultParameterValues: { outputMimeType: 'image/png' },
   }
 
   const mockFakeAdapter = {
     getProvider: () => mockStubProvider,
     getModels: () => [mockStubModel],
-    async getModelsAsync() { return [mockStubModel] },
-    async validateConnection() { return true },
+    async getModelsAsync() {
+      return [mockStubModel]
+    },
+    async validateConnection() {
+      return true
+    },
     async generate(request: any, config: any) {
       return {
         images: [{ b64: 'ZHVtbXk=', mimeType: 'image/png' }],
@@ -115,13 +131,13 @@ vi.mock('../../src/services/image/adapters/registry', () => {
           providerId: config.providerId,
           modelId: config.modelId,
           configId: config.id,
-          finishReason: 'done'
-        }
+          finishReason: 'done',
+        },
       }
     },
     buildDefaultModel(modelId: string) {
       return { ...mockStubModel, id: modelId, name: modelId }
-    }
+    },
   }
 
   const mockStubRegistry = {
@@ -129,29 +145,41 @@ vi.mock('../../src/services/image/adapters/registry', () => {
       if (providerId.toLowerCase() !== 'test') throw new Error(`未知提供商: ${providerId}`)
       return mockFakeAdapter
     },
-    getAllProviders() { return [mockStubProvider] },
+    getAllProviders() {
+      return [mockStubProvider]
+    },
     getStaticModels(providerId: string) {
       if (providerId.toLowerCase() !== 'test') return []
       return [mockStubModel]
     },
-    async getDynamicModels(providerId: string) { return this.getStaticModels(providerId) },
-    async getModels(providerId: string) { return this.getStaticModels(providerId) },
-    getAllStaticModels() { return [{ provider: mockStubProvider, model: mockStubModel }] },
-    supportsDynamicModels() { return false },
-    async validateProviderConnection() { return true },
+    async getDynamicModels(providerId: string) {
+      return this.getStaticModels(providerId)
+    },
+    async getModels(providerId: string) {
+      return this.getStaticModels(providerId)
+    },
+    getAllStaticModels() {
+      return [{ provider: mockStubProvider, model: mockStubModel }]
+    },
+    supportsDynamicModels() {
+      return false
+    },
+    async validateProviderConnection() {
+      return true
+    },
     validateProviderModel(providerId: string, modelId: string) {
       return providerId.toLowerCase() === 'test' && modelId === 'test-model'
-    }
+    },
   }
 
   // 创建一个构造函数形式的 mock 类
-  const MockImageAdapterRegistry = function() {
+  const MockImageAdapterRegistry = function () {
     return mockStubRegistry
   }
 
   return {
     createImageAdapterRegistry: () => mockStubRegistry,
-    ImageAdapterRegistry: MockImageAdapterRegistry
+    ImageAdapterRegistry: MockImageAdapterRegistry,
   }
 })
 
@@ -176,14 +204,14 @@ describe('Acceptance - Image Service E2E', () => {
       paramOverrides: { outputMimeType: 'image/png' },
       // 自包含字段
       provider: stubProvider,
-      model: stubModel
+      model: stubModel,
     }
     await imageModelManager.addConfig(config)
 
     const request: ImageRequest = {
       prompt: 'A scenic mountain with lake',
       configId: 'cfg-test-1',
-      count: 1
+      count: 1,
     }
 
     const result = await imageService.generate(request)
@@ -208,7 +236,7 @@ describe('Acceptance - Image Service E2E', () => {
       paramOverrides: {},
       // 自包含字段
       provider: stubProvider,
-      model: stubModel
+      model: stubModel,
     }
     await imageModelManager.addConfig(cfg)
 
@@ -235,19 +263,19 @@ describe('Acceptance - Image Service E2E', () => {
       paramOverrides: {},
       // 自包含字段
       provider: stubProvider,
-      model: stubModel
+      model: stubModel,
     }
     await imageModelManager.addConfig(cfg)
 
     const request: ImageRequest = {
       prompt: 'Transform this image',
       configId: 'cfg-test-3',
-      inputImage: { b64: 'ZHVtbXk=', mimeType: 'image/png' }
+      inputImage: { b64: 'ZHVtbXk=', mimeType: 'image/png' },
     }
 
     await expect(imageService.generate(request)).rejects.toMatchObject({
       code: IMAGE_ERROR_CODES.MODEL_NOT_SUPPORT_IMAGE2IMAGE,
-      params: { modelName: 'Test Model' }
+      params: { modelName: 'Test Model' },
     })
   })
 })

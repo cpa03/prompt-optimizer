@@ -17,11 +17,11 @@ Context Mode helps by sending your configured **messages / variables / tools** t
 
 Use this table as a quick decision:
 
-| Your goal | Recommended sub-mode |
-| --- | --- |
-| You are doing role-play or multi-turn chat, and want to optimize one specific system/user message while keeping style consistent with the conversation | Multi-message |
-| You have one user prompt, but many reusable parameters (name/date/spec/output format) and want to manage them via {{var}} for reuse & testing | Variable |
-| You want to configure tools (Function Calling) and verify tool behavior during testing | Variable |
+| Your goal                                                                                                                                              | Recommended sub-mode |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| You are doing role-play or multi-turn chat, and want to optimize one specific system/user message while keeping style consistent with the conversation | Multi-message        |
+| You have one user prompt, but many reusable parameters (name/date/spec/output format) and want to manage them via {{var}} for reuse & testing          | Variable             |
+| You want to configure tools (Function Calling) and verify tool behavior during testing                                                                 | Variable             |
 
 Both sub-modes support the test area (multi-column comparison) on the right.
 
@@ -116,7 +116,7 @@ Recommended starting template:
 
 ## 5. Common pitfalls
 
-- “It replies instead of optimizing”: check your template instructions; the recommended multi-message template is explicitly *optimization-only*.
+- “It replies instead of optimizing”: check your template instructions; the recommended multi-message template is explicitly _optimization-only_.
 - “Optimize button disabled”: in Multi-message mode, you likely didn't select a target message or didn't choose model/template.
 - “The message content changed after optimize”: expected behavior; use version switching to revert to V0.
 - “I still see {{var}} in preview/output”: that variable has no value yet. Set the variable value, then re-run preview/test.

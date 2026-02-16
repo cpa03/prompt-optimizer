@@ -29,7 +29,7 @@ export const DANGEROUS_PARAM_KEY_PATTERNS = [
   'baseurl',
   'base_url',
   'endpoint',
-  'url'
+  'url',
 ] as const
 
 export type UnifiedParameterValueType = 'string' | 'number' | 'integer' | 'boolean'

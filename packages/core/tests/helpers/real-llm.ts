@@ -5,29 +5,29 @@
  * 根据本地环境变量自动选择可用的提供商和模型
  */
 
-import { getDefaultTextModels } from '../../src/services/model/defaults';
-import type { TextModelConfig } from '../../src/services/llm/types';
-import { createLLMService } from '../../src/services/llm/service';
-import { createModelManager } from '../../src/services/model/manager';
-import { LocalStorageProvider } from '../../src/services/storage/localStorageProvider';
-import type { ILLMService } from '../../src/services/llm/types';
-import type { IModelManager } from '../../src/services/model/types';
-import dotenv from 'dotenv';
-import path from 'path';
+import { getDefaultTextModels } from '../../src/services/model/defaults'
+import type { TextModelConfig } from '../../src/services/llm/types'
+import { createLLMService } from '../../src/services/llm/service'
+import { createModelManager } from '../../src/services/model/manager'
+import { LocalStorageProvider } from '../../src/services/storage/localStorageProvider'
+import type { ILLMService } from '../../src/services/llm/types'
+import type { IModelManager } from '../../src/services/model/types'
+import dotenv from 'dotenv'
+import path from 'path'
 
 // 加载环境变量
-dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
 
 /**
  * 可用提供商信息
  */
 export interface AvailableProvider {
   /** 提供商ID */
-  providerId: string;
+  providerId: string
   /** 提供商显示名称 */
-  providerName: string;
+  providerName: string
   /** 完整的模型配置 */
-  modelConfig: TextModelConfig;
+  modelConfig: TextModelConfig
 }
 
 /**
@@ -35,15 +35,15 @@ export interface AvailableProvider {
  */
 export interface RealLLMTestContext {
   /** 提供商信息 */
-  provider: AvailableProvider;
+  provider: AvailableProvider
   /** 模型配置（使用第一个可用模型） */
-  modelConfig: TextModelConfig;
+  modelConfig: TextModelConfig
   /** LLM服务实例 */
-  llmService: ILLMService;
+  llmService: ILLMService
   /** 模型管理器实例 */
-  modelManager: IModelManager;
+  modelManager: IModelManager
   /** 模型键（已添加到modelManager） */
-  modelKey: string;
+  modelKey: string
 }
 
 /**
@@ -55,8 +55,8 @@ export interface RealLLMTestContext {
  */
 export function getAvailableProviders(): AvailableProvider[] {
   // 使用系统自带的配置加载器
-  const allConfigs = getDefaultTextModels();
-  const available: AvailableProvider[] = [];
+  const allConfigs = getDefaultTextModels()
+  const available: AvailableProvider[] = []
 
   // 筛选已启用（有API密钥）的提供商
   for (const [providerId, config] of Object.entries(allConfigs)) {
@@ -64,12 +64,12 @@ export function getAvailableProviders(): AvailableProvider[] {
       available.push({
         providerId,
         providerName: config.name,
-        modelConfig: config
-      });
+        modelConfig: config,
+      })
     }
   }
 
-  return available;
+  return available
 }
 
 /**
@@ -78,8 +78,8 @@ export function getAvailableProviders(): AvailableProvider[] {
  * @returns 第一个可用的提供商，如果没有可用提供商则返回undefined
  */
 export function getFirstAvailableProvider(): AvailableProvider | undefined {
-  const available = getAvailableProviders();
-  return available.length > 0 ? available[0] : undefined;
+  const available = getAvailableProviders()
+  return available.length > 0 ? available[0] : undefined
 }
 
 /**
@@ -98,9 +98,9 @@ export function createTestConfig(
     ...provider.modelConfig,
     paramOverrides: {
       ...provider.modelConfig.paramOverrides,
-      ...paramOverrides
-    }
-  };
+      ...paramOverrides,
+    },
+  }
 }
 
 /**
@@ -126,24 +126,24 @@ export function createTestConfig(
  * ```
  */
 export async function createRealLLMTestContext(options?: {
-  paramOverrides?: Record<string, any>;
+  paramOverrides?: Record<string, any>
 }): Promise<RealLLMTestContext | undefined> {
-  const provider = getFirstAvailableProvider();
+  const provider = getFirstAvailableProvider()
   if (!provider) {
-    return undefined;
+    return undefined
   }
 
   // 创建存储和模型管理器
-  const storage = new LocalStorageProvider();
-  await storage.clearAll();
+  const storage = new LocalStorageProvider()
+  await storage.clearAll()
 
-  const modelManager = createModelManager(storage);
+  const modelManager = createModelManager(storage)
 
   // 直接使用默认模型键（= providerId），避免跨测试依赖存储写入
-  const modelKey = provider.providerId;
-  const baseConfig = await modelManager.getModel(modelKey);
+  const modelKey = provider.providerId
+  const baseConfig = await modelManager.getModel(modelKey)
   if (!baseConfig || !baseConfig.enabled) {
-    return undefined;
+    return undefined
   }
 
   // 可选：覆盖参数（写入到 modelManager，使 LLMService 能读取到）
@@ -151,26 +151,26 @@ export async function createRealLLMTestContext(options?: {
     await modelManager.updateModel(modelKey, {
       paramOverrides: {
         ...(baseConfig.paramOverrides ?? {}),
-        ...options.paramOverrides
-      }
-    });
+        ...options.paramOverrides,
+      },
+    })
   }
 
-  const modelConfig = await modelManager.getModel(modelKey);
+  const modelConfig = await modelManager.getModel(modelKey)
   if (!modelConfig) {
-    return undefined;
+    return undefined
   }
 
   // 创建LLM服务
-  const llmService = createLLMService(modelManager);
+  const llmService = createLLMService(modelManager)
 
   return {
     provider,
     modelConfig,
     llmService,
     modelManager,
-    modelKey
-  };
+    modelKey,
+  }
 }
 
 /**
@@ -179,28 +179,28 @@ export async function createRealLLMTestContext(options?: {
  * @returns 是否有至少一个可用的提供商
  */
 export function hasAvailableProvider(): boolean {
-  return getAvailableProviders().length > 0;
+  return getAvailableProviders().length > 0
 }
 
 /**
  * 打印可用提供商信息（用于调试）
  */
 export function printAvailableProviders(): void {
-  const available = getAvailableProviders();
+  const available = getAvailableProviders()
 
   if (available.length === 0) {
-    console.log('❌ 没有可用的API密钥');
-    console.log('\n请在 .env.local 文件中配置至少一个提供商的 API 密钥');
-    console.log('例如：VITE_OPENAI_API_KEY=your_api_key');
-    return;
+    console.log('❌ 没有可用的API密钥')
+    console.log('\n请在 .env.local 文件中配置至少一个提供商的 API 密钥')
+    console.log('例如：VITE_OPENAI_API_KEY=your_api_key')
+    return
   }
 
-  console.log(`✅ 找到 ${available.length} 个可用提供商：\n`);
+  console.log(`✅ 找到 ${available.length} 个可用提供商：\n`)
   available.forEach((p, index) => {
-    console.log(`${index + 1}. ${p.providerName}`);
-    console.log(`   - Provider ID: ${p.providerId}`);
-    console.log(`   - Model: ${p.modelConfig.modelMeta.name} (${p.modelConfig.modelMeta.id})`);
-    console.log(`   - Base URL: ${p.modelConfig.connectionConfig.baseURL || 'default'}`);
-    console.log('');
-  });
+    console.log(`${index + 1}. ${p.providerName}`)
+    console.log(`   - Provider ID: ${p.providerId}`)
+    console.log(`   - Model: ${p.modelConfig.modelMeta.name} (${p.modelConfig.modelMeta.id})`)
+    console.log(`   - Base URL: ${p.modelConfig.connectionConfig.baseURL || 'default'}`)
+    console.log('')
+  })
 }

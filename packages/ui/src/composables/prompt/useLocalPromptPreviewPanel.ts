@@ -30,7 +30,7 @@ export interface LocalPromptPreviewPanel {
  */
 export function useLocalPromptPreviewPanel(
   variables: Ref<Record<string, string>>,
-  contextMode: Ref<ContextMode>,
+  contextMode: Ref<ContextMode>
 ): LocalPromptPreviewPanel {
   const show = ref(false)
   const renderPhase = ref<PromptPreviewRenderPhase>('optimize')

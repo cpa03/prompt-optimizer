@@ -8,18 +8,30 @@ const makeServices = () => {
     async get<T>(key: string, def: T): Promise<T> {
       return (store.has(key) ? store.get(key) : def) as T
     },
-    async set<T>(key: string, value: T) { store.set(key, value) },
+    async set<T>(key: string, value: T) {
+      store.set(key, value)
+    },
     async delete() {},
-    async keys() { return Array.from(store.keys()) },
-    async clear() { store.clear() },
-    async getAll() { const obj: Record<string,string> = {}; for (const [k,v] of store) obj[k]=String(v); return obj }
+    async keys() {
+      return Array.from(store.keys())
+    },
+    async clear() {
+      store.clear()
+    },
+    async getAll() {
+      const obj: Record<string, string> = {}
+      for (const [k, v] of store) obj[k] = String(v)
+      return obj
+    },
   }
   return ref({ preferenceService } as any)
 }
 
 describe('useFunctionMode', () => {
   let services: any
-  beforeEach(() => { services = makeServices() })
+  beforeEach(() => {
+    services = makeServices()
+  })
 
   it('defaults to basic when unset', async () => {
     const { functionMode, ensureInitialized } = useFunctionMode(services)

@@ -99,7 +99,6 @@ export function useAggregatedVariables(
   variableManager?: VariableManagerHooks,
   predefinedVariables?: Record<string, string>
 ): AggregatedVariablesManager {
-
   // 获取临时变量管理器
   const tempVars = useTemporaryVariables()
 
@@ -113,7 +112,7 @@ export function useAggregatedVariables(
 
     // 优先从 variableManager 的 allVariables 中取值，以保留动态上下文
     const resolved = variableManager?.allVariables?.value || {}
-    PREDEFINED_VARIABLES.forEach(varName => {
+    PREDEFINED_VARIABLES.forEach((varName) => {
       if (resolved[varName] !== undefined) {
         map[varName] = resolved[varName]
       } else {
@@ -141,7 +140,7 @@ export function useAggregatedVariables(
   const variablesBySource = computed<VariablesBySource>(() => ({
     predefined: predefinedVarsMap.value,
     global: globalVarsMap.value,
-    temporary: temporaryVarsMap.value
+    temporary: temporaryVarsMap.value,
   }))
 
   /**
@@ -152,9 +151,9 @@ export function useAggregatedVariables(
    */
   const allVariables = computed<Record<string, string>>(() => {
     return {
-      ...predefinedVarsMap.value,  // 最低优先级
-      ...globalVarsMap.value,       // 中等优先级
-      ...temporaryVarsMap.value     // 最高优先级
+      ...predefinedVarsMap.value, // 最低优先级
+      ...globalVarsMap.value, // 中等优先级
+      ...temporaryVarsMap.value, // 最高优先级
     }
   })
 
@@ -209,6 +208,6 @@ export function useAggregatedVariables(
     getVariableSource,
     getVariable,
     hasVariable,
-    listVariableNames
+    listVariableNames,
   }
 }

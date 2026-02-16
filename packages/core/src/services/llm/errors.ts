@@ -3,19 +3,19 @@
  * 基础错误类
  */
 
-import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes';
+import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 
 export class BaseError extends Error {
-  public readonly code: string;
-  public readonly params?: ErrorParams;
+  public readonly code: string
+  public readonly params?: ErrorParams
 
   constructor(code: string, message?: string, params?: ErrorParams) {
-    super(message ? `[${code}] ${message}` : `[${code}]`);
-    this.name = this.constructor.name;
-    this.code = code;
+    super(message ? `[${code}] ${message}` : `[${code}]`)
+    this.name = this.constructor.name
+    this.code = code
     // Prefer structured params for UI translation; fall back to message as {details}.
-    this.params = params ?? (message ? { details: message } : undefined);
-    Object.setPrototypeOf(this, new.target.prototype); // Ensure correct prototype chain | 确保原型链正确
+    this.params = params ?? (message ? { details: message } : undefined)
+    Object.setPrototypeOf(this, new.target.prototype) // Ensure correct prototype chain | 确保原型链正确
   }
 }
 
@@ -25,7 +25,7 @@ export class BaseError extends Error {
  */
 export class APIError extends BaseError {
   constructor(message: string) {
-    super(LLM_ERROR_CODES.API_ERROR, message);
+    super(LLM_ERROR_CODES.API_ERROR, message)
   }
 }
 
@@ -35,7 +35,7 @@ export class APIError extends BaseError {
  */
 export class RequestConfigError extends BaseError {
   constructor(message: string) {
-    super(LLM_ERROR_CODES.CONFIG_ERROR, message);
+    super(LLM_ERROR_CODES.CONFIG_ERROR, message)
   }
 }
 
@@ -45,7 +45,7 @@ export class RequestConfigError extends BaseError {
  */
 export class ValidationError extends BaseError {
   constructor(message: string) {
-    super(LLM_ERROR_CODES.VALIDATION_ERROR, message);
+    super(LLM_ERROR_CODES.VALIDATION_ERROR, message)
   }
 }
 
@@ -55,7 +55,7 @@ export class ValidationError extends BaseError {
  */
 export class InitializationError extends BaseError {
   constructor(message: string) {
-    super(LLM_ERROR_CODES.INITIALIZATION_ERROR, message);
+    super(LLM_ERROR_CODES.INITIALIZATION_ERROR, message)
   }
 }
 
@@ -64,15 +64,15 @@ export class InitializationError extends BaseError {
  * LLM服务基础错误
  */
 export class LLMError extends Error {
-  public readonly code: string;
-  public readonly params?: ErrorParams;
+  public readonly code: string
+  public readonly params?: ErrorParams
 
   constructor(code: string, message?: string, params?: ErrorParams) {
-    super(message ? `[${code}] ${message}` : `[${code}]`);
-    this.name = 'LLMError';
-    this.code = code;
+    super(message ? `[${code}] ${message}` : `[${code}]`)
+    this.name = 'LLMError'
+    this.code = code
     // Prefer structured params for UI translation; fall back to message as {details}.
-    this.params = params ?? (message ? { details: message } : undefined);
+    this.params = params ?? (message ? { details: message } : undefined)
   }
 }
 
@@ -82,8 +82,8 @@ export class LLMError extends Error {
  */
 export class ModelConfigError extends LLMError {
   constructor(message: string) {
-    super(LLM_ERROR_CODES.CONFIG_ERROR, message);
-    this.name = 'ModelConfigError';
+    super(LLM_ERROR_CODES.CONFIG_ERROR, message)
+    this.name = 'ModelConfigError'
   }
 }
 
@@ -103,4 +103,4 @@ export const ERROR_MESSAGES = {
   TEST_FAILED: LLM_ERROR_CODES.TEST_FAILED,
   MODEL_KEY_REQUIRED: LLM_ERROR_CODES.MODEL_KEY_REQUIRED,
   INPUT_TOO_LONG: LLM_ERROR_CODES.INPUT_TOO_LONG,
-} as const; 
+} as const

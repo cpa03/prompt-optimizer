@@ -7,7 +7,7 @@ describe('OpenRouter Integration Test', () => {
     const registry = new ImageAdapterRegistry()
     const providers = registry.getAllProviders()
 
-    const openrouterProvider = providers.find(p => p.id === 'openrouter')
+    const openrouterProvider = providers.find((p) => p.id === 'openrouter')
 
     expect(openrouterProvider).toBeDefined()
     expect(openrouterProvider?.name).toBe('OpenRouter')
@@ -32,8 +32,8 @@ describe('OpenRouter Integration Test', () => {
 
     expect(models.length).toBeGreaterThan(0)
     expect(models[0].id).toBe(openrouterModelId)
-    expect(models.every(m => m.providerId === 'openrouter')).toBe(true)
-    expect(models.every(m => m.capabilities.text2image)).toBe(true)
+    expect(models.every((m) => m.providerId === 'openrouter')).toBe(true)
+    expect(models.every((m) => m.capabilities.text2image)).toBe(true)
   })
 
   it('should support OpenRouter in all static models view', () => {
@@ -41,7 +41,7 @@ describe('OpenRouter Integration Test', () => {
     const allModels = registry.getAllStaticModels()
     const openrouterModelId = new OpenRouterImageAdapter().getModels()[0].id
 
-    const openrouterModels = allModels.filter(item => item.provider.id === 'openrouter')
+    const openrouterModels = allModels.filter((item) => item.provider.id === 'openrouter')
 
     expect(openrouterModels.length).toBeGreaterThan(0)
     expect(openrouterModels[0].model.id).toBe(openrouterModelId)

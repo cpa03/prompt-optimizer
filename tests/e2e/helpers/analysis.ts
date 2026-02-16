@@ -91,10 +91,7 @@ export async function fillOriginalPrompt(
  * await clickAnalyzeButton(page, 'basic-system')
  * ```
  */
-export async function clickAnalyzeButton(
-  page: Page,
-  mode: WorkspaceMode
-): Promise<void> {
+export async function clickAnalyzeButton(page: Page, mode: WorkspaceMode): Promise<void> {
   const workspace = getWorkspace(page, mode)
 
   // 使用 testIdPrefix 动态生成的 data-testid 精确定位

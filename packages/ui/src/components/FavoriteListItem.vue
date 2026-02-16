@@ -2,10 +2,7 @@
   <n-list-item class="favorite-list-item">
     <template #prefix>
       <div class="item-checkbox">
-        <n-checkbox
-          :checked="isSelected"
-          @update:checked="$emit('select', favorite, $event)"
-        />
+        <n-checkbox :checked="isSelected" @update:checked="$emit('select', favorite, $event)" />
       </div>
     </template>
 
@@ -25,21 +22,12 @@
           </div>
           <div class="item-actions">
             <n-button-group size="small">
-              <n-button
-                quaternary
-                @click="$emit('copy', favorite)"
-                title="复制"
-              >
+              <n-button quaternary @click="$emit('copy', favorite)" title="复制">
                 <template #icon>
                   <n-icon><Copy /></n-icon>
                 </template>
               </n-button>
-              <n-button
-                quaternary
-                @click="$emit('use', favorite)"
-                title="使用"
-                type="primary"
-              >
+              <n-button quaternary @click="$emit('use', favorite)" title="使用" type="primary">
                 <template #icon>
                   <n-icon><PlayerPlay /></n-icon>
                 </template>
@@ -87,10 +75,7 @@
                 </template>
                 {{ favorite.useCount }}
               </n-text>
-              <n-dropdown
-                :options="actionMenuOptions"
-                @select="handleActionSelect"
-              >
+              <n-dropdown :options="actionMenuOptions" @select="handleActionSelect">
                 <n-button quaternary size="small">
                   <template #icon>
                     <n-icon><DotsVertical /></n-icon>
@@ -118,91 +103,82 @@ import {
   NButtonGroup,
   NCheckbox,
   NSpace,
-  NDropdown
-} from 'naive-ui';
-import {
-  Copy,
-  PlayerPlay,
-  Eye,
-  DotsVertical,
-  Edit,
-  Trash,
-  Share,
-  Tag
-} from '@vicons/tabler';
-import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core';
-import { formatRelativeTime } from '../utils/date';
+  NDropdown,
+} from 'naive-ui'
+import { Copy, PlayerPlay, Eye, DotsVertical, Edit, Trash, Share, Tag } from '@vicons/tabler'
+import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core'
+import { formatRelativeTime } from '../utils/date'
 
 interface Props {
-  favorite: FavoritePrompt;
-  category?: FavoriteCategory;
-  isSelected?: boolean;
+  favorite: FavoritePrompt
+  category?: FavoriteCategory
+  isSelected?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isSelected: false
-});
+  isSelected: false,
+})
 
 const emit = defineEmits<{
-  'select': [favorite: FavoritePrompt, selected: boolean];
-  'edit': [favorite: FavoritePrompt];
-  'copy': [favorite: FavoritePrompt];
-  'delete': [favorite: FavoritePrompt];
-  'use': [favorite: FavoritePrompt];
-  'toggle-category': [favorite: FavoritePrompt];
-  'share': [favorite: FavoritePrompt];
-}>();
+  select: [favorite: FavoritePrompt, selected: boolean]
+  edit: [favorite: FavoritePrompt]
+  copy: [favorite: FavoritePrompt]
+  delete: [favorite: FavoritePrompt]
+  use: [favorite: FavoritePrompt]
+  'toggle-category': [favorite: FavoritePrompt]
+  share: [favorite: FavoritePrompt]
+}>()
 
 const actionMenuOptions = [
   {
     label: '编辑',
     key: 'edit',
-    icon: () => h(NIcon, null, { default: () => h(Edit) })
+    icon: () => h(NIcon, null, { default: () => h(Edit) }),
   },
   {
     label: '复制',
     key: 'copy',
-    icon: () => h(NIcon, null, { default: () => h(Copy) })
+    icon: () => h(NIcon, null, { default: () => h(Copy) }),
   },
   {
     label: '分享',
     key: 'share',
-    icon: () => h(NIcon, null, { default: () => h(Share) })
+    icon: () => h(NIcon, null, { default: () => h(Share) }),
   },
   {
     label: '切换分类',
     key: 'category',
-    icon: () => h(NIcon, null, { default: () => h(Tag) })
+    icon: () => h(NIcon, null, { default: () => h(Tag) }),
   },
   {
-    type: 'divider'
+    type: 'divider',
   },
   {
     label: '删除',
     key: 'delete',
-    icon: () => h(NIcon, null, { default: () => h(Trash) })
-  }
-];
+    icon: () => h(NIcon, null, { default: () => h(Trash) }),
+  },
+]
 
 const handleActionSelect = (key: string) => {
   switch (key) {
     case 'edit':
-      emit('edit', props.favorite);
-      break;
+      emit('edit', props.favorite)
+      break
     case 'copy':
-      emit('copy', props.favorite);
-      break;
+      emit('copy', props.favorite)
+      break
     case 'share':
-      emit('share', props.favorite);
-      break;
+      emit('share', props.favorite)
+      break
     case 'category':
-      emit('toggle-category', props.favorite);
-      break;
+      emit('toggle-category', props.favorite)
+      break
     case 'delete':
-      emit('delete', props.favorite);
-      break;
+      emit('delete', props.favorite)
+      break
   }
-};
+}
 </script>
 
 <style scoped>

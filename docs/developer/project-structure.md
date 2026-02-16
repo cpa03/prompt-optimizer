@@ -5,6 +5,7 @@
 ## 1. 项目整体架构
 
 ### 1.1 根目录结构
+
 ```
 prompt-optimizer/
 ├── packages/             # 项目包
@@ -23,6 +24,7 @@ prompt-optimizer/
 ```
 
 ### 1.2 配置文件
+
 - `pnpm-workspace.yaml` - 工作区配置
 - `.env.example` - 环境变量示例
 - `package.json` - 项目配置
@@ -31,11 +33,13 @@ prompt-optimizer/
 - `.gitignore` - Git忽略配置
 
 ### 1.3 工作区文件
+
 - `README.md` - 项目说明文档
 - `scratchpad.md` - 开发笔记和任务规划（已迁移到docs/workspace/）
 - `experience.md` - 项目经验总结（已迁移到docs/workspace/）
 
 ### 1.4 文档目录 (docs/)
+
 - `README.md` - 文档索引
 - `development-guidelines.md` - 开发指南
 - `project-status.md` - 项目状态
@@ -47,6 +51,7 @@ prompt-optimizer/
 ## 2. 核心包结构 (packages/core)
 
 ### 2.1 源代码目录 (packages/core/src/)
+
 ```
 src/
 ├── services/           # 核心服务
@@ -95,13 +100,16 @@ src/
 ```
 
 ### 2.2 API目录 (src/api/)
+
 - `api/llm.js` - LLM API调用封装
 
 ### 2.3 配置目录 (packages/core/config/)
+
 - `models.js` - LLM模型配置
 - `prompts.js` - 提示词模板配置
 
 ### 2.4 测试目录 (packages/core/tests/)
+
 ```
 tests/
 ├── unit/             # 单元测试
@@ -114,6 +122,7 @@ tests/
 ```
 
 ### 2.5 核心包配置
+
 - `package.json` - 核心包配置
 - `tsconfig.json` - TypeScript配置
 - `vitest.config.ts` - 测试配置
@@ -121,6 +130,7 @@ tests/
 ## 3. Web包结构 (packages/web)
 
 ### 3.1 源代码目录 (packages/web/src/)
+
 ```
 src/
 ├── components/        # Vue组件
@@ -154,6 +164,7 @@ src/
 ### 3.2 组件目录详情 (packages/web/src/components/)
 
 #### 核心组件
+
 - `PromptPanel.vue` - 提示词输入和优化面板
 - `InputPanel.vue` - 输入面板组件
 - `OutputPanel.vue` - 输出面板组件
@@ -162,6 +173,7 @@ src/
 - `LoadingSpinner.vue` - 加载动画组件
 
 #### 模型管理架构
+
 - `ModelManager.vue` - **统一模型管理器**
   - 支持文本模型和图像模型的标签页切换
   - 文本模型：直接在该组件内管理
@@ -178,11 +190,13 @@ src/
   - 提供商选择、模型选择、连接配置等表单功能
 
 #### 图像模式组件
+
 - `image-mode/ImageWorkspace.vue` - **图像工作区**
   - 图像模式的主要工作界面
   - 整合文生图、图生图、图像迭代等功能
 
 ### 3.3 测试目录 (packages/web/tests/)
+
 ```
 tests/
 ├── unit/            # 单元测试
@@ -193,6 +207,7 @@ tests/
 ```
 
 ### 3.4 Web包配置
+
 - `package.json` - Web包配置
 - `vite.config.ts` - Vite配置
 - `tailwind.config.js` - TailwindCSS配置
@@ -203,6 +218,7 @@ tests/
 ## 4. 扩展包结构 (packages/extension)
 
 ### 4.1 源代码目录 (packages/extension/src/)
+
 ```
 src/
 ├── popup/           # 弹出窗口界面
@@ -212,12 +228,14 @@ src/
 ```
 
 ### 4.2 扩展包配置
+
 - `package.json` - 扩展包配置
 - `vite.config.ts` - 构建配置
 
 ## 5. 依赖关系
 
 ### 5.1 核心包依赖 (@prompt-optimizer/core)
+
 ```
 @prompt-optimizer/core
 ├── @openai/openai ^4.83.0      # OpenAI SDK
@@ -226,6 +244,7 @@ src/
 ```
 
 ### 5.2 Web包依赖 (@prompt-optimizer/web)
+
 ```
 @prompt-optimizer/web
 ├── @prompt-optimizer/core  # 依赖核心包
@@ -235,9 +254,10 @@ src/
 ```
 
 ### 5.3 扩展包依赖 (@prompt-optimizer/extension)
+
 ```
 @prompt-optimizer/extension
 ├── @prompt-optimizer/core  # 依赖核心包
 ├── @prompt-optimizer/ui    # 依赖UI组件包
 └── vue ^3.5.x             # Vue框架
-``` 
+```

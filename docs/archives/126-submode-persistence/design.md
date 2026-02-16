@@ -1,6 +1,7 @@
 # 子模式持久化设计与实施文档 v4.0
 
 > **重大更新说明：**
+>
 > - ✅ **Phase 1-3 全部完成**：三种功能模式的子模式独立持久化
 > - ✅ **架构升级**：基础/上下文/图像三种模式的子模式完全独立存储
 > - ✅ **导航栏统一**：所有子模式选择器移至导航栏
@@ -11,11 +12,11 @@
 
 ## 🎉 实施状态总览
 
-| 阶段 | 功能模式 | 状态 | 完成日期 | 验证情况 |
-|------|----------|------|----------|----------|
+| 阶段    | 功能模式   | 状态      | 完成日期   | 验证情况    |
+| ------- | ---------- | --------- | ---------- | ----------- |
 | Phase 1 | 上下文模式 | ✅ 已完成 | 2025-10-22 | ✅ 全部通过 |
-| Phase 2 | 基础模式 | ✅ 已完成 | 2025-10-22 | ✅ 全部通过 |
-| Phase 3 | 图像模式 | ✅ 已完成 | 2025-10-22 | ✅ 全部通过 |
+| Phase 2 | 基础模式   | ✅ 已完成 | 2025-10-22 | ✅ 全部通过 |
+| Phase 3 | 图像模式   | ✅ 已完成 | 2025-10-22 | ✅ 全部通过 |
 
 ### 实施概览
 
@@ -53,6 +54,7 @@
 **类型：** `'basic' | 'pro' | 'image'`
 
 **对应界面：**
+
 - `basic` - 基础模式：简单的优化 → 测试流程
 - `pro` - 上下文模式（高级模式）：支持多轮对话、变量、工具
 - `image` - 图像模式：图像提示词优化
@@ -78,7 +80,7 @@
  * 基础模式的子模式类型
  * 用于持久化基础模式下的子模式选择
  */
-export type BasicSubMode = "system" | "user"
+export type BasicSubMode = 'system' | 'user'
 ```
 
 **对应界面：** 基础模式使用同一个组件，但通过 `optimization-mode` prop 控制行为差异
@@ -106,16 +108,16 @@ export type BasicSubMode = "system" | "user"
  * 上下文模式的子模式类型
  * 用于持久化上下文模式下的子模式选择
  */
-export type ProSubMode = "system" | "user"
+export type ProSubMode = 'system' | 'user'
 ```
 
 **对应界面：**
+
 - `system` - 系统提示词优化：`ContextSystemWorkspace.vue`
   - 有会话管理器（ConversationManager）
   - 支持多轮对话上下文
   - 测试时系统提示词作为 system 消息
   - 快捷按钮：📊 全局变量、📝 会话变量
-  
 - `user` - 用户提示词优化：`ContextUserWorkspace.vue`
   - 无会话管理器
   - 优化后的提示词直接作为 user 消息
@@ -144,10 +146,11 @@ export type ProSubMode = "system" | "user"
  * 图像模式的子模式类型
  * 用于持久化图像模式下的子模式选择
  */
-export type ImageSubMode = "text2image" | "image2image"
+export type ImageSubMode = 'text2image' | 'image2image'
 ```
 
 **对应界面：**
+
 - `text2image` - 文生图：文本描述 → 图像提示词
 - `image2image` - 图生图：图像 + 文本描述 → 图像提示词
 
@@ -161,7 +164,8 @@ export type ImageSubMode = "text2image" | "image2image"
 
 **默认值：** `'text2image'`
 
-**特殊说明：** 
+**特殊说明：**
+
 - 图像模式的子模式选择器已从 `ImageWorkspace.vue` 内部移至导航栏
 - `ImageWorkspace.vue` 通过监听 `image-submode-changed` 自定义事件接收导航栏的切换通知
 
@@ -174,14 +178,17 @@ export type ImageSubMode = "text2image" | "image2image"
 #### 原则 1: 状态完全隔离
 
 **重要洞察（用户提出）：**
+
 > "基础模式也应该有自己的存储，这个也应该分开...因为这两个功能模式本质上控制的是不同的，只是当前他们的子模式碰巧都叫 系统/用户提示词优化而已。"
 
 **实现方式：**
+
 - 三个功能模式使用三个完全独立的存储键
 - 三个独立的 Composable 管理各自的状态
 - 即使子模式名称相同（基础和上下文都有 system/user），状态也完全独立
 
 **优势：**
+
 - ✅ 用户体验更好：切换功能模式时，各自记住上次选择
 - ✅ 代码更清晰：职责分离，易于理解和维护
 - ✅ 易于扩展：未来添加新功能模式时不会影响现有模式
@@ -191,6 +198,7 @@ export type ImageSubMode = "text2image" | "image2image"
 #### 原则 2: 单例模式的全局状态
 
 **实现方式：**
+
 ```typescript
 // 每个 composable 内部维护单例状态
 let singleton: {
@@ -201,10 +209,10 @@ let singleton: {
 
 export function useSubMode(services: Ref<AppServices | null>) {
   if (!singleton) {
-    singleton = { 
-      mode: ref<SubModeType>('default'), 
-      initialized: false, 
-      initializing: null 
+    singleton = {
+      mode: ref<SubModeType>('default'),
+      initialized: false,
+      initializing: null,
     }
   }
   // ... 返回只读的 mode 和操作方法
@@ -212,6 +220,7 @@ export function useSubMode(services: Ref<AppServices | null>) {
 ```
 
 **优势：**
+
 - ✅ 全局唯一状态，避免多实例冲突
 - ✅ 任何组件调用都获得相同的状态引用
 - ✅ 自动实现状态共享，无需额外的状态管理库
@@ -221,6 +230,7 @@ export function useSubMode(services: Ref<AppServices | null>) {
 #### 原则 3: 异步初始化
 
 **实现方式：**
+
 ```typescript
 const ensureInitialized = async () => {
   if (singleton!.initialized) return
@@ -228,7 +238,7 @@ const ensureInitialized = async () => {
     await singleton!.initializing
     return
   }
-  
+
   singleton!.initializing = (async () => {
     try {
       const saved = await getPreference<SubModeType>(STORAGE_KEY, DEFAULT_VALUE)
@@ -245,12 +255,13 @@ const ensureInitialized = async () => {
       singleton!.initializing = null
     }
   })()
-  
+
   await singleton!.initializing
 }
 ```
 
 **优势：**
+
 - ✅ 不阻塞应用启动
 - ✅ 避免重复初始化（防抖）
 - ✅ 完善的错误处理和回退机制
@@ -260,6 +271,7 @@ const ensureInitialized = async () => {
 #### 原则 4: 自动持久化
 
 **实现方式：**
+
 ```typescript
 const setSubMode = async (mode: SubModeType) => {
   await ensureInitialized()
@@ -270,6 +282,7 @@ const setSubMode = async (mode: SubModeType) => {
 ```
 
 **优势：**
+
 - ✅ 用户无感知的状态保存
 - ✅ 每次切换自动持久化，不会丢失
 - ✅ 清晰的日志便于调试
@@ -324,7 +337,7 @@ sequenceDiagram
     App->>FM: 初始化功能模式
     FM->>Storage: 读取 FUNCTION_MODE
     Storage-->>FM: 返回 'basic' | 'pro' | 'image'
-    
+
     alt functionMode === 'basic'
         App->>BSM: ensureInitialized()
         BSM->>Storage: 读取 BASIC_SUB_MODE
@@ -379,11 +392,11 @@ export const UI_SETTINGS_KEYS = {
   PREFERRED_LANGUAGE: 'app:settings:ui:preferred-language',
   BUILTIN_TEMPLATE_LANGUAGE: 'app:settings:ui:builtin-template-language',
   FUNCTION_MODE: 'app:settings:ui:function-mode',
-  
+
   // ✅ 子模式持久化（三种功能模式独立存储）
-  BASIC_SUB_MODE: 'app:settings:ui:basic-sub-mode',     // 基础模式的子模式（system/user）
-  PRO_SUB_MODE: 'app:settings:ui:pro-sub-mode',         // 上下文模式的子模式（system/user）
-  IMAGE_SUB_MODE: 'app:settings:ui:image-sub-mode',     // 图像模式的子模式（text2image/image2image）
+  BASIC_SUB_MODE: 'app:settings:ui:basic-sub-mode', // 基础模式的子模式（system/user）
+  PRO_SUB_MODE: 'app:settings:ui:pro-sub-mode', // 上下文模式的子模式（system/user）
+  IMAGE_SUB_MODE: 'app:settings:ui:image-sub-mode', // 图像模式的子模式（text2image/image2image）
 } as const
 ```
 
@@ -400,13 +413,13 @@ export const UI_SETTINGS_KEYS = {
  */
 
 // 基础模式的子模式
-export type BasicSubMode = "system" | "user"
+export type BasicSubMode = 'system' | 'user'
 
 // 上下文模式的子模式
-export type ProSubMode = "system" | "user"
+export type ProSubMode = 'system' | 'user'
 
 // 图像模式的子模式
-export type ImageSubMode = "text2image" | "image2image"
+export type ImageSubMode = 'text2image' | 'image2image'
 ```
 
 ---
@@ -441,10 +454,10 @@ let singleton: {
 
 export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubModeApi {
   if (!singleton) {
-    singleton = { 
-      mode: ref<BasicSubMode>('system'), 
-      initialized: false, 
-      initializing: null 
+    singleton = {
+      mode: ref<BasicSubMode>('system'),
+      initialized: false,
+      initializing: null,
     }
   }
 
@@ -456,17 +469,12 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
       await singleton!.initializing
       return
     }
-    
+
     singleton!.initializing = (async () => {
       try {
-        const saved = await getPreference<BasicSubMode>(
-          UI_SETTINGS_KEYS.BASIC_SUB_MODE, 
-          'system'
-        )
-        singleton!.mode.value = (saved === 'system' || saved === 'user') 
-          ? saved 
-          : 'system'
-        
+        const saved = await getPreference<BasicSubMode>(UI_SETTINGS_KEYS.BASIC_SUB_MODE, 'system')
+        singleton!.mode.value = saved === 'system' || saved === 'user' ? saved : 'system'
+
         console.log(`[useBasicSubMode] 初始化完成，当前值: ${singleton!.mode.value}`)
 
         if (saved !== 'system' && saved !== 'user') {
@@ -485,7 +493,7 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
         singleton!.initializing = null
       }
     })()
-    
+
     await singleton!.initializing
   }
 
@@ -504,12 +512,13 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
     setBasicSubMode,
     switchToSystem,
     switchToUser,
-    ensureInitialized
+    ensureInitialized,
   }
 }
 ```
 
 **设计特点：**
+
 - ✅ 单例模式确保全局唯一状态
 - ✅ 异步初始化防止阻塞
 - ✅ 完善的错误处理
@@ -521,6 +530,7 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
 **文件：** `packages/ui/src/composables/useProSubMode.ts`
 
 **实现：** 与 `useBasicSubMode.ts` 结构完全相同，只是：
+
 - 使用 `ProSubMode` 类型
 - 使用 `UI_SETTINGS_KEYS.PRO_SUB_MODE` 存储键
 - 日志前缀为 `[useProSubMode]`
@@ -530,6 +540,7 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
 **文件：** `packages/ui/src/composables/useImageSubMode.ts`
 
 **实现：** 与 `useBasicSubMode.ts` 结构相同，但：
+
 - 使用 `ImageSubMode` 类型（`'text2image' | 'image2image'`）
 - 使用 `UI_SETTINGS_KEYS.IMAGE_SUB_MODE` 存储键
 - 默认值为 `'text2image'`
@@ -545,10 +556,10 @@ export function useBasicSubMode(services: Ref<AppServices | null>): UseBasicSubM
 
 ```typescript
 import {
-    useBasicSubMode,
-    useProSubMode,
-    useImageSubMode,
-    // ... 其他导入
+  useBasicSubMode,
+  useProSubMode,
+  useImageSubMode,
+  // ... 其他导入
 } from '@prompt-optimizer/ui'
 
 // 功能模式
@@ -564,38 +575,36 @@ const { imageSubMode, setImageSubMode } = useImageSubMode(services as any)
 
 ```vue
 <template #core-nav>
-    <NSpace :size="12" align="center">
-        <!-- 功能模式选择器 -->
-        <FunctionModeSelector
-            :modelValue="functionMode"
-            @update:modelValue="handleModeSelect"
-        />
+  <NSpace :size="12" align="center">
+    <!-- 功能模式选择器 -->
+    <FunctionModeSelector :modelValue="functionMode" @update:modelValue="handleModeSelect" />
 
-        <!-- 子模式选择器 - 基础模式 -->
-        <OptimizationModeSelectorUI
-            v-if="functionMode === 'basic'"
-            :modelValue="basicSubMode"
-            @change="handleBasicSubModeChange"
-        />
+    <!-- 子模式选择器 - 基础模式 -->
+    <OptimizationModeSelectorUI
+      v-if="functionMode === 'basic'"
+      :modelValue="basicSubMode"
+      @change="handleBasicSubModeChange"
+    />
 
-        <!-- 子模式选择器 - 上下文模式 -->
-        <OptimizationModeSelectorUI
-            v-if="functionMode === 'pro'"
-            :modelValue="proSubMode"
-            @change="handleProSubModeChange"
-        />
+    <!-- 子模式选择器 - 上下文模式 -->
+    <OptimizationModeSelectorUI
+      v-if="functionMode === 'pro'"
+      :modelValue="proSubMode"
+      @change="handleProSubModeChange"
+    />
 
-        <!-- 子模式选择器 - 图像模式 -->
-        <ImageModeSelector
-            v-if="functionMode === 'image'"
-            :modelValue="imageSubMode"
-            @change="handleImageSubModeChange"
-        />
-    </NSpace>
+    <!-- 子模式选择器 - 图像模式 -->
+    <ImageModeSelector
+      v-if="functionMode === 'image'"
+      :modelValue="imageSubMode"
+      @change="handleImageSubModeChange"
+    />
+  </NSpace>
 </template>
 ```
 
 **关键特点：**
+
 - ✅ 根据 `functionMode` 动态显示对应的子模式选择器
 - ✅ 三个选择器完全独立，不会相互影响
 - ✅ 统一的 UI 风格和交互体验
@@ -604,65 +613,62 @@ const { imageSubMode, setImageSubMode } = useImageSubMode(services as any)
 
 ```typescript
 onMounted(async () => {
-    // ... 其他初始化代码 ...
+  // ... 其他初始化代码 ...
 
-    // Phase 1: 初始化各功能模式的子模式持久化
-    // 根据当前功能模式，从存储恢复对应的子模式选择
-    if (functionMode.value === "basic") {
-        const { ensureInitialized } = useBasicSubMode(services as any);
-        await ensureInitialized();
-        // 同步到 selectedOptimizationMode 以保持兼容性
-        selectedOptimizationMode.value = basicSubMode.value as OptimizationMode;
-        console.log(`[App] 基础模式子模式已恢复: ${basicSubMode.value}`);
-    } else if (functionMode.value === "pro") {
-        const { ensureInitialized } = useProSubMode(services as any);
-        await ensureInitialized();
-        // 同步到 selectedOptimizationMode 以保持兼容性
-        selectedOptimizationMode.value = proSubMode.value as OptimizationMode;
-        // 同步到 contextMode（关键！否则界面不会切换）
-        await handleContextModeChange(
-            proSubMode.value as import("@prompt-optimizer/core").ContextMode,
-        );
-        console.log(`[App] 上下文模式子模式已恢复: ${proSubMode.value}`);
-    } else if (functionMode.value === "image") {
-        const { ensureInitialized } = useImageSubMode(services as any);
-        await ensureInitialized();
-        console.log(`[App] 图像模式子模式已恢复: ${imageSubMode.value}`);
-    }
+  // Phase 1: 初始化各功能模式的子模式持久化
+  // 根据当前功能模式，从存储恢复对应的子模式选择
+  if (functionMode.value === 'basic') {
+    const { ensureInitialized } = useBasicSubMode(services as any)
+    await ensureInitialized()
+    // 同步到 selectedOptimizationMode 以保持兼容性
+    selectedOptimizationMode.value = basicSubMode.value as OptimizationMode
+    console.log(`[App] 基础模式子模式已恢复: ${basicSubMode.value}`)
+  } else if (functionMode.value === 'pro') {
+    const { ensureInitialized } = useProSubMode(services as any)
+    await ensureInitialized()
+    // 同步到 selectedOptimizationMode 以保持兼容性
+    selectedOptimizationMode.value = proSubMode.value as OptimizationMode
+    // 同步到 contextMode（关键！否则界面不会切换）
+    await handleContextModeChange(proSubMode.value as import('@prompt-optimizer/core').ContextMode)
+    console.log(`[App] 上下文模式子模式已恢复: ${proSubMode.value}`)
+  } else if (functionMode.value === 'image') {
+    const { ensureInitialized } = useImageSubMode(services as any)
+    await ensureInitialized()
+    console.log(`[App] 图像模式子模式已恢复: ${imageSubMode.value}`)
+  }
 
-    console.log("All services and composables initialized.");
+  console.log('All services and composables initialized.')
 })
 ```
 
 #### 功能模式切换处理
 
 ```typescript
-const handleModeSelect = async (mode: "basic" | "pro" | "image") => {
-    await setFunctionMode(mode);
+const handleModeSelect = async (mode: 'basic' | 'pro' | 'image') => {
+  await setFunctionMode(mode)
 
-    // 恢复各功能模式独立的子模式状态
-    if (mode === "basic") {
-        const { ensureInitialized } = useBasicSubMode(services as any);
-        await ensureInitialized();
-        selectedOptimizationMode.value = basicSubMode.value as OptimizationMode;
-        console.log(`[App] 切换到基础模式，已恢复子模式: ${basicSubMode.value}`);
-    } else if (mode === "pro") {
-        const { ensureInitialized } = useProSubMode(services as any);
-        await ensureInitialized();
-        selectedOptimizationMode.value = proSubMode.value as OptimizationMode;
-        await handleContextModeChange(
-            proSubMode.value as import("@prompt-optimizer/core").ContextMode,
-        );
-        console.log(`[App] 切换到上下文模式，已恢复子模式: ${proSubMode.value}`);
-    } else if (mode === "image") {
-        const { ensureInitialized } = useImageSubMode(services as any);
-        await ensureInitialized();
-        console.log(`[App] 切换到图像模式，已恢复子模式: ${imageSubMode.value}`);
-    }
-};
+  // 恢复各功能模式独立的子模式状态
+  if (mode === 'basic') {
+    const { ensureInitialized } = useBasicSubMode(services as any)
+    await ensureInitialized()
+    selectedOptimizationMode.value = basicSubMode.value as OptimizationMode
+    console.log(`[App] 切换到基础模式，已恢复子模式: ${basicSubMode.value}`)
+  } else if (mode === 'pro') {
+    const { ensureInitialized } = useProSubMode(services as any)
+    await ensureInitialized()
+    selectedOptimizationMode.value = proSubMode.value as OptimizationMode
+    await handleContextModeChange(proSubMode.value as import('@prompt-optimizer/core').ContextMode)
+    console.log(`[App] 切换到上下文模式，已恢复子模式: ${proSubMode.value}`)
+  } else if (mode === 'image') {
+    const { ensureInitialized } = useImageSubMode(services as any)
+    await ensureInitialized()
+    console.log(`[App] 切换到图像模式，已恢复子模式: ${imageSubMode.value}`)
+  }
+}
 ```
 
 **关键逻辑：**
+
 - ✅ 切换功能模式后，自动恢复该模式上次的子模式选择
 - ✅ 确保 composable 已初始化（从存储读取）
 - ✅ 同步更新相关的旧变量（`selectedOptimizationMode`, `contextMode`）
@@ -672,39 +678,40 @@ const handleModeSelect = async (mode: "basic" | "pro" | "image") => {
 ```typescript
 // 基础模式子模式变更处理器
 const handleBasicSubModeChange = async (mode: OptimizationMode) => {
-    await setBasicSubMode(mode as import("@prompt-optimizer/core").BasicSubMode);
-    selectedOptimizationMode.value = mode;
-    console.log(`[App] 基础模式子模式已切换并持久化: ${mode}`);
-};
+  await setBasicSubMode(mode as import('@prompt-optimizer/core').BasicSubMode)
+  selectedOptimizationMode.value = mode
+  console.log(`[App] 基础模式子模式已切换并持久化: ${mode}`)
+}
 
 // 上下文模式子模式变更处理器
 const handleProSubModeChange = async (mode: OptimizationMode) => {
-    await setProSubMode(mode as import("@prompt-optimizer/core").ProSubMode);
-    selectedOptimizationMode.value = mode;
-    
-    if (services.value?.contextMode.value !== mode) {
-        await handleContextModeChange(
-            mode as import("@prompt-optimizer/core").ContextMode,
-        );
-    }
-    console.log(`[App] 上下文模式子模式已切换并持久化: ${mode}`);
-};
+  await setProSubMode(mode as import('@prompt-optimizer/core').ProSubMode)
+  selectedOptimizationMode.value = mode
+
+  if (services.value?.contextMode.value !== mode) {
+    await handleContextModeChange(mode as import('@prompt-optimizer/core').ContextMode)
+  }
+  console.log(`[App] 上下文模式子模式已切换并持久化: ${mode}`)
+}
 
 // 图像模式子模式变更处理器
-const handleImageSubModeChange = async (mode: import("@prompt-optimizer/core").ImageSubMode) => {
-    await setImageSubMode(mode);
-    console.log(`[App] 图像模式子模式已切换并持久化: ${mode}`);
-    
-    // 通知 ImageWorkspace 更新
-    if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("image-submode-changed", { 
-            detail: { mode } 
-        }));
-    }
-};
+const handleImageSubModeChange = async (mode: import('@prompt-optimizer/core').ImageSubMode) => {
+  await setImageSubMode(mode)
+  console.log(`[App] 图像模式子模式已切换并持久化: ${mode}`)
+
+  // 通知 ImageWorkspace 更新
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(
+      new CustomEvent('image-submode-changed', {
+        detail: { mode },
+      })
+    )
+  }
+}
 ```
 
 **关键特点：**
+
 - ✅ 三个独立的处理器，职责清晰
 - ✅ 自动调用对应的 `setSubMode` 方法（自动持久化）
 - ✅ 同步更新相关的服务状态
@@ -713,54 +720,54 @@ const handleImageSubModeChange = async (mode: import("@prompt-optimizer/core").I
 #### 历史记录恢复
 
 ```typescript
-const handleHistoryReuse = async (context: { record: any; chainId: string; rootPrompt: string; chain: any }) => {
-    const { record, chain } = context;
-    const rt = chain.rootRecord.type;
+const handleHistoryReuse = async (context: {
+  record: any
+  chainId: string
+  rootPrompt: string
+  chain: any
+}) => {
+  const { record, chain } = context
+  const rt = chain.rootRecord.type
 
-    // ... 图像模式逻辑 ...
+  // ... 图像模式逻辑 ...
 
-    // 确定目标子模式
-    let targetMode: OptimizationMode;
-    if (rt === "optimize" || rt === "contextSystemOptimize") {
-        targetMode = "system";
-    } else if (rt === "userOptimize" || rt === "contextUserOptimize") {
-        targetMode = "user";
-    } else {
-        targetMode = chain.rootRecord.metadata?.optimizationMode || "system";
+  // 确定目标子模式
+  let targetMode: OptimizationMode
+  if (rt === 'optimize' || rt === 'contextSystemOptimize') {
+    targetMode = 'system'
+  } else if (rt === 'userOptimize' || rt === 'contextUserOptimize') {
+    targetMode = 'user'
+  } else {
+    targetMode = chain.rootRecord.metadata?.optimizationMode || 'system'
+  }
+
+  // 如果目标模式与当前模式不同，自动切换
+  if (targetMode !== selectedOptimizationMode.value) {
+    selectedOptimizationMode.value = targetMode
+
+    // 根据功能模式分别处理子模式的持久化
+    if (functionMode.value === 'basic') {
+      // 基础模式：持久化子模式选择
+      await setBasicSubMode(targetMode as import('@prompt-optimizer/core').BasicSubMode)
+    } else if (functionMode.value === 'pro') {
+      // 上下文模式：持久化子模式并同步 contextMode
+      await setProSubMode(targetMode as import('@prompt-optimizer/core').ProSubMode)
+      await handleContextModeChange(targetMode as import('@prompt-optimizer/core').ContextMode)
     }
 
-    // 如果目标模式与当前模式不同，自动切换
-    if (targetMode !== selectedOptimizationMode.value) {
-        selectedOptimizationMode.value = targetMode;
+    useToast().info(
+      t('toast.info.optimizationModeAutoSwitched', {
+        mode: targetMode === 'system' ? t('common.system') : t('common.user'),
+      })
+    )
+  }
 
-        // 根据功能模式分别处理子模式的持久化
-        if (functionMode.value === "basic") {
-            // 基础模式：持久化子模式选择
-            await setBasicSubMode(
-                targetMode as import("@prompt-optimizer/core").BasicSubMode,
-            );
-        } else if (functionMode.value === "pro") {
-            // 上下文模式：持久化子模式并同步 contextMode
-            await setProSubMode(
-                targetMode as import("@prompt-optimizer/core").ProSubMode,
-            );
-            await handleContextModeChange(
-                targetMode as import("@prompt-optimizer/core").ContextMode,
-            );
-        }
-
-        useToast().info(
-            t("toast.info.optimizationModeAutoSwitched", {
-                mode: targetMode === "system" ? t("common.system") : t("common.user"),
-            }),
-        );
-    }
-
-    // ... 功能模式切换和数据恢复 ...
-};
+  // ... 功能模式切换和数据恢复 ...
+}
 ```
 
 **关键改进：**
+
 - ✅ 基础模式和上下文模式都独立处理子模式持久化
 - ✅ 历史记录恢复后的子模式选择会被保存
 - ✅ 刷新页面后保持历史记录的子模式状态
@@ -769,73 +776,64 @@ const handleHistoryReuse = async (context: { record: any; chainId: string; rootP
 
 ```typescript
 const handleUseFavorite = async (favorite: any) => {
-    const {
-        functionMode: favFunctionMode,
-        optimizationMode: favOptimizationMode,
-        imageSubMode: favImageSubMode,
-    } = favorite;
+  const {
+    functionMode: favFunctionMode,
+    optimizationMode: favOptimizationMode,
+    imageSubMode: favImageSubMode,
+  } = favorite
 
-    // ... 图像模式逻辑 ...
+  // ... 图像模式逻辑 ...
 
-    // 2. 切换优化模式
-    if (favOptimizationMode && favOptimizationMode !== selectedOptimizationMode.value) {
-        selectedOptimizationMode.value = favOptimizationMode;
+  // 2. 切换优化模式
+  if (favOptimizationMode && favOptimizationMode !== selectedOptimizationMode.value) {
+    selectedOptimizationMode.value = favOptimizationMode
 
-        // 根据功能模式分别处理子模式的持久化
-        if (functionMode.value === "basic") {
-            // 基础模式：持久化子模式选择
-            await setBasicSubMode(
-                favOptimizationMode as import("@prompt-optimizer/core").BasicSubMode,
-            );
-        } else if (functionMode.value === "pro") {
-            // 上下文模式：持久化子模式并同步 contextMode
-            await setProSubMode(
-                favOptimizationMode as import("@prompt-optimizer/core").ProSubMode,
-            );
-            await handleContextModeChange(
-                favOptimizationMode as import("@prompt-optimizer/core").ContextMode,
-            );
-        }
-
-        useToast().info(
-            t("toast.info.optimizationModeAutoSwitched", {
-                mode: favOptimizationMode === "system" ? t("common.system") : t("common.user"),
-            }),
-        );
+    // 根据功能模式分别处理子模式的持久化
+    if (functionMode.value === 'basic') {
+      // 基础模式：持久化子模式选择
+      await setBasicSubMode(favOptimizationMode as import('@prompt-optimizer/core').BasicSubMode)
+    } else if (functionMode.value === 'pro') {
+      // 上下文模式：持久化子模式并同步 contextMode
+      await setProSubMode(favOptimizationMode as import('@prompt-optimizer/core').ProSubMode)
+      await handleContextModeChange(
+        favOptimizationMode as import('@prompt-optimizer/core').ContextMode
+      )
     }
 
-    // 3. 切换功能模式(basic vs context)
-    const targetFunctionMode = favFunctionMode === "context" ? "pro" : "basic";
-    if (targetFunctionMode !== functionMode.value) {
-        await setFunctionMode(targetFunctionMode);
-        useToast().info(
-            `已自动切换到${targetFunctionMode === "pro" ? "上下文" : "基础"}模式`,
-        );
+    useToast().info(
+      t('toast.info.optimizationModeAutoSwitched', {
+        mode: favOptimizationMode === 'system' ? t('common.system') : t('common.user'),
+      })
+    )
+  }
 
-        // 功能模式切换后，如果有优化模式信息，确保同步各自的子模式持久化
-        if (favOptimizationMode) {
-            if (targetFunctionMode === "basic") {
-                // 基础模式：持久化子模式选择
-                await setBasicSubMode(
-                    favOptimizationMode as import("@prompt-optimizer/core").BasicSubMode,
-                );
-            } else if (targetFunctionMode === "pro") {
-                // 上下文模式：持久化子模式并同步 contextMode
-                await setProSubMode(
-                    favOptimizationMode as import("@prompt-optimizer/core").ProSubMode,
-                );
-                await handleContextModeChange(
-                    favOptimizationMode as import("@prompt-optimizer/core").ContextMode,
-                );
-            }
-        }
+  // 3. 切换功能模式(basic vs context)
+  const targetFunctionMode = favFunctionMode === 'context' ? 'pro' : 'basic'
+  if (targetFunctionMode !== functionMode.value) {
+    await setFunctionMode(targetFunctionMode)
+    useToast().info(`已自动切换到${targetFunctionMode === 'pro' ? '上下文' : '基础'}模式`)
+
+    // 功能模式切换后，如果有优化模式信息，确保同步各自的子模式持久化
+    if (favOptimizationMode) {
+      if (targetFunctionMode === 'basic') {
+        // 基础模式：持久化子模式选择
+        await setBasicSubMode(favOptimizationMode as import('@prompt-optimizer/core').BasicSubMode)
+      } else if (targetFunctionMode === 'pro') {
+        // 上下文模式：持久化子模式并同步 contextMode
+        await setProSubMode(favOptimizationMode as import('@prompt-optimizer/core').ProSubMode)
+        await handleContextModeChange(
+          favOptimizationMode as import('@prompt-optimizer/core').ContextMode
+        )
+      }
     }
+  }
 
-    // ... 数据回填 ...
-};
+  // ... 数据回填 ...
+}
 ```
 
 **关键改进：**
+
 - ✅ 两处逻辑都更新为支持基础模式的独立子模式
 - ✅ 收藏恢复后的子模式选择会被保存
 - ✅ 功能模式切换后也能正确恢复子模式
@@ -880,22 +878,17 @@ const handleImageSubModeChanged = (e: CustomEvent) => {
 }
 
 onMounted(() => {
-    // 🆕 监听导航栏的图像子模式切换事件
-    window.addEventListener(
-        "image-submode-changed",
-        handleImageSubModeChanged as EventListener,
-    );
+  // 🆕 监听导航栏的图像子模式切换事件
+  window.addEventListener('image-submode-changed', handleImageSubModeChanged as EventListener)
 })
 
 onBeforeUnmount(() => {
-    window.removeEventListener(
-        "image-submode-changed",
-        handleImageSubModeChanged as EventListener,
-    );
+  window.removeEventListener('image-submode-changed', handleImageSubModeChanged as EventListener)
 })
 ```
 
 **关键改进：**
+
 - ✅ 移除内部选择器，避免重复显示
 - ✅ 通过自定义事件接收导航栏的切换通知
 - ✅ 保持内部状态同步
@@ -932,6 +925,7 @@ onBeforeUnmount(() => {
 #### 独立性验证（关键测试 ✅）
 
 **测试场景：**
+
 1. 基础模式选择"用户提示词优化"
 2. 切换到上下文模式，选择"用户提示词优化"
 3. 切换回基础模式
@@ -939,6 +933,7 @@ onBeforeUnmount(() => {
 **预期结果：** 基础模式应保持"用户提示词优化"（证明两者独立）
 
 **实际结果：** ✅ 通过
+
 - 日志显示：`[App] 切换到基础模式，已恢复子模式: user`
 - 界面显示：基础模式的"用户提示词优化"被选中
 - **证明：基础模式和上下文模式的子模式完全独立！**
@@ -987,15 +982,18 @@ onBeforeUnmount(() => {
 ### 5.1 用户体验
 
 ✅ **状态记忆**
+
 - 刷新页面后所有选择都保持
 - 切换功能模式时各自记住上次的子模式选择
 - 历史记录和收藏恢复时自动切换到正确的子模式
 
 ✅ **一致性**
+
 - 所有子模式选择器都在导航栏，位置统一
 - 交互方式一致，学习成本低
 
 ✅ **独立性**
+
 - 基础模式和上下文模式虽然选项相同，但状态完全独立
 - 符合用户直觉：不同的功能模式是不同的使用场景
 
@@ -1004,16 +1002,19 @@ onBeforeUnmount(() => {
 ### 5.2 代码质量
 
 ✅ **职责清晰**
+
 - 每个功能模式有独立的 Composable
 - 单例模式确保全局唯一状态
 - 状态管理逻辑集中，易于维护
 
 ✅ **类型安全**
+
 - 三个独立的 TypeScript 类型定义
 - 编译时检查，避免类型混淆
 - IDE 智能提示友好
 
 ✅ **可维护性**
+
 - 渐进式设计，便于后续扩展
 - 清晰的日志输出，便于调试
 - 完善的错误处理，降低风险
@@ -1023,6 +1024,7 @@ onBeforeUnmount(() => {
 ### 5.3 架构优势
 
 ✅ **可扩展性**
+
 - 未来添加新功能模式时，只需：
   1. 新增存储键和类型
   2. 创建对应的 Composable
@@ -1030,11 +1032,13 @@ onBeforeUnmount(() => {
 - 不会影响现有功能模式
 
 ✅ **解耦合**
+
 - 功能模式和子模式完全独立
 - Composables 之间无依赖
 - 组件之间通过事件通信，松耦合
 
 ✅ **向后兼容**
+
 - 保留旧的 `selectedOptimizationMode` 变量
 - 与 `contextMode` 服务保持同步
 - 平滑升级，无需大规模重构
@@ -1112,13 +1116,13 @@ onBeforeUnmount(() => {
 
 ## 七、实施时间线
 
-| 日期 | 里程碑 | 耗时 |
-|------|--------|------|
-| 2025-10-22 | ✅ Phase 1 完成（上下文模式） | 约 2 小时 |
-| 2025-10-22 | ✅ Phase 2 完成（基础模式） | 约 1.5 小时 |
-| 2025-10-22 | ✅ Phase 3 完成（图像模式） | 约 2 小时 |
-| 2025-10-22 | ✅ 完整测试验证 | 约 1.5 小时 |
-| **总计** | **全部完成** | **约 7 小时** |
+| 日期       | 里程碑                        | 耗时          |
+| ---------- | ----------------------------- | ------------- |
+| 2025-10-22 | ✅ Phase 1 完成（上下文模式） | 约 2 小时     |
+| 2025-10-22 | ✅ Phase 2 完成（基础模式）   | 约 1.5 小时   |
+| 2025-10-22 | ✅ Phase 3 完成（图像模式）   | 约 2 小时     |
+| 2025-10-22 | ✅ 完整测试验证               | 约 1.5 小时   |
+| **总计**   | **全部完成**                  | **约 7 小时** |
 
 ---
 
@@ -1129,16 +1133,19 @@ onBeforeUnmount(() => {
 **背景：** 基础模式和上下文模式的子模式名称相同（都是 system/user），最初考虑共享存储。
 
 **用户反馈（关键洞察）：**
+
 > "基础模式也应该有自己的存储，这个也应该分开...因为这两个功能模式本质上控制的是不同的，只是当前他们的子模式碰巧都叫 系统/用户提示词优化而已。"
 
 **决策：** 采用三个完全独立的存储键
 
 **理由：**
+
 1. 基础模式和上下文模式是不同的使用场景
 2. 用户期望各自记住上次选择
 3. 便于未来扩展和维护
 
 **影响：**
+
 - ✅ 用户体验更好
 - ✅ 代码更清晰
 - ⚠️ 存储空间略微增加（可忽略）
@@ -1152,11 +1159,13 @@ onBeforeUnmount(() => {
 **决策：** 统一移至导航栏
 
 **理由：**
+
 1. UI 一致性：所有顶层控制都在导航栏
 2. 用户习惯：导航栏是模式切换的集中位置
 3. 空间优化：工作区更简洁
 
 **影响：**
+
 - ✅ UI 更统一
 - ✅ 用户体验更一致
 - ⚠️ 需要通过事件通信（图像模式）
@@ -1170,11 +1179,13 @@ onBeforeUnmount(() => {
 **决策：** 每个 Composable 内部维护单例状态
 
 **理由：**
+
 1. 避免多实例冲突
 2. 简化状态管理
 3. 无需额外的状态管理库
 
 **影响：**
+
 - ✅ 代码简洁
 - ✅ 性能良好
 - ⚠️ 需要注意单例的正确实现
@@ -1188,11 +1199,13 @@ onBeforeUnmount(() => {
 **决策：** 保留旧变量，与新 Composable 同步
 
 **理由：**
+
 1. 降低重构风险
 2. 平滑升级
 3. 避免大范围改动
 
 **影响：**
+
 - ✅ 兼容现有代码
 - ✅ 降低风险
 - ⚠️ 需要维护同步逻辑
@@ -1234,27 +1247,32 @@ onBeforeUnmount(() => {
 ### 10.1 核心成果
 
 ✅ **完成三个阶段的完整实施**
+
 - Phase 1: 上下文模式子模式持久化
 - Phase 2: 基础模式子模式持久化
 - Phase 3: 图像模式子模式持久化
 
 ✅ **实现完全独立的状态管理**
+
 - 三个独立的存储键
 - 三个独立的 Composables
 - 三个独立的子模式选择器
 
 ✅ **统一的导航栏UI**
+
 - 所有子模式选择器移至导航栏
 - 一致的交互体验
 - 清晰的视觉层次
 
 ✅ **完善的持久化生命周期**
+
 - 应用启动时恢复
 - 手动切换时持久化
 - 历史记录恢复时持久化
 - 收藏恢复时持久化
 
 ✅ **全面的测试验证**
+
 - 功能测试全部通过
 - 独立性验证成功
 - 边界测试完成
@@ -1275,9 +1293,11 @@ onBeforeUnmount(() => {
 ### 10.3 关键洞察
 
 **用户的核心洞察：**
+
 > "基础模式也应该有自己的存储，这个也应该分开...因为这两个功能模式本质上控制的是不同的，只是当前他们的子模式碰巧都叫 系统/用户提示词优化而已。"
 
 这一洞察是整个重构的核心指导原则，确保了：
+
 - ✅ 状态完全隔离
 - ✅ 用户体验符合直觉
 - ✅ 架构清晰可扩展

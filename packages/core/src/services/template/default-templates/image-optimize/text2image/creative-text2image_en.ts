@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-creative-text2image-en',
@@ -57,7 +57,7 @@ export const template: Template = {
 
 ## Initialization
 As a visual alchemist and artist, I will strictly follow the Rules and use the Workflows as my blueprint to launch a journey of visual creation. Context is my forge of inspiration; I will deconstruct the original text with the deepest insight while relentlessly pursuing extreme fantastical aesthetics. When context is absent, I treat it as an ideal stage for epic imagination. I vow never to lose the soul of the original need during deconstruction; instead, I will grant it unprecedented independent life and immense creative force, ensuring it stays recognizable after elevation. Each dimensional leap is devoted to forging visual miracles that transcend the ordinary and overturn perception. I will output only text-to-image prompts born of primordial insight, without explanations or guidance, and I refuse the constraints of code blocks.
-`
+`,
     },
     {
       role: 'user',
@@ -73,16 +73,17 @@ Requirements:
 Original text:
 {{originalPrompt}}
 
-Please provide the creative text-to-image prompt directly:`
-    }
+Please provide the creative text-to-image prompt directly:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1736208000000,
     author: 'System',
-    description: 'A text-to-image prompt creation template built on primordial deconstruction and fantastical reconstruction, focused on forging an entirely new visual language while preserving core imagery.',
+    description:
+      'A text-to-image prompt creation template built on primordial deconstruction and fantastical reconstruction, focused on forging an entirely new visual language while preserving core imagery.',
     templateType: 'text2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -12,14 +12,14 @@ describe('PromptService Enhanced Features', () => {
   beforeEach(() => {
     // Setup mocks
     mockModelManager = {
-      getModel: vi.fn().mockResolvedValue({ id: 'test-model' })
+      getModel: vi.fn().mockResolvedValue({ id: 'test-model' }),
     }
-    
+
     mockLLMService = {
       sendMessage: vi.fn().mockResolvedValue('optimized result'),
-      sendMessageStream: vi.fn()
+      sendMessageStream: vi.fn(),
     }
-    
+
     mockTemplateManager = {
       getTemplate: vi.fn().mockImplementation((id: string) => {
         // Return null for non-existent templates
@@ -30,20 +30,25 @@ describe('PromptService Enhanced Features', () => {
         return {
           id: id,
           content: 'test template content {{originalPrompt}}',
-          metadata: { optimizationMode: 'system' }
+          metadata: { optimizationMode: 'system' },
         }
       }),
       listTemplatesByType: vi.fn().mockReturnValue([
         {
           id: 'user-prompt-optimize',
           content: 'user prompt template {{originalPrompt}}',
-          metadata: { templateType: 'optimize', version: '1.0', lastModified: Date.now(), language: 'zh' }
-        }
-      ])
+          metadata: {
+            templateType: 'optimize',
+            version: '1.0',
+            lastModified: Date.now(),
+            language: 'zh',
+          },
+        },
+      ]),
     }
-    
+
     mockHistoryManager = {
-      addRecord: vi.fn().mockResolvedValue(undefined)
+      addRecord: vi.fn().mockResolvedValue(undefined),
     }
 
     promptService = new PromptService(
@@ -60,7 +65,7 @@ describe('PromptService Enhanced Features', () => {
         optimizationMode: 'system' as const,
         targetPrompt: 'test system prompt',
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       const result = await promptService.optimizePrompt(request)
@@ -75,7 +80,7 @@ describe('PromptService Enhanced Features', () => {
         optimizationMode: 'user' as const,
         targetPrompt: 'test user prompt',
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       const result = await promptService.optimizePrompt(request)
@@ -88,7 +93,7 @@ describe('PromptService Enhanced Features', () => {
       const request: OptimizationRequest = {
         optimizationMode: 'user' as const,
         targetPrompt: 'test user prompt',
-        modelKey: 'test-model'
+        modelKey: 'test-model',
       }
 
       const result = await promptService.optimizePrompt(request)
@@ -101,73 +106,59 @@ describe('PromptService Enhanced Features', () => {
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: '',
-        modelKey: 'test-model'
+        modelKey: 'test-model',
       }
 
-      await expect(promptService.optimizePrompt(request))
-        .rejects.toThrow('Target prompt is required')
+      await expect(promptService.optimizePrompt(request)).rejects.toThrow(
+        'Target prompt is required'
+      )
     })
 
     it('should throw error for empty model key', async () => {
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: 'test prompt',
-        modelKey: ''
+        modelKey: '',
       }
 
-      await expect(promptService.optimizePrompt(request))
-        .rejects.toThrow('Model key is required')
+      await expect(promptService.optimizePrompt(request)).rejects.toThrow('Model key is required')
     })
   })
 
   describe('testPrompt', () => {
     it('should test prompts with proper context', async () => {
-      const result = await promptService.testPrompt(
-        'system prompt',
-        'user prompt',
-        'test-model'
-      )
+      const result = await promptService.testPrompt('system prompt', 'user prompt', 'test-model')
 
       expect(result).toBe('optimized result')
       expect(mockLLMService.sendMessage).toHaveBeenCalledWith(
         [
           { role: 'system', content: 'system prompt' },
-          { role: 'user', content: 'user prompt' }
+          { role: 'user', content: 'user prompt' },
         ],
         'test-model'
       )
     })
 
     it('should test user prompt without system prompt', async () => {
-      const result = await promptService.testPrompt(
-        '',
-        'user prompt only',
-        'test-model'
-      )
+      const result = await promptService.testPrompt('', 'user prompt only', 'test-model')
 
       expect(result).toBe('optimized result')
       expect(mockLLMService.sendMessage).toHaveBeenCalledWith(
-        [
-          { role: 'user', content: 'user prompt only' }
-        ],
+        [{ role: 'user', content: 'user prompt only' }],
         'test-model'
       )
     })
 
     it('should throw error for empty user prompt', async () => {
-      await expect(promptService.testPrompt(
-        'system prompt',
-        '',
-        'test-model'
-      )).rejects.toThrow('User prompt is required')
+      await expect(promptService.testPrompt('system prompt', '', 'test-model')).rejects.toThrow(
+        'User prompt is required'
+      )
     })
 
     it('should throw error for empty model key', async () => {
-      await expect(promptService.testPrompt(
-        'system prompt',
-        'user prompt',
-        ''
-      )).rejects.toThrow('Model key is required')
+      await expect(promptService.testPrompt('system prompt', 'user prompt', '')).rejects.toThrow(
+        'Model key is required'
+      )
     })
   })
 
@@ -176,26 +167,28 @@ describe('PromptService Enhanced Features', () => {
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: 'test prompt',
-        modelKey: 'test-model'
+        modelKey: 'test-model',
       }
 
       const callbacks = {
         onToken: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
       // Mock streaming behavior
-      mockLLMService.sendMessageStream.mockImplementation(async (messages, modelKey, streamCallbacks) => {
-        streamCallbacks.onToken('test')
-        streamCallbacks.onToken(' result')
-        // 模拟结构化响应
-        const mockResponse = {
-          content: 'test result',
-          reasoning: 'some reasoning'
+      mockLLMService.sendMessageStream.mockImplementation(
+        async (messages, modelKey, streamCallbacks) => {
+          streamCallbacks.onToken('test')
+          streamCallbacks.onToken(' result')
+          // 模拟结构化响应
+          const mockResponse = {
+            content: 'test result',
+            reasoning: 'some reasoning',
+          }
+          await streamCallbacks.onComplete(mockResponse)
         }
-        await streamCallbacks.onComplete(mockResponse)
-      })
+      )
 
       await promptService.optimizePromptStream(request, callbacks)
 
@@ -209,57 +202,57 @@ describe('PromptService Enhanced Features', () => {
       const callbacks = {
         onToken: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: 'Test prompt',
         templateId: 'general-optimize',
-        modelKey: '' // Empty model key
+        modelKey: '', // Empty model key
       }
 
-      await expect(
-        promptService.optimizePromptStream(request, callbacks)
-      ).rejects.toThrow('Model key is required')
+      await expect(promptService.optimizePromptStream(request, callbacks)).rejects.toThrow(
+        'Model key is required'
+      )
     })
 
     it('should handle undefined model key', async () => {
       const callbacks = {
         onToken: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: 'Test prompt',
         templateId: 'general-optimize',
-        modelKey: undefined as any // Undefined model key
+        modelKey: undefined as any, // Undefined model key
       }
 
-      await expect(
-        promptService.optimizePromptStream(request, callbacks)
-      ).rejects.toThrow('Model key is required')
+      await expect(promptService.optimizePromptStream(request, callbacks)).rejects.toThrow(
+        'Model key is required'
+      )
     })
 
     it('should handle missing template gracefully', async () => {
       const callbacks = {
         onToken: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
       const request: OptimizationRequest = {
         optimizationMode: 'system' as const,
         targetPrompt: 'Test prompt',
         templateId: 'non-existent-template',
-        modelKey: 'test-model'
+        modelKey: 'test-model',
       }
 
-      await expect(
-        promptService.optimizePromptStream(request, callbacks)
-      ).rejects.toThrow('Template not found or invalid')
+      await expect(promptService.optimizePromptStream(request, callbacks)).rejects.toThrow(
+        'Template not found or invalid'
+      )
     })
   })
 
@@ -268,26 +261,23 @@ describe('PromptService Enhanced Features', () => {
       const callbacks = {
         onToken: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
-      mockLLMService.sendMessageStream.mockImplementation(async (messages, modelKey, streamCallbacks) => {
-        streamCallbacks.onToken('test')
-        streamCallbacks.onToken(' response')
-        await streamCallbacks.onComplete()
-      })
-
-      await promptService.testPromptStream(
-        'system prompt',
-        'user prompt',
-        'test-model',
-        callbacks
+      mockLLMService.sendMessageStream.mockImplementation(
+        async (messages, modelKey, streamCallbacks) => {
+          streamCallbacks.onToken('test')
+          streamCallbacks.onToken(' response')
+          await streamCallbacks.onComplete()
+        }
       )
+
+      await promptService.testPromptStream('system prompt', 'user prompt', 'test-model', callbacks)
 
       expect(mockLLMService.sendMessageStream).toHaveBeenCalledWith(
         [
           { role: 'system', content: 'system prompt' },
-          { role: 'user', content: 'user prompt' }
+          { role: 'user', content: 'user prompt' },
         ],
         'test-model',
         callbacks
@@ -305,8 +295,8 @@ describe('PromptService Enhanced Features', () => {
         metadata: {
           version: '1.0',
           lastModified: Date.now(),
-          templateType: 'iterate'
-        }
+          templateType: 'iterate',
+        },
       })
 
       await expect(
@@ -327,24 +317,24 @@ describe('PromptService Enhanced Features', () => {
         content: [
           {
             role: 'system',
-            content: 'You are a prompt optimizer'
+            content: 'You are a prompt optimizer',
           },
           {
             role: 'user',
-            content: 'Optimize: {{lastOptimizedPrompt}}\nRequirement: {{iterateInput}}'
-          }
+            content: 'Optimize: {{lastOptimizedPrompt}}\nRequirement: {{iterateInput}}',
+          },
         ],
         metadata: {
           version: '1.0',
           lastModified: Date.now(),
-          templateType: 'iterate'
-        }
+          templateType: 'iterate',
+        },
       })
 
       mockLLMService.sendMessage.mockResolvedValue('iterated result')
 
       const result = await promptService.iteratePrompt(
-        '',  // originalPrompt can be empty
+        '', // originalPrompt can be empty
         'last optimized prompt',
         'iterate input',
         'test-model'
@@ -365,14 +355,14 @@ describe('PromptService Enhanced Features', () => {
         metadata: {
           version: '1.0',
           lastModified: Date.now(),
-          templateType: 'iterate'
-        }
+          templateType: 'iterate',
+        },
       })
 
       const callbacks = {
         onContent: vi.fn(),
         onComplete: vi.fn(),
-        onError: vi.fn()
+        onError: vi.fn(),
       }
 
       await expect(

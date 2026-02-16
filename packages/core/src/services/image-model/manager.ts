@@ -1,12 +1,12 @@
-import {
-  IImageModelManager,
-  ImageModelConfig,
-  IImageAdapterRegistry
-} from '../image/types'
+import { IImageModelManager, ImageModelConfig, IImageAdapterRegistry } from '../image/types'
 import { IStorageProvider } from '../storage/types'
 import { StorageAdapter } from '../storage/adapter'
 import { ImportExportError } from '../../interfaces/import-export'
-import { IMAGE_ERROR_CODES, IMPORT_EXPORT_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import {
+  IMAGE_ERROR_CODES,
+  IMPORT_EXPORT_ERROR_CODES,
+  type ErrorParams,
+} from '../../constants/error-codes'
 import { BaseError } from '../llm/errors'
 import { getDefaultImageModels, getBuiltinImageConfigIds } from './defaults'
 import { SERVICE_KEYS } from '../../config/core-config'
@@ -88,9 +88,9 @@ export class ImageModelManager implements IImageModelManager {
               ...existingConfig,
               connectionConfig: {
                 ...(existingConfig.connectionConfig || {}),
-                apiKey: cfg.connectionConfig?.apiKey
+                apiKey: cfg.connectionConfig?.apiKey,
               },
-              enabled: true
+              enabled: true,
             }
             changed = true
             console.log(`[ImageModelManager] Auto-enabled builtin model with new API key: ${key}`)
@@ -120,79 +120,66 @@ export class ImageModelManager implements IImageModelManager {
     // 保存时移除 customParamOverrides（已合并到 paramOverrides）
     const toStore = {
       ...completeConfig,
-      customParamOverrides: undefined
+      customParamOverrides: undefined,
     }
 
-    await this.storage.updateData<Record<string, ImageModelConfig>>(
-      this.storageKey,
-      (current) => {
-        const data = current || {}
-        if (data[toStore.id]) {
-          throw new ImageModelManagerError(
-            IMAGE_ERROR_CODES.CONFIG_ALREADY_EXISTS,
-            undefined,
-            { configId: toStore.id },
-          )
-        }
-        return { ...data, [toStore.id]: toStore }
+    await this.storage.updateData<Record<string, ImageModelConfig>>(this.storageKey, (current) => {
+      const data = current || {}
+      if (data[toStore.id]) {
+        throw new ImageModelManagerError(IMAGE_ERROR_CODES.CONFIG_ALREADY_EXISTS, undefined, {
+          configId: toStore.id,
+        })
       }
-    )
+      return { ...data, [toStore.id]: toStore }
+    })
   }
 
   async updateConfig(id: string, updates: Partial<ImageModelConfig>): Promise<void> {
-    await this.storage.updateData<Record<string, ImageModelConfig>>(
-      this.storageKey,
-      (current) => {
-        const data = current || {}
-        if (!data[id]) {
-          throw new ImageModelManagerError(
-            IMAGE_ERROR_CODES.CONFIG_DOES_NOT_EXIST,
-            undefined,
-            { configId: id },
-          )
-        }
-
-        const updated: ImageModelConfig = {
-          ...data[id],
-          ...updates,
-          id: data[id].id // 保护id不被更新
-        }
-
-        // 确保更新后的配置是自包含的
-        const completeConfig = this.ensureSelfContained(updated)
-        this.validateConfig(completeConfig)
-
-        // 保存时移除 customParamOverrides（已合并到 paramOverrides）
-        const toStore = {
-          ...completeConfig,
-          customParamOverrides: undefined
-        }
-
-        return { ...data, [id]: toStore }
+    await this.storage.updateData<Record<string, ImageModelConfig>>(this.storageKey, (current) => {
+      const data = current || {}
+      if (!data[id]) {
+        throw new ImageModelManagerError(IMAGE_ERROR_CODES.CONFIG_DOES_NOT_EXIST, undefined, {
+          configId: id,
+        })
       }
-    )
+
+      const updated: ImageModelConfig = {
+        ...data[id],
+        ...updates,
+        id: data[id].id, // 保护id不被更新
+      }
+
+      // 确保更新后的配置是自包含的
+      const completeConfig = this.ensureSelfContained(updated)
+      this.validateConfig(completeConfig)
+
+      // 保存时移除 customParamOverrides（已合并到 paramOverrides）
+      const toStore = {
+        ...completeConfig,
+        customParamOverrides: undefined,
+      }
+
+      return { ...data, [id]: toStore }
+    })
   }
 
   async deleteConfig(id: string): Promise<void> {
-    await this.storage.updateData<Record<string, ImageModelConfig>>(
-      this.storageKey,
-      (current) => {
-        const data = current || {}
+    await this.storage.updateData<Record<string, ImageModelConfig>>(this.storageKey, (current) => {
+      const data = current || {}
 
-        // 强制删除：无论配置是否存在都尝试删除
-        // 这确保损坏的配置也能被清理
-        if (!data[id]) {
-          console.warn(`[ImageModelManager] Config ${id} not found in storage, but proceeding anyway`)
-          // 仍然返回原数据，因为确实没什么可删的
-          return data
-        }
-
-        // 配置存在，正常删除
-        const { [id]: removed, ...rest } = data
-        console.log(`[ImageModelManager] Successfully deleted config: ${id}`)
-        return rest
+      // 强制删除：无论配置是否存在都尝试删除
+      // 这确保损坏的配置也能被清理
+      if (!data[id]) {
+        console.warn(`[ImageModelManager] Config ${id} not found in storage, but proceeding anyway`)
+        // 仍然返回原数据，因为确实没什么可删的
+        return data
       }
-    )
+
+      // 配置存在，正常删除
+      const { [id]: removed, ...rest } = data
+      console.log(`[ImageModelManager] Successfully deleted config: ${id}`)
+      return rest
+    })
   }
 
   async getConfig(id: string): Promise<ImageModelConfig | null> {
@@ -214,7 +201,10 @@ export class ImageModelManager implements IImageModelManager {
       return this.ensureSelfContained(migrated)
     } catch (error) {
       // 即使修复失败，也返回配置（已在ensureSelfContained中标记为disabled）
-      console.warn(`[ImageModelManager] Failed to fully repair config ${id}, but returning for deletion:`, error)
+      console.warn(
+        `[ImageModelManager] Failed to fully repair config ${id}, but returning for deletion:`,
+        error
+      )
       return migrated
     }
   }
@@ -224,35 +214,40 @@ export class ImageModelManager implements IImageModelManager {
     const data: Record<string, ImageModelConfig> = raw ? JSON.parse(raw) : {}
 
     // 轻量迁移兜底：为缺失 id 的旧记录补齐 id，并尝试修复损坏的配置
-    return Object.entries(data).map(([key, cfg]) => {
-      if (!cfg || typeof cfg !== 'object') {
-        return null
-      }
+    return Object.entries(data)
+      .map(([key, cfg]) => {
+        if (!cfg || typeof cfg !== 'object') {
+          return null
+        }
 
-      // 始终使用存储键作为公开的 id，保持删除等操作一致
-      ;(cfg as any).id = key
+        // 始终使用存储键作为公开的 id，保持删除等操作一致
+        ;(cfg as any).id = key
 
-      // 读时迁移：合并 customParamOverrides 到 paramOverrides
-      const migrated = this.migrateConfig(cfg)
+        // 读时迁移：合并 customParamOverrides 到 paramOverrides
+        const migrated = this.migrateConfig(cfg)
 
-      // 尝试修复配置，如果失败则返回占位配置（标记为disabled）
-      try {
-        return this.ensureSelfContained(migrated)
-      } catch (error) {
-        console.warn(`[ImageModelManager] Failed to repair config ${key}, returning placeholder:`, error)
-        // 返回最小占位配置，确保能在UI中显示和删除
-        return {
-          ...migrated,
-          id: key,
-          enabled: false
-        } as ImageModelConfig
-      }
-    }).filter((cfg): cfg is ImageModelConfig => cfg !== null)
+        // 尝试修复配置，如果失败则返回占位配置（标记为disabled）
+        try {
+          return this.ensureSelfContained(migrated)
+        } catch (error) {
+          console.warn(
+            `[ImageModelManager] Failed to repair config ${key}, returning placeholder:`,
+            error
+          )
+          // 返回最小占位配置，确保能在UI中显示和删除
+          return {
+            ...migrated,
+            id: key,
+            enabled: false,
+          } as ImageModelConfig
+        }
+      })
+      .filter((cfg): cfg is ImageModelConfig => cfg !== null)
   }
 
   async getEnabledConfigs(): Promise<ImageModelConfig[]> {
     const all = await this.getAllConfigs()
-    return all.filter(config => config.enabled)
+    return all.filter((config) => config.enabled)
   }
 
   // === 导入导出 ===
@@ -265,7 +260,7 @@ export class ImageModelManager implements IImageModelManager {
         'Failed to export image model configurations',
         await this.getDataType(),
         error as Error,
-        IMPORT_EXPORT_ERROR_CODES.EXPORT_FAILED,
+        IMPORT_EXPORT_ERROR_CODES.EXPORT_FAILED
       )
     }
   }
@@ -276,12 +271,12 @@ export class ImageModelManager implements IImageModelManager {
         'Invalid data format: expected array of ImageModelConfig',
         await this.getDataType(),
         undefined,
-        IMPORT_EXPORT_ERROR_CODES.VALIDATION_ERROR,
+        IMPORT_EXPORT_ERROR_CODES.VALIDATION_ERROR
       )
     }
 
     const configs = data as ImageModelConfig[]
-    const failed: { config: ImageModelConfig, error: Error }[] = []
+    const failed: { config: ImageModelConfig; error: Error }[] = []
 
     for (const config of configs) {
       try {
@@ -316,7 +311,7 @@ export class ImageModelManager implements IImageModelManager {
       return false
     }
 
-    return data.every(item => {
+    return data.every((item) => {
       try {
         this.validateConfig(item)
         return true
@@ -343,8 +338,8 @@ export class ImageModelManager implements IImageModelManager {
       ...config,
       paramOverrides: {
         ...(config.paramOverrides || {}),
-        ...(config.customParamOverrides || {})
-      }
+        ...(config.customParamOverrides || {}),
+      },
       // 保留 customParamOverrides 字段以防版本回退，但新代码不再使用
     }
   }
@@ -362,8 +357,8 @@ export class ImageModelManager implements IImageModelManager {
           ...config,
           provider: {
             ...config.provider,
-            corsRestricted: false
-          }
+            corsRestricted: false,
+          },
         }
       }
 
@@ -376,8 +371,8 @@ export class ImageModelManager implements IImageModelManager {
               ...config,
               provider: {
                 ...config.provider,
-                corsRestricted: latestProvider.corsRestricted
-              }
+                corsRestricted: latestProvider.corsRestricted,
+              },
             }
           }
         } catch {
@@ -393,7 +388,9 @@ export class ImageModelManager implements IImageModelManager {
       const provider = adapter.getProvider()
 
       // 尝试从静态模型列表获取模型信息
-      let model = this.registry.getStaticModels(config.providerId).find(m => m.id === config.modelId)
+      let model = this.registry
+        .getStaticModels(config.providerId)
+        .find((m) => m.id === config.modelId)
 
       // 如果静态模型不存在，使用buildDefaultModel构建
       if (!model) {
@@ -405,11 +402,14 @@ export class ImageModelManager implements IImageModelManager {
         ...config,
         provider,
         model,
-        paramOverrides: config.paramOverrides ?? {}
+        paramOverrides: config.paramOverrides ?? {},
       }
     } catch (error) {
       // 对于无法修复的旧配置，创建占位数据并禁用，允许用户查看和删除
-      console.warn(`[ImageModelManager] Cannot repair legacy config ${config.id}, marking as disabled:`, error)
+      console.warn(
+        `[ImageModelManager] Cannot repair legacy config ${config.id}, marking as disabled:`,
+        error
+      )
       return {
         ...config,
         enabled: false,
@@ -420,7 +420,7 @@ export class ImageModelManager implements IImageModelManager {
           requiresApiKey: false,
           supportsDynamicModels: false,
           defaultBaseURL: '',
-          connectionSchema: { required: [], optional: [], fieldTypes: {} }
+          connectionSchema: { required: [], optional: [], fieldTypes: {} },
         },
         model: {
           id: config.modelId || 'unknown',
@@ -430,12 +430,12 @@ export class ImageModelManager implements IImageModelManager {
           capabilities: {
             text2image: false,
             image2image: false,
-            multiImage: false
+            multiImage: false,
           },
           parameterDefinitions: [],
-          defaultParameterValues: {}
+          defaultParameterValues: {},
         },
-        paramOverrides: config.paramOverrides ?? {}
+        paramOverrides: config.paramOverrides ?? {},
       } as ImageModelConfig
     }
   }
@@ -537,11 +537,9 @@ export class ImageModelManager implements IImageModelManager {
     // 因此不需要在此验证模型是否存在
 
     if (errors.length > 0) {
-      throw new ImageModelManagerError(
-        IMAGE_ERROR_CODES.CONFIG_INVALID,
-        errors.join(', '),
-        { details: errors.join(', ') },
-      )
+      throw new ImageModelManagerError(IMAGE_ERROR_CODES.CONFIG_INVALID, errors.join(', '), {
+        details: errors.join(', '),
+      })
     }
   }
 }

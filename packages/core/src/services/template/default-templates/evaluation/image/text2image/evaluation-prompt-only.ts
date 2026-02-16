@@ -5,7 +5,7 @@
  * 统一输出结构：score + improvements + patchPlan + summary
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-image-text2image-prompt-only',
@@ -71,7 +71,7 @@ export const template: Template = {
   - instruction：简洁说明问题和修复方案
 - **summary**：一句话总结评估结论（必填）
 
-只输出 JSON，不添加额外解释。`
+只输出 JSON，不添加额外解释。`,
     },
     {
       role: 'user',
@@ -87,8 +87,8 @@ export const template: Template = {
 
 ---
 
-请评估当前图像生成提示词的质量{{#hasOriginalPrompt}}，并与原始版本对比{{/hasOriginalPrompt}}。`
-    }
+请评估当前图像生成提示词的质量{{#hasOriginalPrompt}}，并与原始版本对比{{/hasOriginalPrompt}}。`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -97,7 +97,7 @@ export const template: Template = {
     description: '直接评估图像生成提示词质量（文生图模式），统一输出 improvements + patchPlan',
     templateType: 'evaluation',
     language: 'zh',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'image', 'text2image']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'image', 'text2image'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

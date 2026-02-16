@@ -11,13 +11,19 @@
       :class="getFragmentClass(fragment.type)"
       :style="{ animationDelay: `${index * 20}ms` }"
       class="diff-fragment"
-    >{{ fragment.text }}</span>
+      >{{ fragment.text }}</span
+    >
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, inject, ref, type Ref } from 'vue'
-import { createCompareService, type ChangeType, type TextFragment, type ICompareService } from '@prompt-optimizer/core'
+import {
+  createCompareService,
+  type ChangeType,
+  type TextFragment,
+  type ICompareService,
+} from '@prompt-optimizer/core'
 import type { AppServices } from '../../types/services'
 import { useNaiveTheme } from '../../composables/ui/useNaiveTheme'
 
@@ -28,9 +34,13 @@ const props = defineProps<{
 
 // 获取主题配置并计算颜色变量
 const { themeOverrides } = useNaiveTheme()
-const successBg = computed(() => themeOverrides.value?.common?.successColorSuppl || 'rgba(34, 197, 94, 0.15)')
+const successBg = computed(
+  () => themeOverrides.value?.common?.successColorSuppl || 'rgba(34, 197, 94, 0.15)'
+)
 const successColor = computed(() => themeOverrides.value?.common?.successColor || '#16a34a')
-const errorBg = computed(() => themeOverrides.value?.common?.errorColorSuppl || 'rgba(239, 68, 68, 0.15)')
+const errorBg = computed(
+  () => themeOverrides.value?.common?.errorColorSuppl || 'rgba(239, 68, 68, 0.15)'
+)
 const errorColor = computed(() => themeOverrides.value?.common?.errorColor || '#dc2626')
 const textColor3 = computed(() => themeOverrides.value?.common?.textColor3 || '#6b7280')
 
@@ -82,7 +92,7 @@ const fragments = computed<TextFragment[]>(() => {
     const result = compareService.value.compareTexts(props.oldText, props.newText, {
       granularity,
       ignoreWhitespace: false,
-      caseSensitive: true
+      caseSensitive: true,
     })
     return result.fragments
   } catch {

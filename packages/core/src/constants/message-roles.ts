@@ -46,13 +46,13 @@ export const MESSAGE_ROLES = {
 export const ROLE_FILTERS = {
   // Roles to include for system message extraction
   SYSTEM_ONLY: [MESSAGE_ROLE_SYSTEM],
-  
+
   // Roles to exclude for conversation messages
   NON_SYSTEM: [MESSAGE_ROLE_USER, MESSAGE_ROLE_ASSISTANT, MESSAGE_ROLE_TOOL],
-  
+
   // All conversation participant roles
   CONVERSATION: [MESSAGE_ROLE_USER, MESSAGE_ROLE_ASSISTANT],
 } as const
 
 // Type exports for type safety
-export type MessageRole = typeof MESSAGE_ROLES[keyof typeof MESSAGE_ROLES]
+export type MessageRole = (typeof MESSAGE_ROLES)[keyof typeof MESSAGE_ROLES]

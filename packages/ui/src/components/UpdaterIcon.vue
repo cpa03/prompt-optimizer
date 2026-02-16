@@ -1,11 +1,7 @@
 <template>
   <!-- 🎨 Palette: Enhanced UpdaterIcon with improved accessibility and micro-interactions -->
   <div v-if="isElectronEnvironment" class="relative">
-    <NTooltip
-      :placement="tooltipPlacement"
-      :delay="300"
-      :disabled="showModal"
-    >
+    <NTooltip :placement="tooltipPlacement" :delay="300" :disabled="showModal">
       <template #trigger>
         <NBadge :show="state.hasUpdate" dot processing>
           <NButton
@@ -16,20 +12,20 @@
             circle
             size="small"
             class="update-button"
-            :class="{ 
+            :class="{
               'has-update': state.hasUpdate,
               'is-checking': state.isChecking,
-              'is-downloading': state.isDownloading
+              'is-downloading': state.isDownloading,
             }"
           >
             <template #icon>
               <!-- 🎨 Palette: Icon wrapper with enhanced states -->
-              <div 
+              <div
                 class="update-icon-wrapper"
-                :class="{ 
+                :class="{
                   'pulse-animation': state.hasUpdate && !state.isDownloading,
                   'spin-animation': state.isChecking,
-                  'bounce-animation': state.isDownloaded
+                  'bounce-animation': state.isDownloaded,
                 }"
               >
                 <!-- 🎨 Palette: Dynamic icon based on state -->
@@ -61,7 +57,7 @@
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                
+
                 <!-- 🎨 Palette: Download progress indicator -->
                 <svg
                   v-if="state.isDownloading && state.downloadProgress > 0"
@@ -85,7 +81,7 @@
           </NButton>
         </NBadge>
       </template>
-      
+
       <!-- 🎨 Palette: Informative tooltip content -->
       <div class="update-tooltip">
         <div class="update-tooltip-title">{{ tooltipTitle }}</div>
@@ -127,7 +123,12 @@ const tooltipPlacement = computed(() => 'bottom')
 // 🎨 Palette: Dynamic ARIA labels for accessibility
 const buttonAriaLabel = computed(() => {
   if (state.isChecking) return t('updater.checkingAriaLabel', '正在检查更新')
-  if (state.isDownloading) return t('updater.downloadingAriaLabel', { progress: state.downloadProgress }, '正在下载更新 {progress}%')
+  if (state.isDownloading)
+    return t(
+      'updater.downloadingAriaLabel',
+      { progress: state.downloadProgress },
+      '正在下载更新 {progress}%'
+    )
   if (state.isDownloaded) return t('updater.readyToInstallAriaLabel', '更新已下载，点击安装')
   if (state.hasUpdate) return t('updater.updateAvailableAriaLabel', '有新版本可用')
   return t('updater.checkForUpdatesAriaLabel', '检查更新')
@@ -136,7 +137,8 @@ const buttonAriaLabel = computed(() => {
 // 🎨 Palette: Dynamic button title
 const buttonTitle = computed(() => {
   if (state.isChecking) return t('updater.checking', '正在检查...')
-  if (state.isDownloading) return t('updater.downloading', { progress: state.downloadProgress }, '下载中 {progress}%')
+  if (state.isDownloading)
+    return t('updater.downloading', { progress: state.downloadProgress }, '下载中 {progress}%')
   if (state.isDownloaded) return t('updater.readyToInstall', '点击安装更新')
   if (state.hasUpdate) return t('updater.newVersionAvailable', '新版本可用！')
   return t('updater.checkForUpdates', '检查更新')
@@ -147,7 +149,8 @@ const tooltipTitle = computed(() => {
   if (state.isChecking) return t('updater.checkingTooltip', '正在检查更新...')
   if (state.isDownloading) return t('updater.downloadingTooltip', '正在下载更新')
   if (state.isDownloaded) return t('updater.readyTooltip', '更新已准备就绪！')
-  if (state.hasUpdate) return t('updater.availableTooltip', { version: state.latestVersion }, '发现新版本 {version}')
+  if (state.hasUpdate)
+    return t('updater.availableTooltip', { version: state.latestVersion }, '发现新版本 {version}')
   return t('updater.upToDateTooltip', '已是最新版本')
 })
 
@@ -211,7 +214,8 @@ const toggleModal = () => {
 }
 
 @keyframes icon-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -241,7 +245,8 @@ const toggleModal = () => {
 }
 
 @keyframes icon-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -326,7 +331,8 @@ const toggleModal = () => {
 }
 
 @keyframes badge-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(var(--n-error-color-rgb, 240, 72, 72), 0.4);
   }
   50% {
@@ -340,23 +346,23 @@ const toggleModal = () => {
   .update-icon {
     transition: none;
   }
-  
+
   .pulse-animation {
     animation: none;
   }
-  
+
   .spin-animation {
     animation: none;
   }
-  
+
   .bounce-animation {
     animation: none;
   }
-  
+
   .progress-ring-circle {
     transition: none;
   }
-  
+
   :deep(.n-badge-sup) {
     animation: none;
   }

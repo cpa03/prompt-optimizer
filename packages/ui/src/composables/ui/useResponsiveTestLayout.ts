@@ -5,7 +5,7 @@ import type {
   TestControlLayout,
   TestResultConfig,
   ComponentSize,
-  ButtonSize
+  ButtonSize,
 } from '../../components/types/test-area'
 import { TIME_CONSTANTS } from '../../config/constants'
 
@@ -16,7 +16,7 @@ const BREAKPOINTS = {
   md: 768,
   lg: 992,
   xl: 1200,
-  xxl: 1600
+  xxl: 1600,
 } as const
 
 type ScreenSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
@@ -24,20 +24,16 @@ type ScreenSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'
 export interface ResponsiveTestLayoutOptions {
   // 初始配置
   initialConfig?: Partial<TestAreaConfig>
-  
+
   // 自定义断点
   customBreakpoints?: Partial<typeof BREAKPOINTS>
-  
+
   // 是否启用自动监听
   enableAutoResize?: boolean
 }
 
 export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {}) {
-  const {
-    initialConfig,
-    customBreakpoints,
-    enableAutoResize = true
-  } = options
+  const { initialConfig, customBreakpoints, enableAutoResize = true } = options
 
   // 响应式状态
   const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1200)
@@ -67,7 +63,9 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
 
   // 屏幕类型检测
   const isMobile = computed(() => windowWidth.value < breakpoints.md)
-  const isTablet = computed(() => windowWidth.value >= breakpoints.md && windowWidth.value < breakpoints.lg)
+  const isTablet = computed(
+    () => windowWidth.value >= breakpoints.md && windowWidth.value < breakpoints.lg
+  )
   const isDesktop = computed(() => windowWidth.value >= breakpoints.lg)
   const isLargeScreen = computed(() => windowWidth.value >= breakpoints.xl)
 
@@ -104,7 +102,7 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
         md: 8,
         lg: 8,
         xl: 6,
-        xxl: 6
+        xxl: 6,
       },
       controlButtonsSpan: {
         xs: 24,
@@ -112,20 +110,20 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
         md: 16,
         lg: 16,
         xl: 18,
-        xxl: 18
-      }
+        xxl: 18,
+      },
     }
   })
 
   // 高度配置计算
   const responsiveHeights = computed(() => {
     const baseHeight = windowHeight.value
-    
+
     return {
       testInputMin: isMobile.value ? 2 : 3,
       testInputMax: isMobile.value ? 4 : 8,
       conversationMax: isMobile.value ? '200px' : isTablet.value ? '250px' : '300px',
-      resultAreaMax: Math.max(200, baseHeight * 0.6) + 'px'
+      resultAreaMax: Math.max(200, baseHeight * 0.6) + 'px',
     }
   })
 
@@ -136,23 +134,23 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
         inputMode: recommendedInputMode.value,
         controlBarLayout: recommendedControlBarLayout.value,
         buttonSize: smartButtonSize.value,
-        enableFullscreen: !isMobile.value // 移动端不建议全屏编辑
+        enableFullscreen: !isMobile.value, // 移动端不建议全屏编辑
       },
       features: {
         compareMode: !isMobile.value, // 移动端不建议对比模式
         conversationManager: true,
-        advancedMode: isDesktop.value // 仅桌面端启用高级模式
+        advancedMode: isDesktop.value, // 仅桌面端启用高级模式
       },
       heights: {
         testInputMin: responsiveHeights.value.testInputMin,
         testInputMax: responsiveHeights.value.testInputMax,
-        conversationMax: responsiveHeights.value.conversationMax
+        conversationMax: responsiveHeights.value.conversationMax,
       },
       responsive: {
         modelSelectSpan: gridResponsiveConfig.value.modelSelectSpan,
-        controlButtonsSpan: gridResponsiveConfig.value.controlButtonsSpan
+        controlButtonsSpan: gridResponsiveConfig.value.controlButtonsSpan,
       },
-      ...initialConfig
+      ...initialConfig,
     }
   })
 
@@ -161,25 +159,25 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
     return {
       modelSelect: {
         span: gridResponsiveConfig.value.modelSelectSpan[currentScreenSize.value],
-        responsive: gridResponsiveConfig.value.modelSelectSpan
+        responsive: gridResponsiveConfig.value.modelSelectSpan,
       },
       controls: {
         span: gridResponsiveConfig.value.controlButtonsSpan[currentScreenSize.value],
         responsive: gridResponsiveConfig.value.controlButtonsSpan,
-        justification: isMobile.value ? 'center' : 'end'
+        justification: isMobile.value ? 'center' : 'end',
       },
       buttons: {
         size: smartButtonSize.value,
         spacing: isMobile.value ? 8 : 12,
         primary: {
           type: 'primary',
-          ghost: false
+          ghost: false,
         },
         secondary: {
           type: 'default',
-          ghost: !isMobile.value
-        }
-      }
+          ghost: !isMobile.value,
+        },
+      },
     }
   })
 
@@ -189,18 +187,18 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
       compareMode: {
         enabled: !isMobile.value,
         layout: isMobile.value || isTablet.value ? 'vertical' : 'horizontal',
-        showOriginal: !isMobile.value
+        showOriginal: !isMobile.value,
       },
       singleMode: {
         title: '测试结果',
-        showToolbar: isDesktop.value
+        showToolbar: isDesktop.value,
       },
       display: {
         cardSize: smartComponentSize.value,
         gap: isMobile.value ? 8 : 12,
         enableDiff: isDesktop.value,
-        enableFullscreen: isDesktop.value
-      }
+        enableFullscreen: isDesktop.value,
+      },
     }
   })
 
@@ -251,7 +249,7 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
     windowWidth: readonly(windowWidth),
     windowHeight: readonly(windowHeight),
     currentScreenSize: readonly(currentScreenSize),
-    
+
     // 屏幕尺寸检测
     isXS: readonly(isXS),
     isSM: readonly(isSM),
@@ -259,33 +257,33 @@ export function useResponsiveTestLayout(options: ResponsiveTestLayoutOptions = {
     isLG: readonly(isLG),
     isXL: readonly(isXL),
     isXXL: readonly(isXXL),
-    
+
     // 屏幕类型检测
     isMobile: readonly(isMobile),
     isTablet: readonly(isTablet),
     isDesktop: readonly(isDesktop),
     isLargeScreen: readonly(isLargeScreen),
-    
+
     // 智能配置
     smartComponentSize: readonly(smartComponentSize),
     smartButtonSize: readonly(smartButtonSize),
     recommendedInputMode: readonly(recommendedInputMode),
     recommendedControlBarLayout: readonly(recommendedControlBarLayout),
-    
+
     // 响应式配置
     gridResponsiveConfig: readonly(gridResponsiveConfig),
     responsiveHeights: readonly(responsiveHeights),
-    
+
     // 完整配置
     testAreaConfig: readonly(testAreaConfig),
     controlLayoutConfig: readonly(controlLayoutConfig),
     resultConfig: readonly(resultConfig),
-    
+
     // 工具方法
     recalculate,
     getConfigForBreakpoint,
-    
+
     // 常量
-    breakpoints: readonly(breakpoints)
+    breakpoints: readonly(breakpoints),
   }
 }

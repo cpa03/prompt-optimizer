@@ -5,6 +5,7 @@
 ## 🏗️ 架构重构系列
 
 ### 核心架构演进
+
 - **[101-singleton-refactor](./101-singleton-refactor/)** - 单例模式重构
   - 移除项目中的单例模式，改为依赖注入架构
   - 提高代码的可测试性和可维护性
@@ -21,6 +22,7 @@
   - 进程间通信优化
 
 ### 架构修复与优化
+
 - **[111-electron-preference-architecture](./111-electron-preference-architecture/)** - Electron偏好架构
   - Electron PreferenceService架构重构
   - 竞态条件修复
@@ -35,6 +37,7 @@
 ## 🚀 功能开发系列
 
 ### 核心功能模块
+
 - **[106-template-management](./106-template-management/)** - 模板管理功能
   - 模板的增删改查功能
   - 异步操作优化
@@ -46,6 +49,7 @@
   - 提高代码一致性和可维护性
 
 ### 界面功能优化
+
 - **[104-test-panel-refactor](./104-test-panel-refactor/)** - 测试面板重构 📋
   - 测试面板功能重构和优化
   - 用户体验改进
@@ -57,6 +61,7 @@
 ## 🎨 系统优化系列
 
 ### UI/UX系统
+
 - **[108-layout-system](./108-layout-system/)** - 布局系统经验
   - 动态Flex布局实现经验
   - 响应式设计最佳实践
@@ -76,6 +81,7 @@
   - 为UI框架迁移建立了完整的方法论和最佳实践
 
 ### 状态管理系统
+
 - **[117-pinia-refactoring](./117-pinia-refactoring/)** - Pinia 状态管理重构 🔄
   - 引入 Pinia 状态管理库，构建 6+1 session store 架构
   - 解决 session 存储竞态条件
@@ -96,12 +102,14 @@
   - 建立完整的状态管理最佳实践和设计模式
 
 ### 上下文模式（Pro）
+
 - **[127-multi-turn-dialogue-mode-optimization](./127-multi-turn-dialogue-mode-optimization/)** - 多轮对话模式优化 💬
   - 基于消息 ID 的稳定选择与映射（避免索引漂移）
   - messageChainMap（消息 → 工作链）复用策略与自动应用
   - 多轮对话（Pro-System / Conversation）体验与实施记录
 
 ### 上下文模式（UI/变量）
+
 - **[128-context-ui-and-variable-system-refactor](./128-context-ui-and-variable-system-refactor/)** - 上下文 UI 改造与变量系统重构 🧩
   - 子模式选择器/快捷操作栏布局调整
   - 变量系统简化：移除会话变量，引入测试区临时变量
@@ -110,12 +118,14 @@
 ## 🔧 问题修复系列
 
 ### 存储与数据
+
 - **[110-desktop-indexeddb-fix](./110-desktop-indexeddb-fix/)** - 桌面端IndexedDB修复
   - 桌面端IndexedDB兼容性问题修复
   - 数据存储稳定性改进
   - 跨平台存储方案优化
 
 ### 进程间通信
+
 - **[112-desktop-ipc-fixes](./112-desktop-ipc-fixes/)** - 桌面端IPC修复合集
   - 语言切换按钮显示"Object Promise"问题修复
   - Vue响应式对象IPC序列化问题修复
@@ -133,6 +143,7 @@
 ## ⚙️ 服务重构系列
 
 ### 全面重构
+
 - **[113-full-service-refactoring](./113-full-service-refactoring/)** - 全面服务重构
   - 服务层架构全面重构
   - 依赖注入优化
@@ -157,6 +168,7 @@
 ## 🔍 快速查找指南
 
 ### 按问题类型查找
+
 - **启动问题** → 102-web-architecture-refactor
 - **显示异常** → 112-desktop-ipc-fixes
 - **存储问题** → 110-desktop-indexeddb-fix, 114-desktop-file-storage, 116-desktop-packaging-optimization
@@ -179,6 +191,7 @@
 - **刷新后状态丢失** → 126-submode-persistence
 
 ### 按技术栈查找
+
 - **Electron相关** → 103, 110, 111, 112, 114
 - **Vue/前端相关** → 102, 104, 105, 107, 108, 109, 121, 122, 126
 - **UI库相关** → 109, 122
@@ -193,6 +206,7 @@
 - **状态管理相关** → 126
 
 ### 按开发阶段查找
+
 - **项目初期架构** → 101, 102, 103
 - **功能开发阶段** → 104, 105, 106, 107, 126
 - **优化改进阶段** → 108, 109, 121, 122
@@ -200,6 +214,7 @@
 - **重构完善阶段** → 113, 121, 122
 
 ### 按经验类型查找
+
 - **架构设计经验** → 101, 102, 103, 111, 121, 126
 - **功能开发经验** → 106, 107, 126
 - **UI/UX设计经验** → 108, 109, 122
@@ -212,6 +227,7 @@
 ## 📖 使用建议
 
 ### 新手入门路径
+
 1. **了解架构** → 101 → 102 → 103
 2. **学习功能开发** → 106 → 107
 3. **掌握系统优化** → 108 → 109 → 122
@@ -219,12 +235,14 @@
 5. **UI框架迁移** → 122 (完整方法论和最佳实践)
 
 ### 问题解决路径
+
 1. **确定问题类型** → 查看"按问题类型查找"
 2. **找到相关文档** → 阅读README了解概况
 3. **深入技术细节** → 查看experience.md和troubleshooting.md
 4. **应用解决方案** → 参考implementation.md
 
 ### 经验学习路径
+
 1. **选择感兴趣的领域** → 查看"按技术栈查找"
 2. **按时间顺序阅读** → 了解演进过程
 3. **提取关键经验** → 重点关注experience.md

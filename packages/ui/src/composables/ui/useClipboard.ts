@@ -5,7 +5,6 @@
 
 import { ref, type Ref } from 'vue'
 
-
 export interface ClipboardHooks {
   isSupported: boolean
   copyText: (text: string) => Promise<void>
@@ -20,13 +19,13 @@ export interface ClipboardHooks {
 export function useClipboard(): ClipboardHooks {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  
+
   // 检查浏览器支持
   const isSupported = !!(
-    typeof navigator?.clipboard?.writeText === 'function' && 
+    typeof navigator?.clipboard?.writeText === 'function' &&
     typeof navigator?.clipboard?.readText === 'function'
   )
-  
+
   /**
    * 复制文本到剪贴板
    */
@@ -34,11 +33,11 @@ export function useClipboard(): ClipboardHooks {
     if (!isSupported) {
       throw new Error('Clipboard API not supported')
     }
-    
+
     try {
       isLoading.value = true
       error.value = null
-      
+
       await navigator.clipboard.writeText(text)
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to copy to clipboard'
@@ -49,7 +48,7 @@ export function useClipboard(): ClipboardHooks {
       isLoading.value = false
     }
   }
-  
+
   /**
    * 从剪贴板读取文本
    */
@@ -57,11 +56,11 @@ export function useClipboard(): ClipboardHooks {
     if (!isSupported) {
       throw new Error('Clipboard API not supported')
     }
-    
+
     try {
       isLoading.value = true
       error.value = null
-      
+
       const text = await navigator.clipboard.readText()
       return text
     } catch (err) {
@@ -73,12 +72,12 @@ export function useClipboard(): ClipboardHooks {
       isLoading.value = false
     }
   }
-  
+
   return {
     isSupported,
     copyText,
     readText,
     isLoading,
-    error
+    error,
   }
 }

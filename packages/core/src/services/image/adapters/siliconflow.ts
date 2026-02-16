@@ -6,10 +6,10 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { 
+import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
   IMAGE_SIZE_PRESETS,
@@ -18,7 +18,7 @@ import {
   getTestPrompt,
   getSiliconFlowKolorsParameterDefinitions,
   getSiliconFlowQwenParameterDefinitions,
-  getSiliconFlowDefaultParameterValues
+  getSiliconFlowDefaultParameterValues,
 } from '../../../config'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
@@ -40,9 +40,9 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -57,10 +57,10 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: getSiliconFlowKolorsParameterDefinitions(),
-        defaultParameterValues: getSiliconFlowDefaultParameterValues('Kwai-Kolors/Kolors')
+        defaultParameterValues: getSiliconFlowDefaultParameterValues('Kwai-Kolors/Kolors'),
       },
       {
         id: 'Qwen/Qwen-Image',
@@ -70,11 +70,11 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: false,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: getSiliconFlowQwenParameterDefinitions(),
-        defaultParameterValues: getSiliconFlowDefaultParameterValues('Qwen/Qwen-Image')
-      }
+        defaultParameterValues: getSiliconFlowDefaultParameterValues('Qwen/Qwen-Image'),
+      },
     ]
   }
 
@@ -83,7 +83,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     this.validateConnectionConfig(connectionConfig)
 
     const headers = {
-      'Authorization': `Bearer ${connectionConfig.apiKey}`
+      Authorization: `Bearer ${connectionConfig.apiKey}`,
     }
     const baseURL = connectionConfig.baseURL || this.getProvider().defaultBaseURL
 
@@ -97,19 +97,19 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         enabled: true,
         connectionConfig: { apiKey: connectionConfig.apiKey, baseURL },
         provider: this.getProvider(),
-        model: this.buildDefaultModel('')
+        model: this.buildDefaultModel(''),
       } as any
 
       // 分别获取不同能力的模型
       const [text2imageResponse, image2imageResponse] = await Promise.all([
         this.apiCall(tmpConfig, '/models?type=image&sub_type=text-to-image', {
           method: 'GET',
-          headers
+          headers,
         }),
         this.apiCall(tmpConfig, '/models?type=image&sub_type=image-to-image', {
           method: 'GET',
-          headers
-        })
+          headers,
+        }),
       ])
 
       // 组装模型能力
@@ -123,7 +123,10 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     }
   }
 
-  private assembleModelCapabilities(text2imageModels: any[], image2imageModels: any[]): ImageModel[] {
+  private assembleModelCapabilities(
+    text2imageModels: any[],
+    image2imageModels: any[]
+  ): ImageModel[] {
     const image2imageSet = new Set(image2imageModels.map((m: any) => m.id))
     const allModelsMap = new Map()
 
@@ -137,10 +140,10 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: image2imageSet.has(model.id), // 检查是否也支持图生图
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: this.getParameterDefinitions(model.id),
-        defaultParameterValues: this.getDefaultParameterValues(model.id)
+        defaultParameterValues: this.getDefaultParameterValues(model.id),
       })
     })
 
@@ -153,12 +156,12 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
           description: `SiliconFlow ${model.id} model (Image-to-Image only)`,
           providerId: 'siliconflow',
           capabilities: {
-            text2image: false,    // 纯图生图模型
+            text2image: false, // 纯图生图模型
             image2image: true,
-            multiImage: false
+            multiImage: false,
           },
           parameterDefinitions: this.getParameterDefinitions(model.id),
-          defaultParameterValues: this.getDefaultParameterValues(model.id)
+          defaultParameterValues: this.getDefaultParameterValues(model.id),
         })
       }
     })
@@ -172,15 +175,19 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
     // SiliconFlow 特定验证
     if (!connectionConfig.apiKey) {
-      throw new ImageError(IMAGE_ERROR_CODES.API_KEY_REQUIRED, undefined, { providerName: 'SiliconFlow' })
+      throw new ImageError(IMAGE_ERROR_CODES.API_KEY_REQUIRED, undefined, {
+        providerName: 'SiliconFlow',
+      })
     }
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: getTestPrompt('siliconflow', 'text2image'),
-        count: 1
+        count: 1,
       }
     }
 
@@ -190,20 +197,23 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: MIME_TYPES.PNG
-        }
+          mimeType: MIME_TYPES.PNG,
+        },
       }
     }
 
     throw new ImageError(IMAGE_ERROR_CODES.UNSUPPORTED_TEST_TYPE, undefined, { testType })
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     // 构建请求体，隐藏多图相关参数并固定为单图
     const mergedParams: Record<string, any> = {
       // 使用默认参数和覆盖参数
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
     delete mergedParams.n
     delete mergedParams.batch_size
@@ -211,8 +221,8 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: config.modelId, // 直接使用配置中的模型ID
@@ -222,26 +232,27 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         batch_size: 1,
         // 处理输入图像（如果有）
         ...(request.inputImage?.b64 && {
-          image: `data:${request.inputImage.mimeType || MIME_TYPES.PNG};base64,${request.inputImage.b64}`
-        })
-      })
+          image: `data:${request.inputImage.mimeType || MIME_TYPES.PNG};base64,${request.inputImage.b64}`,
+        }),
+      }),
     })
 
     return {
-      images: response.images?.map((img: any) => ({
-        url: img.url,
-        b64: img.b64,
-        mimeType: img.mimeType || MIME_TYPES.PNG
-      })) || [],
+      images:
+        response.images?.map((img: any) => ({
+          url: img.url,
+          b64: img.b64,
+          mimeType: img.mimeType || MIME_TYPES.PNG,
+        })) || [],
       metadata: {
         providerId: 'siliconflow',
         modelId: config.modelId,
         configId: config.id,
         seed: response.seed,
         usage: {
-          inference_time: response.timings?.inference
-        }
-      }
+          inference_time: response.timings?.inference,
+        },
+      },
     }
   }
 
@@ -277,12 +288,12 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
   protected getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[] {
     const modelName = modelId.toLowerCase()
-    
+
     // Use modular parameter definitions based on model type
     if (modelName.includes('qwen')) {
       return getSiliconFlowQwenParameterDefinitions()
     }
-    
+
     // Default to Kolors parameters for all other models
     return getSiliconFlowKolorsParameterDefinitions()
   }

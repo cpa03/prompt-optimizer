@@ -58,7 +58,7 @@ if (import.meta.env.VITE_VERCEL_DEPLOYMENT === 'true') {
     script.onerror = () => console.warn('Vercel Analytics 加载失败')
     document.head.appendChild(script)
   }
-  
+
   // 延迟执行以确保DOM已完全加载
   window.addEventListener('DOMContentLoaded', loadAnalytics)
 } else if (import.meta.env.DEV) {
@@ -81,9 +81,11 @@ if (typeof window !== 'undefined') {
   // 捕获全局错误
   window.addEventListener('error', (event) => {
     // 忽略已知的第三方库警告
-    if (event.message?.includes('currentInstance') || 
-        event.message?.includes('ResizeObserver') ||
-        event.filename?.includes('chrome-extension')) {
+    if (
+      event.message?.includes('currentInstance') ||
+      event.message?.includes('ResizeObserver') ||
+      event.filename?.includes('chrome-extension')
+    ) {
       event.preventDefault()
       return
     }

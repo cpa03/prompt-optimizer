@@ -40,7 +40,7 @@ describe('SeedreamImageAdapter', () => {
       expect(Array.isArray(models)).toBe(true)
       expect(models.length).toBeGreaterThan(0)
 
-      const seedreamModel = models.find(m => m.id.includes('seedream') || m.id.includes('doubao'))
+      const seedreamModel = models.find((m) => m.id.includes('seedream') || m.id.includes('doubao'))
       expect(seedreamModel).toBeDefined()
       expect(seedreamModel).toMatchObject({
         id: expect.any(String),
@@ -49,9 +49,9 @@ describe('SeedreamImageAdapter', () => {
         capabilities: {
           text2image: true,
           image2image: expect.any(Boolean),
-          multiImage: expect.any(Boolean)
+          multiImage: expect.any(Boolean),
         },
-        parameterDefinitions: expect.any(Array)
+        parameterDefinitions: expect.any(Array),
       })
     })
 
@@ -60,8 +60,8 @@ describe('SeedreamImageAdapter', () => {
       const model = models[0]
 
       expect(model.parameterDefinitions).toBeDefined()
-      const watermarkParam = model.parameterDefinitions?.find(p => p.name === 'watermark')
-      const sizeParam = model.parameterDefinitions?.find(p => p.name === 'size')
+      const watermarkParam = model.parameterDefinitions?.find((p) => p.name === 'watermark')
+      const sizeParam = model.parameterDefinitions?.find((p) => p.name === 'size')
 
       expect(watermarkParam).toBeDefined()
       expect(watermarkParam?.type).toBe('boolean')
@@ -85,12 +85,12 @@ describe('SeedreamImageAdapter', () => {
         enabled: true,
         connectionConfig: {
           apiKey: 'test-api-key',
-          baseURL: 'https://ark.cn-beijing.volces.com/api/v3'
+          baseURL: 'https://ark.cn-beijing.volces.com/api/v3',
         },
         paramOverrides: {
           size: '1024x1024',
-          watermark: false
-        }
+          watermark: false,
+        },
       }
 
       const request: ImageRequest = {
@@ -98,24 +98,24 @@ describe('SeedreamImageAdapter', () => {
         configId: config.id,
         count: 1,
         paramOverrides: {
-          outputMimeType: 'image/png'
-        }
+          outputMimeType: 'image/png',
+        },
       }
 
       const mockResponse = {
         code: 0,
         data: [
           {
-            url: 'https://example.com/seedream-generated-image.png'
-          }
+            url: 'https://example.com/seedream-generated-image.png',
+          },
         ],
         task_id: 'task-123456',
-        created_at: Date.now()
+        created_at: Date.now(),
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       })
 
       const result = await adapter.generate(request, config)
@@ -123,7 +123,7 @@ describe('SeedreamImageAdapter', () => {
       expect(result).toBeDefined()
       expect(result.images).toHaveLength(1)
       expect(result.images[0]).toMatchObject({
-        url: expect.any(String)
+        url: expect.any(String),
       })
       expect(result.metadata).toBeDefined()
       expect(result.metadata?.configId).toBe(config.id)
@@ -138,24 +138,25 @@ describe('SeedreamImageAdapter', () => {
         modelId,
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'test prompt',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 400,
-        json: () => Promise.resolve({
-          code: 400,
-          message: 'Invalid request parameters'
-        })
+        json: () =>
+          Promise.resolve({
+            code: 400,
+            message: 'Invalid request parameters',
+          }),
       })
 
       await expect(adapter.generate(request, config)).rejects.toThrow()
@@ -171,17 +172,18 @@ describe('SeedreamImageAdapter', () => {
         connectionConfig: {
           // Missing apiKey
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'test prompt',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
-      await expect(adapter.generate(request, config))
-        .rejects.toMatchObject({ code: IMAGE_ERROR_CODES.API_KEY_REQUIRED })
+      await expect(adapter.generate(request, config)).rejects.toMatchObject({
+        code: IMAGE_ERROR_CODES.API_KEY_REQUIRED,
+      })
     })
 
     test('should handle Chinese prompts correctly', async () => {
@@ -192,27 +194,25 @@ describe('SeedreamImageAdapter', () => {
         modelId,
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: '古代中国山水画，水墨画风格，朦胧意境',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const mockResponse = {
         code: 0,
-        data: [
-          { url: 'https://example.com/chinese-landscape.png' }
-        ]
+        data: [{ url: 'https://example.com/chinese-landscape.png' }],
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       })
 
       const result = await adapter.generate(request, config)
@@ -223,7 +223,7 @@ describe('SeedreamImageAdapter', () => {
       expect(fetch).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
-          body: expect.stringContaining('古代中国山水画')
+          body: expect.stringContaining('古代中国山水画'),
         })
       )
     })
@@ -251,7 +251,7 @@ describe('SeedreamImageAdapter', () => {
     test('should validate size parameter values', () => {
       const models = adapter.getModels()
       const model = models[0]
-      const sizeParam = model.parameterDefinitions?.find(p => p.name === 'size')
+      const sizeParam = model.parameterDefinitions?.find((p) => p.name === 'size')
 
       expect(sizeParam?.allowedValues).toContain('1024x1024')
       expect(sizeParam?.allowedValues).toContain('512x512')
@@ -260,7 +260,7 @@ describe('SeedreamImageAdapter', () => {
     test('should validate watermark parameter', () => {
       const models = adapter.getModels()
       const model = models[0]
-      const watermarkParam = model.parameterDefinitions?.find(p => p.name === 'watermark')
+      const watermarkParam = model.parameterDefinitions?.find((p) => p.name === 'watermark')
 
       expect(watermarkParam?.type).toBe('boolean')
       expect(watermarkParam?.defaultValue).toBe(false)
@@ -282,18 +282,21 @@ describe('SeedreamImageAdapter', () => {
         enabled: true,
         connectionConfig: {
           apiKey: apiKey,
-          baseURL: process.env.VITE_SEEDREAM_BASE_URL || process.env.VITE_ARK_BASE_URL || 'https://ark.cn-beijing.volces.com/api/v3'
+          baseURL:
+            process.env.VITE_SEEDREAM_BASE_URL ||
+            process.env.VITE_ARK_BASE_URL ||
+            'https://ark.cn-beijing.volces.com/api/v3',
         },
         paramOverrides: {
           size: '1024x1024',
-          watermark: false
-        }
+          watermark: false,
+        },
       }
 
       const request: ImageRequest = {
         prompt: '中国传统山水画，水墨画风格，远山如黛，云雾缭绕',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const result = await adapter.generate(request, config)

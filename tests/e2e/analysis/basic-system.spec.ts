@@ -4,7 +4,7 @@ import {
   fillOriginalPrompt,
   clickAnalyzeButton,
   getEvaluationScore,
-  verifyAnalyzeButtonDisabledWhenEmpty
+  verifyAnalyzeButtonDisabledWhenEmpty,
 } from '../helpers/analysis'
 import { EXTENDED_ANALYSIS_TEST_TIMEOUT } from '../constants/timeouts'
 

@@ -1,4 +1,4 @@
-import { Template } from '../../types';
+import { Template } from '../../types'
 
 export const template: Template = {
   id: 'analytical-optimize',
@@ -40,7 +40,7 @@ export const template: Template = {
 - 优先考虑实用性，生成的Prompt应该能够直接使用
 - 注重细节完善，每个部分都要有具体且有价值的内容
 - 保持专业水准，确保输出的Prompt符合行业最佳实践
-- **特别注意**：Suggestions部分应该专注于角色内在的工作方法，而不是与用户互动的策略`
+- **特别注意**：Suggestions部分应该专注于角色内在的工作方法，而不是与用户互动的策略`,
     },
     {
       role: 'user',
@@ -124,8 +124,8 @@ export const template: Template = {
 - **数量要求**：Skills、Goals、Constrains、Workflow、Suggestions各部分需要5个要点，OutputFormat需要3个要点
 - **Suggestions是给角色的内在工作方法论**，专注于角色自身的技能提升和工作优化方法，避免涉及与用户互动的建议
 - **必须包含完整结构**：确保包含Role、Background、Attention、Profile、Skills、Goals、Constrains、Workflow、OutputFormat、Suggestions、Initialization等所有部分
-- 保持内容的逻辑性和连贯性，各部分之间要相互呼应`
-    }
+- 保持内容的逻辑性和连贯性，各部分之间要相互呼应`,
+    },
   ],
   metadata: {
     version: '2.1.0',
@@ -133,7 +133,7 @@ export const template: Template = {
     author: 'System',
     description: '适合复杂业务场景，深度分析原提示词问题，提供详细改进建议和完整优化方案',
     templateType: 'optimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

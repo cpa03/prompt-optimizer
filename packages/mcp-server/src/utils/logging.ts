@@ -6,19 +6,19 @@
  * - 生产环境：DEBUG=mcp:info,mcp:warn,mcp:error node server.js
  */
 
-import createDebug from 'debug';
+import createDebug from 'debug'
 
 // 创建不同级别的调试器
-const debugLogger = createDebug('mcp:debug');
-const infoLogger = createDebug('mcp:info');
-const warnLogger = createDebug('mcp:warn');
-const errorLogger = createDebug('mcp:error');
+const debugLogger = createDebug('mcp:debug')
+const infoLogger = createDebug('mcp:info')
+const warnLogger = createDebug('mcp:warn')
+const errorLogger = createDebug('mcp:error')
 
 // 为不同级别设置颜色
-debugLogger.color = '6'; // cyan
-infoLogger.color = '2';  // green
-warnLogger.color = '3';  // yellow
-errorLogger.color = '1'; // red
+debugLogger.color = '6' // cyan
+infoLogger.color = '2' // green
+warnLogger.color = '3' // yellow
+errorLogger.color = '1' // red
 
 /**
  * 设置日志级别（通过环境变量 DEBUG 控制）
@@ -30,29 +30,32 @@ export function setLogLevel(level: 'debug' | 'info' | 'warn' | 'error'): void {
     debug: 'mcp:*',
     info: 'mcp:info,mcp:warn,mcp:error',
     warn: 'mcp:warn,mcp:error',
-    error: 'mcp:error'
-  };
+    error: 'mcp:error',
+  }
 
   // 动态设置 DEBUG 环境变量（如果还没有设置的话）
   if (!process.env.DEBUG) {
-    process.env.DEBUG = levelMap[level];
+    process.env.DEBUG = levelMap[level]
   }
 
   // 强制重新初始化debug库的enabled函数
-  const debugPattern = process.env.DEBUG || levelMap[level];
+  const debugPattern = process.env.DEBUG || levelMap[level]
   createDebug.enabled = (namespace: string) => {
-    if (debugPattern === 'mcp:*') return namespace.startsWith('mcp:');
-    return debugPattern.split(',').some(pattern =>
-      pattern.trim() === namespace ||
-      (pattern.includes('*') && namespace.startsWith(pattern.replace('*', '')))
-    );
-  };
+    if (debugPattern === 'mcp:*') return namespace.startsWith('mcp:')
+    return debugPattern
+      .split(',')
+      .some(
+        (pattern) =>
+          pattern.trim() === namespace ||
+          (pattern.includes('*') && namespace.startsWith(pattern.replace('*', '')))
+      )
+  }
 
   // 重新启用所有调试器
-  debugLogger.enabled = createDebug.enabled('mcp:debug');
-  infoLogger.enabled = createDebug.enabled('mcp:info');
-  warnLogger.enabled = createDebug.enabled('mcp:warn');
-  errorLogger.enabled = createDebug.enabled('mcp:error');
+  debugLogger.enabled = createDebug.enabled('mcp:debug')
+  infoLogger.enabled = createDebug.enabled('mcp:info')
+  warnLogger.enabled = createDebug.enabled('mcp:warn')
+  errorLogger.enabled = createDebug.enabled('mcp:error')
 }
 
 /**
@@ -60,9 +63,9 @@ export function setLogLevel(level: 'debug' | 'info' | 'warn' | 'error'): void {
  */
 export function debug(message: string, meta?: unknown): void {
   if (meta !== undefined) {
-    debugLogger(message, meta);
+    debugLogger(message, meta)
   } else {
-    debugLogger(message);
+    debugLogger(message)
   }
 }
 
@@ -71,9 +74,9 @@ export function debug(message: string, meta?: unknown): void {
  */
 export function info(message: string, meta?: unknown): void {
   if (meta !== undefined) {
-    infoLogger(message, meta);
+    infoLogger(message, meta)
   } else {
-    infoLogger(message);
+    infoLogger(message)
   }
 }
 
@@ -82,9 +85,9 @@ export function info(message: string, meta?: unknown): void {
  */
 export function warn(message: string, meta?: unknown): void {
   if (meta !== undefined) {
-    warnLogger(message, meta);
+    warnLogger(message, meta)
   } else {
-    warnLogger(message);
+    warnLogger(message)
   }
 }
 
@@ -96,9 +99,9 @@ export function error(message: string, err?: Error): void {
     errorLogger(message, {
       message: err.message,
       stack: err.stack,
-      name: err.name
-    });
+      name: err.name,
+    })
   } else {
-    errorLogger(message);
+    errorLogger(message)
   }
 }

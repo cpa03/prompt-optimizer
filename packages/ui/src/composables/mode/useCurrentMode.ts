@@ -98,11 +98,9 @@ export function useCurrentMode(): UseCurrentModeReturn {
     isImageMode: computed(() => _functionMode.value === 'image'),
 
     // 便捷布尔判断（二级模式，仅 Pro 模式有效）
-    isMultiMode: computed(() =>
-      _functionMode.value === 'pro' && _proSubMode.value === 'multi'
-    ),
-    isVariableMode: computed(() =>
-      _functionMode.value === 'pro' && _proSubMode.value === 'variable'
+    isMultiMode: computed(() => _functionMode.value === 'pro' && _proSubMode.value === 'multi'),
+    isVariableMode: computed(
+      () => _functionMode.value === 'pro' && _proSubMode.value === 'variable'
     ),
   }
 }

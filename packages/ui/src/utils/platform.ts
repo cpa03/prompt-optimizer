@@ -34,7 +34,7 @@ export function getPlatform(): Platform {
     isLinux,
     getUndoKey: () => (isMac ? 'Cmd+Z' : 'Ctrl+Z'),
     getRedoKey: () => (isMac ? 'Cmd+Shift+Z' : 'Ctrl+Y'),
-    getCommandKey: () => (isMac ? 'Cmd' : 'Ctrl')
+    getCommandKey: () => (isMac ? 'Cmd' : 'Ctrl'),
   }
 }
 

@@ -36,27 +36,27 @@ const LLM_PROVIDERS: Record<string, LLMProviderConfig> = {
     baseURL: 'https://api.openai.com/v1',
     endpoints: {
       chat: '/chat/completions',
-      completions: '/completions'
-    }
+      completions: '/completions',
+    },
   },
   deepseek: {
     baseURL: 'https://api.deepseek.com/v1',
     endpoints: {
-      chat: '/chat/completions'
-    }
+      chat: '/chat/completions',
+    },
   },
   gemini: {
     baseURL: 'https://generativelanguage.googleapis.com/v1beta',
     endpoints: {
-      chat: '/models/gemini-pro:generateContent'
-    }
+      chat: '/models/gemini-pro:generateContent',
+    },
   },
   anthropic: {
     baseURL: 'https://api.anthropic.com/v1',
     endpoints: {
-      chat: '/messages'
-    }
-  }
+      chat: '/messages',
+    },
+  },
 }
 
 /**
@@ -109,7 +109,7 @@ export class LLMMockService {
       useVCR: options.useVCR ?? true,
       errorScenario: options.errorScenario ?? null,
       baseDelay: options.baseDelay ?? 100,
-      debug: options.debug ?? false
+      debug: options.debug ?? false,
     }
   }
 
@@ -167,7 +167,9 @@ export class LLMMockService {
             }
 
             // 否则返回 JSON
-            return HttpResponse.json(this.transformToAPIFormat(provider, fixture as unknown as LLMResponse))
+            return HttpResponse.json(
+              this.transformToAPIFormat(provider, fixture as unknown as LLMResponse)
+            )
           } catch (error) {
             this.log(`[LLM Mock] VCR error: ${(error as Error).message}`)
             if (process.env.VCR_MODE === 'replay') {
@@ -175,7 +177,10 @@ export class LLMMockService {
             }
             // 降级到默认 mock
             return HttpResponse.json(
-              this.transformToAPIFormat(provider, this.getDefaultMockResponse(provider, normalizedRequest))
+              this.transformToAPIFormat(
+                provider,
+                this.getDefaultMockResponse(provider, normalizedRequest)
+              )
             )
           }
         }
@@ -183,7 +188,10 @@ export class LLMMockService {
         // 不使用 VCR，直接返回默认 mock
         await delay(this.options.baseDelay)
         return HttpResponse.json(
-          this.transformToAPIFormat(provider, this.getDefaultMockResponse(provider, normalizedRequest))
+          this.transformToAPIFormat(
+            provider,
+            this.getDefaultMockResponse(provider, normalizedRequest)
+          )
         )
       })
     )
@@ -195,7 +203,7 @@ export class LLMMockService {
    * 从请求推导场景名称
    */
   private deriveScenarioName(request: LLMRequest): string {
-    const userMessage = request.messages.find(m => m.role === 'user')
+    const userMessage = request.messages.find((m) => m.role === 'user')
     const contentPreview = userMessage?.content.slice(0, 30) || ''
 
     const readable =
@@ -210,7 +218,7 @@ export class LLMMockService {
       stream: request.stream ?? false,
       temperature: request.temperature,
       max_tokens: request.max_tokens,
-      messages: request.messages
+      messages: request.messages,
     })
     const hash = createHash('sha1').update(hashPayload).digest('hex').slice(0, 12)
     return `${readable}-${hash}`
@@ -223,7 +231,7 @@ export class LLMMockService {
     const base: LLMRequest = {
       provider,
       model: 'unknown',
-      messages: []
+      messages: [],
     }
 
     if (!raw || typeof raw !== 'object') return base
@@ -245,7 +253,7 @@ export class LLMMockService {
               ? m.content
               : Array.isArray(m.content)
                 ? m.content.map((c: any) => c?.text ?? '').join('')
-                : ''
+                : '',
         }))
       return base
     }
@@ -271,7 +279,7 @@ export class LLMMockService {
    * 获取默认 mock 响应
    */
   private getDefaultMockResponse(provider: string, request: LLMRequest): LLMResponse {
-    const userMessage = request.messages.find(m => m.role === 'user')
+    const userMessage = request.messages.find((m) => m.role === 'user')
 
     return {
       type: 'single',
@@ -280,9 +288,9 @@ export class LLMMockService {
       usage: {
         prompt_tokens: 10,
         completion_tokens: 20,
-        total_tokens: 30
+        total_tokens: 30,
       },
-      finish_reason: 'stop'
+      finish_reason: 'stop',
     }
   }
 
@@ -293,7 +301,8 @@ export class LLMMockService {
     const content = response.content ?? (response as any).finalResult?.content ?? ''
     const model = response.model ?? (response as any).finalResult?.model
     const usage = response.usage ?? (response as any).finalResult?.usage
-    const finishReason = response.finish_reason ?? (response as any).finalResult?.finish_reason ?? 'stop'
+    const finishReason =
+      response.finish_reason ?? (response as any).finalResult?.finish_reason ?? 'stop'
 
     // OpenAI 格式
     if (provider === 'openai' || provider === 'deepseek') {
@@ -307,12 +316,12 @@ export class LLMMockService {
             index: 0,
             message: {
               role: 'assistant',
-              content
+              content,
             },
-            finish_reason: finishReason
-          }
+            finish_reason: finishReason,
+          },
         ],
-        usage
+        usage,
       }
     }
 
@@ -322,12 +331,12 @@ export class LLMMockService {
         candidates: [
           {
             content: {
-              parts: [{ text: content }]
+              parts: [{ text: content }],
             },
-            finishReason: finishReason.toUpperCase()
-          }
+            finishReason: finishReason.toUpperCase(),
+          },
         ],
-        usageMetadata: usage
+        usageMetadata: usage,
       }
     }
 
@@ -340,7 +349,7 @@ export class LLMMockService {
         model,
         content: [{ type: 'text', text: content }],
         stop_reason: finishReason,
-        usage
+        usage,
       }
     }
 
@@ -380,9 +389,9 @@ export class LLMMockService {
                 {
                   index: 0,
                   delta: { content: chunk.content },
-                  finish_reason: null
-                }
-              ]
+                  finish_reason: null,
+                },
+              ],
             })
 
             controller.enqueue(encoder.encode(`data: ${sseData}\n\n`))
@@ -390,7 +399,7 @@ export class LLMMockService {
 
           // 发送结束 chunk
           const endChunk = JSON.stringify({
-            choices: [{ finish_reason: 'stop' }]
+            choices: [{ finish_reason: 'stop' }],
           })
           controller.enqueue(encoder.encode(`data: ${endChunk}\n\n`))
           controller.enqueue(encoder.encode('data: [DONE]\n\n'))
@@ -399,15 +408,15 @@ export class LLMMockService {
         } catch (error) {
           controller.error(error)
         }
-      }
+      },
     })
 
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
-      }
+        Connection: 'keep-alive',
+      },
     })
   }
 
@@ -428,8 +437,8 @@ export class LLMMockService {
             error: {
               message: 'Rate limit exceeded. Please try again later.',
               type: 'rate_limit_error',
-              code: 'rate_limit_exceeded'
-            }
+              code: 'rate_limit_exceeded',
+            },
           },
           { status: 429 }
         )
@@ -443,8 +452,8 @@ export class LLMMockService {
             error: {
               message: 'Internal server error',
               type: 'server_error',
-              code: 'internal_error'
-            }
+              code: 'internal_error',
+            },
           },
           { status: 500 }
         )
@@ -455,8 +464,8 @@ export class LLMMockService {
             error: {
               message: 'Invalid API key provided',
               type: 'invalid_request_error',
-              code: 'invalid_api_key'
-            }
+              code: 'invalid_api_key',
+            },
           },
           { status: 401 }
         )
@@ -467,17 +476,14 @@ export class LLMMockService {
             error: {
               message: 'Insufficient quota',
               type: 'insufficient_quota',
-              code: 'insufficient_quota'
-            }
+              code: 'insufficient_quota',
+            },
           },
           { status: 429 }
         )
 
       default:
-        return HttpResponse.json(
-          { error: { message: 'Unknown error' } },
-          { status: 500 }
-        )
+        return HttpResponse.json({ error: { message: 'Unknown error' } }, { status: 500 })
     }
   }
 
@@ -541,6 +547,6 @@ export function withLLMErrorScenario(scenario: ErrorScenario): {
     service,
     cleanup: () => {
       // 清理逻辑（如果需要）
-    }
+    },
   }
 }

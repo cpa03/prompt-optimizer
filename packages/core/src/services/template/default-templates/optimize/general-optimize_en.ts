@@ -1,4 +1,4 @@
-import { Template } from '../../types';
+import { Template } from '../../types'
 
 export const template: Template = {
   id: 'general-optimize',
@@ -70,7 +70,7 @@ Please optimize and expand the following prompt based on the above template, ens
     author: 'System',
     description: 'General optimization prompt suitable for most scenarios',
     templateType: 'optimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

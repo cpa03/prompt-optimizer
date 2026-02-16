@@ -78,7 +78,10 @@ const ROUTES: RouteCase[] = [
  * 验证下拉框有选项
  * @description 检查 Naive UI Select 组件是否渲染了选项
  */
-async function expectSelectHasOptions(page: Parameters<typeof test>[0]['page'], label: RegExp): Promise<void> {
+async function expectSelectHasOptions(
+  page: Parameters<typeof test>[0]['page'],
+  label: RegExp
+): Promise<void> {
   const labelNode = page.getByText(label).first()
   await expect(labelNode).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 

@@ -4,7 +4,7 @@
  * Evaluate the effectiveness of the optimized prompt
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-basic-system-optimized',
@@ -91,7 +91,7 @@ improvements SHOULD be **generic** improvements, for example:
 - ✓ Enhance output format constraints
 - ✓ Clarify role positioning and boundaries
 - ✓ Add generic quality requirements
-- ✓ Improve instruction clarity and completeness`
+- ✓ Improve instruction clarity and completeness`,
     },
     {
       role: 'user',
@@ -115,8 +115,8 @@ improvements SHOULD be **generic** improvements, for example:
 
 ---
 
-Please strictly evaluate the above test result and provide generic improvement suggestions for the system prompt.`
-    }
+Please strictly evaluate the above test result and provide generic improvement suggestions for the system prompt.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -125,7 +125,7 @@ Please strictly evaluate the above test result and provide generic improvement s
     description: 'Evaluate the effectiveness of the optimized prompt',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'optimized', 'scoring', 'basic', 'system']
+    tags: ['evaluation', 'optimized', 'scoring', 'basic', 'system'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

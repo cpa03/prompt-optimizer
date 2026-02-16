@@ -108,7 +108,6 @@ export function getI18nErrorMessage(error: unknown, fallback = 'Unknown error'):
   return message
 }
 
-
 /**
  * 类型守卫：检查是否为 ExtendedError
  * @param error - 待检查的错误对象
@@ -117,7 +116,10 @@ export function getI18nErrorMessage(error: unknown, fallback = 'Unknown error'):
 export function isExtendedError(error: unknown): error is ExtendedError {
   return (
     error instanceof Error &&
-    ('detailedMessage' in error || 'originalError' in error || 'code' in error || 'context' in error)
+    ('detailedMessage' in error ||
+      'originalError' in error ||
+      'code' in error ||
+      'context' in error)
   )
 }
 
@@ -214,7 +216,7 @@ export function createErrorHandler(context: string) {
       console.error(`[${context}]错误:`, error)
 
       toast.error(getI18nErrorMessage(error, `${context}过程中发生未知错误`))
-    }
+    },
   }
 }
 
@@ -235,8 +237,8 @@ export function logErrorInDev(context: string, error: unknown): void {
           detailedMessage: error.detailedMessage,
           originalError: error.originalError,
           code: error.code,
-          context: error.context
-        })
+          context: error.context,
+        }),
       })
     }
   }
@@ -250,5 +252,5 @@ export const errorMessages = {
   TEMPLATE_NOT_SELECTED: '请先选择提示词模板',
   INCOMPLETE_TEST_INFO: '请填写完整的测试信息',
   LOAD_TEMPLATE_FAILED: '加载提示词失败',
-  CLEAR_HISTORY_FAILED: '清空历史记录失败'
-} as const 
+  CLEAR_HISTORY_FAILED: '清空历史记录失败',
+} as const

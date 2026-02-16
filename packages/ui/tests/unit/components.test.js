@@ -9,8 +9,8 @@ describe('基础UI组件测试', () => {
       const wrapper = mount(ActionButtonUI, {
         props: {
           text: buttonText,
-          icon: '??'
-        }
+          icon: '??',
+        },
       })
       expect(wrapper.text()).toContain(buttonText)
     })
@@ -20,8 +20,8 @@ describe('基础UI组件测试', () => {
         props: {
           text: '测试按钮',
           icon: '??',
-          loading: false
-        }
+          loading: false,
+        },
       })
 
       expect(wrapper.props('loading')).toBe(false)
@@ -36,11 +36,10 @@ describe('基础UI组件测试', () => {
       const slotContent = '测试内容'
       const wrapper = mount(ContentCardUI, {
         slots: {
-          default: slotContent
-        }
+          default: slotContent,
+        },
       })
       expect(wrapper.text()).toContain(slotContent)
     })
   })
 })
-

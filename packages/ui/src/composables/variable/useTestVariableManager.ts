@@ -92,9 +92,7 @@ export function useTestVariableManager(options: TestVariableManagerOptions) {
   })
 
   // 获取变量来源
-  const getVariableSource = (
-    varName: string
-  ): 'predefined' | 'test' | 'global' | 'empty' => {
+  const getVariableSource = (varName: string): 'predefined' | 'test' | 'global' | 'empty' => {
     // Use key existence (not truthiness) because empty-string values are valid.
     if (hasOwn(options.predefinedVariables.value, varName)) return 'predefined'
     if (hasOwn(testVariables.value as unknown as Record<string, unknown>, varName)) {
@@ -141,7 +139,9 @@ export function useTestVariableManager(options: TestVariableManagerOptions) {
         case 'required':
           return t('variableExtraction.validation.required')
         case 'tooLong':
-          return t('variableExtraction.validation.tooLong', { max: VARIABLE_VALIDATION.MAX_NAME_LENGTH })
+          return t('variableExtraction.validation.tooLong', {
+            max: VARIABLE_VALIDATION.MAX_NAME_LENGTH,
+          })
         case 'forbiddenPrefix':
           return t('variableExtraction.validation.forbiddenPrefix')
         case 'noNumberStart':

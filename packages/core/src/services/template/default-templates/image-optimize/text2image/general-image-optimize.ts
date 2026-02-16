@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-general-optimize',
@@ -90,7 +90,7 @@ export const template: Template = {
 - 每个关键名词配 2–3 个精准修饰词，提升信息密度
 - 不使用参数/权重/负面清单
 - 不使用列表、代码块或 JSON
-- 鼓励在自然语言中体现对比与呼应（明暗/冷暖/软硬/动静），增强叙事与可读性`
+- 鼓励在自然语言中体现对比与呼应（明暗/冷暖/软硬/动静），增强叙事与可读性`,
     },
     {
       role: 'user',
@@ -105,16 +105,17 @@ export const template: Template = {
 原始描述：
 {{originalPrompt}}
 
-请输出优化后的提示词：`
-    }
+请输出优化后的提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.3.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: '通用自然语言图像生成提示词优化模板，以结构化自然语言强化主体/动作/环境锚点/光线/配色/材质/氛围与构图视角；不含参数/权重/负面清单',
+    description:
+      '通用自然语言图像生成提示词优化模板，以结构化自然语言强化主体/动作/环境锚点/光线/配色/材质/氛围与构图视角；不含参数/权重/负面清单',
     templateType: 'text2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -1,4 +1,4 @@
-import { Template } from '../../types';
+import { Template } from '../../types'
 
 export const template: Template = {
   id: 'output-format-optimize',
@@ -102,7 +102,7 @@ export const template: Template = {
     author: 'System',
     description: '适合需要规范输出格式的场景，在通用优化基础上增加详细的输出格式控制和约束',
     templateType: 'optimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

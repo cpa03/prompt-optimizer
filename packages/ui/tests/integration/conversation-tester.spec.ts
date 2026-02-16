@@ -6,7 +6,7 @@ const toast = {
   error: vi.fn(),
   warning: vi.fn(),
   info: vi.fn(),
-  loading: vi.fn()
+  loading: vi.fn(),
 }
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -14,13 +14,13 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
 vi.mock('../../src/composables/ui/useToast', () => ({
-  useToast: () => toast
+  useToast: () => toast,
 }))
 
 import type { AppServices } from '../../src/types/services'
@@ -32,7 +32,7 @@ describe('Conversation tester (integration)', () => {
     toast.error.mockReset()
 
     const optimizationContext = ref<ConversationMessage[]>([
-      { id: 'm1', role: 'user', content: 'c1', originalContent: 'c0' } as any
+      { id: 'm1', role: 'user', content: 'c1', originalContent: 'c0' } as any,
     ])
 
     const selectedMessageId = ref('m1')
@@ -47,19 +47,19 @@ describe('Conversation tester (integration)', () => {
     })
 
     const services = ref({
-      promptService: { testCustomConversationStream }
+      promptService: { testCustomConversationStream },
     } as unknown as AppServices)
 
     const selectedTestModel = ref('test-model-1')
     const variableManager = {
       variableManager: ref({
-        resolveAllVariables: () => ({ base: '1' })
-      })
+        resolveAllVariables: () => ({ base: '1' }),
+      }),
     } as any
 
     const testPanelRef = {
       clearToolCalls: vi.fn(),
-      handleToolCall: vi.fn()
+      handleToolCall: vi.fn(),
     } as any
 
     const tester = useConversationTester(
@@ -80,4 +80,3 @@ describe('Conversation tester (integration)', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 })
-

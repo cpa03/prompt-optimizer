@@ -2,7 +2,13 @@
  * 数据导入导出管理器实现
  */
 
-import type { DataImportExport, StandardPromptData, ConversionResult, ConversationMessage, OpenAIRequest } from '../types'
+import type {
+  DataImportExport,
+  StandardPromptData,
+  ConversionResult,
+  ConversationMessage,
+  OpenAIRequest,
+} from '../types'
 import { PromptDataConverter } from './PromptDataConverter'
 import { scanVariableNames } from '../utils/prompt-variables'
 
@@ -25,7 +31,7 @@ export class DataImportExportManager implements DataImportExport {
       if (!file) {
         return {
           success: false,
-          error: 'No file provided'
+          error: 'No file provided',
         }
       }
 
@@ -33,13 +39,13 @@ export class DataImportExportManager implements DataImportExport {
       if (!file.name.toLowerCase().endsWith('.json')) {
         return {
           success: false,
-          error: 'Only JSON files are supported'
+          error: 'Only JSON files are supported',
         }
       }
 
       // 读取文件内容
       const text = await this.readFileAsText(file)
-      
+
       // 解析JSON
       let jsonData: unknown
       try {
@@ -47,7 +53,7 @@ export class DataImportExportManager implements DataImportExport {
       } catch (parseError) {
         return {
           success: false,
-          error: `Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`
+          error: `Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`,
         }
       }
 
@@ -56,7 +62,7 @@ export class DataImportExportManager implements DataImportExport {
     } catch (error) {
       return {
         success: false,
-        error: `File import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `File import failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -69,7 +75,7 @@ export class DataImportExportManager implements DataImportExport {
       if (!jsonText || typeof jsonText !== 'string') {
         return {
           success: false,
-          error: 'No text provided'
+          error: 'No text provided',
         }
       }
 
@@ -80,7 +86,7 @@ export class DataImportExportManager implements DataImportExport {
       } catch (parseError) {
         return {
           success: false,
-          error: `Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`
+          error: `Invalid JSON format: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`,
         }
       }
 
@@ -89,7 +95,7 @@ export class DataImportExportManager implements DataImportExport {
     } catch (error) {
       return {
         success: false,
-        error: `Clipboard import failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Clipboard import failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -98,14 +104,14 @@ export class DataImportExportManager implements DataImportExport {
    * 导出为JSON文件
    */
   exportToFile(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     format: 'standard' | 'openai' | 'template',
     filename?: string
   ): void {
     try {
       const exportData = this.prepareExportData(data, format)
       const jsonString = JSON.stringify(exportData, null, 2)
-      
+
       // 生成文件名
       const defaultFilename = this.generateFilename(format)
       const finalFilename = filename || defaultFilename
@@ -113,14 +119,14 @@ export class DataImportExportManager implements DataImportExport {
       // 创建下载链接
       const blob = new Blob([jsonString], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
-      
+
       const link = document.createElement('a')
       link.href = url
       link.download = finalFilename
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
-      
+
       // 清理URL对象
       URL.revokeObjectURL(url)
     } catch (error) {
@@ -133,13 +139,13 @@ export class DataImportExportManager implements DataImportExport {
    * 导出到剪贴板
    */
   async exportToClipboard(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     format: 'standard' | 'openai' | 'template'
   ): Promise<boolean> {
     try {
       const exportData = this.prepareExportData(data, format)
       const jsonString = JSON.stringify(exportData, null, 2)
-      
+
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(jsonString)
         return true
@@ -164,8 +170,12 @@ export class DataImportExportManager implements DataImportExport {
     const dataObj = data as Record<string, unknown>
 
     // 检测LangFuse格式
-    if (dataObj.id && dataObj.input && typeof dataObj.input === 'object' &&
-        (dataObj.input as Record<string, unknown>).messages) {
+    if (
+      dataObj.id &&
+      dataObj.input &&
+      typeof dataObj.input === 'object' &&
+      (dataObj.input as Record<string, unknown>).messages
+    ) {
       return 'langfuse'
     }
 
@@ -175,16 +185,23 @@ export class DataImportExportManager implements DataImportExport {
     }
 
     // 检测会话消息格式
-    if (Array.isArray(data) && data.length > 0 &&
-        data[0] && typeof data[0] === 'object' &&
-        (data[0] as Record<string, unknown>).role &&
-        (data[0] as Record<string, unknown>).content) {
+    if (
+      Array.isArray(data) &&
+      data.length > 0 &&
+      data[0] &&
+      typeof data[0] === 'object' &&
+      (data[0] as Record<string, unknown>).role &&
+      (data[0] as Record<string, unknown>).content
+    ) {
       return 'conversation'
     }
 
     // 检测标准格式
-    if (dataObj.messages && Array.isArray(dataObj.messages) &&
-        (!dataObj.model || typeof dataObj.model === 'string')) {
+    if (
+      dataObj.messages &&
+      Array.isArray(dataObj.messages) &&
+      (!dataObj.model || typeof dataObj.model === 'string')
+    ) {
       return 'openai' // 当作OpenAI格式处理
     }
 
@@ -194,7 +211,7 @@ export class DataImportExportManager implements DataImportExport {
   // 私有方法：从解析后的数据导入
   private importFromParsedData(jsonData: unknown): ConversionResult<StandardPromptData> {
     const format = this.detectFormat(jsonData)
-    
+
     switch (format) {
       case 'langfuse':
         return this.converter.fromLangFuse(jsonData as Record<string, unknown>)
@@ -206,21 +223,27 @@ export class DataImportExportManager implements DataImportExport {
         return this.converter.fromOpenAI(jsonData)
 
       case 'conversation':
-        return this.converter.fromConversationMessages(jsonData as Array<Partial<ConversationMessage>>, {
-          imported_from: 'file',
-          detected_format: 'conversation'
-        })
+        return this.converter.fromConversationMessages(
+          jsonData as Array<Partial<ConversationMessage>>,
+          {
+            imported_from: 'file',
+            detected_format: 'conversation',
+          }
+        )
 
       default:
         return {
           success: false,
-          error: `Unknown or unsupported data format. Detected: ${format}`
+          error: `Unknown or unsupported data format. Detected: ${format}`,
         }
     }
   }
 
   // 私有方法：准备导出数据
-  private prepareExportData(data: StandardPromptData, format: 'standard' | 'openai' | 'template'): StandardPromptData | Record<string, unknown> {
+  private prepareExportData(
+    data: StandardPromptData,
+    format: 'standard' | 'openai' | 'template'
+  ): StandardPromptData | Record<string, unknown> {
     switch (format) {
       case 'standard':
         return data
@@ -256,9 +279,9 @@ export class DataImportExportManager implements DataImportExport {
   } {
     // 提取变量
     const variables: Record<string, string> = {}
-    
+
     // 扫描所有消息中的变量
-    data.messages.forEach(message => {
+    data.messages.forEach((message) => {
       const found = scanVariableNames(message.content)
       for (const variableName of found) {
         if (!Object.prototype.hasOwnProperty.call(variables, variableName)) {
@@ -273,8 +296,8 @@ export class DataImportExportManager implements DataImportExport {
       export_info: {
         format: 'template',
         exported_at: new Date().toISOString(),
-        variable_count: Object.keys(variables).length
-      }
+        variable_count: Object.keys(variables).length,
+      },
     }
   }
 
@@ -282,11 +305,11 @@ export class DataImportExportManager implements DataImportExport {
   private generateFilename(format: 'standard' | 'openai' | 'template'): string {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
     const formatPrefix = {
-      'standard': 'standard-prompt',
-      'openai': 'openai-request', 
-      'template': 'prompt-template'
+      standard: 'standard-prompt',
+      openai: 'openai-request',
+      template: 'prompt-template',
     }[format]
-    
+
     return `${formatPrefix}-${timestamp}.json`
   }
 
@@ -294,7 +317,7 @@ export class DataImportExportManager implements DataImportExport {
   private readFileAsText(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
-      
+
       reader.onload = (event) => {
         if (event.target?.result) {
           resolve(event.target.result as string)
@@ -302,11 +325,11 @@ export class DataImportExportManager implements DataImportExport {
           reject(new Error('Failed to read file'))
         }
       }
-      
+
       reader.onerror = () => {
         reject(new Error('File reading failed'))
       }
-      
+
       reader.readAsText(file, 'utf-8')
     })
   }
@@ -319,12 +342,12 @@ export class DataImportExportManager implements DataImportExport {
       textarea.style.position = 'fixed'
       textarea.style.opacity = '0'
       textarea.style.pointerEvents = 'none'
-      
+
       document.body.appendChild(textarea)
       textarea.select()
       const success = document.execCommand('copy')
       document.body.removeChild(textarea)
-      
+
       return success
     } catch {
       return false

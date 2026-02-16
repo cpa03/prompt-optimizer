@@ -3,7 +3,7 @@
     <NSpace vertical :size="8">
       <!-- 标题和控制区域 -->
       <NFlex justify="space-between" align="center" :wrap="false">
-        <NText :depth="2" style="font-size: 14px; font-weight: 500;">
+        <NText :depth="2" style="font-size: 14px; font-weight: 500">
           {{ label }}
         </NText>
         <NButton
@@ -17,8 +17,18 @@
         >
           <template #icon>
             <NIcon>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                />
               </svg>
             </NIcon>
           </template>
@@ -40,7 +50,7 @@
       />
 
       <!-- 帮助文本 -->
-      <NText v-if="helpText" :depth="3" style="font-size: 12px;">
+      <NText v-if="helpText" :depth="3" style="font-size: 12px">
         {{ helpText }}
       </NText>
     </NSpace>
@@ -94,7 +104,7 @@ const props = withDefaults(defineProps<Props>(), {
   enableFullscreen: true,
   minRows: 3,
   maxRows: 8,
-  testId: undefined
+  testId: undefined,
 })
 
 const emit = defineEmits<{
@@ -105,9 +115,9 @@ const emit = defineEmits<{
 const autosizeConfig = computed(() => {
   const baseConfig = {
     minRows: props.mode === 'compact' ? Math.max(2, props.minRows - 1) : props.minRows,
-    maxRows: props.mode === 'compact' ? Math.max(4, props.maxRows - 2) : props.maxRows
+    maxRows: props.mode === 'compact' ? Math.max(4, props.maxRows - 2) : props.maxRows,
   }
-  
+
   return baseConfig
 })
 

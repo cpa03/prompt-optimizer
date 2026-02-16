@@ -5,6 +5,7 @@
 本规范定义了基于"主面板轻量管理 + 全屏编辑器深度管理"分工模式的上下文编辑器架构重构需求。通过分析ConversationManager.vue.backup和ConversationMessageEditor.vue的现有功能实现，确定需要保留的核心功能并重新分配到合适的组件中。
 
 重构目标：
+
 1. 移除ConversationMessageEditor和ConversationSection组件
 2. 简化ConversationManager，保留轻量管理功能
 3. 增强ContextEditor，承载所有复杂功能
@@ -13,6 +14,7 @@
 ## 与产品愿景的一致性
 
 此重构支持提供直观AI提示词优化工具的核心产品愿景：
+
 - 主界面保持简洁，专注核心工作流
 - 复杂功能集中在专门界面，提供完整体验
 - 数据实时同步，减少操作复杂度
@@ -20,7 +22,9 @@
 ## 功能分析和分配
 
 ### 从ConversationManager.vue.backup学到的功能
+
 **已有功能：**
+
 - ✅ 紧凑型头部标题和统计信息
 - ✅ 变量统计（已用/缺失）和工具统计
 - ✅ 快速模板下拉菜单
@@ -31,12 +35,15 @@
 - ✅ 集成的添加消息功能
 
 **需要重新分配：**
+
 - 模板功能 → 移至ContextEditor
 - 导入导出功能 → 移至ContextEditor
 - 基础统计和编辑 → 保留在ConversationManager
 
 ### 从ConversationMessageEditor.vue学到的功能
+
 **已有功能：**
+
 - ✅ 紧凑行式布局
 - ✅ 消息头部信息（序号、角色、变量统计）
 - ✅ 预览切换功能
@@ -47,12 +54,15 @@
 - ✅ 变量高亮预览
 
 **需要整合：**
+
 - 基础编辑功能 → 整合到ConversationManager内联编辑
 - 全屏编辑模态框 → 移除（由ContextEditor替代）
 - 预览功能 → 移至ContextEditor
 
 ### 当前ContextEditor已有的功能
+
 **已有功能：**
+
 - ✅ 模态框界面
 - ✅ 标签页架构（消息编辑/工具管理）
 - ✅ 完整的消息编辑功能
@@ -61,6 +71,7 @@
 - ✅ 可访问性支持
 
 **缺失但需要添加：**
+
 - ❌ 导入导出功能
 - ❌ 模板选择和应用
 
@@ -150,18 +161,21 @@
 ## 技术实现要点
 
 ### ConversationManager简化重点
+
 - 移除模板、导入导出、同步功能的UI元素
 - 保留统计信息显示和基础消息管理
 - 集成ConversationMessageEditor的基础编辑功能到内联编辑
 - 保持折叠、打开高级编辑器等导航功能
 
-### ContextEditor增强重点  
+### ContextEditor增强重点
+
 - 添加从ConversationManager.backup移植的模板选择功能
 - 添加从ConversationManager.backup移植的导入导出功能
 - 保持现有的标签页架构和编辑功能
 - 确保与ConversationManager的数据双向绑定
 
 ### 数据绑定架构
+
 - 使用Vue的响应式系统实现共享状态
 - 两个组件操作同一数据源
 - 通过v-model和computed实现双向同步
@@ -170,15 +184,16 @@
 ## 组件API设计
 
 ### ConversationManager Props
+
 ```typescript
 interface ConversationManagerProps {
   // 双向绑定数据
   messages: ConversationMessage[]
   availableVariables?: Record<string, string>
-  
+
   // 功能函数
   scanVariables?: (content: string) => string[]
-  
+
   // UI控制
   size?: 'small' | 'medium' | 'large'
   collapsible?: boolean
@@ -187,17 +202,19 @@ interface ConversationManagerProps {
 }
 ```
 
-### ConversationManager Emits  
+### ConversationManager Emits
+
 ```typescript
 interface ConversationManagerEmits {
   'update:messages': [messages: ConversationMessage[]]
-  'openContextEditor': []
-  'createVariable': [name: string]
-  'openVariableManager': [variableName?: string]
+  openContextEditor: []
+  createVariable: [name: string]
+  openVariableManager: [variableName?: string]
 }
 ```
 
 ### ContextEditor增强功能
+
 - 保持现有Props和Emits结构
 - 添加模板管理相关方法
 - 添加导入导出相关方法
@@ -206,21 +223,25 @@ interface ConversationManagerEmits {
 ## 非功能性需求
 
 ### 代码质量
+
 - 清晰的组件职责分工
 - 最小化组件间依赖
 - 保持现有的代码质量标准
 
 ### 性能要求
+
 - 保持现有的渲染性能
 - 使用Vue响应式系统的性能优化
 - 避免不必要的重渲染
 
 ### 用户体验
+
 - 保持现有的交互体验
 - 数据同步要及时自然
 - 界面切换要流畅
 
 ### 兼容性
+
 - 保持现有的浏览器兼容性
 - 保持现有的可访问性支持
 - 保持现有的响应式设计

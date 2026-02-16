@@ -29,20 +29,24 @@
 ### ✅ 目标 1: 子模式选择器移到导航栏 (已完成)
 
 **问题陈述:**
+
 - 当前子模式选择器（系统提示词/用户提示词）位于工作区内的输入面板
 - 给用户造成"局部设置"的错觉，实际上它切换整个工作区
 - 与功能模式选择器（基础/上下文/图像）层级不一致
 
 **改造目标:**
+
 - 将子模式选择器移到导航栏，紧邻功能模式选择器右侧
 - 仅在「上下文模式」时显示 `[系统提示词|用户提示词]`
 - 基础模式和图像模式也显示子模式选择器
 
 **实施状态**: ✅ **已完成** (2025-10-22)
+
 - 提交: 之前已完成
 - 文件: `packages/web/src/App.vue`
 
 **期望效果:**
+
 ```
 改造前:
 ┌────────────────────────────────────────────────────────┐
@@ -73,21 +77,25 @@
 ### ✅ 目标 2: 快捷操作栏移到测试区 (已完成)
 
 **问题陈述:**
+
 - 当前快捷操作栏（📊全局变量 📝会话变量 🔧工具管理）位于左侧优化区上方
 - 作用域不明确，视觉上像是"只影响左侧"
 - 但实际上这些操作主要在测试时使用，与右侧测试区关联更强
 - 占用优化区垂直空间，而优化区需要显示较长的提示词内容
 
 **改造目标:**
+
 - 将快捷操作栏移到右侧测试区顶部
 - 作为测试区的操作工具栏，明确其作用域
 - 释放优化区的垂直空间
 
 **实施状态**: ✅ **已完成** (2025-10-22)
+
 - 提交: `ce90d47` - refactor(ui): 优化上下文模式快捷操作栏位置
 - 文件: `ContextUserWorkspace.vue`, `ContextSystemWorkspace.vue`
 
 **期望效果:**
+
 ```
 改造前:
 ┌────────────────────────┬───────────────────────────────┐
@@ -118,18 +126,21 @@
 ### ✅ 目标 3: 变量系统重构 (已完成)
 
 **问题陈述:**
+
 - 当前有两种持久化变量: "全局变量" 和 "会话变量"
 - 实际上只有一个默认上下文,无法切换上下文
 - "会话变量"名不副实,本质上是另一个全局变量池
 - 两种变量造成用户困惑: "有什么区别?" "应该用哪个?"
 
 **改造目标:**
+
 - **移除**: 会话变量相关UI和代码 ✅
 - **保留**: 全局变量 (持久化,跨会话共享) ✅
 - **新增**: 测试区临时变量 (内存存储,刷新丢失) ✅
 - **简化**: 变量系统概念,降低学习成本 ✅
 
 **实际效果:**
+
 ```
 改造前:
 ┌─────────────────────────────────────────┐
@@ -158,6 +169,7 @@
 **详细设计**: 见 [变量系统重构设计文档](./variable-system-redesign.md)
 
 **实施状态**: ✅ **已完成** (2025-10-23)
+
 - 提交: `3f53812` - refactor(ui): 重构变量系统并移除会话变量功能
 - 文件: 多个核心文件,详见变量系统重构设计文档
 - 测试: 已通过所有功能测试和回归测试
@@ -168,21 +180,21 @@
 
 ### v1.0 已完成的改造
 
-| 改造项 | 改造前 | 改造后 | 改进效果 |
-|-------|--------|--------|---------|
-| **子模式选择器位置** | 工作区输入面板内 | 导航栏功能模式右侧 | ✅ 层级清晰<br/>✅ 作用域明确 |
-| **快捷操作栏位置** | 左侧优化区上方 | 右侧测试区顶部 | ✅ 使用场景匹配<br/>✅ 操作路径最短 |
-| **优化区垂直空间** | 被快捷操作栏占用 | 完全释放 | ✅ 显示更多内容 |
-| **用户认知负担** | 高（层级混乱） | 低（清晰分明） | ✅ 易于理解 |
+| 改造项               | 改造前           | 改造后             | 改进效果                            |
+| -------------------- | ---------------- | ------------------ | ----------------------------------- |
+| **子模式选择器位置** | 工作区输入面板内 | 导航栏功能模式右侧 | ✅ 层级清晰<br/>✅ 作用域明确       |
+| **快捷操作栏位置**   | 左侧优化区上方   | 右侧测试区顶部     | ✅ 使用场景匹配<br/>✅ 操作路径最短 |
+| **优化区垂直空间**   | 被快捷操作栏占用 | 完全释放           | ✅ 显示更多内容                     |
+| **用户认知负担**     | 高（层级混乱）   | 低（清晰分明）     | ✅ 易于理解                         |
 
 ### v2.0 已完成的改造
 
-| 改造项 | 改造前 | 改造后 | 改进效果 | 状态 |
-|-------|--------|--------|---------|------|
-| **变量系统** | 全局变量 + 会话变量 (都持久化) | 全局变量 (持久化) + 测试变量 (临时) | ✅ 概念清晰<br/>✅ 符合直觉<br/>✅ 降低学习成本 | ✅ 已验证 |
-| **测试区操作栏** | 3个按钮 | 2个按钮 | ✅ UI简化<br/>✅ 减少困惑 | ✅ 已验证 |
-| **变量输入方式** | 需要打开管理器 | 测试区直接输入 | ✅ 操作便捷<br/>✅ 贴近使用场景 | ✅ 已验证 |
-| **持久化开销** | 高 (所有变量都持久化) | 低 (只持久化全局变量) | ✅ 性能优化 | ✅ 已验证 |
+| 改造项           | 改造前                         | 改造后                              | 改进效果                                        | 状态      |
+| ---------------- | ------------------------------ | ----------------------------------- | ----------------------------------------------- | --------- |
+| **变量系统**     | 全局变量 + 会话变量 (都持久化) | 全局变量 (持久化) + 测试变量 (临时) | ✅ 概念清晰<br/>✅ 符合直觉<br/>✅ 降低学习成本 | ✅ 已验证 |
+| **测试区操作栏** | 3个按钮                        | 2个按钮                             | ✅ UI简化<br/>✅ 减少困惑                       | ✅ 已验证 |
+| **变量输入方式** | 需要打开管理器                 | 测试区直接输入                      | ✅ 操作便捷<br/>✅ 贴近使用场景                 | ✅ 已验证 |
+| **持久化开销**   | 高 (所有变量都持久化)          | 低 (只持久化全局变量)               | ✅ 性能优化                                     | ✅ 已验证 |
 
 ---
 
@@ -191,6 +203,7 @@
 ### 需要修改的文件
 
 #### 核心组件（必改）
+
 ```
 packages/web/src/
 └── App.vue                            # 添加子模式选择器到导航栏
@@ -206,6 +219,7 @@ packages/ui/src/components/
 ```
 
 #### 文档（必更新）
+
 ```
 docs/workspace/
 ├── ui-design-analysis.md              # 更新设计分析
@@ -223,6 +237,7 @@ docs/workspace/
 **文件**: `packages/web/src/App.vue`
 
 **修改内容:**
+
 ```vue
 <template>
   <MainLayoutUI>
@@ -230,10 +245,7 @@ docs/workspace/
     <template #core-nav>
       <NSpace :size="12" align="center">
         <!-- 功能模式选择器 -->
-        <FunctionModeSelector
-          v-model="functionMode"
-          @update:modelValue="handleModeSelect"
-        />
+        <FunctionModeSelector v-model="functionMode" @update:modelValue="handleModeSelect" />
 
         <!-- ✅ 新增：子模式选择器（仅上下文模式显示） -->
         <OptimizationModeSelector
@@ -247,40 +259,34 @@ docs/workspace/
     <!-- Main Workspace -->
     <template #main>
       <template v-if="functionMode === 'pro'">
-        <ContextSystemWorkspace
-          v-if="selectedOptimizationMode === 'system'"
-          ...
-        >
+        <ContextSystemWorkspace v-if="selectedOptimizationMode === 'system'" ...>
           <!-- ❌ 移除子模式选择器插槽 -->
           <!-- <template #optimization-mode-selector>...</template> -->
         </ContextSystemWorkspace>
 
-        <ContextUserWorkspace
-          v-else-if="selectedOptimizationMode === 'user'"
-          ...
-        />
+        <ContextUserWorkspace v-else-if="selectedOptimizationMode === 'user'" ... />
       </template>
     </template>
   </MainLayoutUI>
 </template>
 
 <script setup lang="ts">
-import OptimizationModeSelector from '@/components/OptimizationModeSelector.vue';
+import OptimizationModeSelector from '@/components/OptimizationModeSelector.vue'
 
 // 新增状态管理
 const handleModeSelect = (mode: 'basic' | 'pro' | 'image') => {
-  functionMode.value = mode;
-  
+  functionMode.value = mode
+
   // 切换到上下文模式时，默认为系统提示词
   if (mode === 'pro') {
-    selectedOptimizationMode.value = 'system';
+    selectedOptimizationMode.value = 'system'
   }
-};
+}
 
 const handleOptimizationModeChange = (mode: OptimizationMode) => {
-  selectedOptimizationMode.value = mode;
-  console.log('[App] Optimization mode changed to:', mode);
-};
+  selectedOptimizationMode.value = mode
+  console.log('[App] Optimization mode changed to:', mode)
+}
 </script>
 ```
 
@@ -294,22 +300,23 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
 **文件 1**: `packages/ui/src/components/InputPanel.vue`
 
 **修改内容:**
+
 ```vue
 <template>
   <div class="input-panel">
     <NSpace justify="space-between" align="center">
       <NText strong>{{ label }}</NText>
-      
+
       <NSpace :size="8">
         <!-- ❌ 移除子模式选择器插槽 -->
         <!-- <slot name="optimization-mode-selector"></slot> -->
-        
+
         <!-- 保留模型和模板选择 -->
         <slot name="model-select"></slot>
         <slot name="template-select"></slot>
       </NSpace>
     </NSpace>
-    
+
     <!-- 提示词输入区域 -->
     <NInput ... />
   </div>
@@ -319,6 +326,7 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
 **文件 2**: `packages/ui/src/components/context-mode/ContextUserWorkspace.vue`
 
 **修改内容:**
+
 ```vue
 <template>
   <NFlex justify="space-between">
@@ -330,12 +338,12 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
           <template #template-select>...</template>
         </InputPanelUI>
       </NCard>
-      
+
       <NCard>
         <PromptPanelUI ... />
       </NCard>
     </NFlex>
-    
+
     <NCard>
       <TestAreaPanel ... />
     </NCard>
@@ -357,6 +365,7 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
 **文件**: `packages/ui/src/components/context-mode/ContextUserWorkspace.vue`
 
 **修改内容:**
+
 ```vue
 <template>
   <NFlex justify="space-between" :style="{ width: '100%', height: '100%', gap: '16px' }">
@@ -390,16 +399,12 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
               <template #icon><span>👤</span></template>
               {{ t('contextMode.user.label') }}
             </NTag>
-            
+
             <!-- 缺失变量警告（可选） -->
-            <NTag
-              v-if="missingVariables.length > 0"
-              type="warning"
-              size="small"
-            >
+            <NTag v-if="missingVariables.length > 0" type="warning" size="small">
               <template #icon>
                 <svg width="12" height="12">
-                  <path d="M12 2L2 12M2 2l10 10" stroke="currentColor"/>
+                  <path d="M12 2L2 12M2 2l10 10" stroke="currentColor" />
                 </svg>
               </template>
               {{ missingVariables.length }} {{ t('variables.missing') }}
@@ -456,37 +461,37 @@ const handleOptimizationModeChange = (mode: OptimizationMode) => {
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useBreakpoints } from '@vueuse/core';
+import { computed } from 'vue'
+import { useBreakpoints } from '@vueuse/core'
 
 const breakpoints = useBreakpoints({
   mobile: 0,
   tablet: 768,
   desktop: 1024,
-});
+})
 
-const isMobile = breakpoints.smaller('tablet');
+const isMobile = breakpoints.smaller('tablet')
 
 // 计算缺失变量
 const missingVariables = computed(() => {
   // 从 props 中获取变量信息
-  const allVars = new Set<string>();
+  const allVars = new Set<string>()
   const providedVars = {
     ...props.globalVariables,
     ...props.contextVariables,
     ...props.predefinedVariables,
-  };
-  
-  // 从 optimizedPrompt 中提取占位符
-  const regex = /\{\{([^{}]+)\}\}/g;
-  let match;
-  while ((match = regex.exec(props.optimizedPrompt)) !== null) {
-    allVars.add(match[1].trim());
   }
-  
+
+  // 从 optimizedPrompt 中提取占位符
+  const regex = /\{\{([^{}]+)\}\}/g
+  let match
+  while ((match = regex.exec(props.optimizedPrompt)) !== null) {
+    allVars.add(match[1].trim())
+  }
+
   // 找出缺失的变量
-  return Array.from(allVars).filter(v => !providedVars[v]);
-});
+  return Array.from(allVars).filter((v) => !providedVars[v])
+})
 </script>
 ```
 
@@ -500,13 +505,14 @@ const missingVariables = computed(() => {
 **文件**: `packages/ui/src/components/context-mode/ContextSystemWorkspace.vue`
 
 **修改内容:**（与 ContextUserWorkspace.vue 类似）
+
 ```vue
 <template>
   <NFlex justify="space-between">
     <!-- 左侧：优化区域 -->
     <NFlex vertical>
       <!-- ❌ 移除快捷操作栏 -->
-      
+
       <NCard><InputPanelUI ... /></NCard>
       <NCard><ConversationManager ... /></NCard>
       <NCard><PromptPanelUI ... /></NCard>
@@ -530,12 +536,12 @@ const missingVariables = computed(() => {
               <template #icon><span>📊</span></template>
               <span v-if="!isMobile">{{ t('contextMode.actions.globalVariables') }}</span>
             </NButton>
-            
+
             <NButton size="small" quaternary @click="emit('open-context-variables')">
               <template #icon><span>📝</span></template>
               <span v-if="!isMobile">{{ t('contextMode.actions.contextVariables') }}</span>
             </NButton>
-            
+
             <!-- 系统模式不显示工具管理按钮 -->
           </NSpace>
         </NSpace>
@@ -558,10 +564,12 @@ const missingVariables = computed(() => {
 #### Step 2.3: 废弃或重构 ContextModeActions.vue
 
 **选项 A**: 废弃组件（推荐）
+
 - 删除 `packages/ui/src/components/context-mode/ContextModeActions.vue`
 - 删除所有对该组件的引用
 
 **选项 B**: 重构为通用组件
+
 - 重命名为 `TestAreaActions.vue`
 - 作为测试区操作栏的独立组件
 - 支持更多配置选项
@@ -577,32 +585,32 @@ const missingVariables = computed(() => {
 
 ### 功能测试
 
-| 测试项 | 测试步骤 | 预期结果 |
-|-------|---------|---------|
-| **子模式选择器显示** | 1. 选择「基础模式」<br/>2. 选择「上下文模式」<br/>3. 选择「图像模式」 | 1. 不显示子模式选择器<br/>2. 显示「系统提示词\|用户提示词」<br/>3. 不显示子模式选择器 |
-| **子模式切换** | 1. 点击「系统提示词」<br/>2. 点击「用户提示词」 | 1. 切换到 ContextSystemWorkspace<br/>2. 切换到 ContextUserWorkspace |
-| **快捷操作栏位置** | 1. 打开用户模式<br/>2. 打开系统模式 | 1. 操作栏在右侧测试区顶部<br/>2. 操作栏在右侧测试区顶部 |
-| **快捷按钮功能** | 1. 点击「全局变量」<br/>2. 点击「会话变量」<br/>3. 点击「工具管理」 | 1. 打开全局变量管理器<br/>2. 打开上下文编辑器-变量标签<br/>3. 打开上下文编辑器-工具标签 |
-| **优化区空间** | 1. 对比改造前后优化区高度 | 改造后优化区垂直空间增加 |
+| 测试项               | 测试步骤                                                              | 预期结果                                                                                |
+| -------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **子模式选择器显示** | 1. 选择「基础模式」<br/>2. 选择「上下文模式」<br/>3. 选择「图像模式」 | 1. 不显示子模式选择器<br/>2. 显示「系统提示词\|用户提示词」<br/>3. 不显示子模式选择器   |
+| **子模式切换**       | 1. 点击「系统提示词」<br/>2. 点击「用户提示词」                       | 1. 切换到 ContextSystemWorkspace<br/>2. 切换到 ContextUserWorkspace                     |
+| **快捷操作栏位置**   | 1. 打开用户模式<br/>2. 打开系统模式                                   | 1. 操作栏在右侧测试区顶部<br/>2. 操作栏在右侧测试区顶部                                 |
+| **快捷按钮功能**     | 1. 点击「全局变量」<br/>2. 点击「会话变量」<br/>3. 点击「工具管理」   | 1. 打开全局变量管理器<br/>2. 打开上下文编辑器-变量标签<br/>3. 打开上下文编辑器-工具标签 |
+| **优化区空间**       | 1. 对比改造前后优化区高度                                             | 改造后优化区垂直空间增加                                                                |
 
 ### 视觉测试
 
-| 测试项 | 检查点 |
-|-------|--------|
-| **导航栏布局** | ✅ 功能模式和子模式在同一行<br/>✅ 间距合适（12px）<br/>✅ 与操作按钮对齐良好 |
-| **测试区操作栏** | ✅ 区域标识清晰<br/>✅ 按钮组对齐<br/>✅ 与测试内容间距合适 |
-| **响应式适配** | ✅ 桌面端显示完整文字<br/>✅ 移动端仅显示图标<br/>✅ 小屏幕下不拥挤 |
+| 测试项           | 检查点                                                                        |
+| ---------------- | ----------------------------------------------------------------------------- |
+| **导航栏布局**   | ✅ 功能模式和子模式在同一行<br/>✅ 间距合适（12px）<br/>✅ 与操作按钮对齐良好 |
+| **测试区操作栏** | ✅ 区域标识清晰<br/>✅ 按钮组对齐<br/>✅ 与测试内容间距合适                   |
+| **响应式适配**   | ✅ 桌面端显示完整文字<br/>✅ 移动端仅显示图标<br/>✅ 小屏幕下不拥挤           |
 
 ### 兼容性测试
 
-| 浏览器 | 分辨率 | 测试结果 |
-|-------|--------|---------|
-| Chrome 120+ | 1920x1080 | ✅ 通过 |
-| Chrome 120+ | 1366x768 | ✅ 通过 |
-| Chrome 120+ | 375x667 (Mobile) | ✅ 通过 |
-| Firefox 120+ | 1920x1080 | ✅ 通过 |
-| Safari 17+ | 1920x1080 | ✅ 通过 |
-| Edge 120+ | 1920x1080 | ✅ 通过 |
+| 浏览器       | 分辨率           | 测试结果 |
+| ------------ | ---------------- | -------- |
+| Chrome 120+  | 1920x1080        | ✅ 通过  |
+| Chrome 120+  | 1366x768         | ✅ 通过  |
+| Chrome 120+  | 375x667 (Mobile) | ✅ 通过  |
+| Firefox 120+ | 1920x1080        | ✅ 通过  |
+| Safari 17+   | 1920x1080        | ✅ 通过  |
+| Edge 120+    | 1920x1080        | ✅ 通过  |
 
 ---
 
@@ -610,28 +618,31 @@ const missingVariables = computed(() => {
 
 ### 里程碑规划 ✅ 已完成
 
-| 阶段 | 任务 | 预计工时 | 实际工时 | 状态 | 完成日期 |
-|------|------|---------|---------|------|---------|
-| **阶段 1** | 子模式选择器移到导航栏 | 4 小时 | ~3 小时 | ✅ | 2025-10-21 |
-| **阶段 2** | 快捷操作栏移到测试区 | 6 小时 | ~5 小时 | ✅ | 2025-10-22 |
-| **阶段 3** | 变量系统重构 | 8 小时 | ~12 小时 | ✅ | 2025-10-22 |
-| **阶段 4** | 测试验证 + Bug 修复 | 4 小时 | ~3 小时 | ✅ | 2025-10-23 |
-| **阶段 5** | 文档更新 + Code Review | 2 小时 | ~2 小时 | ✅ | 2025-10-23 |
+| 阶段       | 任务                   | 预计工时 | 实际工时 | 状态 | 完成日期   |
+| ---------- | ---------------------- | -------- | -------- | ---- | ---------- |
+| **阶段 1** | 子模式选择器移到导航栏 | 4 小时   | ~3 小时  | ✅   | 2025-10-21 |
+| **阶段 2** | 快捷操作栏移到测试区   | 6 小时   | ~5 小时  | ✅   | 2025-10-22 |
+| **阶段 3** | 变量系统重构           | 8 小时   | ~12 小时 | ✅   | 2025-10-22 |
+| **阶段 4** | 测试验证 + Bug 修复    | 4 小时   | ~3 小时  | ✅   | 2025-10-23 |
+| **阶段 5** | 文档更新 + Code Review | 2 小时   | ~2 小时  | ✅   | 2025-10-23 |
 
 **总工时**: 24 小时（3 个工作日）- 实际工时约 25 小时
 
 ### 详细时间表
 
 **2025-10-21 (阶段1)**
+
 - ✅ 代码审查，明确改造范围
 - ✅ 实现子模式选择器移动
 
 **2025-10-22 (阶段2+3)**
+
 - ✅ 实现快捷操作栏移动
 - ✅ 完成变量系统重构
 - ✅ 移除会话变量相关代码
 
 **2025-10-23 (阶段4+5)**
+
 - ✅ 功能测试 + Bug 修复
 - ✅ 视觉测试 + 响应式调整
 - ✅ 兼容性测试
@@ -644,24 +655,25 @@ const missingVariables = computed(() => {
 
 ### 技术风险
 
-| 风险项 | 风险等级 | 影响范围 | 缓解措施 |
-|-------|---------|---------|---------|
-| **状态管理复杂** | 🟡 中 | 子模式切换可能导致状态丢失 | 1. 在切换前保存状态<br/>2. 提供恢复机制<br/>3. 充分测试各种切换场景 |
-| **布局兼容性** | 🟢 低 | 移动端可能显示不佳 | 1. 响应式设计<br/>2. 移动端测试<br/>3. 提供折叠选项 |
-| **组件依赖** | 🟢 低 | 废弃 ContextModeActions 可能影响其他模块 | 1. 全局搜索引用<br/>2. 确保无遗漏 |
+| 风险项           | 风险等级 | 影响范围                                 | 缓解措施                                                            |
+| ---------------- | -------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| **状态管理复杂** | 🟡 中    | 子模式切换可能导致状态丢失               | 1. 在切换前保存状态<br/>2. 提供恢复机制<br/>3. 充分测试各种切换场景 |
+| **布局兼容性**   | 🟢 低    | 移动端可能显示不佳                       | 1. 响应式设计<br/>2. 移动端测试<br/>3. 提供折叠选项                 |
+| **组件依赖**     | 🟢 低    | 废弃 ContextModeActions 可能影响其他模块 | 1. 全局搜索引用<br/>2. 确保无遗漏                                   |
 
 ### 业务风险
 
-| 风险项 | 风险等级 | 影响 | 缓解措施 |
-|-------|---------|------|---------|
-| **用户习惯改变** | 🟡 中 | 老用户可能不适应新布局 | 1. 提供新手引导<br/>2. 发布更新说明<br/>3. 收集用户反馈 |
-| **功能遗漏** | 🟢 低 | 可能遗漏某些边界场景 | 1. 详细测试计划<br/>2. Beta 测试<br/>3. 快速修复机制 |
+| 风险项           | 风险等级 | 影响                   | 缓解措施                                                |
+| ---------------- | -------- | ---------------------- | ------------------------------------------------------- |
+| **用户习惯改变** | 🟡 中    | 老用户可能不适应新布局 | 1. 提供新手引导<br/>2. 发布更新说明<br/>3. 收集用户反馈 |
+| **功能遗漏**     | 🟢 低    | 可能遗漏某些边界场景   | 1. 详细测试计划<br/>2. Beta 测试<br/>3. 快速修复机制    |
 
 ### 回滚计划
 
 如果改造后出现严重问题，回滚步骤：
 
 1. **Git 回滚**
+
    ```bash
    git revert <commit-hash>
    git push origin develop
@@ -779,23 +791,23 @@ const missingVariables = computed(() => {
 
 ## 📝 变更日志
 
-| 版本 | 日期 | 变更内容 | 状态 |
-|------|------|---------|------|
-| v1.0 | 2025-10-21 | 初始版本，定义改造方案 | ✅ |
-| v1.1 | 2025-10-22 | 完成阶段1、2改造 | ✅ |
-| v2.0 | 2025-10-22 | 完成变量系统重构 | ✅ |
-| v2.1 | 2025-10-23 | 所有阶段完成并通过测试，更新文档状态 | ✅ |
+| 版本 | 日期       | 变更内容                             | 状态 |
+| ---- | ---------- | ------------------------------------ | ---- |
+| v1.0 | 2025-10-21 | 初始版本，定义改造方案               | ✅   |
+| v1.1 | 2025-10-22 | 完成阶段1、2改造                     | ✅   |
+| v2.0 | 2025-10-22 | 完成变量系统重构                     | ✅   |
+| v2.1 | 2025-10-23 | 所有阶段完成并通过测试，更新文档状态 | ✅   |
 
 ---
 
 ## 👥 相关人员
 
-| 角色 | 姓名 | 职责 | 状态 |
-|------|------|------|------|
-| **产品负责人** | - | 需求确认、验收 | ✅ 已完成 |
-| **开发负责人** | - | 技术实现、Code Review | ✅ 已完成 |
-| **测试负责人** | - | 测试计划、质量保证 | ✅ 已完成 |
-| **UI 设计师** | - | 视觉验收、设计指导 | ✅ 已完成 |
+| 角色           | 姓名 | 职责                  | 状态      |
+| -------------- | ---- | --------------------- | --------- |
+| **产品负责人** | -    | 需求确认、验收        | ✅ 已完成 |
+| **开发负责人** | -    | 技术实现、Code Review | ✅ 已完成 |
+| **测试负责人** | -    | 测试计划、质量保证    | ✅ 已完成 |
+| **UI 设计师**  | -    | 视觉验收、设计指导    | ✅ 已完成 |
 
 ---
 

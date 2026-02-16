@@ -14,7 +14,7 @@ import {
   isImageRef,
   createImageRef,
   type ImageResult,
-  type IImageStorageService
+  type IImageStorageService,
 } from '@prompt-optimizer/core'
 import {
   IMAGE_TEXT2IMAGE_SESSION_KEY,
@@ -218,7 +218,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     if (layout.value.testColumnCount === count) return
     layout.value = { ...layout.value, testColumnCount: count }
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -229,13 +229,13 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     if (layout.value.mainSplitLeftPct === next) return
     layout.value = { ...layout.value, mainSplitLeftPct: next }
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
 
   const updateTestVariant = (id: TestVariantId, patch: Partial<Omit<TestVariantConfig, 'id'>>) => {
-    const idx = testVariants.value.findIndex(v => v.id === id)
+    const idx = testVariants.value.findIndex((v) => v.id === id)
     if (idx < 0) return
     const prev = testVariants.value[idx]
     const next: TestVariantConfig = { ...prev, ...patch, id }
@@ -244,7 +244,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     nextList[idx] = next
     testVariants.value = nextList
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -259,7 +259,10 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 
   const setTestVariantLastRunFingerprint = (id: TestVariantId, fingerprint: string) => {
     if (testVariantLastRunFingerprint.value[id] === fingerprint) return
-    testVariantLastRunFingerprint.value = { ...testVariantLastRunFingerprint.value, [id]: fingerprint }
+    testVariantLastRunFingerprint.value = {
+      ...testVariantLastRunFingerprint.value,
+      [id]: fingerprint,
+    }
     lastActiveAt.value = Date.now()
   }
 
@@ -267,7 +270,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     if (selectedTextModelKey.value === modelKey) return
     selectedTextModelKey.value = modelKey
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -277,7 +280,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     selectedImageModelKey.value = modelKey
     lastActiveAt.value = Date.now()
     // 异步保存完整状态（best-effort）
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -286,7 +289,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     if (selectedTemplateId.value === templateId) return
     selectedTemplateId.value = templateId
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -295,7 +298,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     if (selectedIterateTemplateId.value === templateId) return
     selectedIterateTemplateId.value = templateId
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageText2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -397,10 +400,10 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
               metadata: {
                 prompt: result.metadata?.prompt,
                 modelId: result.metadata?.modelId,
-                configId: result.metadata?.configId
-              }
+                configId: result.metadata?.configId,
+              },
             },
-            data: img.b64
+            data: img.b64,
           })
         }
 
@@ -413,7 +416,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 
     return {
       ...result,
-      images: processedImages
+      images: processedImages,
     }
   }
 
@@ -438,7 +441,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
           if (fullImageData) {
             loadedImages.push({
               b64: fullImageData.data,
-              mimeType: fullImageData.metadata.mimeType
+              mimeType: fullImageData.metadata.mimeType,
             })
           } else {
             console.warn(`[ImageText2ImageSession] 图像 ${img.id} 未找到`)
@@ -458,7 +461,7 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 
     return {
       ...result,
-      images: loadedImages
+      images: loadedImages,
     }
   }
 
@@ -530,10 +533,10 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
     }
 
     try {
-        const saved = await $services.preferenceService.get<unknown>(
-          IMAGE_TEXT2IMAGE_SESSION_KEY,
-          null
-        )
+      const saved = await $services.preferenceService.get<unknown>(
+        IMAGE_TEXT2IMAGE_SESSION_KEY,
+        null
+      )
 
       if (saved) {
         const parsed =
@@ -553,7 +556,10 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
               ? (layoutRecord['mainSplitLeftPct'] as number)
               : defaultState.layout.mainSplitLeftPct
           const countRaw = layoutRecord['testColumnCount']
-          const count: TestColumnCount = countRaw === 2 || countRaw === 3 || countRaw === 4 ? countRaw : defaultState.layout.testColumnCount
+          const count: TestColumnCount =
+            countRaw === 2 || countRaw === 3 || countRaw === 4
+              ? countRaw
+              : defaultState.layout.testColumnCount
           layout.value = {
             mainSplitLeftPct: Math.min(50, Math.max(25, Math.round(pct))),
             testColumnCount: count,
@@ -635,7 +641,8 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
         const rawFingerprints = parsed.testVariantLastRunFingerprint
         if (rawFingerprints && typeof rawFingerprints === 'object') {
           const fingerprintRecord = rawFingerprints as Record<string, unknown>
-          const pick = (id: TestVariantId) => (typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : '')
+          const pick = (id: TestVariantId) =>
+            typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : ''
           testVariantLastRunFingerprint.value = {
             a: pick('a'),
             b: pick('b'),
@@ -646,8 +653,10 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
           testVariantLastRunFingerprint.value = defaultState.testVariantLastRunFingerprint
         }
 
-        originalPrompt.value = typeof parsed.originalPrompt === 'string' ? parsed.originalPrompt : ''
-        optimizedPrompt.value = typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
+        originalPrompt.value =
+          typeof parsed.originalPrompt === 'string' ? parsed.originalPrompt : ''
+        optimizedPrompt.value =
+          typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
         reasoning.value = typeof parsed.reasoning === 'string' ? parsed.reasoning : ''
         chainId.value = typeof parsed.chainId === 'string' ? parsed.chainId : ''
         versionId.value = typeof parsed.versionId === 'string' ? parsed.versionId : ''
@@ -659,11 +668,18 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
             ? (parsed.evaluationResults as PersistedEvaluationResults)
             : {}),
         }
-        isCompareMode.value = typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
-        selectedTextModelKey.value = typeof parsed.selectedTextModelKey === 'string' ? parsed.selectedTextModelKey : ''
-        selectedImageModelKey.value = typeof parsed.selectedImageModelKey === 'string' ? parsed.selectedImageModelKey : ''
-        selectedTemplateId.value = typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
-        selectedIterateTemplateId.value = typeof parsed.selectedIterateTemplateId === 'string' ? parsed.selectedIterateTemplateId : null
+        isCompareMode.value =
+          typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
+        selectedTextModelKey.value =
+          typeof parsed.selectedTextModelKey === 'string' ? parsed.selectedTextModelKey : ''
+        selectedImageModelKey.value =
+          typeof parsed.selectedImageModelKey === 'string' ? parsed.selectedImageModelKey : ''
+        selectedTemplateId.value =
+          typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
+        selectedIterateTemplateId.value =
+          typeof parsed.selectedIterateTemplateId === 'string'
+            ? parsed.selectedIterateTemplateId
+            : null
         lastActiveAt.value = Date.now()
 
         // 如果 variants 的 modelKey 为空，尝试用 legacy selectedImageModelKey 填充一次

@@ -6,7 +6,7 @@ import type {
   ImageModelConfig,
   ImageModel,
   Text2ImageRequest,
-  Image2ImageRequest
+  Image2ImageRequest,
 } from './types'
 import { BaseError } from '../llm/errors'
 import { IMAGE_ERROR_CODES } from '../../constants/error-codes'
@@ -20,7 +20,10 @@ type ElectronAPI = {
     validateText2ImageRequest: (request: Text2ImageRequest) => Promise<void>
     validateImage2ImageRequest: (request: Image2ImageRequest) => Promise<void>
     testConnection: (config: ImageModelConfig) => Promise<ImageResult>
-    getDynamicModels: (providerId: string, connectionConfig: Record<string, unknown>) => Promise<ImageModel[]>
+    getDynamicModels: (
+      providerId: string,
+      connectionConfig: Record<string, unknown>
+    ) => Promise<ImageModel[]>
   }
   imageModel: {
     ensureInitialized: () => Promise<void>
@@ -43,7 +46,10 @@ export class ElectronImageServiceProxy implements IImageService {
 
   constructor() {
     if (typeof window === 'undefined' || !window.electronAPI) {
-      throw new BaseError(IMAGE_ERROR_CODES.GENERATION_FAILED, 'ElectronImageServiceProxy can only be used in Electron renderer process')
+      throw new BaseError(
+        IMAGE_ERROR_CODES.GENERATION_FAILED,
+        'ElectronImageServiceProxy can only be used in Electron renderer process'
+      )
     }
     this.electronAPI = (window as unknown as { electronAPI: ElectronAPI }).electronAPI
   }
@@ -94,7 +100,10 @@ export class ElectronImageModelManagerProxy implements IImageModelManager {
 
   constructor() {
     if (typeof window === 'undefined' || !window.electronAPI) {
-      throw new BaseError(IMAGE_ERROR_CODES.CONFIG_INVALID, 'ElectronImageModelManagerProxy can only be used in Electron renderer process')
+      throw new BaseError(
+        IMAGE_ERROR_CODES.CONFIG_INVALID,
+        'ElectronImageModelManagerProxy can only be used in Electron renderer process'
+      )
     }
     this.electronAPI = (window as unknown as { electronAPI: ElectronAPI }).electronAPI
   }

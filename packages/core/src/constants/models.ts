@@ -10,13 +10,13 @@ export const OPENAI_MODELS = {
   GPT5_MINI: 'gpt-5-mini',
   GPT5_1: 'gpt-5.1',
   GPT5_IMAGE_MINI: 'gpt-5-image-mini',
-  
+
   // Legacy models (for reference)
   GPT4O: 'gpt-4o',
   GPT4O_MINI: 'gpt-4o-mini',
 } as const
 
-// Anthropic Models  
+// Anthropic Models
 export const ANTHROPIC_MODELS = {
   // Claude 4.0 series
   CLAUDE_OPUS_4: 'claude-opus-4-20250514',
@@ -28,10 +28,10 @@ export const GEMINI_MODELS = {
   // Gemini 2.5 series
   GEMINI_25_FLASH: 'gemini-2.5-flash',
   GEMINI_25_PRO: 'gemini-2.5-pro',
-  
+
   // Gemini 3.0 series (preview)
   GEMINI_3_PRO_PREVIEW: 'gemini-3-pro-preview',
-  
+
   // Image generation models
   GEMINI_25_FLASH_IMAGE: 'gemini-2.5-flash-image',
   GEMINI_3_PRO_IMAGE_PREVIEW: 'gemini-3-pro-image-preview',
@@ -41,7 +41,7 @@ export const GEMINI_MODELS = {
 export const OPENROUTER_MODELS = {
   // Google models via OpenRouter
   GOOGLE_GEMINI_25_FLASH_IMAGE: 'google/gemini-2.5-flash-image',
-  
+
   // OpenAI models via OpenRouter
   OPENAI_GPT5_IMAGE_MINI: 'openai/gpt-5-image-mini',
 } as const
@@ -52,18 +52,18 @@ export const MODEL_DISPLAY_NAMES: Record<string, string> = {
   [OPENAI_MODELS.GPT5_MINI]: 'GPT-5 Mini',
   [OPENAI_MODELS.GPT5_1]: 'GPT-5.1',
   [OPENAI_MODELS.GPT5_IMAGE_MINI]: 'GPT-5 Image Mini',
-  
+
   // Anthropic
   [ANTHROPIC_MODELS.CLAUDE_OPUS_4]: 'Claude 4.0 Opus',
   [ANTHROPIC_MODELS.CLAUDE_SONNET_4]: 'Claude 4.0 Sonnet',
-  
+
   // Gemini
   [GEMINI_MODELS.GEMINI_25_FLASH]: 'Gemini 2.5 Flash',
   [GEMINI_MODELS.GEMINI_25_PRO]: 'Gemini 2.5 Pro',
   [GEMINI_MODELS.GEMINI_3_PRO_PREVIEW]: 'Gemini 3.0 Pro Preview',
   [GEMINI_MODELS.GEMINI_25_FLASH_IMAGE]: 'Gemini 2.5 Flash Image',
   [GEMINI_MODELS.GEMINI_3_PRO_IMAGE_PREVIEW]: 'Gemini 3.0 Pro Image Preview',
-  
+
   // OpenRouter
   [OPENROUTER_MODELS.GOOGLE_GEMINI_25_FLASH_IMAGE]: 'Gemini 2.5 Flash Image (via OpenRouter)',
   [OPENROUTER_MODELS.OPENAI_GPT5_IMAGE_MINI]: 'GPT-5 Image Mini (via OpenRouter)',

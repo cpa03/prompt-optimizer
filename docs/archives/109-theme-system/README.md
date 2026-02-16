@@ -20,12 +20,14 @@
 ## 🎨 主题特性
 
 ### 支持的主题
+
 - 默认亮色主题
 - 默认深色主题
 - 紫色深色主题
 - 绿色深色主题
 
 ### 技术实现
+
 - 基于 `data-theme` 属性的CSS变量系统
 - 与 Tailwind CSS 的深度集成
 - 响应式主题切换
@@ -34,21 +36,33 @@
 ## 🔧 关键解决方案
 
 ### Tailwind Typography 冲突处理
+
 - **问题**: `prose` 插件的强样式主张与自定义主题冲突
 - **解决**: 彻底隔离策略，手动重建布局
 - **原则**: 禁止部分应用，完全移除 `@apply prose`
 
 ### 手动重建的 Markdown 布局
+
 ```css
 .theme-markdown-content {
   @apply max-w-none;
 }
 
-.theme-markdown-content > :first-child { @apply mt-0; }
-.theme-markdown-content > :last-child { @apply mb-0; }
-.theme-markdown-content h1 { @apply text-2xl font-bold my-4; }
-.theme-markdown-content h2 { @apply text-xl font-semibold my-3; }
-.theme-markdown-content p { @apply my-3 leading-relaxed; }
+.theme-markdown-content > :first-child {
+  @apply mt-0;
+}
+.theme-markdown-content > :last-child {
+  @apply mb-0;
+}
+.theme-markdown-content h1 {
+  @apply text-2xl font-bold my-4;
+}
+.theme-markdown-content h2 {
+  @apply text-xl font-semibold my-3;
+}
+.theme-markdown-content p {
+  @apply my-3 leading-relaxed;
+}
 ```
 
 ## 📚 相关文档

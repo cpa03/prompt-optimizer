@@ -14,7 +14,7 @@ describe('Pinia 服务集成', () => {
     const set = vi.fn<IPreferenceService['set']>().mockResolvedValue(undefined)
 
     const { pinia } = createTestPinia({
-      preferenceService: createPreferenceServiceStub({ set })
+      preferenceService: createPreferenceServiceStub({ set }),
     })
 
     const store = useBasicUserSession(pinia)

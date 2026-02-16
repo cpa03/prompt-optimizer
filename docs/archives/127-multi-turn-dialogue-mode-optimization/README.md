@@ -26,4 +26,3 @@
 - `packages/ui/src/composables/prompt/useConversationOptimization.ts`（`selectedMessageId` / `messageChainMap` / 自动应用）
 - `packages/ui/src/components/context-mode/ContextSystemWorkspace.vue`（多轮对话模式工作区）
 - `packages/ui/src/components/context-mode/ConversationManager.vue`（会话输入与消息选择）
-

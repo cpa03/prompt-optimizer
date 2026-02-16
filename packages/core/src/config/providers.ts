@@ -4,14 +4,14 @@
  * Flexy loves modularity! All URLs configurable via environment.
  */
 
-import { getEnvString } from './env';
+import { getEnvString } from './env'
 
 // Ollama configuration - fully configurable via environment
 export const OLLAMA_CONFIG = {
   defaultBaseURL: getEnvString('VITE_OLLAMA_BASE_URL', 'http://localhost:11434/v1'),
   fallbackApiKey: getEnvString('VITE_OLLAMA_API_KEY', 'ollama'),
   defaultModel: getEnvString('VITE_OLLAMA_DEFAULT_MODEL', 'llama2'),
-} as const;
+} as const
 
 // Provider URLs - all overridable via environment variables for enterprise proxies
 export const PROVIDER_URLS = {
@@ -26,21 +26,21 @@ export const PROVIDER_URLS = {
   zhipu: getEnvString('VITE_ZHIPU_BASE_URL', 'https://open.bigmodel.cn/api/paas/v4'),
   anthropic: getEnvString('VITE_ANTHROPIC_BASE_URL', 'https://api.anthropic.com'),
   ollama: getEnvString('VITE_OLLAMA_BASE_URL', 'http://localhost:11434/v1'),
-} as const;
+} as const
 
 // Provider ID mapping
 export const PROVIDER_ID_MAP: Record<string, string> = {
-  'openai': 'openai',
-  'anthropic': 'anthropic',
-  'ollama': 'ollama',
-  'deepseek': 'deepseek',
-  'siliconflow': 'siliconflow',
-  'openrouter': 'openrouter',
-  'gemini': 'gemini',
-  'dashscope': 'dashscope',
-  'modelscope': 'modelscope',
-  'zhipu': 'zhipu',
-} as const;
+  openai: 'openai',
+  anthropic: 'anthropic',
+  ollama: 'ollama',
+  deepseek: 'deepseek',
+  siliconflow: 'siliconflow',
+  openrouter: 'openrouter',
+  gemini: 'gemini',
+  dashscope: 'dashscope',
+  modelscope: 'modelscope',
+  zhipu: 'zhipu',
+} as const
 
 // Environment variable keys for API keys
 export const PROVIDER_ENV_KEYS: Record<string, string> = {
@@ -54,19 +54,19 @@ export const PROVIDER_ENV_KEYS: Record<string, string> = {
   dashscope: 'VITE_DASHSCOPE_API_KEY',
   modelscope: 'VITE_MODELSCOPE_API_KEY',
   zhipu: 'VITE_ZHIPU_API_KEY',
-} as const;
+} as const
 
 // Helper function to get provider URL with environment override
 export function getProviderUrl(provider: keyof typeof PROVIDER_URLS): string {
-  return PROVIDER_URLS[provider];
+  return PROVIDER_URLS[provider]
 }
 
 // Helper function to check if a provider URL has been customized
 export function isProviderUrlCustomized(provider: keyof typeof PROVIDER_URLS): boolean {
-  const envKey = `VITE_${provider.toUpperCase()}_BASE_URL`;
-  const envValue = getEnvString(envKey, '');
-  return !!envValue;
+  const envKey = `VITE_${provider.toUpperCase()}_BASE_URL`
+  const envValue = getEnvString(envKey, '')
+  return !!envValue
 }
 
-export type ProviderId = keyof typeof PROVIDER_ID_MAP;
-export type ProviderUrl = keyof typeof PROVIDER_URLS;
+export type ProviderId = keyof typeof PROVIDER_ID_MAP
+export type ProviderUrl = keyof typeof PROVIDER_URLS

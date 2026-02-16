@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const user_prompt_planning: Template = {
   id: 'user-prompt-planning',
@@ -71,7 +71,7 @@ export const user_prompt_planning: Template = {
 - **约束**:
     - [必须遵守的第一条规则]。
     - [必须遵守的第二条规则]。
-    - **最终输出**: 你的最终回复应仅包含最终成果本身，不得包含任何步骤说明、分析或其他无关内容。`
+    - **最终输出**: 你的最终回复应仅包含最终成果本身，不得包含任何步骤说明、分析或其他无关内容。`,
     },
     {
       role: 'user',
@@ -86,8 +86,8 @@ export const user_prompt_planning: Template = {
 需要优化的用户提示词：
 【{{originalPrompt}}】
 
-请直接输出优化后的新提示词：`
-    }
+请直接输出优化后的新提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.2.0',
@@ -95,7 +95,7 @@ export const user_prompt_planning: Template = {
     author: 'System',
     description: '适合复杂任务场景，将模糊需求分解为具体执行步骤，让AI按步骤完成复杂工作',
     templateType: 'userOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

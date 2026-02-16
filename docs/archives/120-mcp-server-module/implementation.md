@@ -3,6 +3,7 @@
 ## 🔧 架构设计
 
 ### 整体架构
+
 MCP Server 模块采用了分层架构设计，确保了与 Core 模块的解耦：
 
 ```
@@ -46,6 +47,7 @@ MCP Server 模块采用了分层架构设计，确保了与 Core 模块的解耦
 ```
 
 ### 模块结构
+
 ```
 packages/mcp-server/
 ├── package.json                 # 项目配置和依赖
@@ -81,18 +83,19 @@ packages/mcp-server/
 ## 🐛 问题诊断与解决
 
 ### 环境变量加载时机问题
+
 **问题描述**: Core 包的 `defaultModels` 在模块导入时就初始化，无法读取到后来通过 dotenv 加载的环境变量。
 
 **解决方案**: 创建预加载脚本 (`preload-env.js`)，在 Node.js 启动时预加载环境变量：
 
 ```javascript
 // preload-env.js
-import { config } from 'dotenv';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { config } from 'dotenv'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // 按优先级加载环境变量
 const paths = [
@@ -100,18 +103,19 @@ const paths = [
   resolve(process.cwd(), '../.env.local'),
   resolve(__dirname, '../../.env.local'),
   // ... 更多路径
-];
+]
 
-paths.forEach(path => {
+paths.forEach((path) => {
   try {
-    config({ path });
+    config({ path })
   } catch (error) {
     // 忽略文件不存在的错误
   }
-});
+})
 ```
 
 使用 `-r` 参数预加载:
+
 ```json
 {
   "scripts": {
@@ -121,26 +125,30 @@ paths.forEach(path => {
 ```
 
 ### 构建时产生后台进程问题
+
 **问题描述**: 在 `src/index.ts` 文件末尾有立即执行的代码，当 `tsup` 构建时会意外启动服务器并占用端口。
 
 **解决方案**: 文件分离策略
 
 1. `src/index.ts` - 只导出函数，不执行：
+
 ```typescript
 // 导出 main 函数供外部调用
-export { main };
+export { main }
 ```
 
 2. `src/start.ts` - 专门用于启动：
+
 ```typescript
 #!/usr/bin/env node
-import { main } from './index.js';
+import { main } from './index.js'
 
 // 启动服务器
-main().catch(console.error);
+main().catch(console.error)
 ```
 
 3. 更新构建配置：
+
 ```json
 {
   "scripts": {
@@ -173,11 +181,13 @@ main().catch(console.error);
 ## 🧪 测试验证
 
 ### 构建测试
+
 - ✅ CJS/ESM 双格式输出
 - ✅ TypeScript 类型定义生成
 - ✅ 构建时无副作用（不启动服务器）
 
 ### 功能测试
+
 - ✅ 环境变量正确加载
 - ✅ 模型自动选择和配置
 - ✅ 模板加载和管理
@@ -185,6 +195,7 @@ main().catch(console.error);
 - ✅ HTTP/stdio 双传输支持
 
 ### 兼容性测试
+
 - ✅ Windows 10/11
 - ✅ Node.js 18+
 - ✅ MCP Inspector 集成

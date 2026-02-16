@@ -65,13 +65,13 @@ export function useUpdater() {
     try {
       // 直接调用，类型安全，无 IDE 警告
       const results = await window.electronAPI!.updater.checkAllVersions()
-      
+
       // 直接使用返回的数据
       console.log('Current version:', results.currentVersion)
       if (results.stable?.hasUpdate) {
         console.log('Stable update available:', results.stable.remoteVersion)
       }
-      
+
       return results
     } catch (error) {
       console.error('Version check failed:', error)
@@ -99,7 +99,7 @@ export function useUpdater() {
   return {
     checkBothVersions,
     installUpdate,
-    openReleaseUrl
+    openReleaseUrl,
   }
 }
 ```
@@ -144,8 +144,8 @@ const useElectronAPI = () => {
 
   return {
     updater: {
-      checkAllVersions: () => safeCall(() => window.electronAPI.updater.checkAllVersions())
-    }
+      checkAllVersions: () => safeCall(() => window.electronAPI.updater.checkAllVersions()),
+    },
   }
 }
 ```
@@ -155,10 +155,11 @@ const useElectronAPI = () => {
 ```typescript
 // ❌ 错误：引入不必要的包装格式
 const response = await electronAPI.updater.checkAllVersions()
-if (!response.success) {  // 增加了复杂性
+if (!response.success) {
+  // 增加了复杂性
   throw new Error(response.error)
 }
-const data = response.data  // 多余的解包
+const data = response.data // 多余的解包
 ```
 
 ## 🔧 preload.js 最佳实践
@@ -174,18 +175,18 @@ const electronAPI = {
       if (!result.success) {
         throw new Error(result.error)
       }
-      return result.data  // 直接返回数据
+      return result.data // 直接返回数据
     },
-    
+
     installUpdate: async () => {
       const result = await ipcRenderer.invoke('update-install')
       if (!result.success) {
         throw new Error(result.error)
       }
       // void 返回，无需返回数据
-    }
+    },
   },
-  
+
   shell: {
     openExternal: async (url) => {
       const result = await ipcRenderer.invoke('shell-open-external', url)
@@ -193,11 +194,11 @@ const electronAPI = {
         throw new Error(result.error)
       }
       // void 返回
-    }
+    },
   },
-  
+
   on: (event, callback) => ipcRenderer.on(event, callback),
-  off: (event, callback) => ipcRenderer.off(event, callback)
+  off: (event, callback) => ipcRenderer.off(event, callback),
 }
 
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)

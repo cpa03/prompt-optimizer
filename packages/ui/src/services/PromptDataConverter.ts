@@ -9,7 +9,7 @@ import type {
   ConversionResult,
   StandardMessage,
   ConversationMessage,
-  ToolDefinition
+  ToolDefinition,
 } from '../types'
 
 export class PromptDataConverter implements DataConverter {
@@ -44,7 +44,7 @@ export class PromptDataConverter implements DataConverter {
         if (langfuseData.length === 0) {
           return {
             success: false,
-            error: 'Invalid LangFuse data: empty array'
+            error: 'Invalid LangFuse data: empty array',
           }
         }
 
@@ -66,12 +66,12 @@ export class PromptDataConverter implements DataConverter {
             ...metadata,
             langfuse_trace_id: firstRecord.id,
             timestamp: firstRecord.timestamp,
-            ...(ensureRecord(firstRecord.metadata) ?? {})
+            ...(ensureRecord(firstRecord.metadata) ?? {}),
           }
         } else {
           return {
             success: false,
-            error: 'Invalid LangFuse data: unrecognized array structure'
+            error: 'Invalid LangFuse data: unrecognized array structure',
           }
         }
       } else {
@@ -92,7 +92,7 @@ export class PromptDataConverter implements DataConverter {
             ...metadata,
             langfuse_trace_id: record.id,
             timestamp: record.timestamp,
-            ...(ensureRecord(record.metadata) ?? {})
+            ...(ensureRecord(record.metadata) ?? {}),
           }
         }
       }
@@ -100,7 +100,7 @@ export class PromptDataConverter implements DataConverter {
       if (!messages) {
         return {
           success: false,
-          error: 'Invalid LangFuse data: missing input or messages'
+          error: 'Invalid LangFuse data: missing input or messages',
         }
       }
 
@@ -131,7 +131,7 @@ export class PromptDataConverter implements DataConverter {
 
         const standardMessage: StandardMessage = {
           role,
-          content
+          content,
         }
 
         if (typeof messageRecord.name === 'string') {
@@ -150,7 +150,7 @@ export class PromptDataConverter implements DataConverter {
           if (contentRecord?.type === 'function' && ensureRecord(functionPayload)) {
             extractedTools.push({
               type: 'function',
-              function: functionPayload as ToolDefinition['function']
+              function: functionPayload as ToolDefinition['function'],
             })
           }
         }
@@ -179,23 +179,23 @@ export class PromptDataConverter implements DataConverter {
         metadata: {
           source: 'langfuse',
           template_info: {
-            name: getMetadataString('name')
+            name: getMetadataString('name'),
           },
           timestamp: getMetadataString('timestamp'),
           langfuse_trace_id: getMetadataString('langfuse_trace_id'),
           usage: metadata['usage'],
-          extracted_tools_count: extractedTools.length
-        }
+          extracted_tools_count: extractedTools.length,
+        },
       }
 
       return {
         success: true,
-        data: standardData
+        data: standardData,
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to convert LangFuse data: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to convert LangFuse data: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -208,7 +208,7 @@ export class PromptDataConverter implements DataConverter {
       if (!request.messages || !Array.isArray(request.messages)) {
         return {
           success: false,
-          error: 'Invalid OpenAI request: missing or invalid messages array'
+          error: 'Invalid OpenAI request: missing or invalid messages array',
         }
       }
 
@@ -225,18 +225,18 @@ export class PromptDataConverter implements DataConverter {
         stream: request.stream,
         metadata: {
           source: 'openai',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       }
 
       return {
         success: true,
-        data: standardData
+        data: standardData,
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to convert OpenAI data: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to convert OpenAI data: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -245,19 +245,21 @@ export class PromptDataConverter implements DataConverter {
    * 从会话消息格式转换为标准格式
    */
   fromConversationMessages(
-    messages: Array<Partial<ConversationMessage>>, 
+    messages: Array<Partial<ConversationMessage>>,
     metadata?: Record<string, unknown>
   ): ConversionResult<StandardPromptData> {
     try {
       if (!messages || !Array.isArray(messages)) {
         return {
           success: false,
-          error: 'Invalid conversation messages: must be an array'
+          error: 'Invalid conversation messages: must be an array',
         }
       }
 
-      const standardMessages: StandardMessage[] = messages.map(rawMessage => {
-        const normalizedRole = ['system', 'user', 'assistant', 'tool'].includes(rawMessage.role as string)
+      const standardMessages: StandardMessage[] = messages.map((rawMessage) => {
+        const normalizedRole = ['system', 'user', 'assistant', 'tool'].includes(
+          rawMessage.role as string
+        )
           ? (rawMessage.role as ConversationMessage['role'])
           : 'user'
 
@@ -267,9 +269,8 @@ export class PromptDataConverter implements DataConverter {
           content = rawContent
         } else if (rawContent != null) {
           try {
-            content = typeof rawContent === 'object'
-              ? JSON.stringify(rawContent)
-              : String(rawContent)
+            content =
+              typeof rawContent === 'object' ? JSON.stringify(rawContent) : String(rawContent)
           } catch {
             content = String(rawContent)
           }
@@ -277,7 +278,7 @@ export class PromptDataConverter implements DataConverter {
 
         const standardMessage: StandardMessage = {
           role: normalizedRole,
-          content
+          content,
         }
 
         if (typeof rawMessage.name === 'string') {
@@ -300,18 +301,18 @@ export class PromptDataConverter implements DataConverter {
         metadata: {
           source: 'conversation',
           timestamp: new Date().toISOString(),
-          ...(metadata ?? {})
-        }
+          ...(metadata ?? {}),
+        },
       }
 
       return {
         success: true,
-        data: standardData
+        data: standardData,
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to convert conversation messages: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to convert conversation messages: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -320,23 +321,23 @@ export class PromptDataConverter implements DataConverter {
    * 从标准格式转换为OpenAI请求格式
    */
   toOpenAI(
-    data: StandardPromptData, 
+    data: StandardPromptData,
     variables?: Record<string, string>
   ): ConversionResult<OpenAIRequest> {
     try {
       if (!data.messages || !Array.isArray(data.messages)) {
         return {
           success: false,
-          error: 'Invalid standard data: missing or invalid messages array'
+          error: 'Invalid standard data: missing or invalid messages array',
         }
       }
 
       // 替换变量
       let processedMessages = data.messages
       if (variables) {
-        processedMessages = data.messages.map(msg => ({
+        processedMessages = data.messages.map((msg) => ({
           ...msg,
-          content: this.replaceVariables(msg.content, variables)
+          content: this.replaceVariables(msg.content, variables),
         }))
       }
 
@@ -350,17 +351,17 @@ export class PromptDataConverter implements DataConverter {
         ...(data.frequency_penalty !== undefined && { frequency_penalty: data.frequency_penalty }),
         ...(data.presence_penalty !== undefined && { presence_penalty: data.presence_penalty }),
         ...(data.stop !== undefined && { stop: data.stop }),
-        ...(data.stream !== undefined && { stream: data.stream })
+        ...(data.stream !== undefined && { stream: data.stream }),
       }
 
       return {
         success: true,
-        data: openaiRequest
+        data: openaiRequest,
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to convert to OpenAI format: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to convert to OpenAI format: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -373,7 +374,7 @@ export class PromptDataConverter implements DataConverter {
       if (!data.messages || !Array.isArray(data.messages)) {
         return {
           success: false,
-          error: 'Invalid standard data: missing or invalid messages array'
+          error: 'Invalid standard data: missing or invalid messages array',
         }
       }
 
@@ -388,7 +389,7 @@ export class PromptDataConverter implements DataConverter {
 
         const conversationMessage: ConversationMessage = {
           role: msg.role as ConversationMessage['role'],
-          content: msg.content
+          content: msg.content,
         }
 
         if (typeof msg.name === 'string') {
@@ -409,12 +410,12 @@ export class PromptDataConverter implements DataConverter {
       return {
         success: true,
         data: conversationMessages,
-        warnings
+        warnings,
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to convert to conversation messages: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Failed to convert to conversation messages: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -422,7 +423,10 @@ export class PromptDataConverter implements DataConverter {
   /**
    * 验证数据格式是否有效
    */
-  validate(data: unknown, format: 'standard' | 'langfuse' | 'openai' | 'conversation'): ConversionResult<boolean> {
+  validate(
+    data: unknown,
+    format: 'standard' | 'langfuse' | 'openai' | 'conversation'
+  ): ConversionResult<boolean> {
     try {
       switch (format) {
         case 'standard':
@@ -436,13 +440,13 @@ export class PromptDataConverter implements DataConverter {
         default:
           return {
             success: false,
-            error: `Unknown format: ${format}`
+            error: `Unknown format: ${format}`,
           }
       }
     } catch (error) {
       return {
         success: false,
-        error: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       }
     }
   }
@@ -476,7 +480,10 @@ export class PromptDataConverter implements DataConverter {
 
       const typedMessage = message as { role?: unknown; content?: unknown }
 
-      if (!typedMessage.role || !['system', 'user', 'assistant', 'tool'].includes(String(typedMessage.role))) {
+      if (
+        !typedMessage.role ||
+        !['system', 'user', 'assistant', 'tool'].includes(String(typedMessage.role))
+      ) {
         return { success: false, error: `Invalid role in message ${index}` }
       }
       if (typeof typedMessage.content !== 'string') {
@@ -534,7 +541,10 @@ export class PromptDataConverter implements DataConverter {
 
       const typedMessage = message as { role?: unknown; content?: unknown }
 
-      if (!typedMessage.role || !['system', 'user', 'assistant', 'tool'].includes(String(typedMessage.role))) {
+      if (
+        !typedMessage.role ||
+        !['system', 'user', 'assistant', 'tool'].includes(String(typedMessage.role))
+      ) {
         return { success: false, error: `Invalid role in conversation message ${index}` }
       }
       if (typeof typedMessage.content !== 'string') {

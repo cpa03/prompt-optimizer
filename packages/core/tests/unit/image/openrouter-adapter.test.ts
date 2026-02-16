@@ -109,17 +109,17 @@ describe('OpenRouterImageAdapter', () => {
         modelId,
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
         provider: adapter.getProvider(),
-        model: adapter.getModels()[0]
+        model: adapter.getModels()[0],
       }
     })
 
     it('should validate request without errors', () => {
       const request = {
         prompt: 'test prompt',
-        configId: 'test-config'
+        configId: 'test-config',
       }
 
       expect(() => {
@@ -130,7 +130,7 @@ describe('OpenRouterImageAdapter', () => {
     it('should throw error for empty prompt', () => {
       const request = {
         prompt: '',
-        configId: 'test-config'
+        configId: 'test-config',
       }
 
       try {
@@ -150,7 +150,7 @@ describe('OpenRouterImageAdapter', () => {
     it('should throw error for missing API key', () => {
       const configWithoutKey = {
         ...mockConfig,
-        connectionConfig: {}
+        connectionConfig: {},
       }
 
       try {

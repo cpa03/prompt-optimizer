@@ -7,14 +7,14 @@ import LanguageSwitchDropdown from '../../../src/components/LanguageSwitchDropdo
 vi.mock('naive-ui', () => ({
   NButton: {
     name: 'NButton',
-    template: '<button><slot name="icon"></slot><slot></slot></button>'
+    template: '<button><slot name="icon"></slot><slot></slot></button>',
   },
   NDropdown: {
     name: 'NDropdown',
     template: '<div><slot></slot></div>',
     emits: ['select'],
-    props: ['options', 'placement', 'trigger']
-  }
+    props: ['options', 'placement', 'trigger'],
+  },
 }))
 
 // Mock服务注入
@@ -22,9 +22,9 @@ const mockServices = {
   value: {
     preferenceService: {
       get: vi.fn().mockResolvedValue('zh-CN'),
-      set: vi.fn().mockResolvedValue(true)
-    }
-  }
+      set: vi.fn().mockResolvedValue(true),
+    },
+  },
 }
 
 describe('LanguageSwitchDropdown', () => {
@@ -38,10 +38,10 @@ describe('LanguageSwitchDropdown', () => {
     return mount(LanguageSwitchDropdown, {
       global: {
         provide: {
-          services: mockServices
-        }
+          services: mockServices,
+        },
       },
-      props
+      props,
     })
   }
 

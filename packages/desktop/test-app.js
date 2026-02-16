@@ -1,7 +1,7 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { app, BrowserWindow } = require('electron')
+const path = require('path')
 
-let mainWindow;
+let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -10,31 +10,31 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
-    }
-  });
+      contextIsolation: true,
+    },
+  })
 
-  const webDistPath = path.join(__dirname, 'web-dist/index.html');
-  console.log('[Test] Loading web app from:', webDistPath);
-  
-  mainWindow.loadFile(webDistPath);
-  mainWindow.webContents.openDevTools();
-  
+  const webDistPath = path.join(__dirname, 'web-dist/index.html')
+  console.log('[Test] Loading web app from:', webDistPath)
+
+  mainWindow.loadFile(webDistPath)
+  mainWindow.webContents.openDevTools()
+
   mainWindow.on('closed', () => {
-    mainWindow = null;
-  });
+    mainWindow = null
+  })
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    app.quit();
+    app.quit()
   }
-});
+})
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createWindow()
   }
-}); 
+})

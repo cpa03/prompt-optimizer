@@ -13,27 +13,21 @@
     <template #header>
       <slot name="title">{{ title || t('common.title') }}</slot>
     </template>
-    
+
     <template #default>
       <div class="modal-content">
         <slot></slot>
       </div>
     </template>
-    
+
     <template #footer>
       <div class="modal-footer">
         <slot name="footer">
           <div class="flex justify-end gap-3">
-            <NButton
-              type="tertiary"
-              @click="handleCancel"
-            >
+            <NButton type="tertiary" @click="handleCancel">
               {{ t('common.cancel') }}
             </NButton>
-            <NButton
-              type="primary"
-              @click="handleConfirm"
-            >
+            <NButton type="primary" @click="handleConfirm">
               {{ t('common.confirm') }}
             </NButton>
           </div>
@@ -69,13 +63,13 @@ const props = withDefaults(defineProps<Props>(), {
   autoFocus: true,
   trapFocus: true,
   width: UI_DIMENSIONS.MODAL_WIDTH_VW,
-  maxWidth: UI_DIMENSIONS.MODAL_WIDTH_SMALL
+  maxWidth: UI_DIMENSIONS.MODAL_WIDTH_SMALL,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  'confirm': []
-  'cancel': []
+  confirm: []
+  cancel: []
   'after-leave': []
 }>()
 
@@ -83,9 +77,12 @@ const emit = defineEmits<{
 const isVisible = ref(props.modelValue)
 
 // 监听外部变化
-watch(() => props.modelValue, (newVal) => {
-  isVisible.value = newVal
-})
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    isVisible.value = newVal
+  }
+)
 
 // 监听内部变化，同步到外部
 watch(isVisible, (newVal) => {
@@ -95,13 +92,10 @@ watch(isVisible, (newVal) => {
 // 模态框样式
 const modalStyle = computed(() => ({
   width: props.width,
-  maxWidth: props.maxWidth
+  maxWidth: props.maxWidth,
 }))
 
-const modalClass = computed(() => [
-  'modern-modal',
-  { 'modal-closing': isClosing.value }
-])
+const modalClass = computed(() => ['modern-modal', { 'modal-closing': isClosing.value }])
 
 // 事件处理
 const handleConfirm = () => {
@@ -194,7 +188,9 @@ const handleAfterLeave = () => {
   }
 
   :deep(.n-card) {
-    transition: transform 0s, opacity 0s !important;
+    transition:
+      transform 0s,
+      opacity 0s !important;
   }
 }
-</style> 
+</style>

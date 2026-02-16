@@ -11,7 +11,7 @@ import type {
   ContextEditorState,
   ComponentVisibility,
   VariableImportOptions,
-  VariableExportData
+  VariableExportData,
 } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
 import type { VariableManagerHooks } from '../composables/prompt/useVariableManager'
@@ -119,7 +119,11 @@ export interface ConversationManagerEvents extends BaseComponentEvents {
   /** 消息列表变更 */
   'update:messages': (messages: ConversationMessage[]) => void
   /** 消息变更事件 */
-  messageChange: (index: number, message: ConversationMessage, action: 'add' | 'update' | 'delete') => void
+  messageChange: (
+    index: number,
+    message: ConversationMessage,
+    action: 'add' | 'update' | 'delete'
+  ) => void
   /** 打开上下文编辑器 */
   openContextEditor: (messages: ConversationMessage[], variables?: Record<string, string>) => void
   /** 变量管理器打开请求 */
@@ -190,7 +194,11 @@ export interface ContextEditorEvents extends BaseComponentEvents {
   /** 工具变更 */
   toolChange: (tools: ToolDefinition[], action: 'add' | 'update' | 'delete', index?: number) => void
   /** 保存事件 */
-  save: (context: { messages: ConversationMessage[]; variables: Record<string, string>; tools: ToolDefinition[] }) => void
+  save: (context: {
+    messages: ConversationMessage[]
+    variables: Record<string, string>
+    tools: ToolDefinition[]
+  }) => void
   /** 取消事件 */
   cancel: () => void
   /** 预览模式切换 */

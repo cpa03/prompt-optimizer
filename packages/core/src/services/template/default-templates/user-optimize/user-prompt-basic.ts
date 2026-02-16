@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const user_prompt_basic: Template = {
   id: 'user-prompt-basic',
@@ -58,7 +58,7 @@ export const user_prompt_basic: Template = {
 - 直接输出优化后的用户提示词，确保清晰、具体
 - 保持适度的详细程度，避免过于复杂
 - 使用简洁明了的表达方式
-- 确保输出的提示词可以直接使用`
+- 确保输出的提示词可以直接使用`,
     },
     {
       role: 'user',
@@ -72,8 +72,8 @@ export const user_prompt_basic: Template = {
 需要优化的用户提示词：
 {{originalPrompt}}
 
-请输出优化后的提示词：`
-    }
+请输出优化后的提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.0.0',
@@ -81,7 +81,7 @@ export const user_prompt_basic: Template = {
     author: 'System',
     description: '适合简单快速的日常优化，消除模糊表达、补充关键信息，让提示词更清晰明确',
     templateType: 'userOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

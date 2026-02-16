@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image2image-design-text-edit-optimize-en',
@@ -52,7 +52,7 @@ Rewrite the user's request as clear natural-language editing instructions: speci
 ## Output Requirements
 - Output the instructions directly (natural language, plain text), recommended length 2–5 sentences
 - Do not include any prefixes (e.g., 'Optimized prompt:' or 'Instructions:') or any explanations; output the instructions only
-- No lists, code blocks, or JSON`
+- No lists, code blocks, or JSON`,
     },
     {
       role: 'user',
@@ -65,16 +65,17 @@ Notes:
 Original request:
 {{originalPrompt}}
 
-Output the instructions:`
-    }
+Output the instructions:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: 'Natural-language template for design text replacement: preserve layout and brand, replace text only',
+    description:
+      'Natural-language template for design text replacement: preserve layout and brand, replace text only',
     templateType: 'image2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

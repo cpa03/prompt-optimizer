@@ -53,14 +53,14 @@ const versionFiles = [
   {
     path: 'packages/extension/public/manifest.json',
     field: 'version',
-    description: '浏览器扩展清单文件'
+    description: '浏览器扩展清单文件',
   },
   {
     path: 'path/to/your/file.json',
     field: 'version',
-    description: '你的文件描述'
-  }
-];
+    description: '你的文件描述',
+  },
+]
 ```
 
 ## 注意事项
@@ -83,4 +83,4 @@ const versionFiles = [
 
 ```bash
 node scripts/sync-versions.js
-``` 
+```

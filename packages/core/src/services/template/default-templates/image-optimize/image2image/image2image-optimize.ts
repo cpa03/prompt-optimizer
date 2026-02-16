@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image2image-general-optimize',
@@ -84,7 +84,7 @@ export const template: Template = {
 **替换意图**：用户说"把XX改成YY" → 输出应明确"将XX区域替换为YY，保持其他元素不变..."
 **增强意图**：用户说"让花朵更鲜艳" → 输出应明确"增强花朵的色彩饱和度和层次感，保持其他特征..."
 
-❌ 常见错误：假设原图已有用户描述的元素 → 导致输出"保留XX与YY的关系"（但原图根本没有XX）`
+❌ 常见错误：假设原图已有用户描述的元素 → 导致输出"保留XX与YY的关系"（但原图根本没有XX）`,
     },
     {
       role: 'user',
@@ -105,8 +105,8 @@ export const template: Template = {
 需要优化的修改需求：
 {{originalPrompt}}
 
-请输出精确的图生图优化提示词：`
-    }
+请输出精确的图生图优化提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -114,7 +114,7 @@ export const template: Template = {
     author: 'System',
     description: '图生图专用提示词优化模板，使用自然语言进行克制的编辑指导，避免参数与权重语法',
     templateType: 'image2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

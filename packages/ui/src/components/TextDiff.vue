@@ -1,7 +1,19 @@
 <template>
-  <NCard class="text-diff" :style="{ height: '100%' }" :bordered="false" content-style="padding: 0; height: 100%; display: flex; flex-direction: column;">
+  <NCard
+    class="text-diff"
+    :style="{ height: '100%' }"
+    :bordered="false"
+    content-style="padding: 0; height: 100%; display: flex; flex-direction: column;"
+  >
     <!-- 统计信息 -->
-    <NFlex v-if="compareResult" justify="flex-end" align="center" :size="8" class="px-3 py-2 border-b" style="flex: 0 0 auto;">
+    <NFlex
+      v-if="compareResult"
+      justify="flex-end"
+      align="center"
+      :size="8"
+      class="px-3 py-2 border-b"
+      style="flex: 0 0 auto"
+    >
       <NTag v-if="compareResult.summary.additions > 0" type="success" size="small">
         +{{ compareResult.summary.additions }}
       </NTag>
@@ -11,7 +23,7 @@
     </NFlex>
 
     <!-- 文本内容 -->
-    <NScrollbar class="text-diff-content" style="flex: 1; min-height: 0;">
+    <NScrollbar class="text-diff-content" style="flex: 1; min-height: 0">
       <!-- 对比模式：显示高亮的差异 -->
       <div class="diff-text" v-if="compareResult">
         <span
@@ -19,30 +31,31 @@
           :key="fragment.index"
           :class="getFragmentClass(fragment.type)"
           class="text-fragment"
-        >{{ fragment.text }}</span>
+          >{{ fragment.text }}</span
+        >
       </div>
     </NScrollbar>
   </NCard>
 </template>
-  
-  <script setup lang="ts">
+
+<script setup lang="ts">
 import { computed } from 'vue'
 
 import { NTag, NCard, NFlex, NScrollbar } from 'naive-ui'
 import type { CompareResult, ChangeType } from '@prompt-optimizer/core'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
 import { FONT_SIZES, SPACING, BORDER_RADIUS } from '../config/constants'
-  
-  interface Props {
-    /** 原始文本 */
-    originalText: string
-    /** 优化后的文本 */
-    optimizedText: string
-    /** 对比结果 */
-    compareResult: CompareResult
-  }
-  
-  defineProps<Props>()
+
+interface Props {
+  /** 原始文本 */
+  originalText: string
+  /** 优化后的文本 */
+  optimizedText: string
+  /** 对比结果 */
+  compareResult: CompareResult
+}
+
+defineProps<Props>()
 
 // 获取当前主题配置
 const { themeOverrides } = useNaiveTheme()
@@ -59,9 +72,9 @@ const getFragmentClass = (type: ChangeType): string => {
       return 'diff-unchanged'
   }
 }
-  </script>
-  
-  <style scoped>
+</script>
+
+<style scoped>
 .text-diff-content {
   min-height: 200px;
 }

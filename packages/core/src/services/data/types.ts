@@ -6,9 +6,9 @@
  * 完整的导出数据结构
  */
 export interface ExportData {
-  version: number;
-  timestamp: number;
-  data: Record<string, any>;
+  version: number
+  timestamp: number
+  data: Record<string, any>
 }
 
 /**
@@ -19,13 +19,13 @@ export interface IDataManager {
    * 导出所有数据
    * @returns JSON格式的数据字符串
    */
-  exportAllData(): Promise<string>;
+  exportAllData(): Promise<string>
 
   /**
    * 导入所有数据
    * @param dataString JSON格式的数据字符串
    */
-  importAllData(dataString: string): Promise<void>;
+  importAllData(dataString: string): Promise<void>
 }
 
 // ImportExportError 已移动到 ../../interfaces/import-export.ts

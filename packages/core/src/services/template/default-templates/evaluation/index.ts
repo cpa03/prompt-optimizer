@@ -14,7 +14,7 @@ export {
   evaluationBasicSystemPromptOnlyEn,
   evaluationBasicSystemPromptIterate,
   evaluationBasicSystemPromptIterateEn,
-} from './basic/system';
+} from './basic/system'
 
 // 基础模式 - 用户提示词评估
 export {
@@ -28,7 +28,7 @@ export {
   evaluationBasicUserPromptOnlyEn,
   evaluationBasicUserPromptIterate,
   evaluationBasicUserPromptIterateEn,
-} from './basic/user';
+} from './basic/user'
 
 // 高级模式 - 系统提示词评估（多消息模式）
 export {
@@ -42,7 +42,7 @@ export {
   evaluationProSystemPromptOnlyEn,
   evaluationProSystemPromptIterate,
   evaluationProSystemPromptIterateEn,
-} from './pro/system';
+} from './pro/system'
 
 // 高级模式 - 用户提示词评估（变量模式）
 export {
@@ -56,16 +56,16 @@ export {
   evaluationProUserPromptOnlyEn,
   evaluationProUserPromptIterate,
   evaluationProUserPromptIterateEn,
-} from './pro/user';
+} from './pro/user'
 
 // 图像模式 - 文生图评估
 export {
   evaluationImageText2ImagePromptOnly,
   evaluationImageText2ImagePromptOnlyEn,
-} from './image/text2image';
+} from './image/text2image'
 
 // 图像模式 - 图生图评估
 export {
   evaluationImageImage2ImagePromptOnly,
   evaluationImageImage2ImagePromptOnlyEn,
-} from './image/image2image';
+} from './image/image2image'

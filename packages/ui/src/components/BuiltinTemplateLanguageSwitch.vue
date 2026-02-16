@@ -48,7 +48,9 @@ const toast = useToast()
 // 统一使用inject获取services
 const services = inject<Ref<AppServices | null>>('services')
 if (!services) {
-  throw new Error('[BuiltinTemplateLanguageSwitch] services未正确注入，请确保在App组件中正确provide了services')
+  throw new Error(
+    '[BuiltinTemplateLanguageSwitch] services未正确注入，请确保在App组件中正确provide了services'
+  )
 }
 
 const getTemplateManager = computed(() => {
@@ -73,7 +75,9 @@ const getTemplateLanguageService = computed(() => {
 
   const service = servicesValue.templateLanguageService
   if (!service) {
-    throw new Error('[BuiltinTemplateLanguageSwitch] templateLanguageService未初始化，请确保服务已正确配置')
+    throw new Error(
+      '[BuiltinTemplateLanguageSwitch] templateLanguageService未初始化，请确保服务已正确配置'
+    )
   }
 
   return service
@@ -147,7 +151,7 @@ const handleLanguageToggle = async () => {
 
   try {
     isChanging.value = true
-    
+
     const manager = getTemplateManager.value
     if (!manager) {
       throw new Error('Template manager not available')
@@ -173,7 +177,6 @@ const handleLanguageToggle = async () => {
     } catch (toastError) {
       console.error('Failed to show success toast:', toastError)
     }
-
   } catch (error) {
     console.error('Failed to toggle builtin template language:', error)
 
@@ -205,7 +208,7 @@ const refresh = async () => {
 
 // Expose methods for parent components
 defineExpose({
-  refresh
+  refresh,
 })
 </script>
 

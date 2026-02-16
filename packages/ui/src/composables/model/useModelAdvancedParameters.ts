@@ -3,7 +3,7 @@ import { computed, type Ref } from 'vue'
 import type {
   UnifiedParameterDefinition,
   ITextAdapterRegistry,
-  IImageAdapterRegistry
+  IImageAdapterRegistry,
 } from '@prompt-optimizer/core'
 
 type ParameterizedModel = {
@@ -41,9 +41,7 @@ interface UseModelAdvancedParametersOptions extends OverrideAccessors {
  * 2. 移除了 candidateModelIds 数组,直接使用 modelId
  * 3. 简化了模型元数据解析逻辑:savedModelMeta → static → buildDefault
  */
-export function useModelAdvancedParameters(
-  options: UseModelAdvancedParametersOptions
-) {
+export function useModelAdvancedParameters(options: UseModelAdvancedParametersOptions) {
   /**
    * 解析当前模型元数据
    * 优先级: savedModelMeta → static models → buildDefault
@@ -63,11 +61,12 @@ export function useModelAdvancedParameters(
     // 尝试从静态模型列表获取
     try {
       const registry = options.registry.value
-      const staticModels = options.mode === 'text'
-        ? (registry as ITextAdapterRegistry).getStaticModels(providerId)
-        : (registry as IImageAdapterRegistry).getStaticModels(providerId)
+      const staticModels =
+        options.mode === 'text'
+          ? (registry as ITextAdapterRegistry).getStaticModels(providerId)
+          : (registry as IImageAdapterRegistry).getStaticModels(providerId)
 
-      const staticMatch = staticModels.find(model => model.id === modelId)
+      const staticMatch = staticModels.find((model) => model.id === modelId)
       if (staticMatch) return staticMatch
     } catch (error) {
       console.warn(
@@ -79,9 +78,10 @@ export function useModelAdvancedParameters(
     // 最后使用 buildDefaultModel 构建
     try {
       const registry = options.registry.value
-      const adapter = options.mode === 'text'
-        ? (registry as ITextAdapterRegistry).getAdapter(providerId)
-        : (registry as IImageAdapterRegistry).getAdapter(providerId)
+      const adapter =
+        options.mode === 'text'
+          ? (registry as ITextAdapterRegistry).getAdapter(providerId)
+          : (registry as IImageAdapterRegistry).getAdapter(providerId)
 
       return adapter.buildDefaultModel(modelId)
     } catch (error) {
@@ -95,7 +95,7 @@ export function useModelAdvancedParameters(
 
   const currentParameterDefinitions = computed(() => {
     const definitions = currentModelMeta.value?.parameterDefinitions ?? []
-    return definitions.map(definition => ({ ...definition }))
+    return definitions.map((definition) => ({ ...definition }))
   })
 
   const currentParamOverrides = computed(() => options.getParamOverrides())
@@ -103,7 +103,7 @@ export function useModelAdvancedParameters(
   const availableParameterCount = computed(() => {
     const overrides = currentParamOverrides.value || {}
     return currentParameterDefinitions.value.filter(
-      definition => !Object.prototype.hasOwnProperty.call(overrides, definition.name)
+      (definition) => !Object.prototype.hasOwnProperty.call(overrides, definition.name)
     ).length
   })
 
@@ -142,7 +142,7 @@ export function useModelAdvancedParameters(
     currentParamOverrides,
     availableParameterCount,
     updateParamOverrides,
-    applyDefaultsFromModel
+    applyDefaultsFromModel,
   }
 }
 

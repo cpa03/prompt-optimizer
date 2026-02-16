@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image2image-design-text-edit-optimize',
@@ -52,7 +52,7 @@ export const template: Template = {
 ## Output Requirements
 - 直接输出编辑指令（自然语言、纯文本），建议 2–5 句，连贯自然
 - 禁止添加任何前缀或对指令的解释说明；仅输出指令本体
-- 不使用列表、代码块或 JSON`
+- 不使用列表、代码块或 JSON`,
     },
     {
       role: 'user',
@@ -65,8 +65,8 @@ export const template: Template = {
 原始需求：
 {{originalPrompt}}
 
-请输出编辑指令：`
-    }
+请输出编辑指令：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -74,7 +74,7 @@ export const template: Template = {
     author: 'System',
     description: '设计稿文案替换的图生图自然语言模板：保持版式与品牌一致，仅替换文本',
     templateType: 'image2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

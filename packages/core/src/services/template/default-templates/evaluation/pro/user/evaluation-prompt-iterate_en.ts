@@ -5,7 +5,7 @@
  * Unified output: score + improvements + patchPlan + summary
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-prompt-iterate',
@@ -88,7 +88,7 @@ You may receive a JSON format context \`proContext\` containing:
   - instruction: Brief description of issue and fix
 - **summary**: One-line evaluation conclusion
 
-Output JSON only, no additional explanation.`
+Output JSON only, no additional explanation.`,
     },
     {
       role: 'user',
@@ -114,8 +114,8 @@ Output JSON only, no additional explanation.`
 
 ---
 
-Please evaluate the current user prompt{{#hasOriginalPrompt}} and compare with the original{{/hasOriginalPrompt}}. The iteration requirement is only for understanding the modification background.`
-    }
+Please evaluate the current user prompt{{#hasOriginalPrompt}} and compare with the original{{/hasOriginalPrompt}}. The iteration requirement is only for understanding the modification background.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -124,7 +124,7 @@ Please evaluate the current user prompt{{#hasOriginalPrompt}} and compare with t
     description: 'Evaluate user prompt quality with unified improvements + patchPlan output',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'prompt-iterate', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'prompt-iterate', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -15,7 +15,7 @@ import {
   isImageRef,
   createImageRef,
   type ImageResult,
-  type IImageStorageService
+  type IImageStorageService,
 } from '@prompt-optimizer/core'
 import {
   IMAGE_IMAGE2IMAGE_SESSION_KEY,
@@ -235,7 +235,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     if (layout.value.testColumnCount === count) return
     layout.value = { ...layout.value, testColumnCount: count }
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -246,13 +246,13 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     if (layout.value.mainSplitLeftPct === next) return
     layout.value = { ...layout.value, mainSplitLeftPct: next }
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
 
   const updateTestVariant = (id: TestVariantId, patch: Partial<Omit<TestVariantConfig, 'id'>>) => {
-    const idx = testVariants.value.findIndex(v => v.id === id)
+    const idx = testVariants.value.findIndex((v) => v.id === id)
     if (idx < 0) return
     const prev = testVariants.value[idx]
     const next: TestVariantConfig = { ...prev, ...patch, id }
@@ -261,7 +261,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     nextList[idx] = next
     testVariants.value = nextList
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -276,7 +276,10 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
 
   const setTestVariantLastRunFingerprint = (id: TestVariantId, fingerprint: string) => {
     if (testVariantLastRunFingerprint.value[id] === fingerprint) return
-    testVariantLastRunFingerprint.value = { ...testVariantLastRunFingerprint.value, [id]: fingerprint }
+    testVariantLastRunFingerprint.value = {
+      ...testVariantLastRunFingerprint.value,
+      [id]: fingerprint,
+    }
     lastActiveAt.value = Date.now()
   }
 
@@ -284,7 +287,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     if (selectedTextModelKey.value === modelKey) return
     selectedTextModelKey.value = modelKey
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -294,7 +297,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     selectedImageModelKey.value = modelKey
     lastActiveAt.value = Date.now()
     // 异步保存完整状态（best-effort）
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -303,7 +306,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     if (selectedTemplateId.value === templateId) return
     selectedTemplateId.value = templateId
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -312,7 +315,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
     if (selectedIterateTemplateId.value === templateId) return
     selectedIterateTemplateId.value = templateId
     lastActiveAt.value = Date.now()
-    saveSession().catch(error => {
+    saveSession().catch((error) => {
       console.error('[ImageImage2ImageSession] 自动保存会话失败:', error)
     })
   }
@@ -416,10 +419,10 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
               metadata: {
                 prompt: result.metadata?.prompt,
                 modelId: result.metadata?.modelId,
-                configId: result.metadata?.configId
-              }
+                configId: result.metadata?.configId,
+              },
             },
-            data: img.b64
+            data: img.b64,
           })
         }
 
@@ -432,7 +435,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
 
     return {
       ...result,
-      images: processedImages
+      images: processedImages,
     }
   }
 
@@ -457,7 +460,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
           if (fullImageData) {
             loadedImages.push({
               b64: fullImageData.data,
-              mimeType: fullImageData.metadata.mimeType
+              mimeType: fullImageData.metadata.mimeType,
             })
           } else {
             console.warn(`[ImageImage2ImageSession] 图像 ${img.id} 未找到`)
@@ -477,7 +480,7 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
 
     return {
       ...result,
-      images: loadedImages
+      images: loadedImages,
     }
   }
 
@@ -501,9 +504,9 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
           sizeBytes: Math.floor(b64.length * 0.75),
           createdAt: Date.now(),
           accessedAt: Date.now(),
-          source: 'uploaded'
+          source: 'uploaded',
         },
-        data: b64
+        data: b64,
       })
     }
 
@@ -622,7 +625,8 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
           }
         } else {
           // 向后兼容：如果有 base64 数据，直接使用
-          inputImageB64Loaded = typeof parsed.inputImageB64 === 'string' ? parsed.inputImageB64 : null
+          inputImageB64Loaded =
+            typeof parsed.inputImageB64 === 'string' ? parsed.inputImageB64 : null
         }
 
         // ==================== v2: 多列 variants ====================
@@ -635,7 +639,10 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
               ? (layoutRecord['mainSplitLeftPct'] as number)
               : defaultState.layout.mainSplitLeftPct
           const countRaw = layoutRecord['testColumnCount']
-          const count: TestColumnCount = countRaw === 2 || countRaw === 3 || countRaw === 4 ? countRaw : defaultState.layout.testColumnCount
+          const count: TestColumnCount =
+            countRaw === 2 || countRaw === 3 || countRaw === 4
+              ? countRaw
+              : defaultState.layout.testColumnCount
           layout.value = {
             mainSplitLeftPct: Math.min(50, Math.max(25, Math.round(pct))),
             testColumnCount: count,
@@ -716,7 +723,8 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
         const rawFingerprints = parsed.testVariantLastRunFingerprint
         if (rawFingerprints && typeof rawFingerprints === 'object') {
           const fingerprintRecord = rawFingerprints as Record<string, unknown>
-          const pick = (id: TestVariantId) => (typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : '')
+          const pick = (id: TestVariantId) =>
+            typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : ''
           testVariantLastRunFingerprint.value = {
             a: pick('a'),
             b: pick('b'),
@@ -727,43 +735,52 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
           testVariantLastRunFingerprint.value = defaultState.testVariantLastRunFingerprint
         }
 
-         originalPrompt.value = typeof parsed.originalPrompt === 'string' ? parsed.originalPrompt : ''
-         optimizedPrompt.value = typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
-         reasoning.value = typeof parsed.reasoning === 'string' ? parsed.reasoning : ''
-         chainId.value = typeof parsed.chainId === 'string' ? parsed.chainId : ''
-         versionId.value = typeof parsed.versionId === 'string' ? parsed.versionId : ''
+        originalPrompt.value =
+          typeof parsed.originalPrompt === 'string' ? parsed.originalPrompt : ''
+        optimizedPrompt.value =
+          typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
+        reasoning.value = typeof parsed.reasoning === 'string' ? parsed.reasoning : ''
+        chainId.value = typeof parsed.chainId === 'string' ? parsed.chainId : ''
+        versionId.value = typeof parsed.versionId === 'string' ? parsed.versionId : ''
 
-          temporaryVariables.value = sanitizeVariableRecord(parsed.temporaryVariables)
-          inputImageB64.value = typeof inputImageB64Loaded === 'string' ? inputImageB64Loaded : null
-          inputImageId.value = typeof parsed.inputImageId === 'string' ? parsed.inputImageId : null
-          inputImageMime.value = typeof parsed.inputImageMime === 'string' ? parsed.inputImageMime : ''
-         evaluationResults.value = {
-           ...createDefaultEvaluationResults(),
-           ...(parsed.evaluationResults && typeof parsed.evaluationResults === 'object'
-             ? (parsed.evaluationResults as PersistedEvaluationResults)
-             : {}),
-         }
-         isCompareMode.value = typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
-         selectedTextModelKey.value = typeof parsed.selectedTextModelKey === 'string' ? parsed.selectedTextModelKey : ''
-         selectedImageModelKey.value = typeof parsed.selectedImageModelKey === 'string' ? parsed.selectedImageModelKey : ''
-         selectedTemplateId.value = typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
-          selectedIterateTemplateId.value = typeof parsed.selectedIterateTemplateId === 'string' ? parsed.selectedIterateTemplateId : null
-          lastActiveAt.value = Date.now()
+        temporaryVariables.value = sanitizeVariableRecord(parsed.temporaryVariables)
+        inputImageB64.value = typeof inputImageB64Loaded === 'string' ? inputImageB64Loaded : null
+        inputImageId.value = typeof parsed.inputImageId === 'string' ? parsed.inputImageId : null
+        inputImageMime.value =
+          typeof parsed.inputImageMime === 'string' ? parsed.inputImageMime : ''
+        evaluationResults.value = {
+          ...createDefaultEvaluationResults(),
+          ...(parsed.evaluationResults && typeof parsed.evaluationResults === 'object'
+            ? (parsed.evaluationResults as PersistedEvaluationResults)
+            : {}),
+        }
+        isCompareMode.value =
+          typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
+        selectedTextModelKey.value =
+          typeof parsed.selectedTextModelKey === 'string' ? parsed.selectedTextModelKey : ''
+        selectedImageModelKey.value =
+          typeof parsed.selectedImageModelKey === 'string' ? parsed.selectedImageModelKey : ''
+        selectedTemplateId.value =
+          typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
+        selectedIterateTemplateId.value =
+          typeof parsed.selectedIterateTemplateId === 'string'
+            ? parsed.selectedIterateTemplateId
+            : null
+        lastActiveAt.value = Date.now()
 
-          // 如果 variants 的 modelKey 为空，尝试用 legacy selectedImageModelKey 填充一次
-          const seedModelKey = selectedImageModelKey.value
-          if (seedModelKey) {
-            let changed = false
-            const next = testVariants.value.map((v) => {
-              if (v.modelKey) return v
-              changed = true
-              return { ...v, modelKey: seedModelKey }
-            })
-            if (changed) {
-              testVariants.value = next
-            }
+        // 如果 variants 的 modelKey 为空，尝试用 legacy selectedImageModelKey 填充一次
+        const seedModelKey = selectedImageModelKey.value
+        if (seedModelKey) {
+          let changed = false
+          const next = testVariants.value.map((v) => {
+            if (v.modelKey) return v
+            changed = true
+            return { ...v, modelKey: seedModelKey }
+          })
+          if (changed) {
+            testVariants.value = next
           }
-
+        }
       }
       // else: 没有保存的会话，使用默认状态
     } catch (error) {

@@ -5,7 +5,7 @@
       flex: 1,
       minHeight: 0,
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
     }"
   >
     <!-- 对比模式：双列布局 -->
@@ -17,7 +17,7 @@
         flex: 1,
         overflow: 'hidden',
         height: '100%',
-        gap: '12px'
+        gap: '12px',
       }"
     >
       <!-- 原始结果 -->
@@ -27,13 +27,13 @@
         :style="{
           flex: 1,
           height: '100%',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }"
         content-style="height: 100%; max-height: 100%; overflow: hidden; display: flex; flex-direction: column;"
       >
         <template #header>
           <div class="card-header-content">
-            <NText style="font-size: 16px; font-weight: 600;">
+            <NText style="font-size: 16px; font-weight: 600">
               {{ originalTitle }}
             </NText>
             <!-- 原始结果评估入口 -->
@@ -82,13 +82,13 @@
         :style="{
           flex: 1,
           height: '100%',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }"
         content-style="height: 100%; max-height: 100%; overflow: hidden; display: flex; flex-direction: column;"
       >
         <template #header>
           <div class="card-header-content">
-            <NText style="font-size: 16px; font-weight: 600;">
+            <NText style="font-size: 16px; font-weight: 600">
               {{ optimizedTitle }}
             </NText>
             <!-- 优化结果评估入口 -->
@@ -139,13 +139,13 @@
       :style="{
         flex: 1,
         height: '100%',
-        overflow: 'hidden'
+        overflow: 'hidden',
       }"
       content-style="height: 100%; max-height: 100%; overflow: hidden; display: flex; flex-direction: column;"
     >
       <template #header>
         <div class="card-header-content">
-          <NText style="font-size: 16px; font-weight: 600;">
+          <NText style="font-size: 16px; font-weight: 600">
             {{ singleResultTitle }}
           </NText>
           <!-- 单一结果评估入口（使用优化结果的评估状态） -->
@@ -194,7 +194,12 @@ import { useI18n } from 'vue-i18n'
 import { NFlex, NCard, NText, NButton } from 'naive-ui'
 import ToolCallDisplay from './ToolCallDisplay.vue'
 import { EvaluationScoreBadge } from './evaluation'
-import type { AdvancedTestResult, EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
+import type {
+  AdvancedTestResult,
+  EvaluationResponse,
+  EvaluationType,
+  PatchOperation,
+} from '@prompt-optimizer/core'
 import type { ScoreLevel } from './evaluation/types'
 
 const { t } = useI18n()
@@ -266,7 +271,7 @@ const props = withDefaults(defineProps<Props>(), {
   originalEvaluationResult: null,
   optimizedEvaluationResult: null,
   originalScoreLevel: null,
-  optimizedScoreLevel: null
+  optimizedScoreLevel: null,
 })
 
 const emit = defineEmits<{
@@ -279,16 +284,12 @@ const emit = defineEmits<{
 }>()
 
 // 计算属性
-const originalTitle = computed(() =>
-  props.originalTitle || t('test.originalResult', '原始结果')
-)
+const originalTitle = computed(() => props.originalTitle || t('test.originalResult', '原始结果'))
 
-const optimizedTitle = computed(() =>
-  props.optimizedTitle || t('test.optimizedResult', '优化结果')
-)
+const optimizedTitle = computed(() => props.optimizedTitle || t('test.optimizedResult', '优化结果'))
 
-const singleResultTitle = computed(() =>
-  props.singleResultTitle || t('test.testResult', '测试结果')
+const singleResultTitle = computed(
+  () => props.singleResultTitle || t('test.testResult', '测试结果')
 )
 
 // 事件处理
@@ -354,20 +355,25 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
 
 /* 🎨 Palette: Enhanced card hover effects with subtle lift and shadow */
 .test-result-card {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .test-result-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 /* 🎨 Palette: Smooth evaluation button appearance transition */
 .evaluation-entry {
   flex-shrink: 0;
   margin-left: 8px;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .evaluation-entry:empty {
@@ -387,13 +393,16 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
 /* 🎨 Palette: Focus-visible rings for accessibility */
 .test-result-card:focus-within {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25),
-              0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 /* 🎨 Palette: Dark mode adjustments */
 .dark .test-result-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 🎨 Palette: Reduced motion support for accessibility */
@@ -401,19 +410,19 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
   .test-result-card {
     transition: box-shadow 0.2s ease;
   }
-  
+
   .test-result-card:hover {
     transform: none;
   }
-  
+
   .test-result-card:focus-within {
     transform: none;
   }
-  
+
   .evaluation-entry {
     transition: opacity 0.2s ease;
   }
-  
+
   .card-header-content :deep(.n-text) {
     transition: none;
   }

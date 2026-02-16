@@ -17,7 +17,7 @@ export function useResponsive() {
     sm: BREAKPOINTS.MOBILE,
     md: BREAKPOINTS.TABLET,
     lg: BREAKPOINTS.DESKTOP,
-    xl: BREAKPOINTS.LARGE
+    xl: BREAKPOINTS.LARGE,
   }
 
   // 更新窗口宽度
@@ -41,13 +41,15 @@ export function useResponsive() {
   const isDesktop = computed(() => ['md', 'lg', 'xl'].includes(currentBreakpoint.value))
 
   // 响应式配置
-  const responsiveConfig = computed((): ResponsiveConfig => ({
-    breakpoints,
-    currentBreakpoint: currentBreakpoint.value,
-    isMobile: isMobile.value,
-    isTablet: isTablet.value,
-    isDesktop: isDesktop.value
-  }))
+  const responsiveConfig = computed(
+    (): ResponsiveConfig => ({
+      breakpoints,
+      currentBreakpoint: currentBreakpoint.value,
+      isMobile: isMobile.value,
+      isTablet: isTablet.value,
+      isDesktop: isDesktop.value,
+    })
+  )
 
   // 响应式网格配置 - 使用集中间距常量
   const gridConfig = computed(() => {
@@ -177,7 +179,7 @@ export function useResponsive() {
     isTablet,
     isDesktop,
     responsiveConfig,
-    
+
     // 组件配置
     gridConfig,
     spaceSize,
@@ -186,12 +188,12 @@ export function useResponsive() {
     modalWidth,
     cardPadding,
     fontSize,
-    
+
     // 布局决策
     shouldUseVerticalLayout,
     shouldUseCompactMode,
-    
+
     // 断点配置
-    breakpoints
+    breakpoints,
   }
 }

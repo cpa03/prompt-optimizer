@@ -19,9 +19,9 @@
 1.  **核心依赖**: 添加 `electron-updater` 到 `dependencies`。
 2.  **更新源配置**: 在 `build` 节点下，添加 `publish` 配置，指向项目的 GitHub 仓库（提供 `owner` 和 `repo`）。
 3.  **多目标构建**:
-    -   `win.target`: 设置为 `['nsis', 'zip']`，同时生成 Windows 安装包和便携包。
-    -   `mac.target`: 设置为 `['dmg', 'zip']`，同时生成 macOS 安装包和便携包。
-    -   `linux.target`: 设置为 `['AppImage', 'zip']`，同时生成 Linux 安装包和便携包。
+    - `win.target`: 设置为 `['nsis', 'zip']`，同时生成 Windows 安装包和便携包。
+    - `mac.target`: 设置为 `['dmg', 'zip']`，同时生成 macOS 安装包和便携包。
+    - `linux.target`: 设置为 `['AppImage', 'zip']`，同时生成 Linux 安装包和便携包。
 
 #### 2.2. 自动化工作流 (`release.yml`)
 
@@ -40,12 +40,12 @@
 
 1.  **读取持久化设置**: 在函数开始时，从 `PreferenceService` 异步读取 `updater.allowPrerelease` 和 `updater.ignoredVersion` 的值。
 2.  **配置更新器**:
-    -   根据读取到的偏好设置 `autoUpdater.allowPrerelease`。
-    -   **必须**设置 `autoUpdater.autoDownload = false`，将下载控制权交给用户。
+    - 根据读取到的偏好设置 `autoUpdater.allowPrerelease`。
+    - **必须**设置 `autoUpdater.autoDownload = false`，将下载控制权交给用户。
 3.  **处理 `update-available` 事件**:
-    -   **智能忽略**: 在回调函数第一行，进行判断：`if (info.version === ignoredVersion) return;`。如果发现的版本是用户忽略过的，则提前终止流程。
-    -   **构建详情链接**: 根据 `package.json` 中的 `publish` 配置和 `info.version`，动态构建出指向 GitHub Release 页面的 `releaseUrl`。
-    -   **发送通知**: 通过 IPC (`update-available-info`) 将包含版本信息和 `releaseUrl` 的对象发送给 UI 层。
+    - **智能忽略**: 在回调函数第一行，进行判断：`if (info.version === ignoredVersion) return;`。如果发现的版本是用户忽略过的，则提前终止流程。
+    - **构建详情链接**: 根据 `package.json` 中的 `publish` 配置和 `info.version`，动态构建出指向 GitHub Release 页面的 `releaseUrl`。
+    - **发送通知**: 通过 IPC (`update-available-info`) 将包含版本信息和 `releaseUrl` 的对象发送给 UI 层。
 
 #### 3.2. IPC 处理器
 
@@ -80,10 +80,10 @@
 #### 4.3. `UpdaterModal` 组件
 
 1.  **多状态视图**:
-    -   **默认状态**: 显示当前版本，提供"检查更新"按钮。
-    -   **更新可用**: 显示新版本信息，提供"下载"、"查看详情"、"忽略"按钮。
-    -   **下载中**: 显示下载进度条。
-    -   **下载完成**: 提供"安装并重启"按钮。
+    - **默认状态**: 显示当前版本，提供"检查更新"按钮。
+    - **更新可用**: 显示新版本信息，提供"下载"、"查看详情"、"忽略"按钮。
+    - **下载中**: 显示下载进度条。
+    - **下载完成**: 提供"安装并重启"按钮。
 2.  **用户控制**: 提供预览版开关，让用户选择是否接收预览版更新。
 
 ---
@@ -121,7 +121,7 @@ import { isRunningInElectron } from '@prompt-optimizer/core'
 
 ```javascript
 if (!url.startsWith('http://') && !url.startsWith('https://')) {
-  throw new Error('Only HTTP and HTTPS URLs are allowed');
+  throw new Error('Only HTTP and HTTPS URLs are allowed')
 }
 ```
 
@@ -130,9 +130,9 @@ if (!url.startsWith('http://') && !url.startsWith('https://')) {
 对接收到的版本号进行格式验证，防止恶意输入：
 
 ```javascript
-const versionRegex = /^v?\d+\.\d+\.\d+(-[\w.-]+)?(\+[\w.-]+)?$/;
+const versionRegex = /^v?\d+\.\d+\.\d+(-[\w.-]+)?(\+[\w.-]+)?$/
 if (!versionRegex.test(version)) {
-  throw new Error('Invalid version format');
+  throw new Error('Invalid version format')
 }
 ```
 
@@ -141,7 +141,7 @@ if (!versionRegex.test(version)) {
 使用配置文件管理敏感信息，避免硬编码：
 
 ```javascript
-const { buildReleaseUrl, validateVersion } = require('./config/update-config');
+const { buildReleaseUrl, validateVersion } = require('./config/update-config')
 ```
 
 ---
@@ -219,48 +219,51 @@ const { buildReleaseUrl, validateVersion } = require('./config/update-config');
 ### 12.1. 错误处理机制重构
 
 #### 详细错误响应函数
+
 ```javascript
 function createDetailedErrorResponse(error) {
-  const timestamp = new Date().toISOString();
-  let detailedMessage = `[${timestamp}] Error Details:\n\n`;
+  const timestamp = new Date().toISOString()
+  let detailedMessage = `[${timestamp}] Error Details:\n\n`
 
   if (error instanceof Error) {
-    detailedMessage += `Message: ${error.message}\n`;
-    if (error.code) detailedMessage += `Code: ${error.code}\n`;
-    if (error.statusCode) detailedMessage += `HTTP Status: ${error.statusCode}\n`;
-    if (error.url) detailedMessage += `URL: ${error.url}\n`;
-    if (error.stack) detailedMessage += `\nStack Trace:\n${error.stack}\n`;
+    detailedMessage += `Message: ${error.message}\n`
+    if (error.code) detailedMessage += `Code: ${error.code}\n`
+    if (error.statusCode) detailedMessage += `HTTP Status: ${error.statusCode}\n`
+    if (error.url) detailedMessage += `URL: ${error.url}\n`
+    if (error.stack) detailedMessage += `\nStack Trace:\n${error.stack}\n`
 
     // 捕获其他属性和JSON兜底机制
-    const jsonError = JSON.stringify(error, Object.getOwnPropertyNames(error), 2);
+    const jsonError = JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
     if (jsonError && jsonError !== '{}') {
-      detailedMessage += `\nComplete Object Dump:\n${jsonError}`;
+      detailedMessage += `\nComplete Object Dump:\n${jsonError}`
     }
   }
 
-  return { success: false, error: detailedMessage };
+  return { success: false, error: detailedMessage }
 }
 ```
 
 #### preload.js 错误信息保留
+
 ```javascript
 // 修复前：丢失详细信息
 if (!result.success) {
-  throw new Error(result.error);
+  throw new Error(result.error)
 }
 
 // 修复后：保留完整信息
 if (!result.success) {
-  const error = new Error(result.error);
-  error.originalError = result.error;
-  error.detailedMessage = result.error;
-  throw error;
+  const error = new Error(result.error)
+  error.originalError = result.error
+  error.detailedMessage = result.error
+  throw error
 }
 ```
 
 ### 12.2. 组件架构重构
 
 #### 智能组件设计
+
 ```vue
 <!-- UpdaterModal.vue - 智能组件 -->
 <script setup lang="ts">
@@ -272,7 +275,7 @@ const {
   installUpdate,
   ignoreUpdate,
   togglePrerelease,
-  openReleaseUrl
+  openReleaseUrl,
 } = useUpdater()
 
 // 简化的接口
@@ -287,6 +290,7 @@ const emit = defineEmits<{
 ```
 
 #### 简化组件设计
+
 ```vue
 <!-- UpdaterIcon.vue - 简化组件 -->
 <script setup lang="ts">
@@ -306,17 +310,18 @@ const showModal = ref(false)
 ### 12.3. 开发环境智能处理
 
 #### 环境检测逻辑
+
 ```javascript
 // 开发模式下的更新检查配置
 if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
-  const fs = require('fs');
-  const devConfigPath = path.join(__dirname, 'dev-app-update.yml');
+  const fs = require('fs')
+  const devConfigPath = path.join(__dirname, 'dev-app-update.yml')
   if (fs.existsSync(devConfigPath)) {
-    autoUpdater.forceDevUpdateConfig = true;
+    autoUpdater.forceDevUpdateConfig = true
   } else {
     // 返回友好的开发环境提示
-    responseData.message = 'Development environment: Update checking is disabled';
-    return createSuccessResponse(responseData);
+    responseData.message = 'Development environment: Update checking is disabled'
+    return createSuccessResponse(responseData)
   }
 }
 ```
@@ -324,6 +329,7 @@ if (process.env.NODE_ENV === 'development' || !app.isPackaged) {
 ### 12.4. 状态管理系统
 
 #### 状态类型定义
+
 ```typescript
 interface UpdaterState {
   lastCheckResult: 'none' | 'available' | 'not-available' | 'error' | 'dev-disabled'
@@ -332,6 +338,7 @@ interface UpdaterState {
 ```
 
 #### 状态转换逻辑
+
 ```javascript
 if (checkData.hasUpdate && checkData.checkResult?.updateInfo) {
   state.lastCheckResult = 'available'
@@ -347,6 +354,7 @@ if (checkData.hasUpdate && checkData.checkResult?.updateInfo) {
 ### 12.5. 动态UI实现
 
 #### 根据状态显示不同按钮
+
 ```vue
 <template #footer>
   <!-- 开发环境：只显示关闭按钮 -->
@@ -368,6 +376,7 @@ if (checkData.hasUpdate && checkData.checkResult?.updateInfo) {
 ```
 
 关键特性：
+
 - **用户控制**: 用户完全控制更新时机和选择
 - **环境适配**: 多形态产品的优雅兼容
 - **安全可靠**: 完整的安全验证和错误处理

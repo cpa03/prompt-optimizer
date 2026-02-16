@@ -38,11 +38,13 @@ docker run -d -p 8081:80 \
 #### 官方镜像
 
 **Docker Hub**：`linshen/prompt-optimizer:latest`
+
 - ✅ 稳定可靠，自动构建
-- ✅ 支持多架构：amd64, arm64  
+- ✅ 支持多架构：amd64, arm64
 - ✅ 定期更新，跟随项目发布
 
 **国内镜像**：`registry.cn-guangzhou.aliyuncs.com/prompt-optimizer/prompt-optimizer:latest`
+
 - 🚀 国内用户访问更快
 - 🔄 与Docker Hub镜像同步
 - 💡 Docker Hub访问缓慢时推荐使用
@@ -127,6 +129,7 @@ docker run -d --network prompt-net -p 8081:80 linshen/prompt-optimizer
 ```
 
 **配置规则**：
+
 - 变量名格式：`VITE_CUSTOM_API_[TYPE]_[NAME]`
 - `[TYPE]`：`KEY`、`BASE_URL`、`MODEL`
 - `[NAME]`：自定义模型名称（只能包含字母、数字、下划线）
@@ -144,6 +147,7 @@ docker run -d --network prompt-net -p 8081:80 linshen/prompt-optimizer
 配置后访问应用需要输入用户名和密码。
 
 **安全建议**：
+
 - 使用强密码（至少8位，包含字母、数字、特殊字符）
 - 定期更换访问密码
 - 不要在命令行历史中保留密码
@@ -175,6 +179,7 @@ Docker部署自动包含MCP（Model Context Protocol）服务器功能：
 ```
 
 **MCP功能**：
+
 - 提供标准化的AI模型访问接口
 - 支持多种模型提供商
 - 内置日志记录和监控
@@ -193,29 +198,29 @@ services:
     image: linshen/prompt-optimizer:latest
     # 或使用国内镜像
     # image: registry.cn-guangzhou.aliyuncs.com/prompt-optimizer/prompt-optimizer:latest
-    
+
     container_name: prompt-optimizer
     restart: unless-stopped
-    
+
     ports:
-      - "8081:80"
-    
+      - '8081:80'
+
     environment:
       # API密钥配置
       - VITE_OPENAI_API_KEY=${OPENAI_API_KEY}
       - VITE_GEMINI_API_KEY=${GEMINI_API_KEY}
-      
+
       # 访问控制
       - ACCESS_USERNAME=${ACCESS_USERNAME:-admin}
       - ACCESS_PASSWORD=${ACCESS_PASSWORD}
-      
+
       # MCP配置
       - MCP_DEFAULT_MODEL_PROVIDER=${MCP_PROVIDER:-openai}
       - MCP_LOG_LEVEL=${MCP_LOG_LEVEL:-info}
-    
+
     # 健康检查
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -352,6 +357,7 @@ docker exec prompt-optimizer env | grep VITE_
 ### 开发环境建议
 
 1. **快速启动**
+
    ```bash
    docker run -d -p 8081:80 --name prompt-optimizer-dev linshen/prompt-optimizer
    ```
@@ -368,5 +374,6 @@ docker exec prompt-optimizer env | grep VITE_
 ---
 
 **相关链接**：
+
 - [高级配置](docker-advanced.md) - Docker Compose高级配置和安全设置
 - [故障排除](docker-troubleshooting.md) - 常见问题解决和性能优化

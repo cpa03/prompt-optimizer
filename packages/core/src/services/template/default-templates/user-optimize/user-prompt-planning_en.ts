@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const user_prompt_planning_en: Template = {
   id: 'user-prompt-planning',
@@ -72,7 +72,7 @@ During your creation process, please follow these internal steps to brainstorm a
     - [The first rule that must be followed].
     - [The second rule that must be followed].
     - **Final Output**: Your final response should only contain the final result itself, without including any step descriptions, analysis, or other extraneous content.
-`
+`,
     },
     {
       role: 'user',
@@ -87,16 +87,17 @@ Important Notes:
 User prompt to optimize:
 【{{originalPrompt}}】
 
-Please output the optimized new prompt directly:`
-    }
+Please output the optimized new prompt directly:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.3.0',
     lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (fixed value, built-in templates are immutable)
     author: 'System',
-    description: 'Converts user requirements into a clear sequence of execution steps, providing an actionable task plan.',
+    description:
+      'Converts user requirements into a clear sequence of execution steps, providing an actionable task plan.',
     templateType: 'userOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

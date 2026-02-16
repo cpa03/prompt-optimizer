@@ -1,63 +1,86 @@
 <template>
   <!-- 使用ToastUI包装整个布局以提供NMessageProvider -->
   <ToastUI>
-    <NLayout style="position: fixed; inset: 0; width: 100vw; height: 100vh;
-    max-height: 100vh;
-    overflow: hidden; display: flex; min-height: 0;"
-    content-style="height: 100%; max-height: 100%; min-height: 0; overflow: hidden;"
+    <NLayout
+      style="
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+        display: flex;
+        min-height: 0;
+      "
+      content-style="height: 100%; max-height: 100%; min-height: 0; overflow: hidden;"
     >
+      <NFlex
+        vertical
+        style="
+          position: fixed;
+          inset: 0;
+          width: 100vw;
+          max-height: 100vh;
+          height: 100vh;
+          min-height: 0;
+        "
+      >
+        <!-- 顶部导航栏 -->
+        <NLayoutHeader class="theme-header nav-header-enhanced">
+          <NFlex
+            justify="space-between"
+            align="center"
+            class="w-full nav-content"
+            :wrap="false"
+            :size="[16, 12]"
+          >
+            <!-- 左侧：Logo + 标题 + 核心导航 -->
+            <NFlex align="center" :size="16" :wrap="false">
+              <!-- Logo + 标题 -->
+              <NFlex align="center" :size="8" :wrap="false">
+                <NImage
+                  :src="logoSrc"
+                  alt="Logo"
+                  :width="logoSize"
+                  :height="logoSize"
+                  object-fit="cover"
+                  class="logo-image"
+                  :show-toolbar="false"
+                  :preview-disabled="true"
+                  :fallback-src="fallbackLogoSrc"
+                />
+                <NText class="text-lg sm:text-xl font-bold theme-title" tag="h2">
+                  <slot name="title">{{ t('common.appName') }}</slot>
+                </NText>
+              </NFlex>
 
-      <NFlex vertical style="position: fixed; inset: 0; width: 100vw; max-height: 100vh; height: 100vh; min-height: 0;">
-      <!-- 顶部导航栏 -->
-      <NLayoutHeader class="theme-header nav-header-enhanced">
-        <NFlex justify="space-between" align="center" class="w-full nav-content" :wrap="false" :size="[16, 12]">
-          <!-- 左侧：Logo + 标题 + 核心导航 -->
-          <NFlex align="center" :size="16" :wrap="false">
-            <!-- Logo + 标题 -->
-            <NFlex align="center" :size="8" :wrap="false">
-              <NImage
-                :src="logoSrc"
-                alt="Logo"
-                :width="logoSize"
-                :height="logoSize"
-                object-fit="cover"
-                class="logo-image"
-                :show-toolbar="false"
-                :preview-disabled="true"
-                :fallback-src="fallbackLogoSrc"
-              />
-              <NText class="text-lg sm:text-xl font-bold theme-title" tag="h2">
-                <slot name="title">{{ t('common.appName') }}</slot>
-              </NText>
+              <!-- 核心导航元素 -->
+              <div class="core-navigation">
+                <slot name="core-nav"></slot>
+              </div>
             </NFlex>
 
-            <!-- 核心导航元素 -->
-            <div class="core-navigation">
-              <slot name="core-nav"></slot>
-            </div>
+            <!-- 右侧：操作按钮 -->
+            <NFlex align="center" :size="8" :wrap="true" justify="end" class="nav-actions">
+              <slot name="actions"></slot>
+            </NFlex>
           </NFlex>
+        </NLayoutHeader>
 
-          <!-- 右侧：操作按钮 -->
-          <NFlex align="center" :size="8" :wrap="true" justify="end" class="nav-actions">
-            <slot name="actions"></slot>
-          </NFlex>
-        </NFlex>
-      </NLayoutHeader>
-
-      <!-- 主要内容区域 - 严格控制在剩余空间内 -->
-      <NLayoutContent has-sider
-        style="flex: 1; min-height: 0; overflow: hidden;"
-        content-style="height: 100%; max-height: 100%; min-height: 0; box-sizing: border-box; padding: 24px clamp(16px, 2vw, 48px) 40px; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;"
-      >
-        <div class="main-content-wrapper">
-          <slot name="main"></slot>
-        </div>
-      </NLayoutContent>
+        <!-- 主要内容区域 - 严格控制在剩余空间内 -->
+        <NLayoutContent
+          has-sider
+          style="flex: 1; min-height: 0; overflow: hidden"
+          content-style="height: 100%; max-height: 100%; min-height: 0; box-sizing: border-box; padding: 24px clamp(16px, 2vw, 48px) 40px; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;"
+        >
+          <div class="main-content-wrapper">
+            <slot name="main"></slot>
+          </div>
+        </NLayoutContent>
       </NFlex>
 
       <!-- 弹窗插槽 -->
       <slot name="modals"></slot>
-
     </NLayout>
   </ToastUI>
 </template>

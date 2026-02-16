@@ -49,13 +49,13 @@
 <script setup lang="ts">
 import { computed, ref, inject, type Ref } from 'vue'
 
-import OutputDisplayCore from './OutputDisplayCore.vue';
-import OutputDisplayFullscreen from './OutputDisplayFullscreen.vue';
-import type { AppServices } from '../types/services';
+import OutputDisplayCore from './OutputDisplayCore.vue'
+import OutputDisplayFullscreen from './OutputDisplayFullscreen.vue'
+import type { AppServices } from '../types/services'
 
 defineOptions({
   inheritAttrs: false,
-});
+})
 
 type ActionName = 'fullscreen' | 'diff' | 'copy' | 'edit' | 'reasoning' | 'favorite'
 
@@ -82,20 +82,20 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    enableCopy: true,
-    enableFullscreen: true,
-    enableEdit: true,
-    enableDiff: true,
-    enableFavorite: true,
-    testId: undefined,
-});
+  enableCopy: true,
+  enableFullscreen: true,
+  enableEdit: true,
+  enableDiff: true,
+  enableFavorite: true,
+  testId: undefined,
+})
 
 // Emits
 const emit = defineEmits<{
   'update:content': [content: string]
   'update:reasoning': [reasoning: string]
-  'copy': [content: string, type: 'content' | 'reasoning' | 'all']
-  'fullscreen': []
+  copy: [content: string, type: 'content' | 'reasoning' | 'all']
+  fullscreen: []
   'edit-start': []
   'edit-end': []
   'reasoning-toggle': [expanded: boolean]
@@ -104,65 +104,64 @@ const emit = defineEmits<{
   'save-favorite': [data: { content: string; originalContent?: string }]
 }>()
 
-const isShowingFullscreen = ref(false);
+const isShowingFullscreen = ref(false)
 
 const testId = computed(() => props.testId || undefined)
 
 // 注入服务并获取 CompareService
-const services = inject<Ref<AppServices | null>>('services');
+const services = inject<Ref<AppServices | null>>('services')
 if (!services) {
-  throw new Error('[OutputDisplay] services未正确注入，请确保在App组件中正确provide了services');
+  throw new Error('[OutputDisplay] services未正确注入，请确保在App组件中正确provide了services')
 }
 
 const compareService = computed(() => {
-  const servicesValue = services.value;
+  const servicesValue = services.value
   if (!servicesValue) {
-    throw new Error('[OutputDisplay] services未初始化，请确保应用已正确启动');
+    throw new Error('[OutputDisplay] services未初始化，请确保应用已正确启动')
   }
 
-  const service = servicesValue.compareService;
+  const service = servicesValue.compareService
   if (!service) {
-    throw new Error('[OutputDisplay] compareService未初始化，请确保服务已正确配置');
+    throw new Error('[OutputDisplay] compareService未初始化，请确保服务已正确配置')
   }
 
-  return service;
-});
+  return service
+})
 
 const enabledActions = computed(() => {
-    const actions: ActionName[] = ['reasoning'];
-    if (props.enableFullscreen) actions.push('fullscreen');
-    if (props.enableDiff) actions.push('diff');
-    if (props.enableCopy) actions.push('copy');
-    if (props.enableEdit) actions.push('edit');
-    if (props.enableFavorite) actions.push('favorite');
-    return actions;
+  const actions: ActionName[] = ['reasoning']
+  if (props.enableFullscreen) actions.push('fullscreen')
+  if (props.enableDiff) actions.push('diff')
+  if (props.enableCopy) actions.push('copy')
+  if (props.enableEdit) actions.push('edit')
+  if (props.enableFavorite) actions.push('favorite')
+  return actions
 })
 
 const handleCopy = (content: string, type: 'content' | 'reasoning' | 'all') => {
-  emit('copy', content, type);
+  emit('copy', content, type)
 }
 
 const handleFullscreen = () => {
-  isShowingFullscreen.value = true;
-  emit('fullscreen');
+  isShowingFullscreen.value = true
+  emit('fullscreen')
 }
 
-const coreDisplayRef = ref<InstanceType<typeof OutputDisplayCore> | null>(null);
+const coreDisplayRef = ref<InstanceType<typeof OutputDisplayCore> | null>(null)
 
 const forceRefreshContent = () => {
   if (coreDisplayRef.value) {
-    coreDisplayRef.value.forceRefreshContent();
+    coreDisplayRef.value.forceRefreshContent()
   }
 }
 
 const forceExitEditing = () => {
   if (coreDisplayRef.value) {
-    coreDisplayRef.value.forceExitEditing();
+    coreDisplayRef.value.forceExitEditing()
   }
 }
 
-defineExpose({ forceRefreshContent, forceExitEditing });
-
+defineExpose({ forceRefreshContent, forceExitEditing })
 </script>
 
 <style scoped>
@@ -301,4 +300,4 @@ textarea {
 textarea::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
-</style> 
+</style>

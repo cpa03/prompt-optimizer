@@ -19,10 +19,7 @@ export class TemplateError extends Error {
  * 提示词加载错误
  */
 export class TemplateLoadError extends TemplateError {
-  constructor(
-    templateId: string,
-    details?: string,
-  ) {
+  constructor(templateId: string, details?: string) {
     super(TEMPLATE_ERROR_CODES.LOAD_ERROR, details, { ...(details ? { details } : {}), templateId })
     this.name = 'TemplateLoadError'
     this.templateId = templateId
@@ -59,4 +56,4 @@ export class TemplateStorageError extends TemplateError {
     super(TEMPLATE_ERROR_CODES.STORAGE_ERROR, details, details ? { details } : undefined)
     this.name = 'TemplateStorageError'
   }
-} 
+}

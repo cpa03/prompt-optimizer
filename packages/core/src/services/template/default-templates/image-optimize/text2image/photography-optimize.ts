@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-photography-optimize',
@@ -58,7 +58,7 @@ export const template: Template = {
 - 每句专注1个核心维度（主体、光照、氛围、技术细节等）
 - 每个关键名词配2-3个精准修饰词
 - 不使用列表、代码块或 JSON
-`
+`,
     },
     {
       role: 'user',
@@ -73,8 +73,8 @@ export const template: Template = {
 原始描述：
 {{originalPrompt}}
 
-请输出优化后的提示词：`
-    }
+请输出优化后的提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
@@ -82,7 +82,7 @@ export const template: Template = {
     author: 'System',
     description: '摄影场景自然语言优化模板，强调主体、构图、光线与氛围，无参数/权重语法',
     templateType: 'text2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -190,10 +190,7 @@ export const useGlobalSettings = defineStore('globalSettings', () => {
         mode === 'override-defaults' ? current === fallback : !current
 
       if (shouldOverride(state.value.selectedThemeId, defaults.selectedThemeId)) {
-        const themeId = await $services.preferenceService.get<string>(
-          UI_SETTINGS_KEYS.THEME_ID,
-          ''
-        )
+        const themeId = await $services.preferenceService.get<string>(UI_SETTINGS_KEYS.THEME_ID, '')
         if (themeId) state.value.selectedThemeId = themeId
       }
 

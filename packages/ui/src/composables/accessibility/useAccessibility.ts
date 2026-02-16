@@ -27,24 +27,24 @@ export interface AccessibilityFeatures {
 
 export function useAccessibility(componentName: string = 'Component') {
   const { t } = useI18n()
-  
+
   // 焦点管理
   const focusableElements = ref<HTMLElement[]>([])
   const currentFocusIndex = ref(-1)
   const trapFocus = ref(false)
-  
+
   // 辅助功能检测
   const features = ref<AccessibilityFeatures>({
     reduceMotion: false,
     highContrast: false,
     screenReaderMode: false,
-    keyboardOnly: false
+    keyboardOnly: false,
   })
-  
+
   // 实时区域消息
   const liveRegionMessage = ref('')
   const announcements = ref<string[]>([])
-  
+
   // 键盘导航处理
   const keyboard: KeyboardNavigation = {
     handleKeyPress: (event: KeyboardEvent): boolean => {
@@ -54,11 +54,11 @@ export function useAccessibility(componentName: string = 'Component') {
       }
 
       const target = event.target as HTMLElement | null
-      const isEditable = !!target && (
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.isContentEditable === true
-      )
+      const isEditable =
+        !!target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable === true)
 
       switch (event.key) {
         case 'Tab':
@@ -75,7 +75,7 @@ export function useAccessibility(componentName: string = 'Component') {
           return false
       }
     },
-    
+
     focusNext: () => {
       if (focusableElements.value.length === 0) return
       currentFocusIndex.value = Math.min(
@@ -84,41 +84,41 @@ export function useAccessibility(componentName: string = 'Component') {
       )
       focusableElements.value[currentFocusIndex.value]?.focus()
     },
-    
+
     focusPrevious: () => {
       if (focusableElements.value.length === 0) return
       currentFocusIndex.value = Math.max(currentFocusIndex.value - 1, 0)
       focusableElements.value[currentFocusIndex.value]?.focus()
     },
-    
+
     focusFirst: () => {
       if (focusableElements.value.length === 0) return
       currentFocusIndex.value = 0
       focusableElements.value[0]?.focus()
     },
-    
+
     focusLast: () => {
       if (focusableElements.value.length === 0) return
       currentFocusIndex.value = focusableElements.value.length - 1
       focusableElements.value[currentFocusIndex.value]?.focus()
     },
-    
+
     setFocusableElements: (elements: HTMLElement[]) => {
       focusableElements.value = elements
       currentFocusIndex.value = elements.length > 0 ? 0 : -1
-    }
+    },
   }
-  
+
   // ARIA标签管理
   const aria: ARIALabels = {
     getLabel: (key: string, fallback?: string): string => {
       return t(`accessibility.labels.${key}`, fallback || key)
     },
-    
+
     getDescription: (key: string, fallback?: string): string => {
       return t(`accessibility.descriptions.${key}`, fallback || '')
     },
-    
+
     getRole: (element: string): string => {
       const roleMap: Record<string, string> = {
         button: 'button',
@@ -135,43 +135,45 @@ export function useAccessibility(componentName: string = 'Component') {
         list: 'list',
         listitem: 'listitem',
         alert: 'alert',
-        status: 'status'
+        status: 'status',
       }
       return roleMap[element] || 'generic'
     },
-    
+
     getLiveRegionText: (key: string): string => {
       return t(`accessibility.liveRegion.${key}`, key)
-    }
+    },
   }
-  
+
   // Tab导航处理
   const handleTabNavigation = (event: KeyboardEvent) => {
     const isShiftTab = event.shiftKey
     const focusedElement = document.activeElement as HTMLElement
     const currentIndex = focusableElements.value.indexOf(focusedElement)
-    
+
     if (currentIndex !== -1) {
       currentFocusIndex.value = currentIndex
     }
-    
+
     event.preventDefault()
-    
+
     if (isShiftTab) {
       keyboard.focusPrevious()
     } else {
       keyboard.focusNext()
     }
   }
-  
+
   // Escape键处理
   const handleEscapeKey = () => {
     // 发出escape事件让父组件处理
-    document.dispatchEvent(new CustomEvent('accessibility:escape', {
-      detail: { componentName }
-    }))
+    document.dispatchEvent(
+      new CustomEvent('accessibility:escape', {
+        detail: { componentName },
+      })
+    )
   }
-  
+
   // 查找可聚焦元素
   const updateFocusableElements = (container?: HTMLElement) => {
     const focusableSelector = [
@@ -181,60 +183,59 @@ export function useAccessibility(componentName: string = 'Component') {
       'textarea:not([disabled])',
       'a[href]',
       '[tabindex]:not([tabindex="-1"])',
-      '[contenteditable="true"]'
+      '[contenteditable="true"]',
     ].join(', ')
-    
+
     const containerEl = container || document.body
-    const elements = Array.from(
-      containerEl.querySelectorAll(focusableSelector)
-    ) as HTMLElement[]
-    
+    const elements = Array.from(containerEl.querySelectorAll(focusableSelector)) as HTMLElement[]
+
     keyboard.setFocusableElements(elements)
   }
-  
+
   // 宣布消息给屏幕阅读器
   const announce = (message: string, _priority: 'polite' | 'assertive' = 'polite') => {
     announcements.value.push(message)
     liveRegionMessage.value = message
-    
+
     // 清除消息，让屏幕阅读器重新读取
     setTimeout(() => {
       liveRegionMessage.value = ''
     }, 100)
-    
+
     // 限制消息队列长度
     if (announcements.value.length > 5) {
       announcements.value = announcements.value.slice(-5)
     }
   }
-  
+
   // 检测辅助功能偏好
   const detectAccessibilityFeatures = () => {
     if (typeof window === 'undefined') return
-    
+
     // 检测动画偏好
     if (window.matchMedia) {
       const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
       features.value.reduceMotion = reduceMotionQuery.matches
-      
+
       const highContrastQuery = window.matchMedia('(prefers-contrast: high)')
       features.value.highContrast = highContrastQuery.matches
-      
+
       // 监听变化
       reduceMotionQuery.addEventListener('change', (e) => {
         features.value.reduceMotion = e.matches
       })
-      
+
       highContrastQuery.addEventListener('change', (e) => {
         features.value.highContrast = e.matches
       })
     }
-    
+
     // 检测屏幕阅读器
-    features.value.screenReaderMode = window.navigator.userAgent.includes('NVDA') ||
+    features.value.screenReaderMode =
+      window.navigator.userAgent.includes('NVDA') ||
       window.navigator.userAgent.includes('JAWS') ||
       !!document.querySelector('[data-screen-reader]')
-    
+
     // 检测仅键盘用户
     let hasMouseMovement = false
     const handleMouseMove = () => {
@@ -244,62 +245,61 @@ export function useAccessibility(componentName: string = 'Component') {
         document.removeEventListener('mousemove', handleMouseMove)
       }
     }
-    
+
     const handleKeydown = () => {
       if (!hasMouseMovement) {
         features.value.keyboardOnly = true
       }
     }
-    
+
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('keydown', handleKeydown)
   }
-  
+
   // 启用焦点陷阱
   const enableFocusTrap = (container?: HTMLElement) => {
     trapFocus.value = true
     updateFocusableElements(container)
-    
+
     // 立即聚焦第一个元素
     if (focusableElements.value.length > 0) {
       focusableElements.value[0].focus()
     }
   }
-  
+
   // 禁用焦点陷阱
   const disableFocusTrap = () => {
     trapFocus.value = false
     focusableElements.value = []
     currentFocusIndex.value = -1
   }
-  
+
   // 计算属性
   const accessibilityClasses = computed(() => ({
     'reduce-motion': features.value.reduceMotion,
     'high-contrast': features.value.highContrast,
     'screen-reader': features.value.screenReaderMode,
-    'keyboard-only': features.value.keyboardOnly
+    'keyboard-only': features.value.keyboardOnly,
   }))
-  
-  const isAccessibilityMode = computed(() => 
-    features.value.screenReaderMode || 
-    features.value.keyboardOnly || 
-    features.value.highContrast
+
+  const isAccessibilityMode = computed(
+    () =>
+      features.value.screenReaderMode || features.value.keyboardOnly || features.value.highContrast
   )
-  
+
   // 生命周期
   onMounted(() => {
     detectAccessibilityFeatures()
-    
+
     // 添加全局键盘事件监听
     document.addEventListener('keydown', keyboard.handleKeyPress)
   })
-  
+
   onUnmounted(() => {
     document.removeEventListener('keydown', keyboard.handleKeyPress)
     disableFocusTrap()
   })
-  
+
   return {
     // 状态
     features,
@@ -308,11 +308,11 @@ export function useAccessibility(componentName: string = 'Component') {
     trapFocus,
     liveRegionMessage,
     announcements,
-    
+
     // 计算属性
     accessibilityClasses,
     isAccessibilityMode,
-    
+
     // 方法
     keyboard,
     aria,
@@ -320,19 +320,15 @@ export function useAccessibility(componentName: string = 'Component') {
     enableFocusTrap,
     disableFocusTrap,
     updateFocusableElements,
-    detectAccessibilityFeatures
+    detectAccessibilityFeatures,
   }
 }
 
 // 导出常用ARIA属性帮助函数
-export const createAriaProps = (
-  labelKey: string, 
-  descriptionKey?: string,
-  role?: string
-) => ({
+export const createAriaProps = (labelKey: string, descriptionKey?: string, role?: string) => ({
   'aria-label': labelKey,
   'aria-describedby': descriptionKey ? `${descriptionKey}-desc` : undefined,
-  'role': role
+  role: role,
 })
 
 // 导出键盘快捷键常量
@@ -346,5 +342,5 @@ export const KEYBOARD_SHORTCUTS = {
   ARROW_LEFT: 'ArrowLeft',
   ARROW_RIGHT: 'ArrowRight',
   HOME: 'Home',
-  END: 'End'
+  END: 'End',
 } as const

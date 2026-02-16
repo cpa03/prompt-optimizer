@@ -35,7 +35,7 @@ describe('OpenAIImageAdapter', () => {
       expect(Array.isArray(models)).toBe(true)
       expect(models.length).toBeGreaterThan(0)
 
-      const dalleModel = models.find(m => m.id.includes('gpt-image-1'))
+      const dalleModel = models.find((m) => m.id.includes('gpt-image-1'))
       expect(dalleModel).toBeDefined()
       expect(dalleModel).toMatchObject({
         id: expect.any(String),
@@ -44,23 +44,25 @@ describe('OpenAIImageAdapter', () => {
         capabilities: {
           text2image: true,
           image2image: expect.any(Boolean),
-          multiImage: expect.any(Boolean)
+          multiImage: expect.any(Boolean),
         },
-        parameterDefinitions: expect.any(Array)
+        parameterDefinitions: expect.any(Array),
       })
     })
 
     test('should include quality and size parameters', () => {
       const models = adapter.getModels()
-      const model = models.find(m => m.id.includes('gpt-image-1'))
+      const model = models.find((m) => m.id.includes('gpt-image-1'))
 
       expect(model?.parameterDefinitions).toBeDefined()
-      const qualityParam = model?.parameterDefinitions?.find(p => p.name === 'quality')
-      const sizeParam = model?.parameterDefinitions?.find(p => p.name === 'size')
+      const qualityParam = model?.parameterDefinitions?.find((p) => p.name === 'quality')
+      const sizeParam = model?.parameterDefinitions?.find((p) => p.name === 'size')
 
       expect(qualityParam).toBeDefined()
       expect(qualityParam?.type).toBe('string')
-      expect(qualityParam?.allowedValues).toEqual(expect.arrayContaining(['auto', 'high', 'medium', 'low']))
+      expect(qualityParam?.allowedValues).toEqual(
+        expect.arrayContaining(['auto', 'high', 'medium', 'low'])
+      )
 
       expect(sizeParam).toBeDefined()
       expect(sizeParam?.allowedValues).toContain('1024x1024')
@@ -80,18 +82,18 @@ describe('OpenAIImageAdapter', () => {
         modelId: 'gpt-image-1',
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
         paramOverrides: {
           quality: 'standard',
-          size: '1024x1024'
-        }
+          size: '1024x1024',
+        },
       }
 
       const request: ImageRequest = {
         prompt: 'A beautiful landscape with mountains and lakes',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const mockResponse = {
@@ -99,14 +101,15 @@ describe('OpenAIImageAdapter', () => {
         data: [
           {
             b64_json: 'aGVsbG8=',
-            revised_prompt: 'A beautiful landscape with mountains and lakes, painted in a realistic style'
-          }
-        ]
+            revised_prompt:
+              'A beautiful landscape with mountains and lakes, painted in a realistic style',
+          },
+        ],
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       })
 
       const result = await adapter.generate(request, config)
@@ -115,7 +118,9 @@ describe('OpenAIImageAdapter', () => {
       expect(result.images).toHaveLength(1)
       expect(result.images[0].b64).toBeDefined()
       expect(result.images[0].url?.startsWith('data:image/png;base64,')).toBe(true)
-      expect(result.text).toBe('A beautiful landscape with mountains and lakes, painted in a realistic style')
+      expect(result.text).toBe(
+        'A beautiful landscape with mountains and lakes, painted in a realistic style'
+      )
       expect(result.metadata?.configId).toBe(config.id)
       expect(result.metadata?.modelId).toBe(config.modelId)
     })
@@ -128,29 +133,27 @@ describe('OpenAIImageAdapter', () => {
         modelId: 'dall-e-2',
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
         paramOverrides: {
-          size: '512x512'
-        }
+          size: '512x512',
+        },
       }
 
       const request: ImageRequest = {
         prompt: 'A simple drawing of a cat',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const mockResponse = {
         created: Date.now(),
-        data: [
-          { b64_json: 'Y2F0LWltYWdlLWJhc2U2NA==' }
-        ]
+        data: [{ b64_json: 'Y2F0LWltYWdlLWJhc2U2NA==' }],
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockResponse)
+        json: () => Promise.resolve(mockResponse),
       })
 
       const result = await adapter.generate(request, config)
@@ -167,30 +170,32 @@ describe('OpenAIImageAdapter', () => {
         modelId: 'dall-e-3',
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'inappropriate content',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 400,
-        json: () => Promise.resolve({
-          error: {
-            code: 'content_policy_violation',
-            message: 'Your request was rejected as a result of our safety system.'
-          }
-        })
+        json: () =>
+          Promise.resolve({
+            error: {
+              code: 'content_policy_violation',
+              message: 'Your request was rejected as a result of our safety system.',
+            },
+          }),
       })
 
-      await expect(adapter.generate(request, config))
-        .rejects.toThrow(/content.*policy|safety.*system|rejected.*safety/i)
+      await expect(adapter.generate(request, config)).rejects.toThrow(
+        /content.*policy|safety.*system|rejected.*safety/i
+      )
     })
 
     test('should validate required parameters', async () => {
@@ -203,17 +208,18 @@ describe('OpenAIImageAdapter', () => {
         connectionConfig: {
           // Missing apiKey
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'test prompt',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
-      await expect(adapter.generate(request, config))
-        .rejects.toMatchObject({ code: IMAGE_ERROR_CODES.API_KEY_REQUIRED })
+      await expect(adapter.generate(request, config)).rejects.toMatchObject({
+        code: IMAGE_ERROR_CODES.API_KEY_REQUIRED,
+      })
     })
   })
 
@@ -232,18 +238,18 @@ describe('OpenAIImageAdapter', () => {
         modelId: 'dall-e-3',
         enabled: true,
         connectionConfig: {
-          apiKey: apiKey
+          apiKey: apiKey,
         },
         paramOverrides: {
           quality: 'standard',
-          size: '1024x1024'
-        }
+          size: '1024x1024',
+        },
       }
 
       const request: ImageRequest = {
         prompt: 'A serene mountain landscape at sunset, digital art style',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const result = await adapter.generate(request, config)

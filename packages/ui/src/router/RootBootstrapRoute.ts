@@ -68,12 +68,12 @@ export const RootBootstrapRoute = defineComponent({
             justifyContent: 'center',
             minHeight: '40vh',
             color: 'rgba(0,0,0,0.65)',
-            fontSize: '14px'
-          }
+            fontSize: '14px',
+          },
         },
         'Loading…'
       )
-  }
+  },
 })
 
 export default RootBootstrapRoute

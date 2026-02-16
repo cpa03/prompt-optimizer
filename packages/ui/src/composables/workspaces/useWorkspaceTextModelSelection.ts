@@ -28,7 +28,7 @@ export function useWorkspaceTextModelSelection<T extends WorkspaceTextModelSessi
 
   const selectedTextModelKey = computed<string>({
     get: () => sessionStore.selectedTextModelKey ?? '',
-    set: (value: string) => sessionStore.updateTextModel(value || '')
+    set: (value: string) => sessionStore.updateTextModel(value || ''),
   })
 
   let refreshToken = 0
@@ -57,7 +57,7 @@ export function useWorkspaceTextModelSelection<T extends WorkspaceTextModelSessi
       textModelOptions.value = DataTransformer.modelsToSelectOptions(enabledModels)
 
       const fallback = textModelOptions.value[0]?.value || ''
-      const keys = new Set(textModelOptions.value.map(opt => opt.value))
+      const keys = new Set(textModelOptions.value.map((opt) => opt.value))
       const current = selectedTextModelKey.value
 
       const invalid = current && !keys.has(current)
@@ -66,7 +66,11 @@ export function useWorkspaceTextModelSelection<T extends WorkspaceTextModelSessi
         selectedTextModelKey.value = fallback
       }
     } catch (error) {
-      console.error('[useWorkspaceTextModelSelection] refreshTextModels failed:', error instanceof Error ? error.message : String(error), error)
+      console.error(
+        '[useWorkspaceTextModelSelection] refreshTextModels failed:',
+        error instanceof Error ? error.message : String(error),
+        error
+      )
       textModelOptions.value = []
     }
   }

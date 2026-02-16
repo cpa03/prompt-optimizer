@@ -51,7 +51,7 @@ export type UseVariableAwareInputBridgeParams = {
 
 const computePredefinedFromAll = (
   all: Record<string, string>,
-  global: Record<string, string>,
+  global: Record<string, string>
 ): Record<string, string> => {
   const predefined: Record<string, string> = {}
   for (const [key, value] of Object.entries(all)) {
@@ -107,7 +107,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
             name: data.variableName,
             undo: platform.getUndoKey(),
           }),
-          { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true },
+          { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true }
         )
       }
 
@@ -125,7 +125,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
           name: data.variableName,
           undo: platform.getUndoKey(),
         }),
-        { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true },
+        { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true }
       )
     }
 
@@ -146,7 +146,7 @@ export function useVariableAwareInputBridge(params: UseVariableAwareInputBridgeP
           name,
           undo: platform.getUndoKey(),
         }),
-        { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true },
+        { duration: TIME_CONSTANTS.TOAST_DURATION_LONG, closable: true }
       )
     }
 

@@ -1,9 +1,5 @@
 <template>
-  <div 
-    class="action-button-wrapper"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
+  <div class="action-button-wrapper" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
     <NButton
       :type="buttonType"
       :size="buttonSize"
@@ -64,7 +60,7 @@ const props = withDefaults(defineProps<Props>(), {
   type: 'default',
   size: 'medium',
   ghost: false,
-  round: true
+  round: true,
 })
 
 const emit = defineEmits<{
@@ -113,17 +109,17 @@ const handleBlur = () => {
 const handleClick = () => {
   // 设置按下状态
   isPressed.value = true
-  
+
   // 清除之前的定时器
   if (pressTimeout.value) {
     clearTimeout(pressTimeout.value)
   }
-  
+
   // 150ms 后恢复状态，创造微妙的"按下-弹起"视觉效果
   pressTimeout.value = window.setTimeout(() => {
     isPressed.value = false
   }, 150)
-  
+
   // 触发点击事件
   emit('click')
 }
@@ -131,8 +127,12 @@ const handleClick = () => {
 // 🎨 Palette: Expose methods for parent to set hover/focus states
 // This allows the wrapper div to control the states
 defineExpose({
-  setHovered: (value: boolean) => { isHovered.value = value },
-  setFocused: (value: boolean) => { isFocused.value = value }
+  setHovered: (value: boolean) => {
+    isHovered.value = value
+  },
+  setFocused: (value: boolean) => {
+    isFocused.value = value
+  },
 })
 </script>
 
@@ -213,12 +213,7 @@ defineExpose({
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.25),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
   animation: loading-shimmer 1.5s infinite;
   pointer-events: none;
 }
@@ -322,25 +317,25 @@ defineExpose({
   .action-button :deep(.n-button__icon) {
     transition: none !important;
   }
-  
+
   .action-button.is-pressed {
     transform: none;
   }
-  
+
   .action-button :deep(.n-button__loading) {
     animation: none;
   }
-  
+
   .action-button.is-loading::after {
     animation: none;
   }
-  
+
   /* 🎨 Palette: Disable shortcut hint animations for reduced motion */
   .shortcut-hint-enter-active,
   .shortcut-hint-leave-active {
     transition: opacity 0.1s ease;
   }
-  
+
   .shortcut-hint-enter-from,
   .shortcut-hint-leave-to {
     transform: translateX(-50%) scale(1);

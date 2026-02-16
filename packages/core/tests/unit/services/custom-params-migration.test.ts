@@ -9,14 +9,14 @@ describe('自定义参数迁移测试', () => {
       type: 'number',
       minValue: 0,
       maxValue: 2,
-      defaultValue: 1
+      defaultValue: 1,
     },
     {
       name: 'max_tokens',
       type: 'integer',
       minValue: 1,
-      maxValue: 40000
-    }
+      maxValue: 40000,
+    },
   ]
 
   describe('向后兼容旧格式的 customParamOverrides', () => {
@@ -29,7 +29,7 @@ describe('自定义参数迁移测试', () => {
         schema,
         includeDefaults: false,
         customOverrides: customParamOverrides,
-        requestOverrides: paramOverrides
+        requestOverrides: paramOverrides,
       })
 
       // 验证内置参数被正确处理
@@ -48,7 +48,7 @@ describe('自定义参数迁移测试', () => {
         schema,
         includeDefaults: false,
         customOverrides: customParamOverrides,
-        requestOverrides: paramOverrides
+        requestOverrides: paramOverrides,
       })
 
       // requestOverrides 优先级更高
@@ -61,13 +61,13 @@ describe('自定义参数迁移测试', () => {
         valid_param: 'value',
         empty_string: '',
         null_value: null,
-        undefined_value: undefined
+        undefined_value: undefined,
       }
 
       const merged = mergeOverrides({
         schema,
         includeDefaults: false,
-        customOverrides: customParamOverrides as any
+        customOverrides: customParamOverrides as any,
       })
 
       // 只有非空值应该被保留
@@ -79,15 +79,15 @@ describe('自定义参数迁移测试', () => {
 
     it('应该拒绝危险的自定义参数键名', () => {
       const customParamOverrides = {
-        '__proto__': 'dangerous',
-        'apiKey': 'should_reject',
-        'safe_param': 'ok'
+        __proto__: 'dangerous',
+        apiKey: 'should_reject',
+        safe_param: 'ok',
       }
 
       const merged = mergeOverrides({
         schema,
         includeDefaults: false,
-        customOverrides: customParamOverrides
+        customOverrides: customParamOverrides,
       })
 
       // 危险参数应该被过滤（不会作为自己的属性存在）
@@ -112,14 +112,14 @@ describe('自定义参数迁移测试', () => {
           name: 'Test Model',
           providerId: 'test',
           capabilities: {},
-          parameterDefinitions: schema
+          parameterDefinitions: schema,
         } as any,
         connectionConfig: {},
         paramOverrides: { temperature: 0.7, max_tokens: 1000 },
         customParamOverrides: {
           custom_header: 'X-Custom-Value',
-          extra_param: 'important_value'
-        }
+          extra_param: 'important_value',
+        },
       }
 
       // 模拟 prepareRuntimeConfig 逻辑
@@ -127,7 +127,7 @@ describe('自定义参数迁移测试', () => {
         schema: modelConfig.modelMeta.parameterDefinitions,
         includeDefaults: false,
         customOverrides: modelConfig.customParamOverrides,
-        requestOverrides: modelConfig.paramOverrides
+        requestOverrides: modelConfig.paramOverrides,
       })
 
       // 验证运行时配置包含所有参数
@@ -149,23 +149,23 @@ describe('自定义参数迁移测试', () => {
           name: 'Test Model',
           providerId: 'test',
           capabilities: {},
-          parameterDefinitions: schema
+          parameterDefinitions: schema,
         } as any,
         connectionConfig: {},
         paramOverrides: {
           temperature: 0.7,
           max_tokens: 1000,
           custom_header: 'X-Custom-Value',
-          extra_param: 'important_value'
+          extra_param: 'important_value',
         },
-        customParamOverrides: undefined // 已迁移
+        customParamOverrides: undefined, // 已迁移
       }
 
       const mergedOverrides = mergeOverrides({
         schema: modelConfig.modelMeta.parameterDefinitions,
         includeDefaults: false,
         customOverrides: modelConfig.customParamOverrides,
-        requestOverrides: modelConfig.paramOverrides
+        requestOverrides: modelConfig.paramOverrides,
       })
 
       // 新格式也应该正常工作

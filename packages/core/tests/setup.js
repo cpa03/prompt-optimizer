@@ -32,21 +32,21 @@ afterAll(() => {
 const localStorageMock = {
   store: new Map(),
   getItem: vi.fn((key) => {
-    return localStorageMock.store.get(key) || null;
+    return localStorageMock.store.get(key) || null
   }),
   setItem: vi.fn((key, value) => {
-    localStorageMock.store.set(key, value);
+    localStorageMock.store.set(key, value)
   }),
   removeItem: vi.fn((key) => {
-    localStorageMock.store.delete(key);
+    localStorageMock.store.delete(key)
   }),
   clear: vi.fn(() => {
-    localStorageMock.store.clear();
-  })
-};
+    localStorageMock.store.clear()
+  }),
+}
 
 // 全局注入 localStorage
-global.localStorage = localStorageMock;
+global.localStorage = localStorageMock
 
 // 全局注入 navigator mock (用于浏览器API测试)
 // 使用 Object.defineProperty 以兼容 Node.js 22+ (navigator 是只读属性)
@@ -54,14 +54,14 @@ Object.defineProperty(global, 'navigator', {
   value: {
     language: 'en-US',
     userAgent: 'node.js',
-    platform: 'node'
+    platform: 'node',
   },
   writable: true,
-  configurable: true
-});
+  configurable: true,
+})
 
 // 在每个测试之前重置 mock 状态
 beforeEach(() => {
-  localStorageMock.store.clear();
-  vi.clearAllMocks();
-}); 
+  localStorageMock.store.clear()
+  vi.clearAllMocks()
+})

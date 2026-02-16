@@ -7,15 +7,15 @@ const base = {
   content: 'Hello',
   metadata: {
     version: '1.0.0',
-    lastModified: Date.now()
-  }
+    lastModified: Date.now(),
+  },
 }
 
 describe('template schema - context types', () => {
   it('accepts conversationMessageOptimize', () => {
     const result = templateSchema.safeParse({
       ...base,
-      metadata: { ...base.metadata, templateType: 'conversationMessageOptimize' }
+      metadata: { ...base.metadata, templateType: 'conversationMessageOptimize' },
     })
     expect(result.success).toBe(true)
   })
@@ -23,7 +23,7 @@ describe('template schema - context types', () => {
   it('accepts contextUserOptimize', () => {
     const result = templateSchema.safeParse({
       ...base,
-      metadata: { ...base.metadata, templateType: 'contextUserOptimize' }
+      metadata: { ...base.metadata, templateType: 'contextUserOptimize' },
     })
     expect(result.success).toBe(true)
   })
@@ -31,9 +31,8 @@ describe('template schema - context types', () => {
   it('accepts contextIterate', () => {
     const result = templateSchema.safeParse({
       ...base,
-      metadata: { ...base.metadata, templateType: 'contextIterate' }
+      metadata: { ...base.metadata, templateType: 'contextIterate' },
     })
     expect(result.success).toBe(true)
   })
 })
-

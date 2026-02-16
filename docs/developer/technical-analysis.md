@@ -14,6 +14,7 @@
 ## 1. IndexedDB 数据库问题分析
 
 ### 1.1 为什么数据会累积？
+
 # 📊 为什么 IndexedDB 会无限累积到 2.4 GB？
 
 ## 🔍 问题根源分析
@@ -24,23 +25,24 @@
 
 ```typescript
 // PromptOptimizerApp.vue:1954-1960
-window.addEventListener('pagehide', handlePagehide)          // ① 页面卸载时
-document.addEventListener('visibilitychange', handleVisibilityChange)  // ② 标签页切换时
+window.addEventListener('pagehide', handlePagehide) // ① 页面卸载时
+document.addEventListener('visibilitychange', handleVisibilityChange) // ② 标签页切换时
 ```
 
 ```typescript
 // PromptOptimizerApp.vue:1105-1128
 watch(
-    () => promptTester.testResults,
-    (newTestResults) => {
-        // 每次测试结果变化，都会自动同步到 session store
-        (session as any).updateTestResults(stableResults);
-    },
-    { deep: true }  // ⚠️ 深度监听，任何字段变化都会触发
-);
+  () => promptTester.testResults,
+  (newTestResults) => {
+    // 每次测试结果变化，都会自动同步到 session store
+    ;(session as any).updateTestResults(stableResults)
+  },
+  { deep: true } // ⚠️ 深度监听，任何字段变化都会触发
+)
 ```
 
 **这意味着：**
+
 - ✅ 每次测试完成 → `updateTestResults` 被调用 → `lastActiveAt = Date.now()`
 - ✅ 切换标签页 → 触发 `visibilitychange` → 调用 `saveAllSessions()`
 - ✅ 关闭页面 → 触发 `pagehide` → 调用 `saveAllSessions()`
@@ -50,28 +52,29 @@ watch(
 ```typescript
 // useBasicSystemSession.ts:211-227
 const saveSession = async () => {
-    // ❌ 直接序列化整个 state，没有任何过滤或截断
-    const snapshot = JSON.stringify(state.value)
-    await $services.preferenceService.set('session/v1/basic-system', snapshot)
+  // ❌ 直接序列化整个 state，没有任何过滤或截断
+  const snapshot = JSON.stringify(state.value)
+  await $services.preferenceService.set('session/v1/basic-system', snapshot)
 }
 ```
 
 **state.value 包含：**
+
 ```typescript
 interface BasicSystemSessionState {
   prompt: string
   optimizedPrompt: string
   reasoning: string
   testContent: string
-  testResults: TestResults | null  // ⚠️ 这个可以无限大！
+  testResults: TestResults | null // ⚠️ 这个可以无限大！
   // ...其他字段
 }
 
 interface TestResults {
-  originalResult: string       // ⚠️ 可能几十 KB
-  originalReasoning: string    // ⚠️ 可能几十 KB
-  optimizedResult: string      // ⚠️ 可能几十 KB
-  optimizedReasoning: string   // ⚠️ 可能几十 KB
+  originalResult: string // ⚠️ 可能几十 KB
+  originalReasoning: string // ⚠️ 可能几十 KB
+  optimizedResult: string // ⚠️ 可能几十 KB
+  optimizedReasoning: string // ⚠️ 可能几十 KB
 }
 ```
 
@@ -80,15 +83,16 @@ interface TestResults {
 ```typescript
 // useBasicSystemSession.ts:128-143
 const updateTestResults = (results: TestResults | null) => {
-    // ❌ 没有检查 results 的大小
-    // ❌ 没有截断超长文本
-    // ❌ 没有限制历史记录数量
-    state.value.testResults = results
-    state.value.lastActiveAt = Date.now()
+  // ❌ 没有检查 results 的大小
+  // ❌ 没有截断超长文本
+  // ❌ 没有限制历史记录数量
+  state.value.testResults = results
+  state.value.lastActiveAt = Date.now()
 }
 ```
 
 **对比：没有任何防护代码：**
+
 - ❌ 没有 `if (size > MAX_SIZE) { truncate() }`
 - ❌ 没有 `if (text.length > 50000) { text = text.slice(0, 50000) }`
 - ❌ 没有 `cleanupOldResults()`
@@ -96,6 +100,7 @@ const updateTestResults = (results: TestResults | null) => {
 ### 4. **没有清理机制**
 
 搜索整个代码库：
+
 ```bash
 # 搜索清理相关代码
 grep -r "清理\|cleanup\|clean\|delete.*test\|remove.*test" packages/ui/src/stores/session
@@ -103,6 +108,7 @@ grep -r "清理\|cleanup\|clean\|delete.*test\|remove.*test" packages/ui/src/sto
 ```
 
 **这意味着：**
+
 - ❌ 测试结果永远不会被删除
 - ❌ 旧数据永远不会过期
 - ❌ 数据库只会越来越大
@@ -112,6 +118,7 @@ grep -r "清理\|cleanup\|clean\|delete.*test\|remove.*test" packages/ui/src/sto
 假设用户的使用场景：
 
 ### Day 1: 正常使用
+
 ```
 测试 1: GPT-4 输出 5 KB → 保存到 IndexedDB (5 KB)
 测试 2: Claude 输出 8 KB → 保存到 IndexedDB (8 KB)
@@ -120,18 +127,21 @@ grep -r "清理\|cleanup\|clean\|delete.*test\|remove.*test" packages/ui/src/sto
 ```
 
 ### Day 2: 继续测试
+
 ```
 测试 4-10: 每次 5-10 KB
 总计: 19 KB + 70 KB = 89 KB ✅
 ```
 
 ### Day 30: 一个月后
+
 ```
 测试 1-300: 平均每次 7 KB
 总计: 300 * 7 KB = 2.1 MB ⚠️
 ```
 
 ### Day 90: 三个月后
+
 ```
 测试 1-900: 平均每次 7 KB
 总计: 900 * 7 KB = 6.3 MB ⚠️⚠️
@@ -140,18 +150,20 @@ grep -r "清理\|cleanup\|clean\|delete.*test\|remove.*test" packages/ui/src/sto
 ### 但实际情况更糟糕！
 
 **如果用户测试了一个超长输出：**
+
 ```typescript
 // 用户让 GPT-4 写了一篇长文章
 testResults = {
-  originalResult: "很长的文章...",      // 100 KB
-  originalReasoning: "详细的思考...",   // 50 KB
-  optimizedResult: "优化后的长文章...", // 120 KB
-  optimizedReasoning: "优化思路...",    // 60 KB
+  originalResult: '很长的文章...', // 100 KB
+  originalReasoning: '详细的思考...', // 50 KB
+  optimizedResult: '优化后的长文章...', // 120 KB
+  optimizedReasoning: '优化思路...', // 60 KB
 }
 // 单次测试 = 330 KB！
 ```
 
 **如果用户频繁切换标签页：**
+
 ```
 用户打开 10 个标签页 → 每个标签页都有自己的 session
 每个 session 都累积测试结果
@@ -159,10 +171,11 @@ testResults = {
 ```
 
 **如果用户使用了 Pro 模式的多轮对话：**
+
 ```typescript
 // Pro-多消息模式
 messages = [
-  { role: 'user', content: '...' },    // 每条可能 10-50 KB
+  { role: 'user', content: '...' }, // 每条可能 10-50 KB
   { role: 'assistant', content: '...' },
   // ... 30 条消息
 ]
@@ -182,52 +195,61 @@ messages = [
 ## 🔧 为什么代码没有防护？
 
 ### 1. **过度信任用户行为**
+
 开发者假设：
+
 - ❌ "用户不会测试超长文本"
 - ❌ "用户不会频繁切换标签"
 - ❌ "用户会定期清理数据"
 
 实际情况：
+
 - ✅ 用户经常测试 GPT-4 的长回答（5000+ 字）
 - ✅ 用户会开很多标签页
 - ✅ 用户根本不知道需要清理
 
 ### 2. **缺少监控和告警**
+
 没有代码检查：
+
 - ❌ IndexedDB 使用量
 - ❌ 单个 session 大小
 - ❌ 序列化时间（超过 1 秒说明数据太大）
 
 ### 3. **缺少自动清理策略**
+
 其他应用的常见做法：
+
 ```typescript
 // ✅ 示例：自动清理 7 天前的数据
 const cleanupOldData = () => {
-  const now = Date.now();
-  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now()
+  const WEEK = 7 * 24 * 60 * 60 * 1000
 
-  if (state.value.lastActiveAt && (now - state.value.lastActiveAt) > WEEK) {
-    state.value.testResults = null;
-    state.value.testContent = '';
+  if (state.value.lastActiveAt && now - state.value.lastActiveAt > WEEK) {
+    state.value.testResults = null
+    state.value.testContent = ''
   }
 }
 
 // ✅ 示例：限制单个字段大小
-const MAX_RESULT_LENGTH = 50000; // 50 KB
+const MAX_RESULT_LENGTH = 50000 // 50 KB
 if (results.originalResult.length > MAX_RESULT_LENGTH) {
-  results.originalResult = results.originalResult.slice(0, MAX_RESULT_LENGTH) + '...[已截断]';
+  results.originalResult = results.originalResult.slice(0, MAX_RESULT_LENGTH) + '...[已截断]'
 }
 
 // ✅ 示例：数据库大小检查
-if (estimatedSize > 100 * 1024 * 1024) { // 100 MB
-  console.warn('数据库过大，建议清理');
-  showCleanupDialog();
+if (estimatedSize > 100 * 1024 * 1024) {
+  // 100 MB
+  console.warn('数据库过大，建议清理')
+  showCleanupDialog()
 }
 ```
 
 ## 📊 与你的情况对比
 
 你的备份数据库：
+
 ```
 总大小: 2.4 GB
 文件数: 40+ 个 .ldb 文件
@@ -235,6 +257,7 @@ if (estimatedSize > 100 * 1024 * 1024) { // 100 MB
 ```
 
 这说明：
+
 - ✅ 你长期使用该应用（可能几个月）
 - ✅ 测试了大量文本（可能包含 GPT-4 的长回答）
 - ✅ 从未手动清理过数据
@@ -249,10 +272,12 @@ if (estimatedSize > 100 * 1024 * 1024) { // 100 MB
 3. **从不清理** - 代码中没有任何清理逻辑
 
 **解决方案：**
+
 - 🔧 立即：删除数据库重置（已提供工具）
 - 🛡️ 预防：实施数据大小限制和自动清理（下一步任务）
 
 ### 1.2 为什么是追加而非覆盖？
+
 # 🔍 为什么是新增而不是覆盖？深层原因分析
 
 ## 关键发现
@@ -275,8 +300,8 @@ async setItem(key: string, value: string): Promise<void> {
 ```typescript
 // 数据库定义: dexieStorageProvider.ts:23-25
 this.version(1).stores({
-  storage: 'key, value, timestamp'  // ✅ 'key' 是主键
-});
+  storage: 'key, value, timestamp', // ✅ 'key' 是主键
+})
 ```
 
 **逻辑上：** 每次调用 `setItem('session/v1/basic-system', newData)` **应该覆盖**同一个 key 的旧值。
@@ -318,6 +343,7 @@ this.version(1).stores({
 ### 为什么旧数据没有被删除？
 
 **关键：** LSM-Tree 是 **Append-Only（只追加）** 架构：
+
 - ❌ 不会就地修改已有的 .ldb 文件
 - ❌ 不会立即删除旧版本的数据
 - ✅ 每次写入都创建新的记录
@@ -347,6 +373,7 @@ this.version(1).stores({
    - 旧数据一直累积
 
 2. **数据写入速度 > Compaction 速度**
+
    ```
    每秒写入 10 次 (切换标签页很频繁)
    vs
@@ -356,6 +383,7 @@ this.version(1).stores({
    ```
 
 3. **数据过大导致 Compaction 失败**
+
    ```
    单个 .ldb 文件 = 27 MB
    合并 10 个文件 = 270 MB
@@ -366,6 +394,7 @@ this.version(1).stores({
    ```
 
 4. **LevelDB 的 Compaction 策略**
+
    ```
    Level 0: 新写入的文件（未排序）
    Level 1-6: 已压缩的文件（排序）
@@ -391,6 +420,7 @@ $ ls -lhS *.ldb | head -10
 ```
 
 **这说明：**
+
 - ✅ 每次保存都创建了新的 .ldb 文件
 - ✅ 旧的 .ldb 文件从未被清理
 - ✅ Compaction **完全没有执行**或**一直失败**
@@ -401,8 +431,8 @@ $ ls -lhS *.ldb | head -10
 
 ```typescript
 // ✅ 其他应用通常这样做
-await db.users.put({ id: 1, name: 'Alice' })  // 1 KB
-await db.users.put({ id: 2, name: 'Bob' })    // 1 KB
+await db.users.put({ id: 1, name: 'Alice' }) // 1 KB
+await db.users.put({ id: 2, name: 'Bob' }) // 1 KB
 // ...
 
 // 特点：
@@ -420,11 +450,11 @@ await db.storage.put({
   value: JSON.stringify({
     // ...
     testResults: {
-      originalResult: '...很长的文本...',      // 100 KB
-      optimizedResult: '...更长的文本...',     // 120 KB
-    }
-  })
-})  // 单次写入 500 KB - 2 MB！
+      originalResult: '...很长的文本...', // 100 KB
+      optimizedResult: '...更长的文本...', // 120 KB
+    },
+  }),
+}) // 单次写入 500 KB - 2 MB！
 
 // 特点：
 // - 超大数据量 (每次 500 KB - 2 MB)
@@ -434,13 +464,13 @@ await db.storage.put({
 
 ## 6️⃣ 根本原因总结
 
-| 层级 | 问题 | 影响 |
-|------|------|------|
+| 层级       | 问题                             | 影响                   |
+| ---------- | -------------------------------- | ---------------------- |
 | **应用层** | 保存完整的 testResults，没有截断 | 单次写入 500 KB - 2 MB |
-| **应用层** | 频繁自动保存（每次切换标签页） | 写入频率过高 |
-| **存储层** | LevelDB 的 LSM-Tree 是追加式写入 | 每次写入创建新记录 |
-| **存储层** | Compaction 未及时或失败 | 旧数据永不删除 |
-| **结果** | **2.4 GB 的累积数据** | **浏览器崩溃** |
+| **应用层** | 频繁自动保存（每次切换标签页）   | 写入频率过高           |
+| **存储层** | LevelDB 的 LSM-Tree 是追加式写入 | 每次写入创建新记录     |
+| **存储层** | Compaction 未及时或失败          | 旧数据永不删除         |
+| **结果**   | **2.4 GB 的累积数据**            | **浏览器崩溃**         |
 
 ## 7️⃣ 证据链
 
@@ -469,11 +499,14 @@ await db.storage.put({
 ## 8️⃣ 解决方案
 
 ### 立即修复（治标）
+
 1. 删除整个 IndexedDB 数据库
 2. 浏览器重新创建干净的数据库
 
 ### 根本修复（治本）
+
 1. **限制单次写入大小**
+
    ```typescript
    if (testResults.originalResult.length > 50000) {
      testResults.originalResult = testResults.originalResult.slice(0, 50000) + '...'
@@ -481,12 +514,14 @@ await db.storage.put({
    ```
 
 2. **减少写入频率**
+
    ```typescript
    // 使用 debounce，每 5 秒最多保存一次
    const debouncedSave = debounce(saveSession, 5000)
    ```
 
 3. **定期清理旧数据**
+
    ```typescript
    // 只保留最近一次的测试结果
    state.value.testResults = latestResults
@@ -501,12 +536,14 @@ await db.storage.put({
 ## 9️⃣ 为什么浏览器不自动修复？
 
 Chrome 的 LevelDB Compaction 依赖：
+
 - ✅ 浏览器**正常关闭**时触发
 - ✅ 数据库**空闲时**自动运行
 - ❌ 浏览器**崩溃**时无法完成
 - ❌ 数据库**持续高负载**时延迟
 
 你的情况：
+
 1. 应用频繁写入 → 数据库始终繁忙
 2. 浏览器可能因数据过大而崩溃 → Compaction 无法完成
 3. 形成恶性循环 → 数据只增不减
@@ -518,6 +555,7 @@ Chrome 的 LevelDB Compaction 依赖：
 **问题的本质：**
 
 不是"新增 vs 覆盖"的问题，而是：
+
 1. **逻辑上是覆盖**（put 同一个 key）
 2. **物理上是追加**（LSM-Tree 架构）
 3. **清理机制失效**（Compaction 未执行）
@@ -527,6 +565,7 @@ Chrome 的 LevelDB Compaction 依赖：
 就像你每天往同一个文件柜（key）里放新文件（value），虽然名字相同，但旧文件没人清理，最后文件柜爆满。
 
 ### 1.3 为什么分离存储有效？
+
 # 🔍 为什么分离存储能解决问题？
 
 ## 核心问题：保存频率不同
@@ -559,6 +598,7 @@ saveSession() {
 ```
 
 **问题：**
+
 ```
 时间线：
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -634,6 +674,7 @@ saveImage(data) {
 ```
 
 **解决：**
+
 ```
 时间线：
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -833,19 +874,20 @@ Images Store：
 
 ### 为什么分离能解决？
 
-| 维度 | 当前模式 | 分离模式 |
-|------|----------|----------|
-| Session 保存大小 | 26 MB | 5 KB |
-| Session 保存次数 | 42 次 | 42 次 |
-| Session 总写入量 | 1,092 MB | 210 KB |
-| 图像保存次数 | 42 次（冗余） | 2 次（实际） |
-| 图像总写入量 | 1,092 MB | 52 MB |
-| Compaction 内存需求 | 3-4 GB | 1 MB |
-| Compaction 结果 | 失败 ❌ | 成功 ✅ |
+| 维度                | 当前模式      | 分离模式     |
+| ------------------- | ------------- | ------------ |
+| Session 保存大小    | 26 MB         | 5 KB         |
+| Session 保存次数    | 42 次         | 42 次        |
+| Session 总写入量    | 1,092 MB      | 210 KB       |
+| 图像保存次数        | 42 次（冗余） | 2 次（实际） |
+| 图像总写入量        | 1,092 MB      | 52 MB        |
+| Compaction 内存需求 | 3-4 GB        | 1 MB         |
+| Compaction 结果     | 失败 ❌       | 成功 ✅      |
 
 ### 核心原理
 
 **不是"分离"本身解决问题，而是：**
+
 1. Session 不再包含大数据 → 文件小
 2. 文件小 → Compaction 能成功
 3. Compaction 成功 → 旧文件被删除
@@ -855,9 +897,11 @@ Images Store：
 **关键是：减少写入频率（42次 → 2次），而不是分离！**
 
 ### 1.4 IndexedDB 损坏分析
+
 # 🔴 IndexedDB 数据库损坏问题分析报告
 
 ## 问题现象
+
 - 打开 IndexedDB 数据库导致浏览器崩溃
 - 应用在有历史数据的情况下无法启动
 - 连简单的 `indexedDB.open()` 操作都会触发崩溃
@@ -867,14 +911,16 @@ Images Store：
 ### 1. **危险的序列化操作**
 
 **问题代码** (所有 session store):
+
 ```typescript
 const saveSession = async () => {
-  const snapshot = JSON.stringify(state.value)  // ❌ 没有错误处理
+  const snapshot = JSON.stringify(state.value) // ❌ 没有错误处理
   await $services.preferenceService.set('session/v1/basic-system', snapshot)
 }
 ```
 
 **风险点**:
+
 - 如果 `state.value` 包含循环引用 → `JSON.stringify` 抛出错误 → 错误被吞掉 → 写入不完整数据
 - 如果 `state.value` 包含超大对象（> 100MB）→ 内存溢出 → 浏览器崩溃
 - 没有大小限制检查
@@ -883,6 +929,7 @@ const saveSession = async () => {
 ### 2. **可能的并发写入冲突**
 
 虽然 `useSessionManager.ts` 已修复为顺序保存，但：
+
 - 页面卸载时的 `beforeunload` 事件可能触发多次 `saveAllSessions`
 - 如果用户快速刷新/关闭页面，可能同时触发多个保存操作
 - IndexedDB 事务可能冲突，导致数据库损坏
@@ -890,12 +937,14 @@ const saveSession = async () => {
 ### 3. **testResults 可能包含超大对象**
 
 **问题场景**:
+
 ```typescript
 // useBasicSystemSession.ts
-state.value.testResults = results  // 可能包含完整的输出文本
+state.value.testResults = results // 可能包含完整的输出文本
 ```
 
 如果用户测试了很长的输出（如 GPT-4 的长回答）：
+
 - 单个 testResult 可能 1-5 MB
 - 多次测试累积可能达到 50-100 MB
 - `JSON.stringify` 时内存暴涨
@@ -911,80 +960,84 @@ state.value.testResults = results  // 可能包含完整的输出文本
 ### 立即修复 (高优先级)
 
 1. **添加安全的序列化函数**
+
 ```typescript
 function safeStringify(obj: any, maxSize: number = 10 * 1024 * 1024): string | null {
   try {
     // 检测循环引用
-    const seen = new WeakSet();
+    const seen = new WeakSet()
     const jsonString = JSON.stringify(obj, (key, value) => {
       if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) {
-          return '[Circular]';
+          return '[Circular]'
         }
-        seen.add(value);
+        seen.add(value)
       }
-      return value;
-    });
+      return value
+    })
 
     // 检查大小
     if (jsonString.length > maxSize) {
-      console.error(`数据过大: ${jsonString.length} 字节 (限制: ${maxSize})`);
-      return null;
+      console.error(`数据过大: ${jsonString.length} 字节 (限制: ${maxSize})`)
+      return null
     }
 
-    return jsonString;
+    return jsonString
   } catch (error) {
-    console.error('序列化失败:', error);
-    return null;
+    console.error('序列化失败:', error)
+    return null
   }
 }
 ```
 
 2. **限制 testResults 大小**
+
 ```typescript
 const updateTestResults = (results: TestResults | null) => {
-  if (!results) return;
+  if (!results) return
 
   // 限制文本长度
-  const MAX_LENGTH = 50000; // 50KB
+  const MAX_LENGTH = 50000 // 50KB
   if (results.originalResult?.length > MAX_LENGTH) {
-    results.originalResult = results.originalResult.slice(0, MAX_LENGTH) + '...[截断]';
+    results.originalResult = results.originalResult.slice(0, MAX_LENGTH) + '...[截断]'
   }
   if (results.optimizedResult?.length > MAX_LENGTH) {
-    results.optimizedResult = results.optimizedResult.slice(0, MAX_LENGTH) + '...[截断]';
+    results.optimizedResult = results.optimizedResult.slice(0, MAX_LENGTH) + '...[截断]'
   }
 
-  state.value.testResults = results;
+  state.value.testResults = results
 }
 ```
 
 3. **添加保存前的验证**
+
 ```typescript
 const saveSession = async () => {
-  const snapshot = safeStringify(state.value);
+  const snapshot = safeStringify(state.value)
   if (!snapshot) {
-    console.error('[BasicSystemSession] 序列化失败，跳过保存');
-    return;
+    console.error('[BasicSystemSession] 序列化失败，跳过保存')
+    return
   }
 
   try {
-    await $services.preferenceService.set('session/v1/basic-system', snapshot);
+    await $services.preferenceService.set('session/v1/basic-system', snapshot)
   } catch (error) {
-    console.error('[BasicSystemSession] 保存会话失败:', error);
+    console.error('[BasicSystemSession] 保存会话失败:', error)
   }
 }
 ```
 
 4. **添加定期清理**
+
 ```typescript
 // 清理超过 7 天的测试结果
 const cleanupOldData = () => {
-  const now = Date.now();
-  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  const now = Date.now()
+  const WEEK = 7 * 24 * 60 * 60 * 1000
 
-  if (state.value.lastActiveAt && (now - state.value.lastActiveAt) > WEEK) {
-    state.value.testResults = null;
-    state.value.testContent = '';
+  if (state.value.lastActiveAt && now - state.value.lastActiveAt > WEEK) {
+    state.value.testResults = null
+    state.value.testContent = ''
   }
 }
 ```
@@ -1010,6 +1063,7 @@ const cleanupOldData = () => {
 ### 实际发现（2026-01-07）
 
 ✅ **已确认数据库状态：**
+
 - 数据库总大小：**2.4 GB**（正常应该 < 100 MB）
 - 单个 .ldb 文件：26-27 MB（共 40+ 个文件）
 - 文件结构完整，**不是损坏，而是数据过载**
@@ -1022,9 +1076,10 @@ const cleanupOldData = () => {
    - 每次关闭页面（pagehide）→ 自动保存
 
 2. **保存完整 state，没有过滤**
+
    ```typescript
    // useBasicSystemSession.ts:219
-   const snapshot = JSON.stringify(state.value)  // ❌ 包含所有 testResults
+   const snapshot = JSON.stringify(state.value) // ❌ 包含所有 testResults
    ```
 
 3. **没有任何大小限制**
@@ -1059,11 +1114,13 @@ const cleanupOldData = () => {
 - `packages/ui/src/stores/session/useSessionManager.ts:324` (saveAllSessions)
 
 ### 1.5 图像存储解决方案
+
 # 📋 图像存储优化方案
 
 ## 问题分析
 
 当前实现：直接在 session 中存储图像的 base64（2-3 MB），导致：
+
 - 单次保存 26 MB
 - 42 次保存 = 1.1 GB
 - Compaction 失败
@@ -1096,8 +1153,8 @@ class ImageStorageService {
 
     await db.put(this.IMAGE_STORE, {
       id,
-      data: imageResult,        // 完整的图像数据
-      createdAt: Date.now()
+      data: imageResult, // 完整的图像数据
+      createdAt: Date.now(),
     })
 
     return id
@@ -1130,15 +1187,15 @@ class ImageStorageService {
 
 // 2. 修改 ImageResult 接口
 interface ImageResultRef {
-  imageId: string          // 只保存 ID
-  thumbnail?: string      // 缩略图（可选，10KB以内）
+  imageId: string // 只保存 ID
+  thumbnail?: string // 缩略图（可选，10KB以内）
 }
 
 // 3. 修改 Session
 interface ImageText2ImageSessionState {
   // ...其他字段
-  originalImageResult: ImageResultRef | null    // 只保存引用
-  optimizedImageResult: ImageResultRef | null   // 只保存引用
+  originalImageResult: ImageResultRef | null // 只保存引用
+  optimizedImageResult: ImageResultRef | null // 只保存引用
 }
 
 // 4. 保存图像时的流程
@@ -1149,18 +1206,20 @@ async function handleImageGenerated(result: ImageResult) {
   // Session 只保存引用
   session.updateOriginalImageResult({
     imageId,
-    thumbnail: result.images[0].b64?.slice(0, 1000)  // 只保存前1KB作为预览
+    thumbnail: result.images[0].b64?.slice(0, 1000), // 只保存前1KB作为预览
   })
 }
 ```
 
 #### 优点
+
 ✅ Session 数据小（几 KB）
 ✅ 图像独立管理，可单独清理
 ✅ 不影响 Compaction
 ✅ 可以实施 LRU 缓存策略
 
 #### 缺点
+
 ⚠️ 需要额外的清理逻辑
 ⚠️ 增加复杂度
 
@@ -1180,8 +1239,8 @@ async function handleImageGenerated(result: ImageResult) {
 
 ```typescript
 class ImageSessionManager {
-  private readonly MAX_IMAGES = 3  // 最多保留3张图像
-  private readonly MAX_IMAGE_SIZE = 500 * 1024  // 单张最大 500KB
+  private readonly MAX_IMAGES = 3 // 最多保留3张图像
+  private readonly MAX_IMAGE_SIZE = 500 * 1024 // 单张最大 500KB
 
   async updateImageResult(
     session: ImageText2ImageSessionState,
@@ -1197,7 +1256,7 @@ class ImageSessionManager {
     imageList.push({
       ...limitedResult,
       id: `img_${Date.now()}`,
-      createdAt: Date.now()
+      createdAt: Date.now(),
     })
 
     // 4. 只保留最近 N 张
@@ -1214,15 +1273,13 @@ class ImageSessionManager {
   private limitImageSize(result: ImageResult): ImageResult {
     return {
       ...result,
-      images: result.images.map(img => ({
+      images: result.images.map((img) => ({
         ...img,
         // 如果 base64 太大，截断或丢弃
-        b64: img.b64 && img.b64.length > this.MAX_IMAGE_SIZE
-          ? undefined
-          : img.b64,
+        b64: img.b64 && img.b64.length > this.MAX_IMAGE_SIZE ? undefined : img.b64,
         // 优先使用 URL
-        url: img.url || img.b64  // 如果有 b64，生成 Blob URL
-      }))
+        url: img.url || img.b64, // 如果有 b64，生成 Blob URL
+      })),
     }
   }
 }
@@ -1231,16 +1288,18 @@ class ImageSessionManager {
 interface ImageText2ImageSessionState {
   // 不再是 single result，而是 list
   imageList: ImageResultItem[]
-  currentImageId?: string  // 当前选中的图像
+  currentImageId?: string // 当前选中的图像
 }
 ```
 
 #### 优点
+
 ✅ 实现相对简单
 ✅ 总大小可控（3 × 500KB = 1.5 MB）
 ✅ 不需要额外的 object store
 
 #### 缺点
+
 ⚠️ 丢失历史图像
 ⚠️ 用户体验可能受影响
 
@@ -1297,11 +1356,13 @@ function displayImage(imageRef: ImageResultItem) {
 ```
 
 #### 优点
+
 ✅ 实现最简单
 ✅ Session 数据最小
 ✅ 完全避免大文件问题
 
 #### 缺点
+
 ❌ URL 会过期（OpenAI 的 URL 1小时后失效）
 ❌ 用户关闭页面后，图像丢失
 ❌ 用户体验差
@@ -1327,14 +1388,16 @@ async function saveImageToFile(result: ImageResult) {
   // 请求用户选择保存位置
   const fileHandle = await window.showSaveFilePicker({
     suggestedName: `image-${Date.now()}.png`,
-    types: [{
-      description: 'PNG Image',
-      accept: {'image/png': ['.png']}
-    }]
+    types: [
+      {
+        description: 'PNG Image',
+        accept: { 'image/png': ['.png'] },
+      },
+    ],
   })
 
   // 保存图像
-  const blob = await fetch(result.images[0].url).then(r => r.blob())
+  const blob = await fetch(result.images[0].url).then((r) => r.blob())
   const writable = await fileHandle.createWritable()
   await writable.write(blob)
   await writable.close()
@@ -1342,17 +1405,19 @@ async function saveImageToFile(result: ImageResult) {
   // Session 只保存文件路径
   session.updateOriginalImageResult({
     filePath: fileHandle.name,
-    fileType: 'local'
+    fileType: 'local',
   })
 }
 ```
 
 #### 优点
+
 ✅ 不占用浏览器存储
 ✅ 图像永久保存
 ✅ 大小不受限制
 
 #### 缺点
+
 ❌ 只在支持 File System Access API 的浏览器可用
 ❌ 需要用户手动选择
 ❌ Web 版不支持
@@ -1364,6 +1429,7 @@ async function saveImageToFile(result: ImageResult) {
 ### 短期（立即修复）
 
 **方案2：限制图像数量**
+
 - 只保留最近 3 张图像
 - 限制单张 500 KB
 - 总大小 < 1.5 MB
@@ -1372,6 +1438,7 @@ async function saveImageToFile(result: ImageResult) {
 ### 中期（优化体验）
 
 **方案1：图像单独存储**
+
 - 创建独立的 image store
 - Session 只保存引用
 - 实施 LRU 缓存
@@ -1380,6 +1447,7 @@ async function saveImageToFile(result: ImageResult) {
 ### 长期（最佳体验）
 
 **方案1 + 方案4 组合**
+
 - Web 版：图像单独存储（IndexedDB）
 - 桌面版：File System Access API
 - 提供用户选择：自动管理 / 手动保存
@@ -1407,14 +1475,17 @@ async function saveImageToFile(result: ImageResult) {
 ## 🔧 实施优先级
 
 ### P0（立即）
+
 - ✅ 方案2：限制图像数量到 3 张
 - ✅ 限制单张图像 500 KB
 
 ### P1（本周）
+
 - ✅ 方案1：创建 ImageStorageService
 - ✅ 迁移到引用模式
 
 ### P2（下周）
+
 - ✅ 添加清理逻辑
 - ✅ 添加用户下载按钮
 - ✅ 桌面版集成 File System Access API
@@ -1423,16 +1494,17 @@ async function saveImageToFile(result: ImageResult) {
 
 ## 总结
 
-| 方案 | 复杂度 | 效果 | 推荐度 |
-|------|--------|------|--------|
-| 方案1：单独存储 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ 强烈推荐 |
-| 方案2：限制数量 | ⭐⭐ | ⭐⭐⭐⭐ | ✅ 短期推荐 |
-| 方案3：只保存URL | ⭐ | ⭐⭐ | ❌ 不推荐 |
-| 方案4：文件系统 | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ 桌面推荐 |
+| 方案             | 复杂度   | 效果       | 推荐度      |
+| ---------------- | -------- | ---------- | ----------- |
+| 方案1：单独存储  | ⭐⭐⭐   | ⭐⭐⭐⭐⭐ | ✅ 强烈推荐 |
+| 方案2：限制数量  | ⭐⭐     | ⭐⭐⭐⭐   | ✅ 短期推荐 |
+| 方案3：只保存URL | ⭐       | ⭐⭐       | ❌ 不推荐   |
+| 方案4：文件系统  | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ✅ 桌面推荐 |
 
 ---
 
 ## 2. 模式术语迁移总结
+
 # 模式术语统一迁移总结
 
 ## 📋 迁移概述
@@ -1444,6 +1516,7 @@ async function saveImageToFile(result: ImageResult) {
 ## 🎯 统一设计架构
 
 ### 核心概念
+
 - **functionMode**: 一级功能模式 (`basic` | `pro` | `image`)
 - **subMode**: 二级子模式，根据 functionMode 而定
   - 基础模式子模式 (`system` | `user`)
@@ -1451,6 +1524,7 @@ async function saveImageToFile(result: ImageResult) {
   - 图像模式子模式 (`text2image` | `image2image`)
 
 ### 统一管理函数
+
 所有模式状态应使用 `packages/ui/src/composables/mode/` 下的函数：
 
 ```typescript
@@ -1458,12 +1532,12 @@ async function saveImageToFile(result: ImageResult) {
 useFunctionMode(services) // { functionMode, setFunctionMode, ... }
 
 // 子模式管理（独立持久化）
-useBasicSubMode(services)  // 基础模式子模式
-useProSubMode(services)    // 上下文模式子模式
-useImageSubMode(services)  // 图像模式子模式
+useBasicSubMode(services) // 基础模式子模式
+useProSubMode(services) // 上下文模式子模式
+useImageSubMode(services) // 图像模式子模式
 
 // 只读访问（无需 services）
-useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
+useCurrentMode() // { functionMode, proSubMode, isBasicMode, ... }
 ```
 
 ## ✅ 当前实现现状（已落地）
@@ -1482,14 +1556,17 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ## ✅ 已完成的迁移
 
 ### 1. Composables 参数统一
+
 - **usePromptOptimizer**: `selectedOptimizationMode` → `optimizationMode`
 - **usePromptTester**: `selectedOptimizationMode` → `optimizationMode`
 - **useContextManagement**: 添加 @deprecated 标记
 
 ### 2. 内部变量名统一
+
 - `usePromptTester.ts` 中所有 `selectedOptimizationMode.value` → `optimizationMode.value`
 
 ### 3. 文档和注释更新
+
 - 为迁移的参数添加 @deprecated 标记
 - 更新 JSDoc 注释，说明统一使用 subMode 概念
 - 在 `PromptOptimizerApp.vue` 中保留必要的兼容性注释（以反映真实装配位置）
@@ -1497,6 +1574,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ## 🔍 仍需迁移的区域
 
 ### 高优先级（清理与一致性）
+
 1. **逐步移除命名上的“误导”**
    - `selectedOptimizationMode` 虽已是 computed，但命名仍容易让人误以为它是“用户选择的优化模式状态源”。
    - 建议方向：
@@ -1507,6 +1585,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
    - 将零散的 `optimizationMode/contextMode/selectedOptimizationMode` 相关命名逐步统一为“functionMode/subMode 派生值”的表达（不强求一次性替换，但要避免继续引入新旧混用）
 
 ### 中优先级
+
 3. **类型定义中的过时术语**
    - 检查 `packages/ui/src/types/components.ts`
    - 检查 `packages/core/src/types/` 相关文件
@@ -1515,6 +1594,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
    - 更新测试用例中的变量名和断言
 
 ### 低优先级
+
 5. **国际化文件**
    - 检查 `packages/ui/src/i18n/locales/` 中的键名
    - 确保文档和帮助文本使用统一术语
@@ -1522,6 +1602,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ## 🚀 迁移建议
 
 ### 重点方向：以“不破坏行为”为前提做术语清理
+
 1. 将“状态源”限定为 `functionMode + 各自 subMode`（已完成）
 2. 将“对外接口/props”保持可用，同时逐步减少旧命名在内部传播（进行中）
 3. 等调用方与文档一致后，再移除 `@deprecated` 标记（后续清理）
@@ -1563,62 +1644,78 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ---
 
 ## 3. 提示词文档
+
 # 角色设定
+
 你是一个基于E4-D方法论的智能提示词优化引擎，实现分解→诊断→开发→交付的全流程自动化优化。
 
 # 核心参数配置
+
 **基础参数**
+
 - 原始提示词：{{originalPrompt}}
 - 目标平台：{{targetPlatform}}（GPT-4/Claude-3/Gemini-Pro/通用）
 - 优化模式：{{optimizationMode}}（DETAIL/BASIC/AUTO）
 
 **E4-D专项参数**
+
 - 分解深度：{{decomposeDepth}}（浅层/标准/深度）
 - 诊断维度：{{diagnoseDimensions}}（清晰度/完整性/结构性）
 - 开发策略：{{developStrategy}}（思维链/少样本/多视角/混合）
 - 交付标准：{{deliverStandard}}（基础/专业/企业级）
 
 **扩展参数**
+
 - 任务类型：{{taskType}}（创意生成/技术分析/教育解释/复杂推理）
 - 输出格式：{{outputFormat}}（Markdown/JSON/纯文本/结构化报告）
 - 语言风格：{{languageStyle}}（专业/通俗/学术/商务）
 - 迭代上限：{{maxIterations}}（1-5轮，默认3轮）
 
 # E4-D自动化优化流程
+
 **阶段一：分解（Decompose）**
+
 - 语义解构：解析{{originalPrompt}}的核心意图与隐含需求
 - 要素提取：识别关键实体、操作指令、约束条件
 - 边界划定：根据{{decomposeDepth}}确定分析粒度
 
 **阶段二：诊断（Diagnose）**
+
 - 多维评估：基于{{diagnoseDimensions}}进行缺陷量化分析
 - 问题定位：识别模糊点、歧义项、结构缺陷
 - 优先级排序：按影响程度分类处理优化重点
 
 **阶段三：开发（Develop）**
+
 - 策略匹配：根据{{developStrategy}}选择最优架构模式
 - 模板注入：动态绑定标准化优化模板
 - 平台适配：针对{{targetPlatform}}注入兼容层
 
 **阶段四：交付（Deliver）**
+
 - 质量验证：按照{{deliverStandard}}进行输出检验
 - 格式标准化：确保符合{{outputFormat}}要求
 - 迭代判断：未达阈值时自动触发下一轮E4-D循环
 
 # 质量保障机制
+
 **自动评估指标**
+
 - 意图达成率（≥95%）
 - 结构完整性（≥90%）
 - 平台兼容性（≥95%）
 - 风格一致性（≥90%）
 
 **迭代优化逻辑**
+
 - 每轮E4-D流程后重新评估质量得分
 - 根据薄弱环节调整下一轮优化策略
 - 达到{{qualityThreshold}}或{{maxIterations}}后终止
 
 # 输出交付物
+
 **最终产物包含**
+
 - 优化后的提示词（标记E4-D迭代版本）
 - E4-D流程报告（各阶段执行详情）
 - 质量认证证书（四维度达标状态）
@@ -1627,11 +1724,12 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ---
 
 ## 4. 代码审查提示词评估
+
 # 代码审查报告：新增提示词评估类型（prompt-only / prompt-iterate）
 
 日期：2025-12-20  
 分支：`develop`  
-基线提交：`390545b`（工作区存在未提交变更）  
+基线提交：`390545b`（工作区存在未提交变更）
 
 ## 1. 范围与目标
 
@@ -1714,18 +1812,18 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 
 ### 3.1 Core 评估执行链路
 
-1) UI 组装 `EvaluationRequest`  
-2) `EvaluationService.validateRequest()` 校验必要字段  
-3) 根据 `mode` + `type` 组装模板 ID：`evaluation-{functionMode}-{subMode}-{type}`（`packages/core/src/services/evaluation/service.ts:263`）  
-4) `TemplateManager.getTemplate(id)`：按语言选择内置模板集合，并用相同的 `id` 查找（`packages/core/src/services/template/manager.ts:208`）  
-5) `buildTemplateContext()` 注入字段（`optimizedPrompt` / `iterateRequirement` 等）  
-6) 调用 LLM（stream 或非 stream）  
-7) `parseEvaluationResult()` → `normalizeEvaluationResponse()` 规范化输出（`packages/core/src/services/evaluation/service.ts:331`）。
+1. UI 组装 `EvaluationRequest`
+2. `EvaluationService.validateRequest()` 校验必要字段
+3. 根据 `mode` + `type` 组装模板 ID：`evaluation-{functionMode}-{subMode}-{type}`（`packages/core/src/services/evaluation/service.ts:263`）
+4. `TemplateManager.getTemplate(id)`：按语言选择内置模板集合，并用相同的 `id` 查找（`packages/core/src/services/template/manager.ts:208`）
+5. `buildTemplateContext()` 注入字段（`optimizedPrompt` / `iterateRequirement` 等）
+6. 调用 LLM（stream 或非 stream）
+7. `parseEvaluationResult()` → `normalizeEvaluationResponse()` 规范化输出（`packages/core/src/services/evaluation/service.ts:331`）。
 
 ### 3.2 UI 展示链路（新类型）
 
-- `PromptOptimizerApp`：统一持有 `evaluation` 实例，并通过 `provideEvaluation()` 注入  
-- `PromptPanel`：直接通过 `inject` 调用评估方法并展示结果徽章  
+- `PromptOptimizerApp`：统一持有 `evaluation` 实例，并通过 `provideEvaluation()` 注入
+- `PromptPanel`：直接通过 `inject` 调用评估方法并展示结果徽章
 - `EvaluationPanel`：仍由顶层统一展示（依赖 `evaluation.state.activeDetailType`、`evaluation.activeResult` 等）。
 
 ## 3.3 设计说明：为什么“不同模式格式不同”不必导致“多套评估实例”
@@ -1745,17 +1843,21 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 **状态**：✅ 已修复（见第 8 节“P0-1”）
 
 **现象**
+
 - 在 `EvaluationPanel` 中触发 “重新评估（re-evaluate）” 时，若当前详情类型为 `prompt-only` 或 `prompt-iterate`，不会重新发起请求。
 
 **原因定位**
+
 - `handleReEvaluate()` 读取 `evaluation.state.activeDetailType` 并调用 `handleEvaluate(currentType)`（`packages/ui/src/composables/prompt/useEvaluationHandler.ts:220`）。
 - 但 `handleEvaluate(type)` 只处理 `original/optimized/compare` 三种类型（`packages/ui/src/composables/prompt/useEvaluationHandler.ts:183`），对新类型没有分支，等同于“无操作返回”。
 
 **影响**
+
 - 用户从详情面板复评新类型无响应，体验不一致；
 - 若未来 `EvaluationScoreBadge` 也依赖 `EvaluationPanel` 复评链路，问题将进一步扩大。
 
 **建议**
+
 - 在 `useEvaluationHandler.handleEvaluate()` 增加对 `prompt-only/prompt-iterate` 的分支，并考虑从状态或上下文中取得 `iterateRequirement`（或由 UI 提供）。
 
 ---
@@ -1765,14 +1867,17 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 **状态**：✅ 已修复（见第 8 节“P0-2”）
 
 **现象**
+
 - `ContextSystemWorkspace` 与 `ContextUserWorkspace` 监听 `@analyze="handleAnalyze"`，并在 `handleAnalyze` 中调用 `evaluation.evaluatePromptOnly/Iterate` 且传入 `proContext`（`packages/ui/src/components/context-mode/ContextSystemWorkspace.vue:518`、`packages/ui/src/components/context-mode/ContextUserWorkspace.vue:769`）。
 - 但 `PromptPanel` 并未定义/emit `analyze` 事件（`packages/ui/src/components/PromptPanel.vue:413`），点击「分析」走的是 `handleEvaluate()` 直接调用 `evaluation.evaluatePromptOnly/Iterate`，且未传 `proContext`（`packages/ui/src/components/PromptPanel.vue:489`）。
 
 **影响**
+
 - `@analyze` 监听逻辑大概率不会触发，成为“死代码”；
 - Pro 模式模板对 `proContext` 依赖较强（尤其 `pro-system` 场景，用于多消息上下文理解），未传会降低评估质量。
 
 **建议（历史记录）**
+
 - 原建议为“事件驱动”或“上下文直连”二选一避免双轨；当前实现已选择“上下文直连”，并通过 `provide/inject` 共享 `proContext`（见第 8 节“P0-2”）。
 
 ---
@@ -1782,17 +1887,21 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 **状态**：✅ 已修复（见第 8 节“P0-3”）
 
 **现象**
+
 - `PromptPanel` 徽章展示基于 `evaluation.state['prompt-only'|'prompt-iterate']` 是否已有结果（`packages/ui/src/components/PromptPanel.vue:399`）。
 - 当切换版本/切换消息/替换 `optimizedPrompt` 时，如果没有明确清理对应评估状态，徽章可能展示上一条内容的分数与详情。
 
 **当前已有防护**
+
 - 顶层仅对 `optimizer.optimizedPrompt` 做了 watch 并清理 `prompt-only/prompt-iterate`（`packages/ui/src/components/app-layout/PromptOptimizerApp.vue:1340`）。
 
 **风险点**
+
 - Context 模式下 `PromptPanel` 的 `optimizedPrompt` 来自 `displayAdapter.displayedOptimizedPrompt`（`packages/ui/src/components/context-mode/ContextSystemWorkspace.vue:102`），不一定会触发上述 watch；
 - 即使触发，`PromptPanel` 内部也没有基于 `currentVersionId` 或 `selectedMessage` 的精确清理逻辑。
 
 **建议**
+
 - 在 `PromptPanel` 内部针对 `optimizedPrompt`、`currentVersionId`、`versions`（或等价“内容标识”）做 watch，主动清空对应评估状态，确保“内容-评估结果”一致性。
 
 ---
@@ -1800,14 +1909,17 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### P1：模板输出字段与服务规范化逻辑不一致（isOptimizedBetter 被丢弃）
 
 **现象**
+
 - `prompt-only/prompt-iterate` 模板输出 JSON 中包含 `"isOptimizedBetter"`（例如 `packages/core/src/services/template/default-templates/evaluation/basic/system/evaluation-prompt-only.ts`）。
 - 但 `normalizeEvaluationResponse()` 仅在 `type === 'compare'` 时才会把 `isOptimizedBetter` 写入响应（`packages/core/src/services/evaluation/service.ts:468`）。
 
 **影响**
+
 - 模板 token 成本增加但信息被丢弃；
 - 易产生误导：模板要求输出 true/false，但 UI/服务端并不消费该字段。
 
 **建议**
+
 - 明确语义：若希望 prompt-only/prompt-iterate 也保留该字段，扩展响应结构与 UI 展示；若不需要，应移除模板中的字段要求（更省 token、更一致）。
 
 ---
@@ -1815,14 +1927,17 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### P1：错误文案从中文切换为英文，可能造成中文界面体验割裂
 
 **现象**
+
 - Core 抛出的校验/解析错误信息改为英文（`packages/core/src/services/evaluation/service.ts:160` 等）。
 - UI toast 使用 `getErrorMessage(error)` 透传（`packages/ui/src/composables/prompt/useEvaluation.ts:410`），在中文界面下可能显示英文错误。
 
 **影响**
+
 - 用户体验与 i18n 文案体系不一致；
 - 单测已锁定英文字符串，后续想恢复中文会引入测试修改成本（`packages/core/tests/unit/evaluation/service.test.ts:100`）。
 
 **建议**
+
 - 若希望 i18n 统一：考虑在 UI 层将错误映射到本地化 key（按 error class / error code），而不是依赖错误 message 文案。
 
 ---
@@ -1830,36 +1945,42 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### P2：PromptPanel emit 声明存在冗余/误导
 
 **现象**
+
 - `PromptPanel` 的 `defineEmits` 新增了 `"apply-improvement"`，但注释中提到“评估相关事件（evaluate 和 show-evaluation-detail 已通过 inject 处理）”（`packages/ui/src/components/PromptPanel.vue:431`）。
 - 同时 workspace 中仍出现 `@analyze` 监听（见 P0），但 `PromptPanel` 并未 emit。
 
 **影响**
+
 - 组件接口不清晰，调用方难以判断哪些事件仍有效；
 - 容易引入更多“监听了但永远不触发”的事件绑定。
 
 **建议**
+
 - 统一组件契约：对外只保留必要事件（例如 `apply-improvement`），其余通过 context 内部处理即可。
 
 ## 5. 测试与回归关注点
 
 ### 已覆盖
+
 - Core `EvaluationService` 对新类型的校验、模板 ID 生成、`evaluateStream` 回调路径已有单测（`packages/core/tests/unit/evaluation/service.test.ts:73`）。
 
 ### 建议补充（可选）
+
 - UI 层至少做一次“切换版本/切换消息后徽章不残留”的用例验证（手测即可，或后续补 e2e/组件测试）。
 - Pro 模式下确认 `proContext` 在 prompt-only/prompt-iterate 评估中确实被带入，且模板渲染符合预期。
 
 ## 6. 建议行动清单（可直接转为 TODO）
 
-1) `useEvaluationHandler.handleEvaluate()` 支持 `prompt-only/prompt-iterate`，确保 `EvaluationPanel` 的 re-evaluate 可用。  
-2) 统一“分析”入口架构：删除死代码或补齐 `PromptPanel` 的 `analyze` emit，并确保 Pro 场景传递 `proContext`。  
-3) 在 `PromptPanel` 内增加内容变更触发的 `clearResult('prompt-only'|'prompt-iterate')`，避免旧分数残留。  
-4) 明确并统一 `isOptimizedBetter` 的语义（模板/服务/前端三方一致）。  
-5) 如需 i18n 统一，考虑“错误码/错误类型 → 文案 key”的映射策略，减少对英文 message 的依赖。  
+1. `useEvaluationHandler.handleEvaluate()` 支持 `prompt-only/prompt-iterate`，确保 `EvaluationPanel` 的 re-evaluate 可用。
+2. 统一“分析”入口架构：删除死代码或补齐 `PromptPanel` 的 `analyze` emit，并确保 Pro 场景传递 `proContext`。
+3. 在 `PromptPanel` 内增加内容变更触发的 `clearResult('prompt-only'|'prompt-iterate')`，避免旧分数残留。
+4. 明确并统一 `isOptimizedBetter` 的语义（模板/服务/前端三方一致）。
+5. 如需 i18n 统一，考虑“错误码/错误类型 → 文案 key”的映射策略，减少对英文 message 的依赖。
 
 ## 7. 附录：文件变更清单
 
 ### 已修改（M）
+
 - `packages/core/src/services/evaluation/service.ts`
 - `packages/core/src/services/evaluation/types.ts`
 - `packages/core/src/services/template/default-templates/evaluation/basic/system/index.ts`
@@ -1882,6 +2003,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 - `packages/ui/src/i18n/locales/zh-TW.ts`
 
 ### 新增（??）
+
 - `packages/core/src/services/template/default-templates/evaluation/**/evaluation-prompt-only*.ts`
 - `packages/core/src/services/template/default-templates/evaluation/**/evaluation-prompt-iterate*.ts`
 - `packages/core/tests/unit/evaluation/service.test.ts`
@@ -1895,11 +2017,13 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P0-1：handleReEvaluate 支持新类型（已修复）
 
 **修复内容**
+
 - 在 `useEvaluationHandler.ts` 的 `handleEvaluate()` 中添加了对 `prompt-only` 和 `prompt-iterate` 类型的处理分支
 - 在 `UseEvaluationHandlerOptions` 中新增 `currentIterateRequirement` 可选参数，用于 `prompt-iterate` 类型的重新评估
 - 在 `PromptOptimizerApp.vue` 中计算 `currentIterateRequirement`（从当前版本的 `iterationNote` 获取）并传递给 evaluationHandler
 
 **涉及文件**
+
 - `packages/ui/src/composables/prompt/useEvaluationHandler.ts`
 - `packages/ui/src/components/app-layout/PromptOptimizerApp.vue`
 
@@ -1911,6 +2035,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 选择了"上下文直连"路径：通过 `provide/inject` 共享 `proContext`，而非事件驱动。
 
 **修复内容**
+
 1. 新增 `useProContext.ts`，提供 `provideProContext()` 和 `useProContextOptional()` 方法
 2. 在 `ContextSystemWorkspace.vue` 和 `ContextUserWorkspace.vue` 中调用 `provideProContext(proContext)`
 3. 在 `PromptPanel.vue` 中调用 `useProContextOptional()` 获取 proContext，并在评估调用时传入
@@ -1918,6 +2043,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 5. 将 `@analyze` 替换为 `@apply-improvement`（用于应用改进建议）
 
 **涉及文件**
+
 - `packages/ui/src/composables/prompt/useProContext.ts`（新增）
 - `packages/ui/src/composables/prompt/index.ts`
 - `packages/ui/src/components/PromptPanel.vue`
@@ -1929,11 +2055,13 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P0-3：内容变更清除评估结果（已修复）
 
 **修复内容**
+
 - 在 `PromptPanel.vue` 中新增 watch，监听 `optimizedPrompt` 和 `currentVersionId` 的变化
 - 当内容或版本变化时，自动清除 `prompt-only` 和 `prompt-iterate` 评估结果
 - 避免切换版本/消息后旧分数残留的问题
 
 **涉及文件**
+
 - `packages/ui/src/components/PromptPanel.vue`
 
 ---
@@ -1942,11 +2070,13 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 
 **决策**
 保持当前行为，作为已知的设计取舍：
+
 - `prompt-only` 和 `prompt-iterate` 模板中仍输出 `isOptimizedBetter` 字段
 - 服务端 `normalizeEvaluationResponse()` 仅在 `compare` 类型时保留该字段
 - 前端不消费新类型的 `isOptimizedBetter`
 
 **理由**
+
 - 新类型的语义是"评估单个提示词质量"，`isOptimizedBetter` 字段在此场景下意义有限
 - 模板中保留该字段可作为 LLM 输出的校验锚点，不影响功能正确性
 - 若后续需要展示，可在服务端和前端同步扩展
@@ -1957,11 +2087,13 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 
 **决策**
 保持 Core 层错误使用英文，在 UI 层进行本地化映射（未来改进方向）：
+
 - 当前 Core 层的校验/解析错误使用英文，便于日志分析和问题定位
 - UI 层通过 `getErrorMessage(error)` 透传，中文界面下可能显示英文错误
 - 这是一个可接受的临时状态，不影响核心功能
 
 **未来改进方向**
+
 - 在 UI 层实现"错误码 → i18n key"的映射机制
 - 根据错误类型或错误码选择对应的本地化文案
 - 保持 Core 层错误信息稳定，避免因文案变更导致测试频繁修改
@@ -1981,6 +2113,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P0：Context 模式存在"双套 evaluation 实例 + 双面板"（已修复）
 
 **原始问题**
+
 - App 顶层已提供全局评估上下文，但 ContextSystem/ContextUser 两个 Workspace 各自创建独立 `evaluationHandler` 并渲染本地 `EvaluationPanel`，导致状态不同步。
 
 **修复方案**（已实施）
@@ -1997,6 +2130,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
    - `ContextUserWorkspace.vue:552` - `externalEvaluation: globalEvaluation`
 
 **验证方式**
+
 - 在 context-mode 目录搜索 `<EvaluationPanel` 应无匹配
 - 搜索 `externalEvaluation` 应能找到两个 Workspace 的使用
 
@@ -2005,9 +2139,11 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P1：Context Workspaces 的 `prompt-iterate` re-evaluate 缺少 `iterateRequirement`（已修复）
 
 **原始问题**
+
 - Workspace 内部的 `useEvaluationHandler()` 未传 `currentIterateRequirement`，可能导致 `prompt-iterate` 的 re-evaluate 校验失败。
 
 **修复方案**（已实施）
+
 - 在两个 Workspace 中新增 `currentIterateRequirement` 计算属性：
   - `ContextSystemWorkspace.vue:425-432` - 从 `displayAdapter.displayedVersions / displayedCurrentVersionId` 获取（确保与 UI“当前显示版本”一致）
   - `ContextUserWorkspace.vue:531-538` - 从 `contextUserOptimization.currentVersions` 获取
@@ -2020,14 +2156,17 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P1：应用改进建议仅负责“打开迭代弹窗 + 预填文本”，不依赖预选模板（已修复）
 
 **背景/场景**
+
 - 用户在评估详情点击“应用改进建议”，预期行为是：直接打开迭代弹窗，并把建议文本放进输入框；模板在弹窗内再选择（不同模式可选模板不同）。
 
 **修复方案**（已实施）
+
 - `PromptPanel.vue` 的迭代弹窗内已包含 `TemplateSelect`（可在弹窗内选择模板）。
 - `PromptPanel.vue` 的 `handleIterate()` 不再要求 `selectedIterateTemplate` 已预选；直接打开弹窗。
 - `PromptPanel.vue` 暴露 `openIterateDialog(input?)`：用于“应用改进建议”路径预填充输入并打开弹窗。
 
 **验证方式**
+
 - 不预选迭代模板，点击“继续优化”按钮：应能打开迭代弹窗并在弹窗内选择模板。
 - 从评估详情点击“应用改进建议”：应打开迭代弹窗并预填建议文本；未选择模板时点击确认应提示“请先选择迭代提示词”（允许）。
 
@@ -2036,9 +2175,11 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P1：模式/子模式切换时关闭并清理评估状态（已修复）
 
 **背景/场景**
+
 - “评估”永远针对当前显示内容；当切换功能模式（basic/pro/image）或切换子模式（system/user 等）时，旧的评估详情和分数不应残留。
 
 **修复方案**（已实施）
+
 - `PromptOptimizerApp.vue` 在以下入口统一执行：
   - `evaluation.closePanel()`（关闭详情面板）
   - `evaluation.clearAllResults()`（清空所有评估结果）
@@ -2048,6 +2189,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
   - 子模式切换处理器：`handleBasicSubModeChange(...)` / `handleProSubModeChange(...)` / `handleImageSubModeChange(...)`
 
 **验证方式**
+
 - 任意模式下完成评估后切换模式/子模式：评估面板应关闭，评分徽章/详情应清空。
 
 ---
@@ -2064,6 +2206,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 > 该问题是"全局面板事件处理器绑定到基础模式数据源"导致的模式耦合。尽管 Context Workspace 已通过 `externalEvaluation` 复用了全局 evaluation，并移除了本地面板，但 App 顶层面板的交互仍需要进一步解耦。
 
 **代码事实**
+
 - App 顶层唯一 `EvaluationPanel` 的 `@re-evaluate` 绑定到 `handleReEvaluate`（`packages/ui/src/components/app-layout/PromptOptimizerApp.vue:583`），其实现来自 App 内部的 `evaluationHandler.handleReEvaluate()`，而该 handler 使用的数据源是 `optimizer.prompt/optimizer.optimizedPrompt/testResults`（即基础模式优化器与测试结果）。
 - 在 Context 模式中，评估请求通常由 `PromptPanel` 直接使用 inject 到的全局 `evaluation` 发起，内容来源是 Context Workspace 传入的 `originalPrompt/optimizedPrompt` props（`packages/ui/src/components/PromptPanel.vue:489`）。
 - 因此，当用户在 Context 模式下打开评估详情并点击"重新评估"，可能会用基础模式的数据重新评估，覆盖 Context 的评估结果。
@@ -2071,6 +2214,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 **修复方案**（已实施）
 
 本次采用“方案 B：Provider（数据源提供者）路由”，核心原则是：
+
 - **重新评估使用最新状态**（当前工作区/当前内容），不保存/重放 lastRequest。
 - 全局 `EvaluationPanel` 只做 UI，不再绑定到基础模式数据源；其事件路由到“当前活跃 Workspace”执行。
 
@@ -2086,6 +2230,7 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
    - `@apply-improvement`：在 Context 模式下调用对应 Workspace 的 `openIterateDialog(improvement)`；基础模式继续走 `basicModeWorkspaceRef`。
 
 **验证方式**
+
 - Context 模式下执行评估后，在全局 `EvaluationPanel` 点击“重新评估”，应重新评估当前选中消息/当前变量提示词（而非基础模式 optimizer 的数据）。
 - Context 模式下在全局 `EvaluationPanel` 点击“应用改进”，应打开当前 Workspace 的迭代弹窗并预填改进建议。
 
@@ -2094,11 +2239,13 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### ✅ P2：EvaluationPanel 标题未覆盖新类型（已修复）
 
 **原始问题**
+
 - `EvaluationPanel.vue` 标题 switch 只覆盖 `original/optimized/compare`，`prompt-only/prompt-iterate` 会落到 `evaluation.title.default`（`packages/ui/src/components/evaluation/EvaluationPanel.vue:185`）。
 
 **修复方案**（已实施）
 
 1. **`EvaluationPanel.vue` 添加新类型的 case**（第 188-191 行）：
+
    ```typescript
    case 'prompt-only':
      return t('evaluation.title.promptOnly')
@@ -2116,21 +2263,24 @@ useCurrentMode()           // { functionMode, proSubMode, isBasicMode, ... }
 ### 10.1 “基础模式（basic）”怎么用（与评估关联）
 
 典型流程（单提示词优化）：
-1) 输入 `originalPrompt`（原始提示词）  
-2) 点击“优化”得到 `optimizedPrompt`（当前显示版本）  
-3) （可选）在测试区运行测试得到 `testResult`（用于 original/optimized/compare 三类评估）  
-4) 点击“分析”执行 `prompt-only` 或 `prompt-iterate`（不依赖测试结果）  
-5) 在评估详情中点击“重新评估”会对“当前显示的内容 + 当前模式参数”再评估一次
+
+1. 输入 `originalPrompt`（原始提示词）
+2. 点击“优化”得到 `optimizedPrompt`（当前显示版本）
+3. （可选）在测试区运行测试得到 `testResult`（用于 original/optimized/compare 三类评估）
+4. 点击“分析”执行 `prompt-only` 或 `prompt-iterate`（不依赖测试结果）
+5. 在评估详情中点击“重新评估”会对“当前显示的内容 + 当前模式参数”再评估一次
 
 这里的关键约束：**`originalPrompt` 在产品定义中始终存在**（用于对齐原始需求，避免意图偏离），因此 Core 层校验 `originalPrompt` 不能为空是合理的，不需要为所谓“仅提示词独立评估”放宽。
 
 ### 10.2 为什么 Context 模式的 Context 不一样
 
 Context 模式（pro）本质上不是“单提示词”，而是“带上下文的目标对象”：
+
 - **Pro-System**：目标是对话中的某条 message（system/user/assistant/tool），`proContext` 会携带“目标 message + 全对话消息列表”，便于模型理解上下文语义。
 - **Pro-User**：目标是“带变量的提示词”，`proContext` 会携带变量解析信息（raw/resolved/variables），便于评估时知道占位符如何被填充。
 
 因此：
+
 - 同一个 `EvaluationType`（比如 `prompt-only`）在不同子模式下“模板与上下文输入”可能不同；
 - 但服务端输出仍应通过 `EvaluationResponse` 规范化，保持 UI 展示一致（分数/建议/原因等）。
 
@@ -2139,6 +2289,7 @@ Context 模式（pro）本质上不是“单提示词”，而是“带上下文
 “重新评估”的产品语义是：**再执行一次评估**，且评估对象永远是“当前 UI 正在展示的版本”。
 
 因此实现上只需要两类信息：
+
 - “要评估哪种类型”：来自当前打开的详情类型 `evaluation.state.activeDetailType`
 - “要评估的输入数据”：来自当前业务状态（当前 prompt / 当前版本 / 当前 proContext / 当前 iterateRequirement 等）
 
@@ -2147,10 +2298,12 @@ Context 模式（pro）本质上不是“单提示词”，而是“带上下文
 ### 10.4 全局评估面板的设计取舍：方案 B（Provider 路由） vs 每个模式自带面板
 
 本次已落地的是 **方案 B：全局唯一 `EvaluationPanel` + Provider 路由**：
+
 - 优点：UI 一致、状态唯一（避免双套 evaluation）、跨组件更易共享（`provide/inject`）。
 - 风险：顶层需要知道“当前活跃 workspace”，并在能力缺失时按“异常 bug”处理（避免 silently fallback 用错数据源）。
 
 备选方案（回退）：每个模式各自渲染一个 `EvaluationPanel`。
+
 - 优点：数据源天然就近，路由简单。
 - 缺点：容易出现“双面板/双状态”，并带来更多模式分支与同步问题。
 

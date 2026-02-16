@@ -5,7 +5,7 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
@@ -28,7 +28,9 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
   ): Promise<ImageResult>
 
   // 子类必须实现的测试请求构建方法
-  protected abstract getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'>
+  protected abstract getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'>
 
   // 新增的抽象方法：用于构建默认模型对象
   protected abstract getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[]
@@ -46,18 +48,15 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
       capabilities: {
         text2image: true,
         image2image: true,
-        multiImage: true // 默认拥有所有能力
+        multiImage: true, // 默认拥有所有能力
       },
       parameterDefinitions: this.getParameterDefinitions(modelId),
-      defaultParameterValues: this.getDefaultParameterValues(modelId)
+      defaultParameterValues: this.getDefaultParameterValues(modelId),
     }
   }
 
   // 模板方法：统一的生成流程
-  public async generate(
-    request: ImageRequest,
-    config: ImageModelConfig
-  ): Promise<ImageResult> {
+  public async generate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
     // 1. 验证请求合法性
     this.validateRequest(request, config)
 
@@ -78,7 +77,11 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
 
   // 仅返回"基础地址"的最终结果（考虑代理）；用于 SDK 型（如 Gemini）
   protected resolveBaseUrl(config: ImageModelConfig, _isStream: boolean = false): string {
-    const rawBase = (config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL || '').trim()
+    const rawBase = (
+      config.connectionConfig?.baseURL ||
+      this.getProvider().defaultBaseURL ||
+      ''
+    ).trim()
     if (!rawBase) return ''
     const normalizedBase = this.normalizeBaseUrl(rawBase)
     if (!normalizedBase) return ''
@@ -92,7 +95,9 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
     endpoint: string,
     _isStream: boolean = false
   ): string {
-    const base = this.normalizeBaseUrl((config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL || '').trim())
+    const base = this.normalizeBaseUrl(
+      (config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL || '').trim()
+    )
     const ep = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
     const full = `${base}${ep}`
 
@@ -101,14 +106,16 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
 
   // 辅助方法：根据modelId获取模型信息
   protected getModelById(modelId: string): ImageModel | undefined {
-    return this.getModels().find(model => model.id === modelId)
+    return this.getModels().find((model) => model.id === modelId)
   }
 
   // 默认的动态模型获取实现（不支持动态获取的适配器可以使用）
   public async getModelsAsync(_connectionConfig: Record<string, any>): Promise<ImageModel[]> {
     const provider = this.getProvider()
     if (!provider.supportsDynamicModels) {
-      throw new ImageError(IMAGE_ERROR_CODES.DYNAMIC_MODELS_NOT_SUPPORTED, undefined, { providerName: provider.name })
+      throw new ImageError(IMAGE_ERROR_CODES.DYNAMIC_MODELS_NOT_SUPPORTED, undefined, {
+        providerName: provider.name,
+      })
     }
     // 子类应该覆盖此方法
     return this.getModels()
@@ -132,13 +139,15 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
     const provider = this.getProvider()
 
     if (provider.requiresApiKey && !config.connectionConfig?.apiKey) {
-      throw new ImageError(IMAGE_ERROR_CODES.API_KEY_REQUIRED, undefined, { providerName: provider.name })
+      throw new ImageError(IMAGE_ERROR_CODES.API_KEY_REQUIRED, undefined, {
+        providerName: provider.name,
+      })
     }
 
     if (config.providerId !== provider.id) {
       throw new ImageError(IMAGE_ERROR_CODES.CONFIG_PROVIDER_MISMATCH, undefined, {
         configProviderId: config.providerId,
-        adapterProviderId: provider.id
+        adapterProviderId: provider.id,
       })
     }
   }
@@ -153,7 +162,9 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
     // 验证必需字段
     for (const field of schema.required) {
       if (!(field in connectionConfig)) {
-        throw new ImageError(IMAGE_ERROR_CODES.CONNECTION_CONFIG_MISSING_FIELD, undefined, { field })
+        throw new ImageError(IMAGE_ERROR_CODES.CONNECTION_CONFIG_MISSING_FIELD, undefined, {
+          field,
+        })
       }
     }
 
@@ -165,7 +176,7 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
           throw new ImageError(IMAGE_ERROR_CODES.CONNECTION_CONFIG_INVALID_FIELD_TYPE, undefined, {
             field,
             expectedType,
-            actualType
+            actualType,
           })
         }
       }

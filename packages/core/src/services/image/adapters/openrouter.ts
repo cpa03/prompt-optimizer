@@ -6,7 +6,7 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { OPENROUTER_MODELS, getModelDisplayName } from '../../../constants/models'
@@ -35,9 +35,9 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -47,15 +47,16 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       {
         id: OPENROUTER_MODELS.GOOGLE_GEMINI_25_FLASH_IMAGE,
         name: getModelDisplayName(OPENROUTER_MODELS.GOOGLE_GEMINI_25_FLASH_IMAGE),
-        description: 'Google Gemini 2.5 Flash 图像模型（通过 OpenRouter），支持文生图、图生图和多轮对话编辑',
+        description:
+          'Google Gemini 2.5 Flash 图像模型（通过 OpenRouter），支持文生图、图生图和多轮对话编辑',
         providerId: 'openrouter',
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
         parameterDefinitions: [],
-        defaultParameterValues: {}
+        defaultParameterValues: {},
       },
       {
         id: OPENROUTER_MODELS.OPENAI_GPT5_IMAGE_MINI,
@@ -65,11 +66,11 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
         parameterDefinitions: [],
-        defaultParameterValues: {}
-      }
+        defaultParameterValues: {},
+      },
     ]
   }
 
@@ -85,8 +86,8 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         method: 'GET',
         headers: {
           [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
-          ...(apiKey ? { [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${apiKey}` } : {})
-        }
+          ...(apiKey ? { [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${apiKey}` } : {}),
+        },
       })
 
       if (!response.ok) {
@@ -115,10 +116,10 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
             capabilities: {
               text2image: true,
               image2image: supportsImageInput,
-              multiImage: supportsImageInput
+              multiImage: supportsImageInput,
             },
             parameterDefinitions: [],
-            defaultParameterValues: {}
+            defaultParameterValues: {},
           }
         })
 
@@ -129,11 +130,13 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     }
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: 'a simple red flower',
-        count: 1
+        count: 1,
       }
     }
 
@@ -142,9 +145,9 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         prompt: 'make this image more colorful',
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去除data URL前缀
-          mimeType: MIME_TYPES.image.png
+          mimeType: MIME_TYPES.image.png,
         },
-        count: 1
+        count: 1,
       }
     }
 
@@ -161,13 +164,16 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     return {}
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     // 构建 OpenRouter Chat API 请求
     const messages: any[] = [
       {
         role: 'user',
-        content: request.prompt
-      }
+        content: request.prompt,
+      },
     ]
 
     // 如果有输入图像，添加到消息中
@@ -176,7 +182,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
 
       messages[0].content = [
         { type: 'text', text: request.prompt },
-        { type: 'image_url', image_url: { url: imageContent } }
+        { type: 'image_url', image_url: { url: imageContent } },
       ]
     }
 
@@ -184,7 +190,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       model: config.modelId,
       messages,
       // modalities 是OpenRouter内部参数，固定设置
-      modalities: ['image', 'text']
+      modalities: ['image', 'text'],
       // 不合并用户参数覆盖，因为OpenRouter图像生成不需要额外配置
     }
 
@@ -192,9 +198,9 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       method: 'POST',
       headers: {
         [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${config.connectionConfig?.apiKey}`,
-        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON
+        [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     // 解析响应
@@ -221,7 +227,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
       return {
         b64: base64Data,
         mimeType,
-        url: dataUrl // 保留原始 data URL
+        url: dataUrl, // 保留原始 data URL
       }
     })
 
@@ -233,12 +239,16 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
         modelId: config.modelId,
         configId: config.id,
         finishReason: choice.finish_reason,
-        usage: response.usage
-      }
+        usage: response.usage,
+      },
     }
   }
 
-  private async apiCall(config: ImageModelConfig, endpoint: string, options: Record<string, unknown>) {
+  private async apiCall(
+    config: ImageModelConfig,
+    endpoint: string,
+    options: Record<string, unknown>
+  ) {
     const url = this.resolveEndpointUrl(config, endpoint)
     const response = await fetch(url, options as RequestInit)
 

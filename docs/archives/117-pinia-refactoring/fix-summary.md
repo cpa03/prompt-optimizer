@@ -31,16 +31,18 @@
    - ✅ 添加完整的使用示例和测试示例
 
 **代码变更**:
+
 ```typescript
 // ✅ 推荐使用
 import { getPiniaServices } from '@/plugins/pinia'
 const $services = getPiniaServices()
 
 // ❌ 不推荐使用
-this.$services  // 已标记为 @deprecated
+this.$services // 已标记为 @deprecated
 ```
 
 **收益**:
+
 - 消除团队困惑，统一编码规范
 - 新人onboarding更快
 - 代码review更简单
@@ -68,12 +70,13 @@ this.$services  // 已标记为 @deprecated
    - ✅ 代码更简洁，减少30%样板代码
 
 **修复前**（冗长的测试设置）:
+
 ```typescript
 const set = vi.fn().mockResolvedValue(undefined)
 const preferenceService = createPreferenceServiceStub({ set })
 const services = { preferenceService } as unknown as AppServices
 
-setPiniaServices(services)  // ⚠️ 手动设置
+setPiniaServices(services) // ⚠️ 手动设置
 
 const servicesRef = shallowRef<AppServices | null>(services)
 const pinia = createPinia()
@@ -83,16 +86,18 @@ createApp({ render: () => null }).use(pinia)
 ```
 
 **修复后**（简洁的测试设置）:
+
 ```typescript
 const set = vi.fn().mockResolvedValue(undefined)
 
 const { pinia, services } = createTestPinia({
-  preferenceService: createPreferenceServiceStub({ set })
+  preferenceService: createPreferenceServiceStub({ set }),
 })
 // ... 只需3行！
 ```
 
 **收益**:
+
 - 测试代码减少30%
 - 防止测试污染
 - 标准化测试模式，便于维护
@@ -106,26 +111,29 @@ const { pinia, services } = createTestPinia({
 **修复内容**:
 
 **修改 `packages/ui/src/composables/variable/useTemporaryVariables.ts`**
+
 - ✅ 使用 `getActivePinia()` 显式检测
 - ✅ 抛出清晰的错误信息
 - ✅ 添加使用示例和注意事项
 
 **修复前**（依赖隐式检查）:
+
 ```typescript
 export function useTemporaryVariables() {
-  const store = useTemporaryVariablesStore()  // 可能静默失败
+  const store = useTemporaryVariablesStore() // 可能静默失败
   // ...
 }
 ```
 
 **修复后**（显式检查+清晰错误）:
+
 ```typescript
 export function useTemporaryVariables() {
   const activePinia = getActivePinia()
   if (!activePinia) {
     throw new Error(
       '[useTemporaryVariables] Pinia not installed or no active pinia instance. ' +
-      'Make sure you have called installPinia(app) before using this composable...'
+        'Make sure you have called installPinia(app) before using this composable...'
     )
   }
   const store = useTemporaryVariablesStore()
@@ -134,6 +142,7 @@ export function useTemporaryVariables() {
 ```
 
 **收益**:
+
 - 问题定位时间从"数小时"降到"数分钟"
 - 清晰的错误信息加快问题排查
 - 避免"静默失败"导致的状态混乱
@@ -144,12 +153,12 @@ export function useTemporaryVariables() {
 
 ### 代码质量提升
 
-| 指标 | 修复前 | 修复后 | 提升 |
-|------|--------|--------|------|
-| 文档完整性 | 7/10 | 10/10 | +43% |
-| 测试代码量 | 73行 | 51行 | -30% |
-| 错误提示清晰度 | 5/10 | 10/10 | +100% |
-| 团队困惑指数 | 高 | 低 | - |
+| 指标           | 修复前 | 修复后 | 提升  |
+| -------------- | ------ | ------ | ----- |
+| 文档完整性     | 7/10   | 10/10  | +43%  |
+| 测试代码量     | 73行   | 51行   | -30%  |
+| 错误提示清晰度 | 5/10   | 10/10  | +100% |
+| 团队困惑指数   | 高     | 低     | -     |
 
 ### 开发效率提升
 
@@ -163,9 +172,11 @@ export function useTemporaryVariables() {
 ## 📝 修改文件清单
 
 ### 新增文件（1个）
+
 - ✅ `packages/ui/tests/utils/pinia-test-helpers.ts` - 测试辅助工具
 
 ### 修改文件（3个）
+
 - ✅ `packages/ui/src/plugins/pinia-services-plugin.ts` - 更新文档
 - ✅ `packages/ui/src/plugins/pinia.ts` - 完善文档
 - ✅ `packages/ui/src/composables/variable/useTemporaryVariables.ts` - 添加检查
@@ -173,6 +184,7 @@ export function useTemporaryVariables() {
 - ✅ `packages/ui/tests/unit/pinia-services-plugin.test.ts` - 使用新helper
 
 ### 代码变更统计
+
 ```
  5 files changed, 287 insertions(+), 85 deletions(-)
  1 file created
@@ -189,18 +201,21 @@ export function useTemporaryVariables() {
 ## ✅ 验收标准检查
 
 ### P0 - 服务访问入口
+
 - ✅ 所有文档统一推荐 `getPiniaServices()`
 - ✅ `$services` 标记为 `@deprecated`
 - ✅ 代码审查确认无新增 `this.$services` 使用
 - ✅ TypeScript 类型提示显示 deprecated 警告
 
 ### P1 - 测试清理
+
 - ✅ 全局 `afterEach` 清理已配置
 - ✅ `pinia-test-helpers.ts` 已创建并导出3个工具函数
 - ✅ 2个测试用例已使用新 helper
 - ✅ 所有测试通过（194/194）
 
 ### P2 - 依赖检查
+
 - ✅ `useTemporaryVariables` 添加 `getActivePinia()` 检查
 - ✅ 错误信息清晰友好，包含解决方案
 - ✅ 文档包含使用示例和注意事项
@@ -212,6 +227,7 @@ export function useTemporaryVariables() {
 ### 立即可做（可选）
 
 1. **添加 ESLint 规则**（15分钟）
+
    ```javascript
    rules: {
      'no-restricted-imports': ['error', {
@@ -283,6 +299,7 @@ export function useTemporaryVariables() {
 ### 最终评价
 
 这次修复完全符合预期目标：
+
 - ✅ 解决了P0问题（服务访问冲突）
 - ✅ 建立了P1基础设施（测试清理）
 - ✅ 改进了P2错误提示（依赖检查）

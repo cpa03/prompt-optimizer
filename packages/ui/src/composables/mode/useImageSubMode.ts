@@ -57,6 +57,6 @@ export function useImageSubMode(services: Ref<AppServices | null>): UseImageSubM
     setImageSubMode,
     switchToText2Image,
     switchToImage2Image,
-    ensureInitialized
+    ensureInitialized,
   }
 }

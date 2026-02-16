@@ -3,7 +3,7 @@
  * 完全复用 core 包的模型管理功能
  */
 
-import { ModelManager } from '@prompt-optimizer/core';
+import { ModelManager } from '@prompt-optimizer/core'
 
 /**
  * 为 MCP 服务器设置默认模型
@@ -14,49 +14,48 @@ export async function setupDefaultModel(
   preferredProvider?: string
 ): Promise<void> {
   // 动态导入 defaultModels，确保环境变量已经加载
-  const { defaultModels } = await import('@prompt-optimizer/core');
+  const { defaultModels } = await import('@prompt-optimizer/core')
 
   // 获取所有可用的默认模型（已启用的）
-  const availableModels = Object.entries(defaultModels).filter(([_, config]) => config.enabled);
+  const availableModels = Object.entries(defaultModels).filter(([_, config]) => config.enabled)
 
   if (availableModels.length === 0) {
-    throw new Error('No enabled models found in core defaultModels');
+    throw new Error('No enabled models found in core defaultModels')
   }
 
-  let selectedModel: [string, any] | undefined;
+  let selectedModel: [string, any] | undefined
 
   // 1. 如果指定了 preferredProvider，尝试匹配
   if (preferredProvider) {
-    selectedModel = availableModels.find(([key, config]) =>
-      config.provider === preferredProvider.toLowerCase() ||
-      config.name.toLowerCase().includes(preferredProvider.toLowerCase())
-    );
+    selectedModel = availableModels.find(
+      ([key, config]) =>
+        config.provider === preferredProvider.toLowerCase() ||
+        config.name.toLowerCase().includes(preferredProvider.toLowerCase())
+    )
   }
 
   // 2. 如果没有找到匹配的或没有指定，使用第一个可用的模型
   if (!selectedModel) {
-    selectedModel = availableModels[0];
+    selectedModel = availableModels[0]
   }
 
-  const [modelKey, modelConfig] = selectedModel;
+  const [modelKey, modelConfig] = selectedModel
 
   // 3. 使用 core 的模型配置，确保模型启用
   const finalConfig = {
     ...modelConfig,
     // 确保模型启用
-    enabled: true
-  };
+    enabled: true,
+  }
 
   // 4. 使用 ModelManager 的标准 API 添加或更新模型
-  const mcpModelKey = `mcp-default`;
+  const mcpModelKey = `mcp-default`
 
   try {
     // 尝试更新现有模型
-    await modelManager.updateModel(mcpModelKey, finalConfig);
+    await modelManager.updateModel(mcpModelKey, finalConfig)
   } catch (error) {
     // 如果模型不存在，则添加新模型
-    await modelManager.addModel(mcpModelKey, finalConfig);
+    await modelManager.addModel(mcpModelKey, finalConfig)
   }
 }
-
-

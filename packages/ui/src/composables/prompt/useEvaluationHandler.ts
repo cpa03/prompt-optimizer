@@ -8,7 +8,11 @@
 import { computed, watch, type Ref, type ComputedRef } from 'vue'
 import { useEvaluation, type UseEvaluationReturn, type ScoreLevel } from './useEvaluation'
 import type { AppServices } from '../../types/services'
-import type { EvaluationType, EvaluationResponse, ProEvaluationContext } from '@prompt-optimizer/core'
+import type {
+  EvaluationType,
+  EvaluationResponse,
+  ProEvaluationContext,
+} from '@prompt-optimizer/core'
 import type { PersistedEvaluationResults } from '../../types/evaluation'
 
 /**
@@ -194,11 +198,13 @@ export function useEvaluationHandler(
 
   // 使用外部评估实例或创建新的
   // 当 Workspace 需要共享全局评估状态时，应传入 externalEvaluation
-  const evaluation = externalEvaluation ?? useEvaluation(services, {
-    evaluationModelKey,
-    functionMode,
-    subMode,
-  })
+  const evaluation =
+    externalEvaluation ??
+    useEvaluation(services, {
+      evaluationModelKey,
+      functionMode,
+      subMode,
+    })
 
   // Optional: bind evaluation results to a persisted store.
   // - Initialize evaluation state from persisted results.
@@ -212,26 +218,41 @@ export function useEvaluationHandler(
     evaluation.state['prompt-iterate'].result = persistedResults.value['prompt-iterate'] ?? null
 
     // Keep persisted results updated.
-    watch(() => evaluation.state.original.result, (next) => {
-      if (persistedResults.value.original === next) return
-      persistedResults.value.original = next ?? null
-    })
-    watch(() => evaluation.state.optimized.result, (next) => {
-      if (persistedResults.value.optimized === next) return
-      persistedResults.value.optimized = next ?? null
-    })
-    watch(() => evaluation.state.compare.result, (next) => {
-      if (persistedResults.value.compare === next) return
-      persistedResults.value.compare = next ?? null
-    })
-    watch(() => evaluation.state['prompt-only'].result, (next) => {
-      if (persistedResults.value['prompt-only'] === next) return
-      persistedResults.value['prompt-only'] = next ?? null
-    })
-    watch(() => evaluation.state['prompt-iterate'].result, (next) => {
-      if (persistedResults.value['prompt-iterate'] === next) return
-      persistedResults.value['prompt-iterate'] = next ?? null
-    })
+    watch(
+      () => evaluation.state.original.result,
+      (next) => {
+        if (persistedResults.value.original === next) return
+        persistedResults.value.original = next ?? null
+      }
+    )
+    watch(
+      () => evaluation.state.optimized.result,
+      (next) => {
+        if (persistedResults.value.optimized === next) return
+        persistedResults.value.optimized = next ?? null
+      }
+    )
+    watch(
+      () => evaluation.state.compare.result,
+      (next) => {
+        if (persistedResults.value.compare === next) return
+        persistedResults.value.compare = next ?? null
+      }
+    )
+    watch(
+      () => evaluation.state['prompt-only'].result,
+      (next) => {
+        if (persistedResults.value['prompt-only'] === next) return
+        persistedResults.value['prompt-only'] = next ?? null
+      }
+    )
+    watch(
+      () => evaluation.state['prompt-iterate'].result,
+      (next) => {
+        if (persistedResults.value['prompt-iterate'] === next) return
+        persistedResults.value['prompt-iterate'] = next ?? null
+      }
+    )
   }
 
   /**
@@ -248,9 +269,7 @@ export function useEvaluationHandler(
     const originalTrimmed = original?.trim()
     const optimizedTrimmed = optimized?.trim()
     const shouldPassOriginal =
-      originalTrimmed &&
-      optimizedTrimmed &&
-      originalTrimmed !== optimizedTrimmed
+      originalTrimmed && optimizedTrimmed && originalTrimmed !== optimizedTrimmed
 
     if (type === 'original') {
       await evaluation.evaluateOriginal({
@@ -384,9 +403,7 @@ export function useEvaluationHandler(
     const activeType = evaluation.state.activeDetailType
     return {
       show: evaluation.isPanelVisible.value,
-      isEvaluating: activeType
-        ? getIsEvaluatingForType(activeType)
-        : false,
+      isEvaluating: activeType ? getIsEvaluatingForType(activeType) : false,
       result: evaluation.activeResult.value,
       streamContent: evaluation.activeStreamContent.value,
       error: evaluation.activeError.value,
@@ -413,9 +430,7 @@ export function useEvaluationHandler(
    * @param promptPanelRef PromptPanel 组件引用
    * @returns 处理函数，可直接绑定到 @apply-improvement 事件
    */
-  const createApplyImprovementHandler = (
-    promptPanelRef: Ref<PromptPanelRef | null>
-  ) => {
+  const createApplyImprovementHandler = (promptPanelRef: Ref<PromptPanelRef | null>) => {
     return (payload: { improvement: string; type: EvaluationType }): void => {
       const { improvement } = payload
 

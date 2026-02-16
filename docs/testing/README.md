@@ -27,4 +27,3 @@ pnpm test:record
 
 - Vitest（UI 包）：`packages/ui/tests/utils/error-detection.ts`
 - Playwright（E2E）：`tests/e2e/fixtures.ts`
-

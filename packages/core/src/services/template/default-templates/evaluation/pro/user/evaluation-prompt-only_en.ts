@@ -4,7 +4,7 @@
  * Directly evaluate user prompt with variables without test results
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-prompt-only',
@@ -82,7 +82,7 @@ You may receive a JSON format context \`proContext\` containing:
   - instruction: Brief description of issue and fix
 - **summary**: One-line evaluation conclusion
 
-Output JSON only, no additional explanation.`
+Output JSON only, no additional explanation.`,
     },
     {
       role: 'user',
@@ -106,8 +106,8 @@ Output JSON only, no additional explanation.`
 
 ---
 
-Please directly evaluate the improvement of the optimized user prompt compared to the original version.`
-    }
+Please directly evaluate the improvement of the optimized user prompt compared to the original version.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -116,7 +116,7 @@ Please directly evaluate the improvement of the optimized user prompt compared t
     description: 'Directly evaluate user prompt with variables without test results',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'prompt-only', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

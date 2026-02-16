@@ -3,11 +3,13 @@
 ## 📋 审查概览
 
 **审查范围**: 3个主要提交的Pinia状态管理重构
+
 - `3c1ac5c` - 引入Pinia状态管理并迁移临时变量
 - `527bc35` - 创建promptDraft store为后续prompt状态迁移做准备
 - `8a1dd6b` - 解决session store的P0问题和竞态条件
 
 **代码变更统计**:
+
 - 总计新增文件: 17个
 - 总计修改文件: 22个
 - 新增代码行数: ~2900行
@@ -74,6 +76,7 @@
 ```
 
 **评价**: ✅ 优秀
+
 - 清晰的职责划分
 - 良好的封装性
 - 易于测试和维护
@@ -91,23 +94,26 @@ const services = getPiniaServices()
 ```
 
 **设计亮点**:
+
 - ✅ 使用 `shallowRef` 避免深度响应式带来的性能开销
 - ✅ 使用响应式引用解决服务异步初始化问题
 - ✅ 提供完整的TypeScript类型扩展
 
 **潜在问题**:
+
 - ⚠️ 全局单例模式在测试或多实例场景下需要手动清理
 - ⚠️ `getPiniaServices()` 的使用文档强调了测试后需要调用 `setPiniaServices(null)` 清理，但实际项目中容易遗漏
 
 **改进建议**:
+
 ```typescript
 // 可以考虑增加自动清理机制
 export function createScopedPiniaServices() {
   const scopedRef = shallowRef<AppServices | null>(null)
   return {
-    set: (services: AppServices | null) => scopedRef.value = services,
+    set: (services: AppServices | null) => (scopedRef.value = services),
     get: () => scopedRef.value,
-    dispose: () => scopedRef.value = null
+    dispose: () => (scopedRef.value = null),
   }
 }
 ```
@@ -127,16 +133,18 @@ useSessionManager (协调器)
 ```
 
 **设计亮点**:
+
 - ✅ 避免双真源：通过 `injectSubModeReaders` 消费现有状态
 - ✅ 完善的锁机制：`isSwitching` 和 `saveInFlight` 双锁保护
 - ✅ 合理的持久化策略：只存ID/key，不存完整对象
 
 **代码示例**（优秀实践）:
+
 ```typescript
 // ✅ 只持久化ID，不持久化对象
 export interface BasicSystemSessionState {
-  selectedOptimizeModelKey: string  // ✅ 只存key
-  selectedTestModelKey: string      // ✅ 只存key
+  selectedOptimizeModelKey: string // ✅ 只存key
+  selectedTestModelKey: string // ✅ 只存key
   // ❌ 不要存: selectedModel: ModelConfig
 }
 ```
@@ -150,11 +158,13 @@ export interface BasicSystemSessionState {
 **得分**: 9.5/10
 
 **优点**:
+
 - ✅ 完整的接口定义和类型导出
 - ✅ 合理使用 `Ref<T>` 和 `Readonly<Ref<T>>`
 - ✅ Pinia类型扩展正确
 
 **示例**（优秀的类型定义）:
+
 ```typescript
 export interface TemporaryVariablesStoreApi {
   temporaryVariables: Ref<TemporaryVariablesMap>
@@ -172,13 +182,16 @@ export const useTemporaryVariablesStore = defineStore(
 ```
 
 **发现的问题**:
+
 ```typescript
 // ⚠️ packages/ui/src/plugins/pinia-services-plugin.ts:30
 context.store.$services = servicesRef as any
 ```
+
 这里使用了 `as any`，虽然有注释说明，但仍可改进：
 
 **改进建议**:
+
 ```typescript
 // 更安全的类型断言
 context.store.$services = servicesRef as unknown as AppServices | null
@@ -189,11 +202,13 @@ context.store.$services = servicesRef as unknown as AppServices | null
 **得分**: 8.5/10
 
 **优点**:
+
 - ✅ 所有异步操作都有 try-catch
 - ✅ 错误日志清晰，包含上下文信息
 - ✅ 优雅降级策略（失败时重置为默认状态）
 
 **示例**（优秀的错误处理）:
+
 ```typescript
 const restoreSession = async () => {
   try {
@@ -210,6 +225,7 @@ const restoreSession = async () => {
 ```
 
 **发现的问题**:
+
 ```typescript
 // packages/ui/src/stores/session/useSessionManager.ts:208
 catch (error) {
@@ -220,6 +236,7 @@ catch (error) {
 
 **改进建议**:
 可以考虑引入错误收集机制，便于监控和排查问题：
+
 ```typescript
 import { useErrorTracker } from '@/composables/error/useErrorTracker'
 
@@ -234,12 +251,14 @@ catch (error) {
 **得分**: 10/10 ⭐
 
 **优点**:
+
 - ✅ 每个文件都有清晰的模块级注释
 - ✅ 设计原则和设计决策都有详细说明
 - ✅ 关键修复都标注了来源（如"Codex 修复"）
 - ✅ 包含警告标记（⚠️）和修复标记（🔧）
 
 **优秀示例**:
+
 ```typescript
 /**
  * Pinia 实例管理和安装器
@@ -274,11 +293,13 @@ catch (error) {
 **得分**: 9/10
 
 **优点**:
+
 - ✅ 函数职责单一，符合SOLID原则
 - ✅ 合理的代码复用（如 `_saveSubModeSessionUnsafe`）
 - ✅ 提取了复用逻辑到独立的composable（如 `useSessionRestoreCoordinator`）
 
 **示例**（优秀的关注点分离）:
+
 ```typescript
 // ✅ 将临时变量管理从单一文件迁移到 Store + Composable
 // Store: 纯状态管理
@@ -292,6 +313,7 @@ export function useTemporaryVariables() {
 ```
 
 **发现的问题**:
+
 ```typescript
 // packages/ui/src/stores/session/useSessionManager.ts:265-303
 // ⚠️ saveAllSessions 方法包含复杂的轮询等待逻辑，可以提取
@@ -300,21 +322,19 @@ while (saveInFlight.value) {
     console.warn('[SessionManager] 等待保存完成超时，放弃本次保存')
     return
   }
-  await new Promise(resolve => setTimeout(resolve, 50))
+  await new Promise((resolve) => setTimeout(resolve, 50))
 }
 ```
 
 **改进建议**:
+
 ```typescript
 // 提取等待逻辑为独立工具函数
-async function waitForLock(
-  lockRef: Ref<boolean>,
-  maxWait: number = 5000
-): Promise<boolean> {
+async function waitForLock(lockRef: Ref<boolean>, maxWait: number = 5000): Promise<boolean> {
   const startTime = Date.now()
   while (lockRef.value) {
     if (Date.now() - startTime > maxWait) return false
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise((resolve) => setTimeout(resolve, 50))
   }
   return true
 }
@@ -349,13 +369,14 @@ commit `8a1dd6b` 系统性解决了6个竞态条件问题：
 **问题**: 多个异步操作同时调用 `restoreSessionToUI()` 导致状态混乱
 
 **解决方案**:
+
 ```typescript
 // ✅ 使用互斥锁
 const isRestoring = ref(false)
 
 const executeRestore = async () => {
   if (isRestoring.value) {
-    pendingRestore.value = true  // 记录待处理请求
+    pendingRestore.value = true // 记录待处理请求
     return
   }
 
@@ -376,18 +397,19 @@ const executeRestore = async () => {
 **问题**: 使用 `await executeRestore()` 递归调用导致调用栈压力
 
 **解决方案**:
+
 ```typescript
 // ❌ 旧实现（递归压力）
 if (pendingRestore.value) {
   pendingRestore.value = false
-  await executeRestore()  // 递归调用
+  await executeRestore() // 递归调用
 }
 
 // ✅ 新实现（异步队列）
 if (pendingRestore.value) {
   pendingRestore.value = false
   queueMicrotask(() => {
-    void executeRestore().catch(err => {
+    void executeRestore().catch((err) => {
       console.error('[SessionRestoreCoordinator] pending restore failed', err)
     })
   })
@@ -401,6 +423,7 @@ if (pendingRestore.value) {
 **问题**: 多个保存入口（定时器、pagehide、visibilitychange、切换）并发写入
 
 **解决方案**:
+
 ```typescript
 // ✅ 全局保存锁 + 等待机制
 const saveInFlight = ref(false)
@@ -412,16 +435,19 @@ const saveAllSessions = async () => {
       console.warn('[SessionManager] 等待保存完成超时，放弃本次保存')
       return
     }
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise((resolve) => setTimeout(resolve, 50))
   }
 
   let acquired = false
   try {
     saveInFlight.value = true
     acquired = true
-    await Promise.all([/* 保存所有 */])
+    await Promise.all([
+      /* 保存所有 */
+    ])
   } finally {
-    if (acquired) {  // ✅ 只释放自己获得的锁
+    if (acquired) {
+      // ✅ 只释放自己获得的锁
       saveInFlight.value = false
     }
   }
@@ -446,18 +472,20 @@ const saveAllSessions = async () => {
 **得分**: 9/10
 
 **优点**:
+
 - ✅ 测试场景全面，覆盖正常流程和边界情况
 - ✅ 测试数据设计合理（旧格式 → 新格式迁移）
 - ✅ 使用合理的 Mock 策略
 
 **优秀测试示例**:
+
 ```typescript
 it('应该将旧格式 key (system:messageId) 迁移为新格式 (messageId)', () => {
   // 准备旧格式数据
   mockSession.state.messageChainMap = {
     'system:msg-123': 'chain-abc',
     'system:msg-456': 'chain-def',
-    'user:msg-789': 'chain-ghi'
+    'user:msg-789': 'chain-ghi',
   }
 
   // 触发恢复
@@ -472,6 +500,7 @@ it('应该将旧格式 key (system:messageId) 迁移为新格式 (messageId)', (
 ```
 
 **改进建议**:
+
 1. 可以增加竞态条件的测试用例（如并发调用 `executeRestore`）
 2. 可以增加错误场景的测试（如 PreferenceService 失败）
 3. 可以增加性能测试（大量数据保存/恢复）
@@ -483,23 +512,24 @@ it('应该将旧格式 key (system:messageId) 迁移为新格式 (messageId)', (
 ### 1. 响应式优化
 
 **优点**:
+
 - ✅ 使用 `shallowRef` 避免深度响应式
 - ✅ 使用 `readonly` 防止外部修改
 - ✅ 合理使用 `computed` 缓存计算结果
 
 **示例**:
+
 ```typescript
 // ✅ 优秀实践
-const servicesRef = shallowRef<AppServices | null>(null)  // 避免深度代理
-const temporaryVariables = readonly(temporaryVariablesStore)  // 防止修改
-const effectiveUserPrompt = computed(() =>
-  userOptimizedPrompt.value || userPrompt.value
-)  // 缓存计算
+const servicesRef = shallowRef<AppServices | null>(null) // 避免深度代理
+const temporaryVariables = readonly(temporaryVariablesStore) // 防止修改
+const effectiveUserPrompt = computed(() => userOptimizedPrompt.value || userPrompt.value) // 缓存计算
 ```
 
 ### 2. 序列化优化
 
 **发现的问题**:
+
 ```typescript
 // packages/ui/src/stores/session/useBasicSystemSession.ts:172
 const snapshot = JSON.stringify(state.value)
@@ -508,16 +538,14 @@ await $services.preferenceService.set('session/v1/basic-system', snapshot)
 
 **改进建议**:
 对于大对象，可以考虑增量保存或压缩：
+
 ```typescript
 // 增量保存（只保存变更的字段）
 const saveSession = async () => {
   const changes = getChangedFields(state.value, lastSavedState)
-  if (Object.keys(changes).length === 0) return  // 无变更跳过
+  if (Object.keys(changes).length === 0) return // 无变更跳过
 
-  await $services.preferenceService.set(
-    'session/v1/basic-system',
-    JSON.stringify(changes)
-  )
+  await $services.preferenceService.set('session/v1/basic-system', JSON.stringify(changes))
   lastSavedState = { ...state.value }
 }
 ```
@@ -525,10 +553,12 @@ const saveSession = async () => {
 ### 3. 并发优化
 
 **优点**:
+
 - ✅ `saveAllSessions` 使用 `Promise.all` 并行保存
 - ✅ 避免了阻塞式的顺序保存
 
 **示例**:
+
 ```typescript
 // ✅ 并行保存所有子模式
 await Promise.all([
@@ -559,6 +589,7 @@ import { useSessionManager } from '../../stores'
 **评价**: ✅ 已经按建议修复，但需要确保其他文件也遵循此规则
 
 **建议**: 可以添加 ESLint 规则禁止从 barrel exports 导入：
+
 ```javascript
 // .eslintrc.js
 rules: {
@@ -583,6 +614,7 @@ export function getPiniaServices(): AppServices | null {
 **当前解决方案**: 文档要求测试后手动调用 `setPiniaServices(null)`
 
 **改进建议**: 使用测试框架的 `afterEach` 自动清理
+
 ```typescript
 // vitest.setup.ts
 import { setPiniaServices } from '@/plugins/pinia'
@@ -599,6 +631,7 @@ afterEach(() => {
 **问题**: 当恢复失败时直接调用 `reset()`，可能丢失部分有效数据
 
 **当前实现**:
+
 ```typescript
 catch (error) {
   console.error('[BasicSystemSession] 恢复会话失败:', error)
@@ -607,6 +640,7 @@ catch (error) {
 ```
 
 **改进建议**: 可以考虑部分恢复策略
+
 ```typescript
 catch (error) {
   console.error('[BasicSystemSession] 恢复会话失败:', error)
@@ -628,6 +662,7 @@ catch (error) {
 **问题**: 迁移逻辑依赖严格的前缀匹配
 
 **当前实现**:
+
 ```typescript
 // 迁移逻辑（严格前缀匹配）
 for (const [key, chainId] of Object.entries(persistedMap)) {
@@ -643,13 +678,14 @@ for (const [key, chainId] of Object.entries(persistedMap)) {
 **潜在问题**: 如果 messageId 本身包含冒号（如 `uuid:v4:123`），会被错误截断
 
 **改进建议**:
+
 ```typescript
 // 更健壮的迁移
 const PREFIX_PATTERN = /^(system|user):(.+)$/
 for (const [key, chainId] of Object.entries(persistedMap)) {
   const match = key.match(PREFIX_PATTERN)
   if (match) {
-    const messageId = match[2]  // 保留完整的 messageId
+    const messageId = match[2] // 保留完整的 messageId
     messageChainMap.value.set(messageId, chainId)
   } else {
     // 已经是新格式，直接使用
@@ -672,19 +708,16 @@ for (const [key, chainId] of Object.entries(persistedMap)) {
 
 ```typescript
 // ✅ Setup Store（推荐）
-export const useTemporaryVariablesStore = defineStore(
-  'temporaryVariables',
-  () => {
-    const state = ref({})
-    const actions = () => {}
-    return { state, actions }
-  }
-)
+export const useTemporaryVariablesStore = defineStore('temporaryVariables', () => {
+  const state = ref({})
+  const actions = () => {}
+  return { state, actions }
+})
 
 // ❌ Options Store（不推荐）
 export const useStore = defineStore('store', {
   state: () => ({}),
-  actions: {}
+  actions: {},
 })
 ```
 
@@ -712,6 +745,7 @@ export const useStore = defineStore('store', {
    - 大数据量的性能测试
 
 2. **完善错误监控**
+
    ```typescript
    // 引入错误追踪
    import { captureError } from '@/utils/error-tracker'
@@ -723,6 +757,7 @@ export const useStore = defineStore('store', {
    ```
 
 3. **优化全局单例测试污染**
+
    ```typescript
    // vitest.setup.ts
    import { setPiniaServices } from '@/plugins/pinia'
@@ -735,6 +770,7 @@ export const useStore = defineStore('store', {
 ### 中优先级
 
 4. **增加性能监控**
+
    ```typescript
    const saveSession = async () => {
      const startTime = performance.now()
@@ -760,6 +796,7 @@ export const useStore = defineStore('store', {
 ### 低优先级
 
 7. **提取通用工具函数**
+
    ```typescript
    // utils/async.ts
    export async function waitForLock(
@@ -772,9 +809,13 @@ export const useStore = defineStore('store', {
    ```typescript
    // 开发环境下暴露调试接口
    if (import.meta.env.DEV) {
-     (window as any).__debugSession = {
-       printAllSessions: () => { /* ... */ },
-       clearAllSessions: () => { /* ... */ }
+     ;(window as any).__debugSession = {
+       printAllSessions: () => {
+         /* ... */
+       },
+       clearAllSessions: () => {
+         /* ... */
+       },
      }
    }
    ```
@@ -783,16 +824,16 @@ export const useStore = defineStore('store', {
 
 ## 📊 量化评分
 
-| 维度 | 得分 | 说明 |
-|------|------|------|
-| 架构设计 | 9.5/10 | 清晰的分层，合理的职责划分 |
-| 代码质量 | 9.5/10 | 类型安全，注释详尽，风格统一 |
-| 性能优化 | 8.5/10 | 合理使用响应式优化，并发保存 |
+| 维度     | 得分   | 说明                           |
+| -------- | ------ | ------------------------------ |
+| 架构设计 | 9.5/10 | 清晰的分层，合理的职责划分     |
+| 代码质量 | 9.5/10 | 类型安全，注释详尽，风格统一   |
+| 性能优化 | 8.5/10 | 合理使用响应式优化，并发保存   |
 | 测试覆盖 | 9.0/10 | 核心逻辑有测试，可增加边界测试 |
-| 错误处理 | 8.5/10 | 完善的 try-catch，可增强监控 |
-| 文档注释 | 10/10 | 业界顶级水平，设计决策都有说明 |
-| 可维护性 | 9.0/10 | 代码清晰，易于扩展 |
-| 安全性 | 9.0/10 | 数据校验完善，避免XSS等问题 |
+| 错误处理 | 8.5/10 | 完善的 try-catch，可增强监控   |
+| 文档注释 | 10/10  | 业界顶级水平，设计决策都有说明 |
+| 可维护性 | 9.0/10 | 代码清晰，易于扩展             |
+| 安全性   | 9.0/10 | 数据校验完善，避免XSS等问题    |
 
 **总体评分**: 9.2/10
 

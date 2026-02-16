@@ -5,7 +5,7 @@ import type {
   ImageRequest,
   ImageResult,
   ImageModelConfig,
-  ImageParameterDefinition
+  ImageParameterDefinition,
 } from '../types'
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
@@ -16,7 +16,7 @@ import {
   getTestPrompt,
   getDashScopeParameterDefinitions,
   getDashScopeEditParameterDefinitions,
-  getDashScopeDefaultParameterValues
+  getDashScopeDefaultParameterValues,
 } from '../../../config'
 
 /**
@@ -55,9 +55,9 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -72,10 +72,10 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: false,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: getDashScopeParameterDefinitions(),
-        defaultParameterValues: getDashScopeDefaultParameterValues(false)
+        defaultParameterValues: getDashScopeDefaultParameterValues(false),
       },
       // Qwen-Image-Edit 图生图模型
       {
@@ -86,20 +86,22 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: false,
           image2image: true,
-          multiImage: true
+          multiImage: true,
         },
         parameterDefinitions: getDashScopeEditParameterDefinitions(),
-        defaultParameterValues: getDashScopeDefaultParameterValues(true)
-      }
+        defaultParameterValues: getDashScopeDefaultParameterValues(true),
+      },
     ]
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: getTestPrompt('dashscope', 'text2image'),
         count: 1,
-        paramOverrides: {}
+        paramOverrides: {},
       }
     }
 
@@ -121,7 +123,10 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     return modelId.startsWith('qwen-image-edit')
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     if (this.isQwenImageEditModel(config.modelId)) {
       // Qwen-Image-Edit 图生图使用同步 API
       return await this.generateWithQwenImageEdit(request, config)
@@ -133,13 +138,16 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
   /**
    * 使用 Qwen-Image 模型生成图像（同步接口）
    */
-  private async generateWithQwenImage(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  private async generateWithQwenImage(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const baseUrl = config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL
     const url = `${baseUrl}/api/v1/services/aigc/multimodal-generation/generation`
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
 
     const payload = {
@@ -150,28 +158,28 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
             role: 'user',
             content: [
               {
-                text: request.prompt
-              }
-            ]
-          }
-        ]
+                text: request.prompt,
+              },
+            ],
+          },
+        ],
       },
       parameters: {
         size: merged.size || '1328*1328',
         ...(merged.negative_prompt ? { negative_prompt: merged.negative_prompt } : {}),
         ...(merged.prompt_extend !== undefined ? { prompt_extend: merged.prompt_extend } : {}),
         ...(merged.watermark !== undefined ? { watermark: merged.watermark } : {}),
-        ...(merged.seed !== undefined ? { seed: merged.seed } : {})
-      }
+        ...(merged.seed !== undefined ? { seed: merged.seed } : {}),
+      },
     }
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -191,7 +199,10 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
 
     // 检查是否有错误
     if (data.code) {
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, data.message || `DashScope API error: ${data.code}`)
+      throw new ImageError(
+        IMAGE_ERROR_CODES.GENERATION_FAILED,
+        data.message || `DashScope API error: ${data.code}`
+      )
     }
 
     // 解析 Qwen-Image 响应
@@ -209,29 +220,34 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     }
 
     return {
-      images: [{
-        url: imageContent.image,
-        mimeType: MIME_TYPES.PNG
-      }],
+      images: [
+        {
+          url: imageContent.image,
+          mimeType: MIME_TYPES.PNG,
+        },
+      ],
       metadata: {
         providerId: 'dashscope',
         modelId: config.modelId,
         configId: config.id,
-        usage: data.usage
-      }
+        usage: data.usage,
+      },
     }
   }
 
   /**
    * 使用 Qwen-Image-Edit 模型编辑图像（同步接口）
    */
-  private async generateWithQwenImageEdit(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  private async generateWithQwenImageEdit(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     const baseUrl = config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL
     const url = `${baseUrl}/api/v1/services/aigc/multimodal-generation/generation`
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
-      ...request.paramOverrides
+      ...request.paramOverrides,
     }
 
     // 构建 content 数组，包含输入图像和文本提示词
@@ -256,25 +272,25 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         messages: [
           {
             role: 'user',
-            content
-          }
-        ]
+            content,
+          },
+        ],
       },
       parameters: {
         ...(merged.negative_prompt ? { negative_prompt: merged.negative_prompt } : {}),
         ...(merged.prompt_extend !== undefined ? { prompt_extend: merged.prompt_extend } : {}),
         ...(merged.watermark !== undefined ? { watermark: merged.watermark } : {}),
-        ...(merged.seed !== undefined ? { seed: merged.seed } : {})
-      }
+        ...(merged.seed !== undefined ? { seed: merged.seed } : {}),
+      },
     }
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     if (!response.ok) {
@@ -294,7 +310,10 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
 
     // 检查是否有错误
     if (data.code) {
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, data.message || `DashScope API error: ${data.code}`)
+      throw new ImageError(
+        IMAGE_ERROR_CODES.GENERATION_FAILED,
+        data.message || `DashScope API error: ${data.code}`
+      )
     }
 
     // 解析响应 - 只取第一张图像
@@ -309,16 +328,18 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
       for (const item of contentArr) {
         if (item.image) {
           return {
-            images: [{
-              url: item.image,
-              mimeType: MIME_TYPES.PNG
-            }],
+            images: [
+              {
+                url: item.image,
+                mimeType: MIME_TYPES.PNG,
+              },
+            ],
             metadata: {
               providerId: 'dashscope',
               modelId: config.modelId,
               configId: config.id,
-              usage: data.usage
-            }
+              usage: data.usage,
+            },
           }
         }
       }

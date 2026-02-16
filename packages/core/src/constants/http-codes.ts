@@ -11,7 +11,7 @@ export const HTTP_SUCCESS = {
   ACCEPTED: 202,
   NO_CONTENT: 204,
   PARTIAL_CONTENT: 206,
-} as const;
+} as const
 
 // Client error responses (4xx)
 export const HTTP_CLIENT_ERROR = {
@@ -23,7 +23,7 @@ export const HTTP_CLIENT_ERROR = {
   CONFLICT: 409,
   UNPROCESSABLE_ENTITY: 422,
   TOO_MANY_REQUESTS: 429,
-} as const;
+} as const
 
 // Server error responses (5xx)
 export const HTTP_SERVER_ERROR = {
@@ -32,14 +32,14 @@ export const HTTP_SERVER_ERROR = {
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
   GATEWAY_TIMEOUT: 504,
-} as const;
+} as const
 
 // Combined HTTP status codes
 export const HTTP_STATUS = {
   ...HTTP_SUCCESS,
   ...HTTP_CLIENT_ERROR,
   ...HTTP_SERVER_ERROR,
-} as const;
+} as const
 
 // HTTP methods
 export const HTTP_METHODS = {
@@ -50,7 +50,7 @@ export const HTTP_METHODS = {
   DELETE: 'DELETE',
   HEAD: 'HEAD',
   OPTIONS: 'OPTIONS',
-} as const;
+} as const
 
 // Content type headers
 export const CONTENT_TYPES = {
@@ -62,7 +62,7 @@ export const CONTENT_TYPES = {
   MULTIPART: 'multipart/form-data',
   STREAM: 'text/event-stream',
   OCTET_STREAM: 'application/octet-stream',
-} as const;
+} as const
 
 // Common HTTP headers
 export const HTTP_HEADERS = {
@@ -76,13 +76,13 @@ export const HTTP_HEADERS = {
   TRANSFER_ENCODING: 'transfer-encoding',
   ACCESS_CONTROL_ALLOW_ORIGIN: 'access-control-allow-origin',
   ACCESS_CONTROL_ALLOW_HEADERS: 'access-control-allow-headers',
-} as const;
+} as const
 
 // CORS headers
 export const CORS_HEADERS = {
   ALLOW_ORIGIN: '*',
   ALLOW_HEADERS: '*',
-} as const;
+} as const
 
 // Cache control values
 export const CACHE_CONTROL = {
@@ -90,10 +90,10 @@ export const CACHE_CONTROL = {
   NO_STORE: 'no-store',
   MUST_REVALIDATE: 'must-revalidate',
   MAX_AGE_0: 'max-age=0',
-} as const;
+} as const
 
 // Connection values
 export const CONNECTION = {
   KEEP_ALIVE: 'keep-alive',
   CLOSE: 'close',
-} as const;
+} as const

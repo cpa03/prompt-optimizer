@@ -26,7 +26,7 @@ services:
     networks:
       - prompt-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:80/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -43,7 +43,7 @@ services:
     networks:
       - prompt-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -53,8 +53,8 @@ services:
     container_name: prompt-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/nginx/ssl:ro
@@ -64,7 +64,7 @@ services:
     networks:
       - prompt-network
     healthcheck:
-      test: ["CMD", "nginx", "-t"]
+      test: ['CMD', 'nginx', '-t']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -149,24 +149,24 @@ events {
 http {
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
-    
+
     # 日志格式
     log_format main '$remote_addr - $remote_user [$time_local] "$request" '
                     '$status $body_bytes_sent "$http_referer" '
                     '"$http_user_agent" "$http_x_forwarded_for" '
                     'rt=$request_time uct="$upstream_connect_time" '
                     'uht="$upstream_header_time" urt="$upstream_response_time"';
-    
+
     access_log /var/log/nginx/access.log main;
     error_log  /var/log/nginx/error.log warn;
-    
+
     # 性能优化
     sendfile        on;
     tcp_nopush      on;
     tcp_nodelay     on;
     keepalive_timeout 65;
     types_hash_max_size 2048;
-    
+
     # Gzip压缩
     gzip on;
     gzip_vary on;
@@ -180,51 +180,51 @@ http {
         application/javascript
         application/json
         application/xml+rss;
-    
+
     # 上游服务器
     upstream prompt-optimizer {
         server prompt-optimizer:80;
         keepalive 32;
     }
-    
+
     # HTTP服务器 - 重定向到HTTPS
     server {
         listen 80;
         server_name ${SSL_DOMAIN} www.${SSL_DOMAIN};
-        
+
         # Let's Encrypt验证路径
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
         }
-        
+
         # 所有其他请求重定向到HTTPS
         location / {
             return 301 https://$server_name$request_uri;
         }
     }
-    
+
     # HTTPS服务器
     server {
         listen 443 ssl http2;
         server_name ${SSL_DOMAIN} www.${SSL_DOMAIN};
-        
+
         # SSL证书配置
         ssl_certificate /etc/nginx/ssl/cert.pem;
         ssl_certificate_key /etc/nginx/ssl/key.pem;
-        
+
         # SSL安全配置
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384;
         ssl_prefer_server_ciphers off;
         ssl_session_cache shared:SSL:10m;
         ssl_session_timeout 10m;
-        
+
         # HSTS安全头
         add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
         add_header X-Content-Type-Options nosniff;
         add_header X-Frame-Options DENY;
         add_header X-XSS-Protection "1; mode=block";
-        
+
         # 主应用代理
         location / {
             proxy_pass http://prompt-optimizer;
@@ -236,13 +236,13 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_cache_bypass $http_upgrade;
-            
+
             # 超时配置
             proxy_connect_timeout       60s;
             proxy_send_timeout          60s;
             proxy_read_timeout          60s;
         }
-        
+
         # MCP服务器路径
         location /mcp {
             proxy_pass http://prompt-optimizer/mcp;
@@ -250,20 +250,20 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             # WebSocket支持（如果MCP使用WebSocket）
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
         }
-        
+
         # 健康检查端点
         location /health {
             access_log off;
             proxy_pass http://prompt-optimizer/health;
             proxy_set_header Host $host;
         }
-        
+
         # 静态资源缓存
         location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
             proxy_pass http://prompt-optimizer;
@@ -293,26 +293,26 @@ sudo certbot renew --dry-run
 #### Docker Compose集成Certbot
 
 ```yaml
-  certbot:
-    image: certbot/certbot
-    container_name: prompt-certbot
-    volumes:
-      - ./ssl:/etc/letsencrypt
-      - ./certbot-www:/var/www/certbot
-    command: >-
-      sh -c "
-        certbot certonly --webroot 
-        -w /var/www/certbot 
-        -d ${SSL_DOMAIN} 
-        -d www.${SSL_DOMAIN}
-        --email ${SSL_EMAIL} 
-        --agree-tos 
-        --no-eff-email
-      "
-    depends_on:
-      - nginx
-    networks:
-      - prompt-network
+certbot:
+  image: certbot/certbot
+  container_name: prompt-certbot
+  volumes:
+    - ./ssl:/etc/letsencrypt
+    - ./certbot-www:/var/www/certbot
+  command: >-
+    sh -c "
+      certbot certonly --webroot 
+      -w /var/www/certbot 
+      -d ${SSL_DOMAIN} 
+      -d www.${SSL_DOMAIN}
+      --email ${SSL_EMAIL} 
+      --agree-tos 
+      --no-eff-email
+    "
+  depends_on:
+    - nginx
+  networks:
+    - prompt-network
 ```
 
 #### 自动续期脚本
@@ -329,6 +329,7 @@ echo "SSL证书续期完成: $(date)"
 ```
 
 设置定时任务：
+
 ```bash
 # 每月1日凌晨2点执行续期
 0 2 1 * * /path/to/ssl-renew.sh >> /var/log/ssl-renew.log 2>&1
@@ -456,11 +457,11 @@ services:
   prompt-optimizer:
     image: linshen/prompt-optimizer:latest
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "50m"
-        max-file: "10"
-        labels: "service=prompt-optimizer"
+        max-size: '50m'
+        max-file: '10'
+        labels: 'service=prompt-optimizer'
     environment:
       - LOG_LEVEL=info
       - LOG_FORMAT=json
@@ -471,38 +472,38 @@ services:
 使用ELK Stack进行日志聚合：
 
 ```yaml
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-    container_name: prompt-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    networks:
-      - prompt-network
+elasticsearch:
+  image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+  container_name: prompt-elasticsearch
+  environment:
+    - discovery.type=single-node
+    - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+  volumes:
+    - elasticsearch_data:/usr/share/elasticsearch/data
+  networks:
+    - prompt-network
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.8.0
-    container_name: prompt-logstash
-    volumes:
-      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    depends_on:
-      - elasticsearch
-    networks:
-      - prompt-network
+logstash:
+  image: docker.elastic.co/logstash/logstash:8.8.0
+  container_name: prompt-logstash
+  volumes:
+    - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  depends_on:
+    - elasticsearch
+  networks:
+    - prompt-network
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.8.0
-    container_name: prompt-kibana
-    ports:
-      - "5601:5601"
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    networks:
-      - prompt-network
+kibana:
+  image: docker.elastic.co/kibana/kibana:8.8.0
+  container_name: prompt-kibana
+  ports:
+    - '5601:5601'
+  environment:
+    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+  depends_on:
+    - elasticsearch
+  networks:
+    - prompt-network
 ```
 
 ### 健康检查和监控
@@ -510,36 +511,36 @@ services:
 #### Prometheus监控配置
 
 ```yaml
-  prometheus:
-    image: prom/prometheus
-    container_name: prompt-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    networks:
-      - prompt-network
+prometheus:
+  image: prom/prometheus
+  container_name: prompt-prometheus
+  ports:
+    - '9090:9090'
+  volumes:
+    - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    - prometheus_data:/prometheus
+  command:
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--storage.tsdb.path=/prometheus'
+    - '--web.console.libraries=/etc/prometheus/console_libraries'
+    - '--web.console.templates=/etc/prometheus/consoles'
+    - '--web.enable-lifecycle'
+  networks:
+    - prompt-network
 
-  grafana:
-    image: grafana/grafana
-    container_name: prompt-grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    networks:
-      - prompt-network
+grafana:
+  image: grafana/grafana
+  container_name: prompt-grafana
+  ports:
+    - '3000:3000'
+  environment:
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+  volumes:
+    - grafana_data:/var/lib/grafana
+  depends_on:
+    - prometheus
+  networks:
+    - prompt-network
 ```
 
 #### Prometheus配置文件
@@ -556,7 +557,7 @@ scrape_configs:
       - targets: ['prompt-optimizer:80']
     metrics_path: '/metrics'
     scrape_interval: 30s
-    
+
   - job_name: 'nginx'
     static_configs:
       - targets: ['nginx:80']
@@ -569,13 +570,13 @@ scrape_configs:
     scrape_interval: 30s
 
 rule_files:
-  - "alert_rules.yml"
+  - 'alert_rules.yml'
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 ```
 
 ### 备份和恢复策略
@@ -632,5 +633,6 @@ echo "备份完成: $BACKUP_DIR/prompt-optimizer-$DATE.tar.gz"
 ---
 
 **相关链接**：
+
 - [基础部署](docker-basic.md) - Docker单容器快速部署
 - [故障排除](docker-troubleshooting.md) - 常见问题和性能优化

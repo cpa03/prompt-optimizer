@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../types';
+import { Template, MessageTemplate } from '../../types'
 
 export const user_prompt_professional: Template = {
   id: 'user-prompt-professional',
@@ -51,7 +51,7 @@ export const user_prompt_professional: Template = {
 - 直接输出精准化后的用户提示词文本，确保描述具体、有针对性
 - 输出的是优化后的提示词本身，不是执行提示词对应的任务
 - 不要添加解释、示例或使用说明
-- 不要与用户进行交互或询问更多信息`
+- 不要与用户进行交互或询问更多信息`,
     },
     {
       role: 'user',
@@ -65,8 +65,8 @@ export const user_prompt_professional: Template = {
 需要优化的用户提示词：
 {{originalPrompt}}
 
-请输出精准化后的提示词：`
-    }
+请输出精准化后的提示词：`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.0.0',
@@ -74,7 +74,7 @@ export const user_prompt_professional: Template = {
     author: 'System',
     description: '适合需要精准描述的场景，将泛泛而谈转为具体要求，添加量化标准和明确参数',
     templateType: 'userOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-}; 
+  isBuiltin: true,
+}

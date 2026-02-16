@@ -1,11 +1,15 @@
-import type { ModelConfig, TextModelConfig, TextProvider, TextModel } from './types';
-import type { ITextAdapterRegistry } from '../llm/types';
-import { splitOverridesBySchema } from './parameter-utils';
-import { ModelError } from './errors';
-import { MODEL_ERROR_CODES } from '../../constants/error-codes';
-import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config';
-import { MODEL_CONTEXT_LIMITS } from '../../constants/templates';
-import { getProviderIdFromLegacy, PROVIDER_IDS, DEFAULT_PROVIDER_ID } from '../../constants/provider-ids';
+import type { ModelConfig, TextModelConfig, TextProvider, TextModel } from './types'
+import type { ITextAdapterRegistry } from '../llm/types'
+import { splitOverridesBySchema } from './parameter-utils'
+import { ModelError } from './errors'
+import { MODEL_ERROR_CODES } from '../../constants/error-codes'
+import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config'
+import { MODEL_CONTEXT_LIMITS } from '../../constants/templates'
+import {
+  getProviderIdFromLegacy,
+  PROVIDER_IDS,
+  DEFAULT_PROVIDER_ID,
+} from '../../constants/provider-ids'
 
 /**
  * 将传统 ModelConfig 转换为 TextModelConfig（使用 Registry 获取元数据）
@@ -23,29 +27,31 @@ export async function convertLegacyToTextModelConfigWithRegistry(
   registry: ITextAdapterRegistry
 ): Promise<TextModelConfig> {
   // 根据 provider 确定 providerId (使用常量映射，Flexy hates hardcoded!)
-  const providerId = getProviderIdFromLegacy(legacy.provider);
+  const providerId = getProviderIdFromLegacy(legacy.provider)
 
   try {
     // 通过 Registry 获取 Adapter
-    const adapter = registry.getAdapter(providerId);
+    const adapter = registry.getAdapter(providerId)
 
     // 从 Adapter 获取 Provider 元数据
-    const providerMeta: TextProvider = adapter.getProvider();
+    const providerMeta: TextProvider = adapter.getProvider()
 
     // 从 Adapter 获取 Model 元数据
-    let modelMeta: TextModel | undefined;
-    const staticModels = adapter.getModels();
-    modelMeta = staticModels.find(m => m.id === legacy.defaultModel);
+    let modelMeta: TextModel | undefined
+    const staticModels = adapter.getModels()
+    modelMeta = staticModels.find((m) => m.id === legacy.defaultModel)
 
     // 如果静态模型列表中没有找到，使用 buildDefaultModel
     if (!modelMeta) {
-      console.warn(`[Converter] Model ${legacy.defaultModel} not found in static models, building default`);
-      modelMeta = adapter.buildDefaultModel(legacy.defaultModel);
+      console.warn(
+        `[Converter] Model ${legacy.defaultModel} not found in static models, building default`
+      )
+      modelMeta = adapter.buildDefaultModel(legacy.defaultModel)
     }
 
-    const schema = modelMeta.parameterDefinitions ?? [];
-    const legacyParams = legacy.llmParams || {};
-    const { builtIn, custom } = splitOverridesBySchema(schema, legacyParams);
+    const schema = modelMeta.parameterDefinitions ?? []
+    const legacyParams = legacy.llmParams || {}
+    const { builtIn, custom } = splitOverridesBySchema(schema, legacyParams)
 
     // 构建 TextModelConfig
     const textModelConfig: TextModelConfig = {
@@ -56,20 +62,20 @@ export async function convertLegacyToTextModelConfigWithRegistry(
       modelMeta: modelMeta,
       connectionConfig: {
         apiKey: legacy.apiKey,
-        baseURL: legacy.baseURL
+        baseURL: legacy.baseURL,
       },
       paramOverrides: builtIn,
-      customParamOverrides: custom
-    };
+      customParamOverrides: custom,
+    }
 
-    return textModelConfig;
+    return textModelConfig
   } catch (error) {
-    console.error(`[Converter] Failed to convert legacy config for ${key}:`, error);
+    console.error(`[Converter] Failed to convert legacy config for ${key}:`, error)
     // Fallback：使用 OpenAI Adapter 并禁用配置
     try {
-      const openaiAdapter = registry.getAdapter('openai');
-      const providerMeta = openaiAdapter.getProvider();
-      const modelMeta = openaiAdapter.buildDefaultModel(legacy.defaultModel);
+      const openaiAdapter = registry.getAdapter('openai')
+      const providerMeta = openaiAdapter.getProvider()
+      const modelMeta = openaiAdapter.buildDefaultModel(legacy.defaultModel)
 
       return {
         id: key,
@@ -79,14 +85,17 @@ export async function convertLegacyToTextModelConfigWithRegistry(
         modelMeta: modelMeta,
         connectionConfig: {
           apiKey: legacy.apiKey,
-          baseURL: legacy.baseURL
+          baseURL: legacy.baseURL,
         },
-        paramOverrides: legacy.llmParams || {}
-      };
+        paramOverrides: legacy.llmParams || {},
+      }
     } catch (fallbackError) {
-      console.error(`[Converter] Fallback to OpenAI also failed for ${key}:`, fallbackError);
+      console.error(`[Converter] Fallback to OpenAI also failed for ${key}:`, fallbackError)
       const details = error instanceof Error ? error.message : String(error)
-      throw new ModelError(MODEL_ERROR_CODES.CONFIG_ERROR, `Failed to convert config ${key}: ${details}`);
+      throw new ModelError(
+        MODEL_ERROR_CODES.CONFIG_ERROR,
+        `Failed to convert config ${key}: ${details}`
+      )
     }
   }
 }
@@ -100,22 +109,19 @@ export async function convertLegacyToTextModelConfigWithRegistry(
  * @param legacy 传统配置对象
  * @returns 转换后的 TextModelConfig
  */
-export function convertLegacyToTextModelConfig(
-  key: string,
-  legacy: ModelConfig
-): TextModelConfig {
+export function convertLegacyToTextModelConfig(key: string, legacy: ModelConfig): TextModelConfig {
   // 根据 provider 确定 providerId (使用常量映射，Flexy hates hardcoded!)
-  const providerId = getProviderIdFromLegacy(legacy.provider);
+  const providerId = getProviderIdFromLegacy(legacy.provider)
 
   // 构建 Provider 元数据
-  const providerMeta: TextProvider = createProviderMeta(providerId, legacy);
+  const providerMeta: TextProvider = createProviderMeta(providerId, legacy)
 
   // 构建 Model 元数据
-  const modelMeta: TextModel = createModelMeta(legacy.defaultModel, providerId, legacy);
+  const modelMeta: TextModel = createModelMeta(legacy.defaultModel, providerId, legacy)
 
-  const schema = modelMeta.parameterDefinitions ?? [];
-  const legacyParams = legacy.llmParams || {};
-  const { builtIn, custom } = splitOverridesBySchema(schema, legacyParams);
+  const schema = modelMeta.parameterDefinitions ?? []
+  const legacyParams = legacy.llmParams || {}
+  const { builtIn, custom } = splitOverridesBySchema(schema, legacyParams)
 
   // 构建 TextModelConfig
   const textModelConfig: TextModelConfig = {
@@ -126,13 +132,13 @@ export function convertLegacyToTextModelConfig(
     modelMeta: modelMeta,
     connectionConfig: {
       apiKey: legacy.apiKey,
-      baseURL: legacy.baseURL
+      baseURL: legacy.baseURL,
     },
     paramOverrides: builtIn,
-    customParamOverrides: custom
-  };
+    customParamOverrides: custom,
+  }
 
-  return textModelConfig;
+  return textModelConfig
 }
 
 /**
@@ -154,10 +160,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   } else if (providerId === PROVIDER_IDS.DEEPSEEK) {
     return {
       id: PROVIDER_IDS.DEEPSEEK,
@@ -172,10 +178,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   } else if (providerId === PROVIDER_IDS.SILICONFLOW) {
     return {
       id: PROVIDER_IDS.SILICONFLOW,
@@ -190,10 +196,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   } else if (providerId === PROVIDER_IDS.ZHIPU) {
     return {
       id: PROVIDER_IDS.ZHIPU,
@@ -208,10 +214,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   } else if (providerId === PROVIDER_IDS.ANTHROPIC) {
     return {
       id: PROVIDER_IDS.ANTHROPIC,
@@ -226,10 +232,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
         fieldTypes: {
           apiKey: 'string',
           baseURL: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   } else {
     // OpenAI 及兼容 API - 始终使用 'OpenAI' 作为 Provider 名称
     return {
@@ -246,10 +252,10 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
           apiKey: 'string',
           baseURL: 'string',
           organization: 'string',
-          timeout: 'number'
-        }
-      }
-    };
+          timeout: 'number',
+        },
+      },
+    }
   }
 }
 
@@ -259,36 +265,37 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
 function createModelMeta(modelId: string, providerId: string, legacy: ModelConfig): TextModel {
   // 默认的 capabilities (Flexy uses provider ID constants!)
   const defaultCapabilities = {
-        supportsTools: providerId !== PROVIDER_IDS.GEMINI, // Gemini 工具支持可能不同
-    supportsReasoning: modelId.includes('o1') || modelId.includes('reasoner') || modelId.includes('thinking'),
-    maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT
-  };
+    supportsTools: providerId !== PROVIDER_IDS.GEMINI, // Gemini 工具支持可能不同
+    supportsReasoning:
+      modelId.includes('o1') || modelId.includes('reasoner') || modelId.includes('thinking'),
+    maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT,
+  }
 
   // 根据模型 ID 调整 capabilities
   if (modelId.includes('gpt-4o')) {
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GPT4O;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GPT4O
   } else if (modelId.includes('gemini')) {
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GEMINI;
-    defaultCapabilities.supportsTools = true;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.GEMINI
+    defaultCapabilities.supportsTools = true
   } else if (modelId.includes('claude')) {
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.CLAUDE;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.CLAUDE
   } else if (modelId.includes('deepseek')) {
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.DEEPSEEK;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.DEEPSEEK
   }
 
   if (providerId === PROVIDER_IDS.SILICONFLOW) {
-    defaultCapabilities.supportsTools = false;
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.SMALL;
+    defaultCapabilities.supportsTools = false
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.SMALL
   } else if (providerId === PROVIDER_IDS.ZHIPU) {
-    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.ZHIPU;
+    defaultCapabilities.maxContextLength = MODEL_CONTEXT_LIMITS.ZHIPU
   }
 
   if (modelId.includes('glm-4-air')) {
-    defaultCapabilities.supportsTools = false;
+    defaultCapabilities.supportsTools = false
   }
 
   // 构建参数定义
-  const parameterDefinitions = createParameterDefinitions(providerId);
+  const parameterDefinitions = createParameterDefinitions(providerId)
 
   return {
     id: modelId,
@@ -297,8 +304,8 @@ function createModelMeta(modelId: string, providerId: string, legacy: ModelConfi
     providerId: providerId,
     capabilities: defaultCapabilities,
     parameterDefinitions: parameterDefinitions,
-    defaultParameterValues: legacy.llmParams || {}
-  };
+    defaultParameterValues: legacy.llmParams || {},
+  }
 }
 
 /**
@@ -315,7 +322,7 @@ function createParameterDefinitions(providerId: string): readonly any[] {
         defaultValue: 1,
         minValue: 0,
         maxValue: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'maxOutputTokens',
@@ -325,9 +332,9 @@ function createParameterDefinitions(providerId: string): readonly any[] {
         defaultValue: 8192,
         minValue: 1,
         unitKey: 'params.tokens.unit',
-        step: 1
-      }
-    ];
+        step: 1,
+      },
+    ]
   } else {
     return [
       {
@@ -338,7 +345,7 @@ function createParameterDefinitions(providerId: string): readonly any[] {
         defaultValue: 1,
         minValue: 0,
         maxValue: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'max_tokens',
@@ -347,9 +354,9 @@ function createParameterDefinitions(providerId: string): readonly any[] {
         type: 'integer',
         minValue: 1,
         unitKey: 'params.tokens.unit',
-        step: 1
-      }
-    ];
+        step: 1,
+      },
+    ]
   }
 }
 
@@ -368,7 +375,7 @@ export function isLegacyConfig(config: any): config is ModelConfig {
     'defaultModel' in config &&
     !('providerMeta' in config) &&
     !('modelMeta' in config)
-  );
+  )
 }
 
 /**
@@ -384,5 +391,5 @@ export function isTextModelConfig(config: any): config is TextModelConfig {
     'providerMeta' in config &&
     'modelMeta' in config &&
     'connectionConfig' in config
-  );
+  )
 }

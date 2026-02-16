@@ -5,6 +5,7 @@ Transform basic prompts into powerful, effective instructions.
 ## What is Prompt Optimization?
 
 Prompt optimization refines your AI prompts to:
+
 - Increase accuracy and relevance
 - Improve consistency across inputs
 - Enhance clarity of instructions

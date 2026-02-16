@@ -6,7 +6,7 @@ describe('OptimizationModeSelector', () => {
   it('renders correctly with text content', () => {
     const wrapper = mount(OptimizationModeSelector, {
       props: {
-        modelValue: 'system'
+        modelValue: 'system',
       },
     })
 

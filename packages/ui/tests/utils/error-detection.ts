@@ -15,7 +15,7 @@ interface SetupErrorDetectionOptions {
 
 const DEFAULT_IGNORE_PATTERNS: RegExp[] = [
   /ResizeObserver loop limit exceeded/i,
-  /ResizeObserver loop completed with undelivered notifications/i
+  /ResizeObserver loop completed with undelivered notifications/i,
 ]
 
 let currentIgnorePatterns: RegExp[] = [...DEFAULT_IGNORE_PATTERNS]
@@ -64,10 +64,7 @@ export function allowConsole(pattern: RegExp): void {
 
 export function setupErrorDetection(options: SetupErrorDetectionOptions = {}): void {
   failOnWarn = options.failOnWarn ?? process.env.UI_FAIL_ON_WARN !== 'false'
-  currentIgnorePatterns = [
-    ...DEFAULT_IGNORE_PATTERNS,
-    ...(options.ignorePatterns ?? [])
-  ]
+  currentIgnorePatterns = [...DEFAULT_IGNORE_PATTERNS, ...(options.ignorePatterns ?? [])]
 
   let records: ConsoleRecord[] = []
   let onUnhandledRejection: ((event: PromiseRejectionEvent) => void) | null = null
@@ -122,7 +119,8 @@ export function setupErrorDetection(options: SetupErrorDetectionOptions = {}): v
 
   afterEach(() => {
     if (typeof window !== 'undefined' && window.removeEventListener) {
-      if (onUnhandledRejection) window.removeEventListener('unhandledrejection', onUnhandledRejection)
+      if (onUnhandledRejection)
+        window.removeEventListener('unhandledrejection', onUnhandledRejection)
       if (onError) window.removeEventListener('error', onError)
       onUnhandledRejection = null
       onError = null
@@ -142,4 +140,3 @@ export function setupErrorDetection(options: SetupErrorDetectionOptions = {}): v
     }
   })
 }
-

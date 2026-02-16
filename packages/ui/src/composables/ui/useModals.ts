@@ -26,10 +26,10 @@ export function useModals(
 ) {
   const toast = useToast()
   const { t } = useI18n()
-  
+
   // 获取模板管理器引用
   const templateManager = computed(() => services.value?.templateManager)
-  
+
   // 创建一个 reactive 状态对象
   const state = reactive({
     // 弹窗状态
@@ -56,8 +56,8 @@ export function useModals(
       optimizeModelSelect.value?.refresh()
       testModelSelect.value?.refresh()
       state.showConfig = false
-    }
+    },
   })
 
   return state
-} 
+}

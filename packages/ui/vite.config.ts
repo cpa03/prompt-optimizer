@@ -6,7 +6,7 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
-  
+
   return {
     // Monorepo: load VITE_* from repo root .env(.local) so optional integrations
     // can be enabled for the built UI bundle used by the web dev server.
@@ -14,21 +14,23 @@ export default defineConfig(({ mode }) => {
     plugins: [vue()],
     resolve: {
       alias: {
-        '@ui': path.resolve(__dirname, '../ui')
-      }
+        '@ui': path.resolve(__dirname, '../ui'),
+      },
     },
     build: {
       lib: {
         entry: resolve(__dirname, 'src/index.ts'),
         name: 'PromptOptimizerUI',
         fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
-        formats: ['es', 'cjs']
+        formats: ['es', 'cjs'],
       },
-      watch: !isProduction ? {
-        // 更精确的监听配置
-        include: ['src/**/*'],
-        buildDelay: 100
-      } : null,
+      watch: !isProduction
+        ? {
+            // 更精确的监听配置
+            include: ['src/**/*'],
+            buildDelay: 100,
+          }
+        : null,
       sourcemap: !isProduction,
       minify: 'terser',
       terserOptions: {
@@ -39,24 +41,33 @@ export default defineConfig(({ mode }) => {
         },
       },
       rollupOptions: {
-        external: ['vue', 'vue-router', '@prompt-optimizer/core', 'element-plus', 'element-plus/dist/index.css', 'uuid', 'naive-ui', /naive-ui\/.*/],
+        external: [
+          'vue',
+          'vue-router',
+          '@prompt-optimizer/core',
+          'element-plus',
+          'element-plus/dist/index.css',
+          'uuid',
+          'naive-ui',
+          /naive-ui\/.*/,
+        ],
         output: {
           globals: {
             vue: 'Vue',
             'vue-router': 'VueRouter',
             '@prompt-optimizer/core': 'PromptOptimizerCore',
             'element-plus': 'ElementPlus',
-            'uuid': 'uuid'
+            uuid: 'uuid',
           },
           assetFileNames: 'style.css',
           // Preserve modules for better tree-shaking
           preserveModules: false,
           inlineDynamicImports: false,
-        }
+        },
       },
       cssCodeSplit: false,
-      emptyOutDir: false
+      emptyOutDir: false,
     },
-    assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.svg']
+    assetsInclude: ['**/*.jpg', '**/*.jpeg', '**/*.png', '**/*.svg'],
   }
 })

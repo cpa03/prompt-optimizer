@@ -1,4 +1,4 @@
-import type { IStorageProvider } from './types';
+import type { IStorageProvider } from './types'
 
 /**
  * 内存存储提供者
@@ -6,7 +6,7 @@ import type { IStorageProvider } from './types';
  * 数据仅存储在内存中，应用重启后会丢失
  */
 export class MemoryStorageProvider implements IStorageProvider {
-  private storage = new Map<string, string>();
+  private storage = new Map<string, string>()
 
   /**
    * 获取存储项
@@ -14,8 +14,8 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 存储值或null
    */
   async getItem(key: string): Promise<string | null> {
-    const value = this.storage.get(key);
-    return value !== undefined ? value : null;
+    const value = this.storage.get(key)
+    return value !== undefined ? value : null
   }
 
   /**
@@ -24,7 +24,7 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param value 存储值
    */
   async setItem(key: string, value: string): Promise<void> {
-    this.storage.set(key, value);
+    this.storage.set(key, value)
   }
 
   /**
@@ -32,14 +32,14 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param key 存储键
    */
   async removeItem(key: string): Promise<void> {
-    this.storage.delete(key);
+    this.storage.delete(key)
   }
 
   /**
    * 清空所有存储项
    */
   async clearAll(): Promise<void> {
-    this.storage.clear();
+    this.storage.clear()
   }
 
   /**
@@ -48,37 +48,39 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param modifier 修改函数
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
-    const currentValue = await this.getItem(key);
-    let parsedValue: T | null = null;
-    
+    const currentValue = await this.getItem(key)
+    let parsedValue: T | null = null
+
     if (currentValue) {
       try {
-        parsedValue = JSON.parse(currentValue) as T;
+        parsedValue = JSON.parse(currentValue) as T
       } catch (parseError) {
         throw new Error(
           `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`
-        );
+        )
       }
     }
-    
-    const newValue = modifier(parsedValue);
-    await this.setItem(key, JSON.stringify(newValue));
+
+    const newValue = modifier(parsedValue)
+    await this.setItem(key, JSON.stringify(newValue))
   }
 
   /**
    * 批量更新
    * @param operations 操作数组
    */
-  async batchUpdate(operations: Array<{
-    key: string;
-    operation: 'set' | 'remove';
-    value?: string;
-  }>): Promise<void> {
+  async batchUpdate(
+    operations: Array<{
+      key: string
+      operation: 'set' | 'remove'
+      value?: string
+    }>
+  ): Promise<void> {
     for (const op of operations) {
       if (op.operation === 'set' && op.value !== undefined) {
-        await this.setItem(op.key, op.value);
+        await this.setItem(op.key, op.value)
       } else if (op.operation === 'remove') {
-        await this.removeItem(op.key);
+        await this.removeItem(op.key)
       }
     }
   }
@@ -91,8 +93,8 @@ export class MemoryStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true,
       supportsBatch: true,
-      maxStorageSize: undefined // 内存存储没有固定限制
-    };
+      maxStorageSize: undefined, // 内存存储没有固定限制
+    }
   }
 
   /**
@@ -100,7 +102,7 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 存储项数量
    */
   get size(): number {
-    return this.storage.size;
+    return this.storage.size
   }
 
   /**
@@ -109,7 +111,7 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 是否包含该键
    */
   has(key: string): boolean {
-    return this.storage.has(key);
+    return this.storage.has(key)
   }
 
   /**
@@ -117,6 +119,6 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 所有键的数组
    */
   getAllKeys(): string[] {
-    return Array.from(this.storage.keys());
+    return Array.from(this.storage.keys())
   }
-} 
+}

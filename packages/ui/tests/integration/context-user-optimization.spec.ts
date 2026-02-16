@@ -6,7 +6,7 @@ const toast = {
   error: vi.fn(),
   warning: vi.fn(),
   info: vi.fn(),
-  loading: vi.fn()
+  loading: vi.fn(),
 }
 
 vi.mock('vue-i18n', async (importOriginal) => {
@@ -14,13 +14,13 @@ vi.mock('vue-i18n', async (importOriginal) => {
   return {
     ...actual,
     useI18n: () => ({
-      t: (key: string) => key
-    })
+      t: (key: string) => key,
+    }),
   }
 })
 
 vi.mock('../../src/composables/ui/useToast', () => ({
-  useToast: () => toast
+  useToast: () => toast,
 }))
 
 import type { AppServices } from '../../src/types/services'
@@ -38,23 +38,23 @@ describe('ContextUser optimization (integration)', () => {
         handlers.onToken('ok')
         handlers.onReasoningToken('why')
         await handlers.onComplete()
-      })
+      }),
     }
 
     const historyManager = {
       createNewChain: vi.fn(async (recordData: any) => ({
         chainId: 'chain-ctx-user',
         versions: [recordData],
-        currentRecord: recordData
+        currentRecord: recordData,
       })),
-      addIteration: vi.fn()
+      addIteration: vi.fn(),
     }
 
     const services: Ref<AppServices | null> = ref({
       promptService,
       historyManager,
       // Unused by this test but required by the AppServices type
-      contextMode: ref('user' as any)
+      contextMode: ref('user' as any),
     } as any)
 
     const selectedOptimizeModel = ref('text-model-1')
@@ -86,12 +86,14 @@ describe('ContextUser optimization (integration)', () => {
     toast.error.mockReset()
 
     const promptService = {
-      iteratePromptStream: vi.fn(async (_orig: any, _last: any, _note: any, _model: any, handlers: any) => {
-        handlers.onToken('next ')
-        handlers.onToken('v')
-        handlers.onReasoningToken('r')
-        await handlers.onComplete()
-      })
+      iteratePromptStream: vi.fn(
+        async (_orig: any, _last: any, _note: any, _model: any, handlers: any) => {
+          handlers.onToken('next ')
+          handlers.onToken('v')
+          handlers.onReasoningToken('r')
+          await handlers.onComplete()
+        }
+      ),
     }
 
     const historyManager = {
@@ -99,15 +101,15 @@ describe('ContextUser optimization (integration)', () => {
       addIteration: vi.fn(async (_payload: any) => ({
         chainId: 'chain-ctx-user',
         versions: [{ id: 'v0' }, { id: 'v1' }],
-        currentRecord: { id: 'v1' }
-      }))
+        currentRecord: { id: 'v1' },
+      })),
     }
 
     const services: Ref<AppServices | null> = ref({
       promptService,
       historyManager,
       // Unused by this test but required by the AppServices type
-      contextMode: ref('user' as any)
+      contextMode: ref('user' as any),
     } as any)
 
     const selectedOptimizeModel = ref('text-model-1')
@@ -124,7 +126,11 @@ describe('ContextUser optimization (integration)', () => {
     ;(optimizer as any).prompt = 'orig'
     ;(optimizer as any).currentChainId = 'chain-ctx-user'
 
-    await optimizer.iterate({ originalPrompt: 'orig', optimizedPrompt: 'last', iterateInput: 'note' })
+    await optimizer.iterate({
+      originalPrompt: 'orig',
+      optimizedPrompt: 'last',
+      iterateInput: 'note',
+    })
 
     expect(promptService.iteratePromptStream).toHaveBeenCalledTimes(1)
     expect(historyManager.addIteration).toHaveBeenCalledTimes(1)

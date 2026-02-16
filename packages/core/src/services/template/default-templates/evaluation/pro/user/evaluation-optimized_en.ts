@@ -4,7 +4,7 @@
  * Evaluate effectiveness of optimized user prompt with variables
  */
 
-import type { Template, MessageTemplate } from '../../../../types';
+import type { Template, MessageTemplate } from '../../../../types'
 
 export const template: Template = {
   id: 'evaluation-pro-variable-optimized',
@@ -99,7 +99,7 @@ improvements should be **specific and actionable** suggestions:
 - ✓ Point out how to further optimize variable utilization
 - ✓ Suggest improving variable and static text coordination
 - ✓ Suggest adding handling logic for variable values
-- ✓ Point out structure or expression issues that can still be improved`
+- ✓ Point out structure or expression issues that can still be improved`,
     },
     {
       role: 'user',
@@ -131,8 +131,8 @@ improvements should be **specific and actionable** suggestions:
 
 ---
 
-Please strictly evaluate the effectiveness of the optimized prompt and provide specific suggestions for further improvement, with particular focus on variable utilization.`
-    }
+Please strictly evaluate the effectiveness of the optimized prompt and provide specific suggestions for further improvement, with particular focus on variable utilization.`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '3.0.0',
@@ -141,7 +141,7 @@ Please strictly evaluate the effectiveness of the optimized prompt and provide s
     description: 'Evaluate effectiveness of optimized user prompt with variables',
     templateType: 'evaluation',
     language: 'en',
-    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'user', 'variable']
+    tags: ['evaluation', 'optimized', 'scoring', 'pro', 'user', 'variable'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

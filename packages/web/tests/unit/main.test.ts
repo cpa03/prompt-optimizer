@@ -4,9 +4,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 vi.mock('vue', () => ({
   createApp: vi.fn(() => ({
     use: vi.fn(),
-    mount: vi.fn()
+    mount: vi.fn(),
   })),
-  watch: vi.fn()
+  watch: vi.fn(),
 }))
 
 vi.mock('@prompt-optimizer/ui', () => ({
@@ -16,13 +16,13 @@ vi.mock('@prompt-optimizer/ui', () => ({
     global: {
       t: vi.fn((key: string) => key),
       locale: {
-        value: 'zh-CN'
-      }
-    }
+        value: 'zh-CN',
+      },
+    },
   },
   router: {
-    isReady: vi.fn(() => Promise.resolve())
-  }
+    isReady: vi.fn(() => Promise.resolve()),
+  },
 }))
 
 describe('Web App Main', () => {
@@ -33,27 +33,27 @@ describe('Web App Main', () => {
       value: {
         title: '',
         documentElement: {
-          setAttribute: vi.fn()
+          setAttribute: vi.fn(),
         },
         head: {
-          appendChild: vi.fn()
+          appendChild: vi.fn(),
         },
         createElement: vi.fn(() => ({
           src: '',
           defer: false,
           onload: null,
-          onerror: null
-        }))
+          onerror: null,
+        })),
       },
-      writable: true
+      writable: true,
     })
-    
+
     // Mock window
     Object.defineProperty(global, 'window', {
       value: {
-        addEventListener: vi.fn()
+        addEventListener: vi.fn(),
       },
-      writable: true
+      writable: true,
     })
   })
 

@@ -32,11 +32,11 @@ export interface TestInputSectionEmits {
 export interface TestControlBarProps {
   // 模型选择相关
   modelLabel: string
-  
+
   // 对比模式控制
   showCompareToggle?: boolean
   isCompareMode?: boolean
-  
+
   // 主要操作按钮
   primaryActionText: string
   primaryActionDisabled?: boolean
@@ -47,11 +47,11 @@ export interface TestControlBarProps {
 
   /** E2E: stable selector for primary action button */
   primaryActionTestId?: string
-  
+
   // 布局配置
   layout?: 'default' | 'compact' | 'minimal'
   buttonSize?: ButtonSize
-  
+
   // 响应式配置
   modelSelectSpan?: number
   controlButtonsSpan?: number
@@ -68,15 +68,15 @@ export interface TestResultSectionProps {
   isCompareMode?: boolean
   verticalLayout?: boolean
   showOriginal?: boolean
-  
+
   // 标题配置
   originalTitle?: string
   optimizedTitle?: string
   singleResultTitle?: string
-  
+
   // 尺寸配置
   cardSize?: ComponentSize
-  
+
   // 间距配置
   gap?: string | number
 }
@@ -87,24 +87,24 @@ export interface TestAreaPanelProps {
   optimizationMode: OptimizationMode
   isTestRunning?: boolean
   advancedModeEnabled?: boolean
-  
+
   // 测试内容
   testContent?: string
   isCompareMode?: boolean
-  
+
   // 功能开关
   enableCompareMode?: boolean
   enableFullscreen?: boolean
 
   /** E2E: stable selector prefix, e.g. "basic-system" */
   testIdPrefix?: string
-  
+
   // 布局配置
   inputMode?: 'compact' | 'normal'
   controlBarLayout?: 'default' | 'compact' | 'minimal'
   buttonSize?: ButtonSize
   conversationMaxHeight?: string
-  
+
   // 结果显示配置
   showOriginalResult?: boolean
   resultVerticalLayout?: boolean
@@ -116,7 +116,7 @@ export interface TestAreaPanelProps {
 export interface TestAreaPanelEmits {
   'update:testContent': [value: string]
   'update:isCompareMode': [value: boolean]
-  'test': []
+  test: []
   'compare-toggle': []
 }
 
@@ -129,21 +129,21 @@ export interface TestAreaConfig {
     buttonSize: ButtonSize
     enableFullscreen: boolean
   }
-  
+
   // 功能开关
   features: {
     compareMode: boolean
     conversationManager: boolean
     advancedMode: boolean
   }
-  
+
   // 高度配置
   heights: {
     testInputMin: number
     testInputMax: number
     conversationMax: string
   }
-  
+
   // 响应式断点配置
   responsive: {
     modelSelectSpan: {

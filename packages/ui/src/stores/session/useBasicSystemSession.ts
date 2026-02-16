@@ -121,9 +121,9 @@ const createDefaultState = (): BasicSystemSessionState => ({
   versionId: '',
   testContent: '',
   testResults: null,
-  layout: { 
-    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT, 
-    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT 
+  layout: {
+    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT,
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT,
   },
   testVariants: [
     { id: 'a', version: 0, modelKey: '' },
@@ -171,9 +171,9 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
   const testResults = ref<TestResults | null>(null)
 
   // 测试布局与列配置（使用集中常量）
-  const layout = ref<BasicSystemLayoutConfig>({ 
-    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT, 
-    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT 
+  const layout = ref<BasicSystemLayoutConfig>({
+    mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT,
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT,
   })
   const testVariants = ref<TestVariantConfig[]>([
     { id: 'a', version: 0, modelKey: '' },
@@ -350,7 +350,7 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
   const setMainSplitLeftPct = (pct: number) => {
     const normalized = Number.isFinite(pct) ? Math.round(pct) : layout.value.mainSplitLeftPct
     const next = Math.min(
-      LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT, 
+      LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT,
       Math.max(LAYOUT_CONSTANTS.SPLIT_PANEL.MIN_LEFT_PCT, normalized)
     )
     if (layout.value.mainSplitLeftPct === next) return
@@ -363,7 +363,7 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
    * 更新某一列（variant）的版本/模型配置
    */
   const updateTestVariant = (id: TestVariantId, patch: Partial<Omit<TestVariantConfig, 'id'>>) => {
-    const idx = testVariants.value.findIndex(v => v.id === id)
+    const idx = testVariants.value.findIndex((v) => v.id === id)
     if (idx < 0) return
     const prev = testVariants.value[idx]
     const next: TestVariantConfig = { ...prev, ...patch, id }
@@ -432,10 +432,7 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
         isCompareMode: isCompareMode.value,
         lastActiveAt: lastActiveAt.value,
       }
-      await $services.preferenceService.set(
-        'session/v1/basic-system',
-        sessionState
-      )
+      await $services.preferenceService.set('session/v1/basic-system', sessionState)
     } catch (error) {
       console.error('[BasicSystemSession] 保存会话失败:', error)
     }
@@ -453,10 +450,7 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
     }
 
     try {
-      const saved = await $services.preferenceService.get<unknown>(
-        'session/v1/basic-system',
-        null
-      )
+      const saved = await $services.preferenceService.get<unknown>('session/v1/basic-system', null)
 
       if (saved) {
         const parsed =
@@ -475,17 +469,22 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
         const defaultState = createDefaultState()
         const coerceVersionValue = (value: unknown): TestPanelVersionValue | null => {
           if (value === 'latest') return 'latest'
-          if (typeof value === 'number' && Number.isFinite(value) && value >= 0) return Math.floor(value)
+          if (typeof value === 'number' && Number.isFinite(value) && value >= 0)
+            return Math.floor(value)
           return null
         }
 
-        const legacyModelKey = typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
+        const legacyModelKey =
+          typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
 
         // variant results (v2): 优先从 saved 读取；否则从旧 testResults 迁移 a/b
         const savedVariantResults = (parsed as Partial<BasicSystemSessionState>).testVariantResults
-        const savedFingerprint = (parsed as Partial<BasicSystemSessionState>).testVariantLastRunFingerprint
+        const savedFingerprint = (parsed as Partial<BasicSystemSessionState>)
+          .testVariantLastRunFingerprint
         const nextVariantResults: TestVariantResults = { ...defaultState.testVariantResults }
-        const nextFingerprint: TestVariantLastRunFingerprint = { ...defaultState.testVariantLastRunFingerprint }
+        const nextFingerprint: TestVariantLastRunFingerprint = {
+          ...defaultState.testVariantLastRunFingerprint,
+        }
 
         const coerceVariantResult = (value: unknown): TestVariantResult | null => {
           if (!value || typeof value !== 'object') return null
@@ -504,10 +503,14 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
           }
         } else if (parsed.testResults) {
           // legacy: 仅 a/b
-          if (typeof parsed.testResults.originalResult === 'string') nextVariantResults.a.result = parsed.testResults.originalResult
-          if (typeof parsed.testResults.originalReasoning === 'string') nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
-          if (typeof parsed.testResults.optimizedResult === 'string') nextVariantResults.b.result = parsed.testResults.optimizedResult
-          if (typeof parsed.testResults.optimizedReasoning === 'string') nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
+          if (typeof parsed.testResults.originalResult === 'string')
+            nextVariantResults.a.result = parsed.testResults.originalResult
+          if (typeof parsed.testResults.originalReasoning === 'string')
+            nextVariantResults.a.reasoning = parsed.testResults.originalReasoning
+          if (typeof parsed.testResults.optimizedResult === 'string')
+            nextVariantResults.b.result = parsed.testResults.optimizedResult
+          if (typeof parsed.testResults.optimizedReasoning === 'string')
+            nextVariantResults.b.reasoning = parsed.testResults.optimizedReasoning
         }
 
         if (savedFingerprint && typeof savedFingerprint === 'object') {
@@ -522,16 +525,21 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
 
         // layout
         const savedLayout = (parsed as Partial<BasicSystemSessionState>).layout
-        const savedLeftRaw = savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
-          ? savedLayout.mainSplitLeftPct
-          : defaultState.layout.mainSplitLeftPct
+        const savedLeftRaw =
+          savedLayout && typeof savedLayout.mainSplitLeftPct === 'number'
+            ? savedLayout.mainSplitLeftPct
+            : defaultState.layout.mainSplitLeftPct
         const savedLeft = Math.min(
-          LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT, 
+          LAYOUT_CONSTANTS.SPLIT_PANEL.MAX_LEFT_PCT,
           Math.max(LAYOUT_CONSTANTS.SPLIT_PANEL.MIN_LEFT_PCT, Math.round(savedLeftRaw))
         )
-        const savedCols = savedLayout && LAYOUT_CONSTANTS.TEST_COLUMN.VALID_COUNTS.includes(savedLayout.testColumnCount as 2 | 3 | 4)
-          ? savedLayout.testColumnCount
-          : defaultState.layout.testColumnCount
+        const savedCols =
+          savedLayout &&
+          LAYOUT_CONSTANTS.TEST_COLUMN.VALID_COUNTS.includes(
+            savedLayout.testColumnCount as 2 | 3 | 4
+          )
+            ? savedLayout.testColumnCount
+            : defaultState.layout.testColumnCount
         layout.value = {
           mainSplitLeftPct: savedLeft,
           testColumnCount: savedCols,
@@ -550,7 +558,10 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
           })
           testVariants.value = normalized
         } else {
-          testVariants.value = defaultState.testVariants.map((v) => ({ ...v, modelKey: legacyModelKey }))
+          testVariants.value = defaultState.testVariants.map((v) => ({
+            ...v,
+            modelKey: legacyModelKey,
+          }))
         }
         // 兼容旧数据：未保存 evaluationResults 时使用默认值
         evaluationResults.value = {

@@ -13,7 +13,7 @@ describe('Session stores (image) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -29,15 +29,15 @@ describe('Session stores (image) persistence', () => {
         getMetadata,
         listAllMetadata,
         deleteImages,
-        getImage: vi.fn()
-      } as any
+        getImage: vi.fn(),
+      } as any,
     })
 
     const store = useImageText2ImageSession(pinia)
     store.updatePrompt('p')
     store.updateOriginalImageResult({
       images: [{ b64: 'AAAA', mimeType: 'image/png' }],
-      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' }
+      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' },
     } as any)
 
     const runtimeBefore = store.originalImageResult?.images?.[0] as any
@@ -50,8 +50,13 @@ describe('Session stores (image) persistence', () => {
 
     const raw = set.mock.calls[0]?.[1]
     const saved =
-      typeof raw === 'string' ? JSON.parse(raw || '{}') : (raw as Record<string, any> | undefined) || {}
-    expect(saved.originalImageResult.images[0]).toMatchObject({ id: expect.any(String), _type: 'image-ref' })
+      typeof raw === 'string'
+        ? JSON.parse(raw || '{}')
+        : (raw as Record<string, any> | undefined) || {}
+    expect(saved.originalImageResult.images[0]).toMatchObject({
+      id: expect.any(String),
+      _type: 'image-ref',
+    })
 
     const runtimeAfter = store.originalImageResult?.images?.[0] as any
     expect(runtimeAfter?.b64).toBe('AAAA')
@@ -62,7 +67,7 @@ describe('Session stores (image) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -78,7 +83,7 @@ describe('Session stores (image) persistence', () => {
     const store = useImageText2ImageSession(pinia)
     store.updateOriginalImageResult({
       images: [{ b64: 'AAAA', mimeType: 'image/png' }],
-      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' }
+      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' },
     } as any)
 
     await expect(store.saveSession()).rejects.toThrow(/ImageStorageService/)
@@ -96,7 +101,7 @@ describe('Session stores (image) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -112,14 +117,14 @@ describe('Session stores (image) persistence', () => {
         getMetadata,
         listAllMetadata,
         deleteImages,
-        getImage: vi.fn()
-      } as any
+        getImage: vi.fn(),
+      } as any,
     })
 
     const store = useImageText2ImageSession(pinia)
     store.updateOriginalImageResult({
       images: [{ b64: 'AAAA', mimeType: 'image/png' }],
-      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' }
+      metadata: { prompt: 'p', configId: 'cfg', modelId: 'm' },
     } as any)
 
     await expect(store.saveSession()).rejects.toThrow('boom')
@@ -168,15 +173,18 @@ describe('Session stores (image) persistence', () => {
             return { data: 'RESULT_B64', metadata: { mimeType: 'image/png' } }
           }
           return null
-        })
-      } as any
+        }),
+      } as any,
     })
 
     const store = useImageImage2ImageSession(pinia)
     await store.restoreSession()
 
     expect(store.inputImageB64).toBe('INPUT_B64')
-    expect(store.originalImageResult?.images?.[0]).toMatchObject({ b64: 'RESULT_B64', mimeType: 'image/png' })
+    expect(store.originalImageResult?.images?.[0]).toMatchObject({
+      b64: 'RESULT_B64',
+      mimeType: 'image/png',
+    })
     expect(get).toHaveBeenCalledWith('session/v1/image-image2image', null)
   })
 
@@ -185,7 +193,7 @@ describe('Session stores (image) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -216,7 +224,7 @@ describe('Session stores (image) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -232,8 +240,8 @@ describe('Session stores (image) persistence', () => {
         getMetadata,
         listAllMetadata,
         deleteImages,
-        getImage: vi.fn()
-      } as any
+        getImage: vi.fn(),
+      } as any,
     })
 
     const store = useImageImage2ImageSession(pinia)

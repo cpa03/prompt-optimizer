@@ -7,10 +7,7 @@ import type { EvaluationResponse, EvaluationType } from '@prompt-optimizer/core'
  * - We persist only stable data (results) for restart restore.
  * - We do NOT persist transient UI state (panel open, streaming, isEvaluating).
  */
-export type PersistedEvaluationResults = Record<
-  EvaluationType,
-  EvaluationResponse | null
->
+export type PersistedEvaluationResults = Record<EvaluationType, EvaluationResponse | null>
 
 export const createDefaultEvaluationResults = (): PersistedEvaluationResults => ({
   original: null,

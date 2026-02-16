@@ -57,20 +57,26 @@ const handleTestConnection = async (id: string) => {
   }
 
   if (!isRunningInElectron()) {
-    const model = manager.models.value.find(m => m.id === id)
+    const model = manager.models.value.find((m) => m.id === id)
     if (model) {
       const isCorsRestricted = !!model.providerMeta?.corsRestricted
       if (isCorsRestricted) {
-        const providerName = model.providerMeta?.name || model.providerMeta?.id || 'Unknown Provider'
+        const providerName =
+          model.providerMeta?.name || model.providerMeta?.id || 'Unknown Provider'
         dialog.warning({
           title: t('modelManager.corsRestrictedTag'),
-          content: () => h('div', { style: 'white-space: pre-line;' }, t('modelManager.corsRestrictedConfirm', { provider: providerName })),
+          content: () =>
+            h(
+              'div',
+              { style: 'white-space: pre-line;' },
+              t('modelManager.corsRestrictedConfirm', { provider: providerName })
+            ),
           positiveText: t('common.confirm'),
           negativeText: t('common.cancel'),
           // Don't block dialog close while the async test runs.
           onPositiveClick: () => {
             void runTest()
-          }
+          },
         })
         return
       }
@@ -132,7 +138,7 @@ const openAddModal = async () => {
 
 defineExpose({
   openAddModal,
-  refresh: manager.loadModels
+  refresh: manager.loadModels,
 })
 
 onMounted(async () => {

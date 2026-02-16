@@ -1,15 +1,15 @@
-import { TextModelConfig, TextProvider, TextModel } from './types';
-import { ValidatedCustomModelEnvConfig, scanCustomModelEnvVars } from '../../utils/environment';
-import { getDefaultTextModels } from './defaults';
-import { MODEL_CONTEXT_LIMITS } from '../../constants/templates';
+import { TextModelConfig, TextProvider, TextModel } from './types'
+import { ValidatedCustomModelEnvConfig, scanCustomModelEnvVars } from '../../utils/environment'
+import { getDefaultTextModels } from './defaults'
+import { MODEL_CONTEXT_LIMITS } from '../../constants/templates'
 
 /**
  * 获取静态模型键列表
  * 通过创建临时静态模型配置来动态获取键列表，避免硬编码
  */
 function getStaticModelKeys(): string[] {
-  const tempStaticModels = getDefaultTextModels();
-  return Object.keys(tempStaticModels);
+  const tempStaticModels = getDefaultTextModels()
+  return Object.keys(tempStaticModels)
 }
 
 /**
@@ -22,8 +22,8 @@ export function generateCustomModelName(suffix: string): string {
   return suffix
     .replace(/[_-]/g, ' ')
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
 }
 
 /**
@@ -34,7 +34,7 @@ export function generateCustomModelName(suffix: string): string {
  */
 export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig): TextModelConfig {
   // 输入配置已通过验证，直接使用（所有必需字段已确保存在）
-  const modelName = generateCustomModelName(envConfig.suffix);
+  const modelName = generateCustomModelName(envConfig.suffix)
 
   // OpenAI 兼容 Provider（所有自定义模型都使用 OpenAI 兼容 API）
   const customProvider: TextProvider = {
@@ -51,10 +51,10 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
         apiKey: 'string',
         baseURL: 'string',
         organization: 'string',
-        timeout: 'number'
-      }
-    }
-  };
+        timeout: 'number',
+      },
+    },
+  }
 
   // 自定义模型元数据
   const customModel: TextModel = {
@@ -65,7 +65,7 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
     capabilities: {
       supportsTools: false,
       supportsReasoning: false,
-      maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT
+      maxContextLength: MODEL_CONTEXT_LIMITS.DEFAULT,
     },
     parameterDefinitions: [
       {
@@ -74,13 +74,13 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
         description: 'Sampling temperature',
         default: 1,
         min: 0,
-        max: 2
-      }
+        max: 2,
+      },
     ],
     defaultParameterValues: {
-      temperature: 1
-    }
-  };
+      temperature: 1,
+    },
+  }
 
   return {
     id: `custom_${envConfig.suffix}`,
@@ -90,10 +90,10 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
     modelMeta: customModel,
     connectionConfig: {
       apiKey: envConfig.apiKey,
-      baseURL: envConfig.baseURL
+      baseURL: envConfig.baseURL,
     },
-    paramOverrides: {}
-  };
+    paramOverrides: {},
+  }
 }
 
 /**
@@ -101,36 +101,45 @@ export function generateTextModelConfig(envConfig: ValidatedCustomModelEnvConfig
  * @returns 动态模型配置映射
  */
 export function generateDynamicModels(): Record<string, TextModelConfig> {
-  const dynamicModels: Record<string, TextModelConfig> = {};
+  const dynamicModels: Record<string, TextModelConfig> = {}
 
   try {
     // 获取已验证的自定义模型配置（scanCustomModelEnvVars已完成所有验证）
-    const customModelConfigs = scanCustomModelEnvVars();
+    const customModelConfigs = scanCustomModelEnvVars()
 
     Object.entries(customModelConfigs).forEach(([suffix, envConfig]) => {
       try {
-        const modelKey = `custom_${suffix}`;
+        const modelKey = `custom_${suffix}`
 
         // 检查是否与静态模型key冲突（动态获取静态模型键，避免硬编码）
-        const staticModelKeys = getStaticModelKeys();
+        const staticModelKeys = getStaticModelKeys()
         if (staticModelKeys.includes(suffix)) {
-          console.warn(`[generateDynamicModels] Suffix conflict: ${suffix} conflicts with static model, skipping`);
-          return;
+          console.warn(
+            `[generateDynamicModels] Suffix conflict: ${suffix} conflicts with static model, skipping`
+          )
+          return
         }
 
         // 配置已通过验证，直接生成模型配置
-        dynamicModels[modelKey] = generateTextModelConfig(envConfig);
-        console.log(`[generateDynamicModels] Generated model: ${modelKey} (${dynamicModels[modelKey].name})`);
+        dynamicModels[modelKey] = generateTextModelConfig(envConfig)
+        console.log(
+          `[generateDynamicModels] Generated model: ${modelKey} (${dynamicModels[modelKey].name})`
+        )
       } catch (error) {
-        console.error(`[generateDynamicModels] Error generating model for ${suffix}:`, error);
+        console.error(`[generateDynamicModels] Error generating model for ${suffix}:`, error)
         // 继续处理其他模型，不因单个模型错误而中断
       }
-    });
+    })
 
-    console.log(`[generateDynamicModels] Successfully generated ${Object.keys(dynamicModels).length} dynamic custom models`);
+    console.log(
+      `[generateDynamicModels] Successfully generated ${Object.keys(dynamicModels).length} dynamic custom models`
+    )
   } catch (error) {
-    console.error('[generateDynamicModels] Error scanning custom model environment variables:', error);
+    console.error(
+      '[generateDynamicModels] Error scanning custom model environment variables:',
+      error
+    )
   }
 
-  return dynamicModels;
+  return dynamicModels
 }

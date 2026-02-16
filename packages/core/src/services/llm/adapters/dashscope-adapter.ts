@@ -22,8 +22,8 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 131072
-    }
+      maxContextLength: 131072,
+    },
   },
   {
     id: 'qwen-plus',
@@ -32,8 +32,8 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
-    }
+      maxContextLength: 131072,
+    },
   },
   {
     id: 'qwen-turbo',
@@ -42,8 +42,8 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000
-    }
+      maxContextLength: 1000000,
+    },
   },
   {
     id: 'qwen-flash',
@@ -52,9 +52,9 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072
-    }
-  }
+      maxContextLength: 131072,
+    },
+  },
 ]
 
 /**
@@ -79,9 +79,9 @@ export class DashScopeAdapter extends OpenAIAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -95,14 +95,14 @@ export class DashScopeAdapter extends OpenAIAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }
@@ -128,7 +128,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         maxValue: 2,
         min: 0,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'top_p',
@@ -142,7 +142,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         maxValue: 1,
         min: 0,
         max: 1,
-        step: 0.01
+        step: 0.01,
       },
       {
         name: 'max_tokens',
@@ -155,7 +155,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         min: 1,
         max: 16384,
         step: 1,
-        unitKey: 'params.tokens.unit'
+        unitKey: 'params.tokens.unit',
       },
       {
         name: 'presence_penalty',
@@ -169,7 +169,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         maxValue: 2,
         min: -2,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'seed',
@@ -181,7 +181,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         maxValue: 2147483647,
         min: 0,
         max: 2147483647,
-        step: 1
+        step: 1,
       },
       {
         name: 'enable_thinking',
@@ -191,13 +191,14 @@ export class DashScopeAdapter extends OpenAIAdapter {
         type: 'boolean',
         defaultValue: false,
         default: false,
-        tags: ['extra_body']
+        tags: ['extra_body'],
       },
       {
         name: 'thinking_budget',
         labelKey: 'params.thinking_budget.label',
         descriptionKey: 'params.thinking_budget.description',
-        description: 'Maximum tokens for thinking process. Limits reasoning length (via extra_body)',
+        description:
+          'Maximum tokens for thinking process. Limits reasoning length (via extra_body)',
         type: 'integer',
         minValue: 0,
         maxValue: 20000,
@@ -205,7 +206,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
         max: 20000,
         step: 100,
         unitKey: 'params.tokens.unit',
-        tags: ['extra_body']
+        tags: ['extra_body'],
       },
       {
         name: 'enable_search',
@@ -215,8 +216,8 @@ export class DashScopeAdapter extends OpenAIAdapter {
         type: 'boolean',
         defaultValue: false,
         default: false,
-        tags: ['extra_body']
-      }
+        tags: ['extra_body'],
+      },
     ]
   }
 
@@ -226,7 +227,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
    */
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
     return {
-      "enable_thinking": false
+      enable_thinking: false,
     }
   }
 }

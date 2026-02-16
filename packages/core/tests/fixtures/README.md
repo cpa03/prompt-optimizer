@@ -89,11 +89,13 @@ pnpm test
 ## 版本控制
 
 ✅ **应该提交**:
+
 - 生产环境的典型响应
 - 边界情况和错误场景
 - 不同模型的参数差异
 
 ❌ **不应该提交**:
+
 - 敏感数据（API keys, 用户个人信息）
 - 临时调试 fixtures
 - 超过 10MB 的大型 fixtures
@@ -110,6 +112,7 @@ pnpm test
 ### Fixture 未生效
 
 检查：
+
 1. 文件路径是否正确（scenarioName 匹配）
 2. JSON 格式是否有效
 3. VCR_MODE 是否为 'replay' 或 'auto'
@@ -117,12 +120,14 @@ pnpm test
 ### 需要真实 API
 
 设置环境变量：
+
 ```bash
 export VITE_OPENAI_API_KEY=sk-...
 export VITE_DEEPSEEK_API_KEY=sk-...
 ```
 
 然后运行：
+
 ```bash
 VCR_MODE=record pnpm test
 ```

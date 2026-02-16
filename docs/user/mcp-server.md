@@ -114,8 +114,6 @@ MCP_DEFAULT_LANGUAGE=zh
 
 > **注意**：如果你使用的是开发者本地部署（端口 3000），请将 URL 改为 `http://localhost:3000/mcp`。
 
-
-
 ### 其他 MCP 客户端
 
 MCP 服务器支持标准的 MCP 协议，可以被任何兼容的客户端使用：
@@ -141,6 +139,7 @@ npx @modelcontextprotocol/inspector
 ```
 
 在 Inspector Web UI 中：
+
 1. 选择传输方式：`Streamable HTTP`
 2. 服务器 URL：`http://localhost:3000/mcp`
 3. 点击 "Connect" 连接服务器
@@ -190,6 +189,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # 不是 OpenAI
 **原因**: Docker 部署启用密码保护后，Nginx 会对所有路由启用 Basic 认证，包括 `/mcp` 路由
 
 **解决方案**:
+
 - **已修复（v1.4.0+）**：`/mcp` 路由已配置为绕过 Basic 认证
 - **旧版本临时方案**：
   1. 不设置 `ACCESS_PASSWORD` 环境变量
@@ -197,6 +197,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # 不是 OpenAI
   3. 或直接暴露 3000 端口：`docker run -p 3000:3000 ...`
 
 **技术说明**:
+
 - MCP 协议本身不支持 HTTP Basic 认证
 - 新版本在 `docker/nginx.conf` 中为 `/mcp` 路由添加了 `auth_basic off;`
 - Web 应用访问仍然受密码保护
@@ -204,6 +205,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # 不是 OpenAI
 #### 5. Claude Desktop 连接失败
 
 **解决步骤**：
+
 1. 确认 MCP 服务器正在运行
 2. 检查 URL 是否正确
 3. 确认防火墙设置

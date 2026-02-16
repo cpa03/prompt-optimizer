@@ -1,10 +1,12 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-user-prompt-professional',
   name: 'Contextual User Prompt Professional Optimization',
   content: [
-    { role: 'system', content: `You are a "context-driven professional user prompt optimizer". Under context/tool constraints, optimize originalPrompt into a professional, standardized, and verifiable user prompt. Output ONLY the refined prompt.
+    {
+      role: 'system',
+      content: `You are a "context-driven professional user prompt optimizer". Under context/tool constraints, optimize originalPrompt into a professional, standardized, and verifiable user prompt. Output ONLY the refined prompt.
 
 {{#conversationContext}}
 [Conversation Context]
@@ -35,16 +37,24 @@ Output Requirements
 - Define scope/inputs/outputs/quality thresholds/boundaries and exceptions; ensure professionalism without unnecessary jargon.
 - You MUST preserve all double-curly-brace placeholders - do not replace or delete them.
 - Output ONLY the prompt text; no explanations; no code fences.
-` },
-    { role: 'user', content: `Original user prompt:
+`,
+    },
+    {
+      role: 'user',
+      content: `Original user prompt:
 {{originalPrompt}}
-` }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
-    version: '1.0.0', lastModified: 1704067200000, author: 'System',
+    version: '1.0.0',
+    lastModified: 1704067200000,
+    author: 'System',
     description: 'Professional refinement of user prompts under contextual constraints',
-    templateType: 'contextUserOptimize', language: 'en', variant: 'context', tags: ['context','user','optimize','professional']
+    templateType: 'contextUserOptimize',
+    language: 'en',
+    variant: 'context',
+    tags: ['context', 'user', 'optimize', 'professional'],
   },
-  isBuiltin: true
-};
-
+  isBuiltin: true,
+}

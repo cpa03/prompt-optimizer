@@ -1,7 +1,9 @@
 # MCP 服务器用户指南
 
 {% raw %}
+
 <!-- 内容来源：仓库 docs/user/mcp-server.md -->
+
 {% endraw %}
 
 Prompt Optimizer 支持 Model Context Protocol (MCP) 协议，可以与 Claude Desktop 等支持 MCP 的 AI 应用集成。
@@ -128,6 +130,7 @@ npx @modelcontextprotocol/inspector
 ```
 
 在 Inspector Web UI 中：
+
 1. 选择 `Streamable HTTP`
 2. 服务器 URL：`http://localhost:3000/mcp`
 3. 点击 "Connect" 连接服务器
@@ -138,6 +141,7 @@ npx @modelcontextprotocol/inspector
 ### 常见问题
 
 #### 端口占用
+
 更换端口或停止占用进程
 
 ```bash
@@ -149,6 +153,7 @@ MCP_HTTP_PORT=3001 pnpm mcp:dev
 ```
 
 #### API 密钥无效
+
 检查是否配置了至少一个有效密钥
 
 ```bash
@@ -157,6 +162,7 @@ echo $VITE_OPENAI_API_KEY
 ```
 
 #### 模型提供商不匹配
+
 校验 `MCP_DEFAULT_MODEL_PROVIDER`
 
 ```bash
@@ -171,6 +177,7 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # 不是 OpenAI
 **原因**: Docker 部署启用密码保护后，Nginx 会对所有路由启用 Basic 认证，包括 `/mcp` 路由
 
 **解决方案**:
+
 - **已修复（v1.4.0+）**：`/mcp` 路由已配置为绕过 Basic 认证
 - **旧版本临时方案**：
   1. 不设置 `ACCESS_PASSWORD` 环境变量
@@ -178,16 +185,18 @@ MCP_DEFAULT_MODEL_PROVIDER=openai  # 不是 OpenAI
   3. 或直接暴露 3000 端口：`docker run -p 3000:3000 ...`
 
 **技术说明**:
+
 - MCP 协议本身不支持 HTTP Basic 认证
 - 新版本在 `docker/nginx.conf` 中为 `/mcp` 路由添加了 `auth_basic off;`
 - Web 应用访问仍然受密码保护
 
 #### Claude Desktop 连接失败
+
 检查服务运行状态、URL、防火墙与日志
 
 **解决步骤**：
+
 1. 确认 MCP 服务器正在运行
 2. 检查 URL 是否正确
 3. 确认防火墙设置
 4. 查看 Claude Desktop 日志
-

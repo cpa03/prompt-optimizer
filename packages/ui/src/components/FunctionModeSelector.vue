@@ -8,31 +8,20 @@
   - Selected state visual enhancement
 -->
 <template>
-  <NRadioGroup data-testid="function-mode-selector"
+  <NRadioGroup
+    data-testid="function-mode-selector"
     :value="modelValue"
     @update:value="updateFunctionMode"
     size="small"
     class="function-mode-selector"
   >
-    <NRadioButton
-      data-testid="function-mode-basic"
-      value="basic"
-      :title="t('nav.basicMode')"
-    >
+    <NRadioButton data-testid="function-mode-basic" value="basic" :title="t('nav.basicMode')">
       {{ t('nav.basicMode') }}
     </NRadioButton>
-    <NRadioButton
-      data-testid="function-mode-pro"
-      value="pro"
-      :title="t('nav.contextMode')"
-    >
+    <NRadioButton data-testid="function-mode-pro" value="pro" :title="t('nav.contextMode')">
       {{ t('nav.contextMode') }}
     </NRadioButton>
-    <NRadioButton
-      data-testid="function-mode-image"
-      value="image"
-      :title="t('nav.imageMode')"
-    >
+    <NRadioButton data-testid="function-mode-image" value="image" :title="t('nav.imageMode')">
       {{ t('nav.imageMode') }}
     </NRadioButton>
   </NRadioGroup>
@@ -94,7 +83,8 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
 }
 
 /* 🎨 Palette: Hover glow effect for selected state */
-.function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+.function-mode-selector
+  :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
   box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25);
 }
 
@@ -109,7 +99,10 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
-  transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+  transition:
+    width 0.3s ease-out,
+    height 0.3s ease-out,
+    opacity 0.3s ease-out;
   opacity: 0;
   pointer-events: none;
 }
@@ -131,7 +124,9 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.dark .function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+.dark
+  .function-mode-selector
+  :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
   box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.35);
 }
 
@@ -143,17 +138,18 @@ const updateFunctionMode = (mode: 'basic' | 'pro' | 'image') => {
     transition: none !important;
     animation: none !important;
   }
-  
+
   .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
     transform: none;
     box-shadow: none;
   }
-  
+
   .function-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
     transform: none;
   }
-  
-  .function-mode-selector :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+
+  .function-mode-selector
+    :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
     box-shadow: none;
   }
 }

@@ -48,7 +48,7 @@ export function computeConnectionConfig(
   if (providerMeta?.defaultBaseURL && !currentConfig?.baseURL) {
     return {
       ...currentConfig,
-      baseURL: providerMeta.defaultBaseURL
+      baseURL: providerMeta.defaultBaseURL,
     }
   }
   return currentConfig ?? {}
@@ -65,13 +65,19 @@ export interface NormalizedProviderChangeOptions {
 }
 
 export function normalizeProviderChangeOptions(
-  options: boolean | { autoSelectFirstModel?: boolean; resetOverrides?: boolean; resetConnectionConfig?: boolean } = true
+  options:
+    | boolean
+    | {
+        autoSelectFirstModel?: boolean
+        resetOverrides?: boolean
+        resetConnectionConfig?: boolean
+      } = true
 ): NormalizedProviderChangeOptions {
   if (typeof options === 'boolean') {
     return {
       autoSelectFirstModel: options,
       resetOverrides: options,
-      resetConnectionConfig: options
+      resetConnectionConfig: options,
     }
   }
 
@@ -79,6 +85,6 @@ export function normalizeProviderChangeOptions(
   return {
     autoSelectFirstModel,
     resetOverrides: options.resetOverrides ?? autoSelectFirstModel,
-    resetConnectionConfig: options.resetConnectionConfig ?? autoSelectFirstModel
+    resetConnectionConfig: options.resetConnectionConfig ?? autoSelectFirstModel,
   }
 }

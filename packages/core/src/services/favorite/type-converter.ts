@@ -1,4 +1,4 @@
-import type { TagStatistics } from './types';
+import type { TagStatistics } from './types'
 
 /**
  * 标签类型转换工具
@@ -8,13 +8,13 @@ export class TagTypeConverter {
   private static readonly collator = new Intl.Collator(
     ['zh-Hans-u-co-pinyin', 'zh-Hans', 'zh', 'en'],
     { sensitivity: 'accent', numeric: true }
-  );
+  )
 
   private static compareNames(a: string, b: string): number {
     try {
-      return TagTypeConverter.collator.compare(a, b);
+      return TagTypeConverter.collator.compare(a, b)
     } catch {
-      return a.localeCompare(b);
+      return a.localeCompare(b)
     }
   }
 
@@ -24,11 +24,11 @@ export class TagTypeConverter {
    * @returns TagStatistics[] 格式的标签统计数据
    */
   static toTagStatistics(apiData: Array<{ tag: string; count: number }>): TagStatistics[] {
-    return apiData.map(item => ({
+    return apiData.map((item) => ({
       name: item.tag,
       count: item.count,
-      lastUsed: undefined
-    }));
+      lastUsed: undefined,
+    }))
   }
 
   /**
@@ -37,10 +37,10 @@ export class TagTypeConverter {
    * @returns API 格式的标签数据 { tag: string; count: number }[]
    */
   static fromTagStatistics(stats: TagStatistics[]): Array<{ tag: string; count: number }> {
-    return stats.map(item => ({
+    return stats.map((item) => ({
       tag: item.name,
-      count: item.count
-    }));
+      count: item.count,
+    }))
   }
 
   /**
@@ -49,15 +49,15 @@ export class TagTypeConverter {
    * @returns 自动完成选项格式 { label: string; value: string; count: number }[]
    */
   static toAutoCompleteOptions(apiData: Array<{ tag: string; count: number }>): Array<{
-    label: string;
-    value: string;
-    count: number;
+    label: string
+    value: string
+    count: number
   }> {
-    return apiData.map(item => ({
+    return apiData.map((item) => ({
       label: `${item.tag} (${item.count})`,
       value: item.tag,
-      count: item.count
-    }));
+      count: item.count,
+    }))
   }
 
   /**
@@ -66,7 +66,7 @@ export class TagTypeConverter {
    * @returns 标签名称数组
    */
   static toStringArray(apiData: Array<{ tag: string; count: number }>): string[] {
-    return apiData.map(item => item.tag);
+    return apiData.map((item) => item.tag)
   }
 
   /**
@@ -75,7 +75,7 @@ export class TagTypeConverter {
    * @returns 排序后的标签数据
    */
   static sortByCount<T extends { count: number }>(tags: T[]): T[] {
-    return [...tags].sort((a, b) => b.count - a.count);
+    return [...tags].sort((a, b) => b.count - a.count)
   }
 
   /**
@@ -84,7 +84,7 @@ export class TagTypeConverter {
    * @returns 排序后的标签数据
    */
   static sortByName(tags: TagStatistics[]): TagStatistics[] {
-    return [...tags].sort((a, b) => TagTypeConverter.compareNames(a.name, b.name));
+    return [...tags].sort((a, b) => TagTypeConverter.compareNames(a.name, b.name))
   }
 
   /**
@@ -95,16 +95,16 @@ export class TagTypeConverter {
   static sortByCountThenName(tags: TagStatistics[]): TagStatistics[] {
     return [...tags].sort((a, b) => {
       if (b.count !== a.count) {
-        return b.count - a.count;
+        return b.count - a.count
       }
-      return TagTypeConverter.compareNames(a.name, b.name);
-    });
+      return TagTypeConverter.compareNames(a.name, b.name)
+    })
   }
 
   /**
    * 对外暴露名称排序规则，便于其他模块保持一致
    */
   static compareTagNames(a: string, b: string): number {
-    return TagTypeConverter.compareNames(a, b);
+    return TagTypeConverter.compareNames(a, b)
   }
 }

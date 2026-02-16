@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-json-structured-optimize',
@@ -50,7 +50,7 @@ export const template: Template = {
 
 ## Safety
 如原始描述包含不适当内容，进行合规替换与弱化，但仍保持画面意图可用。
-`
+`,
     },
     {
       role: 'user',
@@ -63,16 +63,17 @@ export const template: Template = {
 
 原始图像描述：
 {{originalPrompt}}
-`
-    }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1736208000000,
     author: 'System',
-    description: '输出严格 JSON 的图像提示词优化模板（字段名/字段值均为中文）；结构通用，允许自由扩展字段以适配任意场景',
+    description:
+      '输出严格 JSON 的图像提示词优化模板（字段名/字段值均为中文）；结构通用，允许自由扩展字段以适配任意场景',
     templateType: 'text2imageOptimize',
-    language: 'zh'
+    language: 'zh',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

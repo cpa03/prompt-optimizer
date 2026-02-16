@@ -13,8 +13,9 @@ import { NCard } from 'naive-ui'
 <style scoped>
 /* Subtle hover lift effect for interactive feel */
 .panel-card {
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .panel-card:hover {

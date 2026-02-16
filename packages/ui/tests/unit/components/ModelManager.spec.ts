@@ -13,11 +13,11 @@ const mockServices = {
       deleteModel: vi.fn(),
       addModel: vi.fn(),
       updateModel: vi.fn(),
-      getModel: vi.fn()
+      getModel: vi.fn(),
     },
     llmService: {
       testConnection: vi.fn().mockResolvedValue({ success: true }),
-      fetchModelList: vi.fn().mockResolvedValue([])
+      fetchModelList: vi.fn().mockResolvedValue([]),
     },
     imageModelManager: {
       getAllModels: vi.fn().mockResolvedValue([]),
@@ -26,16 +26,16 @@ const mockServices = {
       deleteModel: vi.fn(),
       addModel: vi.fn(),
       updateModel: vi.fn(),
-      getModel: vi.fn()
+      getModel: vi.fn(),
     },
     imageAdapterRegistry: {
-      getAvailableProviders: vi.fn().mockReturnValue([])
+      getAvailableProviders: vi.fn().mockReturnValue([]),
     },
     textAdapterRegistry: {
       getAllProviders: vi.fn().mockReturnValue([]),
-      getStaticModels: vi.fn().mockReturnValue([])
-    }
-  }
+      getStaticModels: vi.fn().mockReturnValue([]),
+    },
+  },
 }
 
 // Minimal i18n/toast mocks
@@ -54,56 +54,68 @@ vi.mock('../../../src/composables/useToast', () => ({
     success: vi.fn(),
     error: vi.fn(),
     warning: vi.fn(),
-    info: vi.fn()
-  })
+    info: vi.fn(),
+  }),
 }))
 
 describe('ModelManager', () => {
   const mountComponent = () =>
     mount(ModelManager, {
       props: {
-        show: true
+        show: true,
       },
       global: {
         provide: {
-          services: mockServices
+          services: mockServices,
         },
         stubs: {
           NModal: {
-            template: '<div class="stub-modal"><slot /><slot name="header-extra" /><slot name="action" /></div>',
+            template:
+              '<div class="stub-modal"><slot /><slot name="header-extra" /><slot name="action" /></div>',
             props: ['show'],
-            emits: ['update:show']
+            emits: ['update:show'],
           },
           'n-modal': {
-            template: '<div class="stub-modal"><slot /><slot name="header-extra" /><slot name="action" /></div>',
+            template:
+              '<div class="stub-modal"><slot /><slot name="header-extra" /><slot name="action" /></div>',
             props: ['show'],
-            emits: ['update:show']
+            emits: ['update:show'],
           },
           NScrollbar: { template: '<div class="stub-scrollbar"><slot /></div>' },
           'n-scrollbar': { template: '<div class="stub-scrollbar"><slot /></div>' },
           NSpace: { template: '<div class="stub-space"><slot /></div>' },
           'n-space': { template: '<div class="stub-space"><slot /></div>' },
-          NCard: { template: '<div class="stub-card"><slot name="header" /><slot /><slot name="action" /></div>' },
-          'n-card': { template: '<div class="stub-card"><slot name="header" /><slot /><slot name="action" /></div>' },
+          NCard: {
+            template:
+              '<div class="stub-card"><slot name="header" /><slot /><slot name="action" /></div>',
+          },
+          'n-card': {
+            template:
+              '<div class="stub-card"><slot name="header" /><slot /><slot name="action" /></div>',
+          },
           NText: { template: '<span class="stub-text"><slot /></span>' },
           'n-text': { template: '<span class="stub-text"><slot /></span>' },
           NTag: { template: '<span class="stub-tag"><slot /></span>' },
           'n-tag': { template: '<span class="stub-tag"><slot /></span>' },
           NButton: {
-            template: '<button class="stub-button" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>'
+            template:
+              '<button class="stub-button" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>',
           },
           'n-button': {
-            template: '<button class="stub-button" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>'
+            template:
+              '<button class="stub-button" @click="$emit(\'click\')"><slot name="icon" /><slot /></button>',
           },
           NSelect: { template: '<select class="stub-select"><slot /></select>' },
           'n-select': { template: '<select class="stub-select"><slot /></select>' },
           NInput: {
-            template: '<input class="stub-input" :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
-            props: ['value']
+            template:
+              '<input class="stub-input" :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
+            props: ['value'],
           },
           'n-input': {
-            template: '<input class="stub-input" :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
-            props: ['value']
+            template:
+              '<input class="stub-input" :value="value" @input="$emit(\'update:value\', $event.target.value)" />',
+            props: ['value'],
           },
           NTabs: { template: '<div class="stub-tabs"><slot /></div>' },
           'n-tabs': { template: '<div class="stub-tabs"><slot /></div>' },
@@ -114,24 +126,26 @@ describe('ModelManager', () => {
           NH4: { template: '<h4 class="stub-h4"><slot /></h4>' },
           'n-h4': { template: '<h4 class="stub-h4"><slot /></h4>' },
           NCheckbox: {
-            template: '<input type="checkbox" class="stub-checkbox" :checked="checked" @change="$emit(\'update:checked\', $event.target.checked)" />',
-            props: ['checked']
+            template:
+              '<input type="checkbox" class="stub-checkbox" :checked="checked" @change="$emit(\'update:checked\', $event.target.checked)" />',
+            props: ['checked'],
           },
           'n-checkbox': {
-            template: '<input type="checkbox" class="stub-checkbox" :checked="checked" @change="$emit(\'update:checked\', $event.target.checked)" />',
-            props: ['checked']
+            template:
+              '<input type="checkbox" class="stub-checkbox" :checked="checked" @change="$emit(\'update:checked\', $event.target.checked)" />',
+            props: ['checked'],
           },
           ImageModelManager: {
-            template: '<div class="stub-image-manager" />'
+            template: '<div class="stub-image-manager" />',
           },
           ImageModelEditModal: {
-            template: '<div class="stub-image-edit-modal" />'
+            template: '<div class="stub-image-edit-modal" />',
           },
           InputWithSelect: {
-            template: '<div class="stub-input-with-select" />'
-          }
-        }
-      }
+            template: '<div class="stub-input-with-select" />',
+          },
+        },
+      },
     })
 
   it('mounts successfully with provided services', async () => {

@@ -24,7 +24,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   const lastUpdate = ref(new Date())
   const memoryUsage = ref(0)
   const observedElements = ref(new Set<Element>())
-  
+
   // 性能观察器
   let performanceObserver: PerformanceObserver | null = null
   let resizeObserver: ResizeObserver | null = null
@@ -41,13 +41,13 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     const renderTime = performance.now() - startTime.value
     renderCount.value++
     lastUpdate.value = new Date()
-    
+
     // 记录性能指标
     if (typeof performance !== 'undefined' && performance.mark) {
       performance.mark(`${componentName}-render-end`)
       performance.measure(
-        `${componentName}-render`, 
-        `${componentName}-render-start`, 
+        `${componentName}-render`,
+        `${componentName}-render-start`,
         `${componentName}-render-end`
       )
     }
@@ -74,32 +74,33 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   // 计算性能指标
   const metrics = computed((): PerformanceMetrics => {
     const renderTime = startTime.value > 0 ? performance.now() - startTime.value : 0
-    
+
     return {
       renderTime: renderTime,
       loadTime: renderTime, // 简化为渲染时间
       memoryUsage: memoryUsage.value,
       updateCount: updateCount.value,
-      lastUpdate: lastUpdate.value
+      lastUpdate: lastUpdate.value,
     }
   })
 
   // 性能建议
   const suggestions = computed(() => {
     const suggestions: string[] = []
-    
+
     if (updateCount.value > 50) {
       suggestions.push('组件更新过于频繁，考虑使用 debounce 或 throttle')
     }
-    
+
     if (metrics.value.renderTime > 16) {
       suggestions.push('渲染时间超过 16ms，可能影响 60fps 体验')
     }
-    
-    if (memoryUsage.value > 50 * 1024 * 1024) { // 50MB
+
+    if (memoryUsage.value > 50 * 1024 * 1024) {
+      // 50MB
       suggestions.push('内存使用量较高，检查是否存在内存泄漏')
     }
-    
+
     if (renderCount.value > 0 && updateCount.value / renderCount.value > 10) {
       suggestions.push('更新渲染比例过高，考虑优化响应式数据')
     }
@@ -110,25 +111,25 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   // 性能等级评估
   const performanceGrade = computed(() => {
     let score = 100
-    
+
     // 渲染时间评分
     if (metrics.value.renderTime > 32) score -= 30
     else if (metrics.value.renderTime > 16) score -= 15
     else if (metrics.value.renderTime > 8) score -= 5
-    
+
     // 更新频率评分
     if (updateCount.value > 100) score -= 25
     else if (updateCount.value > 50) score -= 15
     else if (updateCount.value > 20) score -= 5
-    
-    // 内存使用评分  
+
+    // 内存使用评分
     const memoryMB = memoryUsage.value / (1024 * 1024)
     if (memoryMB > 100) score -= 20
     else if (memoryMB > 50) score -= 10
     else if (memoryMB > 25) score -= 5
 
     if (score >= 90) return { grade: 'A', color: 'success', text: '优秀' }
-    if (score >= 80) return { grade: 'B', color: 'info', text: '良好' }  
+    if (score >= 80) return { grade: 'B', color: 'info', text: '良好' }
     if (score >= 70) return { grade: 'C', color: 'warning', text: '一般' }
     if (score >= 60) return { grade: 'D', color: 'warning', text: '较差' }
     return { grade: 'F', color: 'error', text: '需要优化' }
@@ -152,7 +153,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
           }
         })
       })
-      
+
       try {
         performanceObserver.observe({ entryTypes: ['measure', 'navigation', 'paint'] })
       } catch (e) {
@@ -162,7 +163,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
 
     // 定期更新内存使用情况
     const memoryInterval = setInterval(updateMemoryUsage, TIME_CONSTANTS.MEMORY_CHECK_INTERVAL_MS)
-    
+
     onUnmounted(() => {
       clearInterval(memoryInterval)
     })
@@ -199,7 +200,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
       mutationObserver?.observe(element, {
         childList: true,
         attributes: true,
-        subtree: true
+        subtree: true,
       })
     } catch (e) {
       console.warn('Element observation failed:', e)
@@ -209,7 +210,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   // 停止观察元素
   const unobserveElement = (element: Element) => {
     if (!element || !observedElements.value.has(element)) return
-    
+
     observedElements.value.delete(element)
     resizeObserver?.unobserve(element)
   }
@@ -224,7 +225,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
       renderCount: renderCount.value,
       updateCount: updateCount.value,
       avgRenderTime: renderCount.value > 0 ? metrics.value.renderTime / renderCount.value : 0,
-      updateRenderRatio: renderCount.value > 0 ? updateCount.value / renderCount.value : 0
+      updateRenderRatio: renderCount.value > 0 ? updateCount.value / renderCount.value : 0,
     }
   }
 
@@ -256,7 +257,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     performanceGrade,
     renderCount,
     updateCount,
-    
+
     // 方法
     startRender,
     endRender,
@@ -266,8 +267,8 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     unobserveElement,
     getPerformanceReport,
     resetMetrics,
-    
+
     // 工具方法
-    startMonitoring
+    startMonitoring,
   }
 }

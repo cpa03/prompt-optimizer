@@ -23,7 +23,9 @@ test.describe('Basic User - Session Persistence', () => {
     const modelLabel = page.getByText(/优化模型|Optimization Model/i).first()
     await expect(modelLabel).toBeVisible({ timeout: TIMEOUTS.NAVIGATION.ELEMENT_VISIBLE })
 
-    const container = modelLabel.locator('xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]')
+    const container = modelLabel.locator(
+      'xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]'
+    )
     const select = container.locator('.n-base-selection').first()
 
     // 获取初始选中的模型
@@ -93,7 +95,9 @@ test.describe('Basic User - Session Persistence', () => {
     const templateLabel = page.getByText(/优化提示词模板|Optimization Template/i).first()
     await expect(templateLabel).toBeVisible({ timeout: 15000 })
 
-    const container = templateLabel.locator('xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]')
+    const container = templateLabel.locator(
+      'xpath=ancestor::*[.//div[contains(@class,"n-base-selection")]][1]'
+    )
     const select = container.locator('.n-base-selection').first()
 
     const getSelectedTemplate = async () => {

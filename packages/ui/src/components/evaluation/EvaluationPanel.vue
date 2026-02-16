@@ -14,7 +14,10 @@
           <!-- 流式内容预览 -->
           <div v-if="streamContent" class="stream-preview">
             <NText depth="3" class="stream-label">{{ t('evaluation.analyzing') }}</NText>
-            <NScrollbar ref="streamScrollbarRef" :style="{ maxHeight: UI_DIMENSIONS.SCROLLBAR_MAX_HEIGHT_MEDIUM + 'px' }">
+            <NScrollbar
+              ref="streamScrollbarRef"
+              :style="{ maxHeight: UI_DIMENSIONS.SCROLLBAR_MAX_HEIGHT_MEDIUM + 'px' }"
+            >
               <NText class="stream-content">{{ streamContent }}</NText>
             </NScrollbar>
           </div>
@@ -35,7 +38,7 @@
 
       <!-- 评估结果 -->
       <template v-else-if="result">
-        <NScrollbar style="max-height: calc(100vh - 120px);">
+        <NScrollbar style="max-height: calc(100vh - 120px)">
           <NSpace vertical :size="20">
             <!-- 总分展示 -->
             <div class="score-section">
@@ -47,7 +50,6 @@
                 {{ scoreLevelText }}
               </NText>
             </div>
-
 
             <!-- 一句话总结 -->
             <NCard v-if="result.summary" size="small">
@@ -90,7 +92,12 @@
                     <div class="patch-diff-inline">
                       <InlineDiff :old-text="op.oldText" :new-text="op.newText" />
                     </div>
-                    <NButton size="tiny" type="primary" class="patch-apply-btn" @click="handleApplyPatchLocal(op)">
+                    <NButton
+                      size="tiny"
+                      type="primary"
+                      class="patch-apply-btn"
+                      @click="handleApplyPatchLocal(op)"
+                    >
                       {{ t('evaluation.diagnose.replaceNow') }}
                     </NButton>
                   </div>
@@ -99,7 +106,11 @@
             </NCard>
 
             <!-- 改进建议 -->
-            <NCard v-if="result.improvements && result.improvements.length > 0" :title="t('evaluation.improvements')" size="small">
+            <NCard
+              v-if="result.improvements && result.improvements.length > 0"
+              :title="t('evaluation.improvements')"
+              size="small"
+            >
               <NList>
                 <NListItem v-for="(item, index) in result.improvements" :key="index">
                   <div class="improvement-item">
@@ -126,7 +137,7 @@
 
       <!-- 底部操作栏 -->
       <template #footer>
-        <NSpace justify="space-between" style="width: 100%;">
+        <NSpace justify="space-between" style="width: 100%">
           <NButton v-if="result" @click="handleClear" quaternary>
             {{ t('common.clear') }}
           </NButton>
@@ -171,7 +182,14 @@ import {
 } from 'naive-ui'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import InlineDiff from './InlineDiff.vue'
-import { EVALUATION_COLORS, FONT_SIZES, SPACING, BORDER_RADIUS, UI_DIMENSIONS, ICON_SIZES } from '../../config/constants'
+import {
+  EVALUATION_COLORS,
+  FONT_SIZES,
+  SPACING,
+  BORDER_RADIUS,
+  UI_DIMENSIONS,
+  ICON_SIZES,
+} from '../../config/constants'
 
 // Props
 const props = defineProps<{
@@ -191,10 +209,13 @@ const emit = defineEmits<{
   (e: 'retry'): void
   (e: 're-evaluate'): void
   (e: 'apply-local-patch', payload: { operation: PatchOperation }): void
-  (e: 'apply-improvement', payload: {
-    improvement: string;
-    type: EvaluationType;
-  }): void
+  (
+    e: 'apply-improvement',
+    payload: {
+      improvement: string
+      type: EvaluationType
+    }
+  ): void
 }>()
 
 const { t } = useI18n()
@@ -203,11 +224,14 @@ const { t } = useI18n()
 const streamScrollbarRef = ref<ScrollbarInst | null>(null)
 
 // 监听流式内容变化，自动滚动到底部
-watch(() => props.streamContent, () => {
-  nextTick(() => {
-    streamScrollbarRef.value?.scrollTo({ top: 999999, behavior: 'smooth' })
-  })
-})
+watch(
+  () => props.streamContent,
+  () => {
+    nextTick(() => {
+      streamScrollbarRef.value?.scrollTo({ top: 999999, behavior: 'smooth' })
+    })
+  }
+)
 
 const tOr = (key: string, fallback: string): string => {
   const translated = t(key)
@@ -301,7 +325,7 @@ const handleReEvaluate = () => {
 const handleApplyImprovement = (improvement: string) => {
   emit('apply-improvement', {
     improvement,
-    type: props.currentType || 'optimized'
+    type: props.currentType || 'optimized',
   })
 }
 
@@ -310,10 +334,14 @@ const handleApplyImprovement = (improvement: string) => {
 // 获取操作类型样式
 const getOperationType = (op: string): 'success' | 'warning' | 'error' | 'info' => {
   switch (op) {
-    case 'insert': return 'success'
-    case 'replace': return 'warning'
-    case 'delete': return 'error'
-    default: return 'info'
+    case 'insert':
+      return 'success'
+    case 'replace':
+      return 'warning'
+    case 'delete':
+      return 'error'
+    default:
+      return 'info'
   }
 }
 
@@ -345,7 +373,8 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
 }
 
 @keyframes loading-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
   }
   50% {
@@ -642,7 +671,7 @@ const handleApplyPatchLocal = (operation: PatchOperation) => {
     transition: none !important;
     transform: none !important;
   }
-  
+
   .score-section:hover,
   .overall-score:hover,
   .dimension-item:hover,

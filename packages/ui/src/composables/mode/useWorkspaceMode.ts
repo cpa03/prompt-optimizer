@@ -1,9 +1,9 @@
 /**
  * Workspace Mode Management Composable
- * 
+ *
  * Centralizes function mode state management to reduce coupling
  * between workspace components and provide consistent mode handling.
- * 
+ *
  * @phase2-hardening - Extracted from PromptOptimizerApp.vue and related components
  * to eliminate duplication and strengthen mode contract
  */
@@ -31,29 +31,29 @@ export interface UseWorkspaceModeApi {
   basicSubMode: Ref<BasicSubMode>
   proSubMode: Ref<ProSubMode>
   imageSubMode: Ref<ImageSubMode>
-  
+
   // Computed
   isBasicMode: Ref<boolean>
   isProMode: Ref<boolean>
   isImageMode: Ref<boolean>
   isContextMode: Ref<boolean>
   currentWorkspace: Ref<string>
-  
+
   // Actions
   setFunctionMode: (mode: FunctionMode) => Promise<void>
   setBasicSubMode: (mode: BasicSubMode) => Promise<void>
   setProSubMode: (mode: ProSubMode) => Promise<void>
   setImageSubMode: (mode: ImageSubMode) => Promise<void>
-  
+
   // Convenience methods
   switchToBasic: (subMode?: BasicSubMode) => Promise<void>
   switchToPro: (subMode?: ProSubMode) => Promise<void>
   switchToImage: (subMode?: ImageSubMode) => Promise<void>
   switchToContext: (type: 'user' | 'system') => Promise<void>
-  
+
   // Initialization
   ensureInitialized: () => Promise<void>
-  
+
   // Validation
   isValidFunctionMode: (mode: unknown) => mode is FunctionMode
   isValidBasicSubMode: (mode: unknown) => mode is BasicSubMode
@@ -85,7 +85,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
       functionMode: ref<FunctionMode>('basic'),
       basicSubMode: ref<BasicSubMode>('user'),
       proSubMode: ref<ProSubMode>('user'),
-      imageSubMode: ref<ImageSubMode>('text2image')
+      imageSubMode: ref<ImageSubMode>('text2image'),
     }
   }
 
@@ -137,17 +137,13 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     singletonState!.initializing = (async () => {
       try {
         // Load all mode preferences
-        const [
-          savedFunctionMode,
-          savedBasicSubMode,
-          savedProSubMode,
-          savedImageSubMode
-        ] = await Promise.all([
-          getPreference<FunctionMode>(UI_SETTINGS_KEYS.FUNCTION_MODE, 'basic'),
-          getPreference<BasicSubMode>('basic-sub-mode', 'user'),
-          getPreference<ProSubMode>('pro-sub-mode', 'user'),
-          getPreference<ImageSubMode>('image-sub-mode', 'text2image')
-        ])
+        const [savedFunctionMode, savedBasicSubMode, savedProSubMode, savedImageSubMode] =
+          await Promise.all([
+            getPreference<FunctionMode>(UI_SETTINGS_KEYS.FUNCTION_MODE, 'basic'),
+            getPreference<BasicSubMode>('basic-sub-mode', 'user'),
+            getPreference<ProSubMode>('pro-sub-mode', 'user'),
+            getPreference<ImageSubMode>('image-sub-mode', 'text2image'),
+          ])
 
         // Validate and set function mode
         if (isValidFunctionMode(savedFunctionMode)) {
@@ -161,11 +157,11 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
         singletonState!.basicSubMode.value = isValidBasicSubMode(savedBasicSubMode)
           ? savedBasicSubMode
           : 'user'
-        
+
         singletonState!.proSubMode.value = isValidProSubMode(savedProSubMode)
           ? savedProSubMode
           : 'user'
-        
+
         singletonState!.imageSubMode.value = isValidImageSubMode(savedImageSubMode)
           ? savedImageSubMode
           : 'text2image'
@@ -188,7 +184,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     if (!isValidFunctionMode(mode)) {
       throw new Error(`Invalid function mode: ${mode}`)
     }
-    
+
     await ensureInitialized()
     singletonState!.functionMode.value = mode
     await setPreference(UI_SETTINGS_KEYS.FUNCTION_MODE, mode)
@@ -198,7 +194,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     if (!isValidBasicSubMode(mode)) {
       throw new Error(`Invalid basic sub-mode: ${mode}`)
     }
-    
+
     await ensureInitialized()
     singletonState!.basicSubMode.value = mode
     await setPreference('basic-sub-mode', mode)
@@ -208,7 +204,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     if (!isValidProSubMode(mode)) {
       throw new Error(`Invalid pro sub-mode: ${mode}`)
     }
-    
+
     await ensureInitialized()
     singletonState!.proSubMode.value = mode
     await setPreference('pro-sub-mode', mode)
@@ -218,7 +214,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     if (!isValidImageSubMode(mode)) {
       throw new Error(`Invalid image sub-mode: ${mode}`)
     }
-    
+
     await ensureInitialized()
     singletonState!.imageSubMode.value = mode
     await setPreference('image-sub-mode', mode)
@@ -251,34 +247,34 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     basicSubMode: readonly(singletonState.basicSubMode) as Ref<BasicSubMode>,
     proSubMode: readonly(singletonState.proSubMode) as Ref<ProSubMode>,
     imageSubMode: readonly(singletonState.imageSubMode) as Ref<ImageSubMode>,
-    
+
     // Computed
     isBasicMode: readonly(isBasicMode) as Ref<boolean>,
     isProMode: readonly(isProMode) as Ref<boolean>,
     isImageMode: readonly(isImageMode) as Ref<boolean>,
     isContextMode: readonly(isContextMode) as Ref<boolean>,
     currentWorkspace: readonly(currentWorkspace) as Ref<string>,
-    
+
     // Actions
     setFunctionMode,
     setBasicSubMode,
     setProSubMode,
     setImageSubMode,
-    
+
     // Convenience methods
     switchToBasic,
     switchToPro,
     switchToImage,
     switchToContext,
-    
+
     // Initialization
     ensureInitialized,
-    
+
     // Validation
     isValidFunctionMode,
     isValidBasicSubMode,
     isValidProSubMode,
-    isValidImageSubMode
+    isValidImageSubMode,
   }
 }
 
@@ -289,6 +285,6 @@ export function getCurrentWorkspaceMode(): WorkspaceModeState | null {
     functionMode: singletonState.functionMode.value,
     basicSubMode: singletonState.basicSubMode.value,
     proSubMode: singletonState.proSubMode.value,
-    imageSubMode: singletonState.imageSubMode.value
+    imageSubMode: singletonState.imageSubMode.value,
   }
 }

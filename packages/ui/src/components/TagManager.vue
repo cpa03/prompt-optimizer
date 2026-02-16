@@ -7,14 +7,14 @@
     :mask-closable="true"
     @update:show="$emit('update:show', $event)"
   >
-    <n-space vertical :size="16" style="height: 100%;">
+    <n-space vertical :size="16" style="height: 100%">
       <!-- 搜索栏和统计 -->
       <n-space justify="space-between" align="center">
         <n-input
           v-model:value="searchQuery"
           :placeholder="t('favorites.manager.tagManager.searchPlaceholder')"
           clearable
-          style="flex: 1; max-width: 300px;"
+          style="flex: 1; max-width: 300px"
         >
           <template #prefix>
             <n-icon><Search /></n-icon>
@@ -70,7 +70,9 @@
       @positive-click="handleRenameConfirm"
     >
       <n-space vertical :size="12">
-        <n-text>{{ t('favorites.manager.tagManager.renameDialog.currentName', { name: currentTag?.name }) }}</n-text>
+        <n-text>{{
+          t('favorites.manager.tagManager.renameDialog.currentName', { name: currentTag?.name })
+        }}</n-text>
         <n-input
           v-model:value="newTagName"
           :placeholder="t('favorites.manager.tagManager.renameDialog.newNamePlaceholder')"
@@ -89,7 +91,9 @@
       @positive-click="handleMergeConfirm"
     >
       <n-space vertical :size="12">
-        <n-text>{{ t('favorites.manager.tagManager.mergeDialog.sourceTag', { name: currentTag?.name }) }}</n-text>
+        <n-text>{{
+          t('favorites.manager.tagManager.mergeDialog.sourceTag', { name: currentTag?.name })
+        }}</n-text>
         <n-select
           v-model:value="mergeTargetTag"
           :options="mergeTargetOptions"
@@ -122,71 +126,71 @@ import {
   NPopconfirm,
   NSelect,
   NTooltip,
-  type DataTableColumns
-} from 'naive-ui';
-import { Search, Edit, Trash, GitMerge } from '@vicons/tabler';
-import { useI18n } from 'vue-i18n';
-import { useToast } from '../composables/ui/useToast';
-import type { AppServices } from '../types/services';
-import { TagTypeConverter, type TagStatistics } from '@prompt-optimizer/core';
+  type DataTableColumns,
+} from 'naive-ui'
+import { Search, Edit, Trash, GitMerge } from '@vicons/tabler'
+import { useI18n } from 'vue-i18n'
+import { useToast } from '../composables/ui/useToast'
+import type { AppServices } from '../types/services'
+import { TagTypeConverter, type TagStatistics } from '@prompt-optimizer/core'
 
-const { t } = useI18n();
+const { t } = useI18n()
 
 interface Props {
-  show: boolean;
+  show: boolean
 }
 
-const props = defineProps<Props>();
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  'update:show': [value: boolean];
-  'updated': [];
-}>();
+  'update:show': [value: boolean]
+  updated: []
+}>()
 
-const services = inject<Ref<AppServices | null>>('services');
-const message = useToast();
+const services = inject<Ref<AppServices | null>>('services')
+const message = useToast()
 
-const loading = ref(false);
-const allTags = ref<TagStatistics[]>([]);
-const searchQuery = ref('');
+const loading = ref(false)
+const allTags = ref<TagStatistics[]>([])
+const searchQuery = ref('')
 
 // 新增相关
-const showAddDialog = ref(false);
+const showAddDialog = ref(false)
 
 // 重命名相关
-const showRenameDialog = ref(false);
-const currentTag = ref<TagStatistics | null>(null);
-const newTagName = ref('');
+const showRenameDialog = ref(false)
+const currentTag = ref<TagStatistics | null>(null)
+const newTagName = ref('')
 
 // 合并相关
-const showMergeDialog = ref(false);
-const mergeTargetTag = ref<string>('');
+const showMergeDialog = ref(false)
+const mergeTargetTag = ref<string>('')
 
 // 分页配置
 const pagination = {
   pageSize: 10,
   showSizePicker: true,
-  pageSizes: [10, 20, 50, 100]
-};
+  pageSizes: [10, 20, 50, 100],
+}
 
 // 过滤后的标签
 const filteredTags = computed(() => {
   if (!searchQuery.value) {
-    return allTags.value;
+    return allTags.value
   }
-  const query = searchQuery.value.toLowerCase();
-  return allTags.value.filter(tag => tag.name.toLowerCase().includes(query));
-});
+  const query = searchQuery.value.toLowerCase()
+  return allTags.value.filter((tag) => tag.name.toLowerCase().includes(query))
+})
 
 // 合并目标选项(排除当前标签)
 const mergeTargetOptions = computed(() => {
   return allTags.value
-    .filter(tag => tag.name !== currentTag.value?.name)
-    .map(tag => ({
+    .filter((tag) => tag.name !== currentTag.value?.name)
+    .map((tag) => ({
       label: `${tag.name} (${tag.count})`,
-      value: tag.name
-    }));
-});
+      value: tag.name,
+    }))
+})
 
 // 表格列定义
 const columns = computed<DataTableColumns<TagStatistics>>(() => [
@@ -195,18 +199,18 @@ const columns = computed<DataTableColumns<TagStatistics>>(() => [
     key: 'name',
     width: 250,
     ellipsis: {
-      tooltip: true
+      tooltip: true,
     },
     render: (row) => {
-      return h(NTag, { type: 'info' }, { default: () => row.name });
-    }
+      return h(NTag, { type: 'info' }, { default: () => row.name })
+    },
   },
   {
     title: t('favorites.manager.tagManager.useCount'),
     key: 'count',
     width: 150,
     align: 'center' as const,
-    sorter: (a, b) => a.count - b.count
+    sorter: (a, b) => a.count - b.count,
   },
   {
     title: t('favorites.manager.tagManager.actions'),
@@ -214,217 +218,246 @@ const columns = computed<DataTableColumns<TagStatistics>>(() => [
     width: 250,
     align: 'center' as const,
     render: (row) => {
-      return h(NSpace, { size: 4, justify: 'center', class: 'tag-action-buttons' }, {
-        default: () => [
-          h(
-            NButton,
-            {
-              size: 'small',
-              quaternary: true,
-              class: 'tag-action-btn tag-action-btn--edit',
-              onClick: () => handleRename(row)
-            },
-            {
-              icon: () => h(NIcon, null, { default: () => h(Edit) }),
-              default: () => t('favorites.manager.tagManager.rename')
-            }
-          ),
-          h(
-            NTooltip,
-            {},
-            {
-              trigger: () => h(
-                NButton,
-                {
-                  size: 'small',
-                  quaternary: true,
-                  class: 'tag-action-btn tag-action-btn--merge',
-                  onClick: () => handleMerge(row)
-                },
-                {
-                  icon: () => h(NIcon, null, { default: () => h(GitMerge) }),
-                  default: () => t('favorites.manager.tagManager.merge')
-                }
-              ),
-              default: () => t('favorites.manager.tagManager.mergeTooltip')
-            }
-          ),
-          h(
-            NPopconfirm,
-            {
-              onPositiveClick: () => handleDelete(row),
-              positiveText: t('favorites.manager.tagManager.renameDialog.confirm'),
-              negativeText: t('favorites.manager.tagManager.renameDialog.cancel')
-            },
-            {
-              trigger: () => h(
-                NButton,
-                {
-                  size: 'small',
-                  quaternary: true,
-                  type: 'error',
-                  class: 'tag-action-btn tag-action-btn--delete'
-                },
-                {
-                  icon: () => h(NIcon, null, { default: () => h(Trash) }),
-                  default: () => t('favorites.manager.tagManager.delete')
-                }
-              ),
-              default: () => t('favorites.manager.tagManager.deleteConfirm', { name: row.name, count: row.count })
-            }
-          )
-        ]
-      });
-    }
-  }
-]);
+      return h(
+        NSpace,
+        { size: 4, justify: 'center', class: 'tag-action-buttons' },
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: 'small',
+                quaternary: true,
+                class: 'tag-action-btn tag-action-btn--edit',
+                onClick: () => handleRename(row),
+              },
+              {
+                icon: () => h(NIcon, null, { default: () => h(Edit) }),
+                default: () => t('favorites.manager.tagManager.rename'),
+              }
+            ),
+            h(
+              NTooltip,
+              {},
+              {
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      size: 'small',
+                      quaternary: true,
+                      class: 'tag-action-btn tag-action-btn--merge',
+                      onClick: () => handleMerge(row),
+                    },
+                    {
+                      icon: () => h(NIcon, null, { default: () => h(GitMerge) }),
+                      default: () => t('favorites.manager.tagManager.merge'),
+                    }
+                  ),
+                default: () => t('favorites.manager.tagManager.mergeTooltip'),
+              }
+            ),
+            h(
+              NPopconfirm,
+              {
+                onPositiveClick: () => handleDelete(row),
+                positiveText: t('favorites.manager.tagManager.renameDialog.confirm'),
+                negativeText: t('favorites.manager.tagManager.renameDialog.cancel'),
+              },
+              {
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      size: 'small',
+                      quaternary: true,
+                      type: 'error',
+                      class: 'tag-action-btn tag-action-btn--delete',
+                    },
+                    {
+                      icon: () => h(NIcon, null, { default: () => h(Trash) }),
+                      default: () => t('favorites.manager.tagManager.delete'),
+                    }
+                  ),
+                default: () =>
+                  t('favorites.manager.tagManager.deleteConfirm', {
+                    name: row.name,
+                    count: row.count,
+                  }),
+              }
+            ),
+          ],
+        }
+      )
+    },
+  },
+])
 
 // 加载标签数据
 const loadTags = async () => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager) {
-    return;
+    return
   }
 
-  loading.value = true;
+  loading.value = true
   try {
-    const tags = await servicesValue.favoriteManager.getAllTags();
+    const tags = await servicesValue.favoriteManager.getAllTags()
     // 使用统一的类型转换器转换数据格式
-    allTags.value = TagTypeConverter.toTagStatistics(tags);
+    allTags.value = TagTypeConverter.toTagStatistics(tags)
   } catch (error: unknown) {
-    message.error(t('favorites.manager.tagManager.messages.loadFailed') + `: ${error instanceof Error ? error.message : '未知错误'}`);
+    message.error(
+      t('favorites.manager.tagManager.messages.loadFailed') +
+        `: ${error instanceof Error ? error.message : '未知错误'}`
+    )
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // 新增标签
 const handleAdd = () => {
-  newTagName.value = '';
-  showAddDialog.value = true;
-};
+  newTagName.value = ''
+  showAddDialog.value = true
+}
 
 const handleAddConfirm = async () => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager) {
-    return;
+    return
   }
 
-  const trimmedName = newTagName.value.trim();
+  const trimmedName = newTagName.value.trim()
   if (!trimmedName) {
-    message.warning(t('favorites.manager.tagManager.addDialog.emptyWarning'));
-    return false;
+    message.warning(t('favorites.manager.tagManager.addDialog.emptyWarning'))
+    return false
   }
 
   // 检查标签是否已存在
-  if (allTags.value.some(tag => tag.name === trimmedName)) {
-    message.warning(t('favorites.manager.tagManager.addDialog.existWarning'));
-    return false;
+  if (allTags.value.some((tag) => tag.name === trimmedName)) {
+    message.warning(t('favorites.manager.tagManager.addDialog.existWarning'))
+    return false
   }
 
   try {
     // 调用 addTag API 持久化标签
-    await servicesValue.favoriteManager.addTag(trimmedName);
+    await servicesValue.favoriteManager.addTag(trimmedName)
 
     // 重新加载标签列表
-    await loadTags();
+    await loadTags()
 
-    message.success(t('favorites.manager.tagManager.messages.addSuccess'));
-    showAddDialog.value = false;
-    return true;
+    message.success(t('favorites.manager.tagManager.messages.addSuccess'))
+    showAddDialog.value = false
+    return true
   } catch (error: unknown) {
-    message.error(t('favorites.manager.tagManager.messages.addFailed') + `: ${error instanceof Error ? error.message : '未知错误'}`);
-    return false;
+    message.error(
+      t('favorites.manager.tagManager.messages.addFailed') +
+        `: ${error instanceof Error ? error.message : '未知错误'}`
+    )
+    return false
   }
-};
+}
 
 // 重命名标签
 const handleRename = (tag: TagStatistics) => {
-  currentTag.value = tag;
-  newTagName.value = tag.name;
-  showRenameDialog.value = true;
-};
+  currentTag.value = tag
+  newTagName.value = tag.name
+  showRenameDialog.value = true
+}
 
 const handleRenameConfirm = async () => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager || !currentTag.value) {
-    return;
+    return
   }
 
-  const trimmedName = newTagName.value.trim();
+  const trimmedName = newTagName.value.trim()
   if (!trimmedName) {
-    message.warning(t('favorites.manager.tagManager.renameDialog.emptyWarning'));
-    return false;
+    message.warning(t('favorites.manager.tagManager.renameDialog.emptyWarning'))
+    return false
   }
 
   if (trimmedName === currentTag.value.name) {
-    showRenameDialog.value = false;
-    return true;
+    showRenameDialog.value = false
+    return true
   }
 
   try {
-    await servicesValue.favoriteManager.renameTag(currentTag.value.name, trimmedName);
-    message.success(t('favorites.manager.tagManager.messages.renameSuccess'));
-    await loadTags();
-    emit('updated');
-    showRenameDialog.value = false;
-    return true;
+    await servicesValue.favoriteManager.renameTag(currentTag.value.name, trimmedName)
+    message.success(t('favorites.manager.tagManager.messages.renameSuccess'))
+    await loadTags()
+    emit('updated')
+    showRenameDialog.value = false
+    return true
   } catch (error: unknown) {
-    message.error(t('favorites.manager.tagManager.messages.renameFailed') + `: ${error instanceof Error ? error.message : '未知错误'}`);
-    return false;
+    message.error(
+      t('favorites.manager.tagManager.messages.renameFailed') +
+        `: ${error instanceof Error ? error.message : '未知错误'}`
+    )
+    return false
   }
-};
+}
 
 // 合并标签
 const handleMerge = (tag: TagStatistics) => {
-  currentTag.value = tag;
-  mergeTargetTag.value = '';
-  showMergeDialog.value = true;
-};
+  currentTag.value = tag
+  mergeTargetTag.value = ''
+  showMergeDialog.value = true
+}
 
 const handleMergeConfirm = async () => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager || !currentTag.value || !mergeTargetTag.value) {
-    message.warning(t('favorites.manager.tagManager.mergeDialog.selectTargetWarning'));
-    return false;
+    message.warning(t('favorites.manager.tagManager.mergeDialog.selectTargetWarning'))
+    return false
   }
 
   try {
-    await servicesValue.favoriteManager.mergeTags([currentTag.value.name], mergeTargetTag.value);
-    message.success(t('favorites.manager.tagManager.messages.mergeSuccess'));
-    await loadTags();
-    emit('updated');
-    showMergeDialog.value = false;
-    return true;
+    await servicesValue.favoriteManager.mergeTags([currentTag.value.name], mergeTargetTag.value)
+    message.success(t('favorites.manager.tagManager.messages.mergeSuccess'))
+    await loadTags()
+    emit('updated')
+    showMergeDialog.value = false
+    return true
   } catch (error: unknown) {
-    message.error(t('favorites.manager.tagManager.messages.mergeFailed') + `: ${error instanceof Error ? error.message : '未知错误'}`);
-    return false;
+    message.error(
+      t('favorites.manager.tagManager.messages.mergeFailed') +
+        `: ${error instanceof Error ? error.message : '未知错误'}`
+    )
+    return false
   }
-};
+}
 
 // 删除标签
 const handleDelete = async (tag: TagStatistics) => {
-  const servicesValue = services?.value;
+  const servicesValue = services?.value
   if (!servicesValue?.favoriteManager) {
-    return;
+    return
   }
 
   try {
-    await servicesValue.favoriteManager.deleteTag(tag.name);
-    message.success(t('favorites.manager.tagManager.messages.deleteSuccess'));
-    await loadTags();
-    emit('updated');
+    await servicesValue.favoriteManager.deleteTag(tag.name)
+    message.success(t('favorites.manager.tagManager.messages.deleteSuccess'))
+    await loadTags()
+    emit('updated')
   } catch (error: unknown) {
-    message.error(t('favorites.manager.tagManager.messages.deleteFailed') + `: ${error instanceof Error ? error.message : '未知错误'}`);
+    message.error(
+      t('favorites.manager.tagManager.messages.deleteFailed') +
+        `: ${error instanceof Error ? error.message : '未知错误'}`
+    )
   }
-};
+}
 
 // 监听对话框显示状态,打开时加载数据
-watch(() => props.show, (newShow) => {
-  if (newShow) {
-    loadTags();
-  }
-}, { immediate: true });
+watch(
+  () => props.show,
+  (newShow) => {
+    if (newShow) {
+      loadTags()
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

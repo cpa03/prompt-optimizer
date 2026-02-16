@@ -40,7 +40,8 @@
     <template v-if="result && result.variables.length > 0" #footer>
       <NSpace justify="space-between" style="width: 100%">
         <NText depth="3">
-          {{ t('evaluation.variableExtraction.selected') }}: {{ selectedKeys.length }} / {{ result.variables.length }}
+          {{ t('evaluation.variableExtraction.selected') }}: {{ selectedKeys.length }} /
+          {{ result.variables.length }}
         </NText>
       </NSpace>
     </template>
@@ -49,16 +50,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import {
-  NModal,
-  NAlert,
-  NDataTable,
-  NEmpty,
-  NSpace,
-  NText,
-  type DataTableColumns,
-} from 'naive-ui'
-import { UI_DIMENSIONS, SPACING } from "../../config/constants";
+import { NModal, NAlert, NDataTable, NEmpty, NSpace, NText, type DataTableColumns } from 'naive-ui'
+import { UI_DIMENSIONS, SPACING } from '../../config/constants'
 import { useI18n } from 'vue-i18n'
 import type { ExtractedVariable, VariableExtractionResponse } from '@prompt-optimizer/core'
 

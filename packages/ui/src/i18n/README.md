@@ -55,7 +55,7 @@ export default {
       noData: '暂无数据',
     },
   },
-  
+
   // 功能模块
   promptOptimizer: {
     title: '提示词优化器',
@@ -69,7 +69,7 @@ export default {
       share: '分享',
     },
   },
-  
+
   // 设置模块
   settings: {
     title: '设置',
@@ -109,4 +109,4 @@ export default {
 
 - **简体中文 (zh-CN)**: 默认语言，适用于中国大陆用户
 - **繁體中文 (zh-TW)**: 适用于台湾、香港等地区用户，基于简体中文翻译并适配港台用语习惯
-- **English (en-US)**: 英语，适用于国际用户 
+- **English (en-US)**: 英语，适用于国际用户

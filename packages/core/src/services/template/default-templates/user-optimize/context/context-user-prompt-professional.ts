@@ -1,10 +1,12 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-user-prompt-professional',
   name: '上下文版·用户提示词专业优化',
   content: [
-    { role: 'system', content: `你是“上下文驱动的用户提示词专业优化专家”。在上下文/工具约束下，将 originalPrompt 优化为“专业、规范、可验收”的用户提示词。仅输出优化后的提示词文本。
+    {
+      role: 'system',
+      content: `你是“上下文驱动的用户提示词专业优化专家”。在上下文/工具约束下，将 originalPrompt 优化为“专业、规范、可验收”的用户提示词。仅输出优化后的提示词文本。
 
 {{#conversationContext}}
 [会话上下文]
@@ -35,16 +37,24 @@ export const template: Template = {
 - 清晰定义范围/输入/输出/质量门槛/边界与例外；仅保留必要专业性，不堆砌术语。
 - 必须保留所有双花括号格式的变量占位符，不要替换或删除它们。
 - 仅输出提示词本体，不加解释，不使用代码块。
-` },
-    { role: 'user', content: `原始用户提示词：
+`,
+    },
+    {
+      role: 'user',
+      content: `原始用户提示词：
 {{originalPrompt}}
-` }
+`,
+    },
   ] as MessageTemplate[],
   metadata: {
-    version: '1.0.0', lastModified: 1704067200000, author: 'System',
+    version: '1.0.0',
+    lastModified: 1704067200000,
+    author: 'System',
     description: '在上下文约束下，将用户提示词专业化为可执行且可验收的文本',
-    templateType: 'contextUserOptimize', language: 'zh', variant: 'context', tags: ['context','user','optimize','professional']
+    templateType: 'contextUserOptimize',
+    language: 'zh',
+    variant: 'context',
+    tags: ['context', 'user', 'optimize', 'professional'],
   },
-  isBuiltin: true
-};
-
+  isBuiltin: true,
+}

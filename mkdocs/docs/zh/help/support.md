@@ -11,6 +11,7 @@
 虽然应用暂时没有内置的批量处理功能，但可以通过以下方法实现高效的批量优化：
 
 **方法1：历史记录管理法**
+
 ```bash
 # 工作流程
 1. 准备待优化的提示词列表
@@ -27,6 +28,7 @@
 ```
 
 **方法2：模板复用法**
+
 ```bash
 # 创建标准化模板
 1. 分析待处理提示词的共同特征
@@ -42,6 +44,7 @@
 ```
 
 **方法3：数据导入导出法**
+
 ```bash
 # 批量数据处理流程
 1. 将待优化内容整理为结构化数据(CSV/JSON)
@@ -67,6 +70,7 @@
 #### 未来功能规划
 
 **即将推出的批量功能**：
+
 ```bash
 # 开发中的功能
 批量导入: 支持CSV、JSON格式的批量导入
@@ -89,6 +93,7 @@
 Model Context Protocol（模型上下文协议）是一个开放标准，用于连接AI应用和各种数据源、工具。
 
 **Prompt Optimizer的MCP支持**：
+
 ```bash
 # MCP服务器功能
 提供标准化API: 遵循MCP协议规范
@@ -104,14 +109,13 @@ Codeium: 代码补全和AI编程工具
 ```
 
 **MCP集成配置**：
+
 ```json
 {
   "mcpServers": {
     "prompt-optimizer": {
       "command": "npx",
-      "args": [
-        "@prompt-optimizer/mcp-server"
-      ],
+      "args": ["@prompt-optimizer/mcp-server"],
       "env": {
         "OPENAI_API_KEY": "your-api-key"
       }
@@ -121,13 +125,14 @@ Codeium: 代码补全和AI编程工具
 ```
 
 **详细配置指南**：
+
 ```bash
 # 安装MCP服务器
 npm install -g @prompt-optimizer/mcp-server
 
 # Claude Desktop配置
 1. 打开Claude Desktop配置文件
-2. 添加Prompt Optimizer服务器配置  
+2. 添加Prompt Optimizer服务器配置
 3. 重启Claude Desktop
 4. 在Claude中使用提示词优化功能
 
@@ -140,6 +145,7 @@ Linux: ~/.config/claude/claude_desktop_config.json
 #### API集成方案
 
 **RESTful API接口**（规划中）：
+
 ```javascript
 // 基础API结构
 const api = {
@@ -150,19 +156,19 @@ const api = {
       text: '待优化的文本',
       template: '优化模板ID',
       model: '模型配置',
-      parameters: '优化参数'
-    }
+      parameters: '优化参数',
+    },
   },
-  
+
   history: {
     url: '/api/v1/history',
     method: 'GET',
     params: {
       limit: 10,
       offset: 0,
-      category: '分类筛选'
-    }
-  }
+      category: '分类筛选',
+    },
+  },
 }
 
 // 使用示例
@@ -170,21 +176,22 @@ fetch('/api/v1/optimize', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer your-token'
+    Authorization: 'Bearer your-token',
   },
   body: JSON.stringify({
     text: 'Your prompt text here',
     template: 'general-optimization',
-    model: 'gpt-4'
-  })
+    model: 'gpt-4',
+  }),
 })
-.then(response => response.json())
-.then(data => console.log(data.optimized_text))
+  .then((response) => response.json())
+  .then((data) => console.log(data.optimized_text))
 ```
 
 #### 数据格式标准化
 
 **导入导出格式**：
+
 ```json
 {
   "version": "2.0",
@@ -194,7 +201,7 @@ fetch('/api/v1/optimize', {
       {
         "id": "unique-id",
         "original": "原始提示词",
-        "optimized": "优化后提示词", 
+        "optimized": "优化后提示词",
         "metadata": {
           "model": "gpt-4",
           "template": "general",
@@ -216,6 +223,7 @@ fetch('/api/v1/optimize', {
 ```
 
 **与其他工具的数据转换**：
+
 ```bash
 # 支持的格式转换
 ChatGPT对话导出: JSON格式的对话记录
@@ -232,59 +240,70 @@ Obsidian笔记: Markdown格式的笔记
 #### 1. GitHub Issues（推荐）
 
 **适用情况**：
+
 - 发现软件Bug或异常
-- 功能需求和改进建议  
+- 功能需求和改进建议
 - 技术问题需要开发者解答
 - 想要参与项目讨论
 
 **提交Issues指南**：
+
 ```bash
 # 仓库地址
 https://github.com/linshenkx/prompt-optimizer/issues
 
 # Issue分类
 🐛 Bug Report: 软件故障报告
-✨ Feature Request: 新功能建议  
+✨ Feature Request: 新功能建议
 ❓ Question: 使用问题咨询
 📚 Documentation: 文档改进建议
 🔧 Enhancement: 功能增强建议
 ```
 
 **高质量Issue模板**：
+
 ```markdown
 ## 问题描述
+
 [清晰简洁地描述遇到的问题]
 
 ## 复现步骤
+
 1. 打开应用并进入...
 2. 点击...按钮
 3. 输入...内容
 4. 观察到...错误
 
 ## 期望行为
+
 [描述期望的正常行为]
 
-## 实际行为  
+## 实际行为
+
 [描述实际发生的异常行为]
 
 ## 环境信息
+
 - 操作系统: [Windows 11 / macOS 14.0 / Ubuntu 22.04]
 - 浏览器: [Chrome 120 / Firefox 118 / Safari 17]
 - 应用版本: [v2.0.0]
 - 使用的AI模型: [GPT-4 / Gemini Pro]
 
 ## 附加信息
+
 - 错误截图: [如有请附上]
 - 控制台错误: [F12查看Console错误信息]
 - 相关配置: [相关的设置配置信息]
 
 ## 可能的解决方案
+
 [如果有想法，可以提出可能的解决方案]
 ```
 
 #### 2. 社区讨论
 
 **GitHub Discussions**：
+
 ```bash
 # 访问地址
 https://github.com/linshenkx/prompt-optimizer/discussions
@@ -292,29 +311,35 @@ https://github.com/linshenkx/prompt-optimizer/discussions
 # 讨论分类
 💡 Ideas: 创意想法分享
 🙏 Q&A: 问题解答
-📢 General: 一般讨论  
+📢 General: 一般讨论
 🎉 Show and tell: 成果展示
 ```
 
 **讨论参与指南**：
+
 ```markdown
 # 提问前的准备
+
 1. 搜索已有讨论，避免重复提问
 2. 查看FAQ文档，确认问题未被解答
 3. 准备详细的背景信息
 4. 考虑问题的普遍性
 
 # 优质讨论示例
+
 标题: "如何优化长文本的处理性能？"
-内容: 
+内容:
+
 - 具体使用场景描述
-- 遇到的性能问题  
+- 遇到的性能问题
 - 已尝试的解决方法
 - 寻求的具体建议
 
 # 分享经验示例
+
 标题: "分享我的批量优化工作流程"
 内容:
+
 - 工作场景介绍
 - 具体操作步骤
 - 效率提升效果
@@ -324,6 +349,7 @@ https://github.com/linshenkx/prompt-optimizer/discussions
 #### 3. 邮件支持
 
 **官方支持邮箱**：
+
 ```bash
 # 技术支持
 邮箱: support@prompt-optimizer.com
@@ -331,13 +357,13 @@ https://github.com/linshenkx/prompt-optimizer/discussions
 适用问题: 技术故障、使用咨询
 
 # 商务合作
-邮箱: business@prompt-optimizer.com  
+邮箱: business@prompt-optimizer.com
 回复时间: 1-2个工作日
 适用问题: 企业合作、定制开发
 
 # 邮件格式建议
 主题: [类别] 简短问题描述
-正文: 
+正文:
 - 详细问题描述
 - 环境信息
 - 截图或日志（如需要）
@@ -349,6 +375,7 @@ https://github.com/linshenkx/prompt-optimizer/discussions
 #### 如何参与项目
 
 **代码贡献**：
+
 ```bash
 # 贡献流程
 1. Fork项目到自己的GitHub
@@ -371,6 +398,7 @@ pnpm dev
 ```
 
 **文档贡献**：
+
 ```bash
 # 文档改进
 修正错误和过时信息
@@ -387,6 +415,7 @@ docs/
 ```
 
 **问题反馈和测试**：
+
 ```bash
 # 测试贡献
 参与新版本的Beta测试
@@ -405,6 +434,7 @@ Discussions: 使用体验分享
 #### 企业定制服务
 
 **定制开发服务**：
+
 ```bash
 # 服务内容
 私有部署解决方案
@@ -422,6 +452,7 @@ API接口定制开发
 ```
 
 **技术咨询服务**：
+
 ```bash
 # 咨询内容
 AI工具集成方案设计
@@ -431,7 +462,7 @@ AI工具集成方案设计
 
 # 服务方式
 在线会议咨询
-现场技术支持  
+现场技术支持
 长期技术顾问
 培训和工作坊
 ```
@@ -439,10 +470,11 @@ AI工具集成方案设计
 #### SLA和服务保障
 
 **服务等级协议**：
+
 ```bash
 # 响应时间承诺
 P0 (严重故障): 2小时内响应
-P1 (重要问题): 4小时内响应  
+P1 (重要问题): 4小时内响应
 P2 (一般问题): 1个工作日内响应
 P3 (咨询建议): 3个工作日内响应
 
@@ -463,6 +495,7 @@ P3 (咨询建议): 3个工作日内响应
 #### 官方文档和教程
 
 **文档体系**：
+
 ```bash
 # 用户文档
 入门指南: 快速上手教程
@@ -470,7 +503,7 @@ P3 (咨询建议): 3个工作日内响应
 最佳实践: 使用技巧和建议
 FAQ: 常见问题解答
 
-# 开发者文档  
+# 开发者文档
 API文档: 接口说明和示例
 MCP集成: 协议集成指南
 插件开发: 扩展开发指南
@@ -483,6 +516,7 @@ GitHub Wiki: 项目百科知识库
 ```
 
 **视频教程**（规划中）：
+
 ```bash
 # 教程系列
 基础入门: 0-1快速上手
@@ -500,6 +534,7 @@ Bilibili官方账号
 #### 社区学习
 
 **学习交流群**：
+
 ```bash
 # QQ交流群
 群号: [待建立]
@@ -515,6 +550,7 @@ Bilibili官方账号
 ```
 
 **定期活动**：
+
 ```bash
 # 社区活动
 每月在线答疑: 开发者在线回答问题
@@ -532,6 +568,7 @@ Bilibili官方账号
 ---
 
 **项目信息**：
+
 - **GitHub仓库**: https://github.com/linshenkx/prompt-optimizer
 - **官方文档**: https://docs.prompt-optimizer.com
 - **在线演示**: https://prompt.always200.com

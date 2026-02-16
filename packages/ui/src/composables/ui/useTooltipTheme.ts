@@ -1,17 +1,17 @@
 import { computed, type CSSProperties } from 'vue'
 
-import { useThemeVars, type TooltipProps } from 'naive-ui';
+import { useThemeVars, type TooltipProps } from 'naive-ui'
 
-type TooltipThemeOverrides = NonNullable<TooltipProps['themeOverrides']>;
+type TooltipThemeOverrides = NonNullable<TooltipProps['themeOverrides']>
 
 interface UseTooltipThemeOptions {
-  maxWidth?: CSSProperties['maxWidth'];
-  maxHeight?: CSSProperties['maxHeight'];
-  whiteSpace?: CSSProperties['whiteSpace'];
-  wordBreak?: CSSProperties['wordBreak'];
-  overflowWrap?: CSSProperties['overflowWrap'];
-  padding?: CSSProperties['padding'];
-  overflowY?: CSSProperties['overflowY'];
+  maxWidth?: CSSProperties['maxWidth']
+  maxHeight?: CSSProperties['maxHeight']
+  whiteSpace?: CSSProperties['whiteSpace']
+  wordBreak?: CSSProperties['wordBreak']
+  overflowWrap?: CSSProperties['overflowWrap']
+  padding?: CSSProperties['padding']
+  overflowY?: CSSProperties['overflowY']
 }
 
 /**
@@ -20,23 +20,23 @@ interface UseTooltipThemeOptions {
  * 让 Tooltip 的背景与弹层类组件保持一致，同时限制尺寸防止遮挡。
  */
 export function useTooltipTheme(options: UseTooltipThemeOptions = {}) {
-  const themeVars = useThemeVars();
+  const themeVars = useThemeVars()
 
   const tooltipThemeOverrides = computed<TooltipThemeOverrides>(() => {
-    const vars = themeVars.value;
+    const vars = themeVars.value
 
     return {
       color: vars.popoverColor,
       textColor: vars.textColor2,
       boxShadow: vars.boxShadow2,
-      borderRadius: vars.borderRadius
-    };
-  });
+      borderRadius: vars.borderRadius,
+    }
+  })
 
   const tooltipOverlayStyle = computed<CSSProperties>(() => ({
     maxWidth: options.maxWidth ?? 'calc(100vw - 32px)',
-    maxHeight: options.maxHeight ?? 'calc(100vh - 32px)'
-  }));
+    maxHeight: options.maxHeight ?? 'calc(100vh - 32px)',
+  }))
 
   const tooltipContentStyle = computed<CSSProperties>(() => ({
     maxWidth: '100%',
@@ -47,12 +47,12 @@ export function useTooltipTheme(options: UseTooltipThemeOptions = {}) {
     padding: options.padding ?? '12px 16px',
     overflowY: options.overflowY ?? 'auto',
     border: `1px solid ${themeVars.value.dividerColor}`,
-    boxSizing: 'border-box'
-  }));
+    boxSizing: 'border-box',
+  }))
 
   return {
     tooltipThemeOverrides,
     tooltipOverlayStyle,
-    tooltipContentStyle
-  };
+    tooltipContentStyle,
+  }
 }

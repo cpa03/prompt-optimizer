@@ -197,4 +197,4 @@ export function getProviderDescription(providerId: string): string {
 }
 
 // Type exports for type safety
-export type ProviderId = typeof PROVIDER_IDS[keyof typeof PROVIDER_IDS]
+export type ProviderId = (typeof PROVIDER_IDS)[keyof typeof PROVIDER_IDS]

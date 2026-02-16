@@ -7,6 +7,7 @@ BroCula is a strict workflow automation system for maintaining browser console e
 > **"Zero console errors. Maximum performance. No exceptions."**
 
 BroCula enforces:
+
 1. **Fatal Error Policy**: Any console error or warning is a fatal failure
 2. **Lighthouse Threshold**: Minimum 90/100 score in all categories
 3. **Build/Lint Compliance**: All builds and lint checks must pass
@@ -34,7 +35,9 @@ pnpm brocula:lighthouse
 ## Scripts
 
 ### 1. `brocula-health-check.js` 🏥
+
 Quick health assessment of the project:
+
 - ✅ Build status (core, ui)
 - ✅ Lint compliance
 - ✅ Unit test results
@@ -43,12 +46,15 @@ Quick health assessment of the project:
 - ✅ Project structure validation
 
 **Usage:**
+
 ```bash
 node scripts/brocula-health-check.js
 ```
 
 ### 2. `brocula-console-monitor.js` 🎭
+
 Monitors browser console for errors and warnings:
+
 - Launches headless Chrome via Playwright
 - Captures all console messages
 - Categorizes errors by severity
@@ -56,6 +62,7 @@ Monitors browser console for errors and warnings:
 - **Fails immediately on any error**
 
 **Usage:**
+
 ```bash
 # Requires dev server running
 pnpm -F @prompt-optimizer/web dev &
@@ -63,13 +70,16 @@ node scripts/brocula-console-monitor.js
 ```
 
 ### 3. `brocula-lighthouse.js` 💡
+
 Comprehensive Lighthouse audit and optimization:
+
 - Audits all 4 categories (Performance, Accessibility, Best Practices, SEO)
 - Identifies optimization opportunities
 - Generates fix guides for each issue
 - **Fails if any score < 90**
 
 **Usage:**
+
 ```bash
 # Requires dev server running
 pnpm -F @prompt-optimizer/web dev &
@@ -77,9 +87,11 @@ node scripts/brocula-lighthouse.js
 ```
 
 ### 4. `brocula-master.js` 🧛‍♂️
+
 Master orchestrator that runs the complete workflow:
 
 **Single Run Mode:**
+
 ```bash
 pnpm brocula:once
 # or
@@ -87,12 +99,14 @@ node scripts/brocula-master.js --once
 ```
 
 **Continuous Mode:**
+
 ```bash
 pnpm brocula
 # Runs every 5 minutes indefinitely
 ```
 
 **Workflow Steps:**
+
 1. Pre-flight checks (git sync, uncommitted changes)
 2. Build application (core → ui → web)
 3. Run lint (auto-fix if possible)
@@ -108,16 +122,17 @@ Edit `scripts/brocula-master.js` to customize:
 
 ```javascript
 const CONFIG = {
-  mainBranch: 'main',           // Target branch for PRs
-  minLighthouseScore: 90,       // Minimum acceptable score
-  checkInterval: 300000,        // Continuous mode interval (ms)
-  maxRetries: 3                 // Max fix attempts per issue
-};
+  mainBranch: 'main', // Target branch for PRs
+  minLighthouseScore: 90, // Minimum acceptable score
+  checkInterval: 300000, // Continuous mode interval (ms)
+  maxRetries: 3, // Max fix attempts per issue
+}
 ```
 
 ## Error Handling
 
 ### Fatal Errors (Build/Lint Failure)
+
 - Console errors detected
 - Build failures
 - Lint errors that can't be auto-fixed
@@ -126,6 +141,7 @@ const CONFIG = {
 **Action:** Workflow stops immediately, manual intervention required
 
 ### Warnings (Logged but Continue)
+
 - Lighthouse optimization opportunities
 - Minor console warnings
 - Non-blocking issues
@@ -154,16 +170,19 @@ Add to your GitHub Actions or CI pipeline:
 ## Best Practices
 
 1. **Run before every commit:**
+
    ```bash
    pnpm brocula:health
    ```
 
 2. **Run before creating PR:**
+
    ```bash
    pnpm brocula:once
    ```
 
 3. **Monitor in development:**
+
    ```bash
    pnpm brocula  # Continuous mode
    ```
@@ -175,11 +194,13 @@ Add to your GitHub Actions or CI pipeline:
 ## Troubleshooting
 
 ### "Cannot find module '@playwright/test'"
+
 ```bash
 pnpm install
 ```
 
 ### "Chrome not found"
+
 ```bash
 # Install Chrome/Chromium
 # Ubuntu/Debian:
@@ -190,7 +211,9 @@ brew install --cask google-chrome
 ```
 
 ### "Dev server not starting"
+
 Check that ports 15555 (E2E) or default dev port are not in use:
+
 ```bash
 pnpm kill:dev
 ```
@@ -198,6 +221,7 @@ pnpm kill:dev
 ## Contributing
 
 BroCula is part of the prompt-optimizer project. Follow existing code style and ensure:
+
 - All checks pass before submitting
 - Console error-free in browser
 - Lighthouse scores maintained

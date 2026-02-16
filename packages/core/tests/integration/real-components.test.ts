@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { ModelManager, HistoryManager, TemplateManager, PromptService, DataManager } from '../../src'
+import {
+  ModelManager,
+  HistoryManager,
+  TemplateManager,
+  PromptService,
+  DataManager,
+} from '../../src'
 import { LocalStorageProvider } from '../../src/services/storage/localStorageProvider'
 import { createLLMService } from '../../src/services/llm/service'
 import { createTemplateManager } from '../../src/services/template/manager'
@@ -33,9 +39,9 @@ describe('Real Components Integration Tests', () => {
     name: string,
     providerId: string = 'openai'
   ): TextModelConfig => {
-    const adapter = registry.getAdapter(providerId);
-    const provider = adapter.getProvider();
-    const models = adapter.getModels();
+    const adapter = registry.getAdapter(providerId)
+    const provider = adapter.getProvider()
+    const models = adapter.getModels()
 
     return {
       id,
@@ -45,11 +51,11 @@ describe('Real Components Integration Tests', () => {
       modelMeta: models[0] || adapter.buildDefaultModel('test-model'),
       connectionConfig: {
         apiKey: 'test-key',
-        baseURL: provider.defaultBaseURL
+        baseURL: provider.defaultBaseURL,
       },
-      paramOverrides: {}
-    };
-  };
+      paramOverrides: {},
+    }
+  }
 
   beforeEach(async () => {
     // 清理存储，确保测试隔离
@@ -80,9 +86,15 @@ describe('Real Components Integration Tests', () => {
       importData: vi.fn().mockResolvedValue(undefined),
       getDataType: vi.fn().mockReturnValue('contexts'),
       validateData: vi.fn().mockReturnValue(true),
-    } as ContextRepo;
+    } as ContextRepo
 
-    dataManager = new DataManager(modelManager, templateManager, historyManager, preferenceService, mockContextRepo)
+    dataManager = new DataManager(
+      modelManager,
+      templateManager,
+      historyManager,
+      preferenceService,
+      mockContextRepo
+    )
 
     const llmService = createLLMService(modelManager)
     promptService = new PromptService(modelManager, llmService, templateManager, historyManager)
@@ -95,7 +107,7 @@ describe('Real Components Integration Tests', () => {
 
   describe('真实存储层测试', () => {
     it('应该能正确保存和读取模型配置', async () => {
-      const testModel = createTextModelConfig('test-model', 'Test Model');
+      const testModel = createTextModelConfig('test-model', 'Test Model')
 
       // 清理存储，确保从空状态开始
       await storage.clearAll()
@@ -110,7 +122,7 @@ describe('Real Components Integration Tests', () => {
 
       // 验证在所有模型列表中（注意：新架构返回数组且包含默认模型）
       const allModels = await modelManager.getAllModels()
-      const userModel = allModels.find(m => m.id === 'test-model')
+      const userModel = allModels.find((m) => m.id === 'test-model')
       expect(userModel).toBeDefined()
       expect(userModel?.name).toBe('Test Model')
     })
@@ -126,7 +138,7 @@ describe('Real Components Integration Tests', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       await historyManager.addRecord(record)
@@ -142,10 +154,11 @@ describe('Real Components Integration Tests', () => {
 
       // 删除记录
       await historyManager.deleteRecord('test-record-1')
-      
+
       // 验证已删除
-      await expect(historyManager.getRecord('test-record-1'))
-        .rejects.toThrow('Record with ID test-record-1 not found')
+      await expect(historyManager.getRecord('test-record-1')).rejects.toThrow(
+        'Record with ID test-record-1 not found'
+      )
     })
 
     it('应该能正确处理用户模板管理', async () => {
@@ -157,8 +170,8 @@ describe('Real Components Integration Tests', () => {
           version: '1.0',
           lastModified: Date.now(),
           templateType: 'optimize' as const,
-          language: 'zh' as const
-        }
+          language: 'zh' as const,
+        },
       }
 
       // 清理存储，确保从空状态开始
@@ -175,15 +188,16 @@ describe('Real Components Integration Tests', () => {
 
       // 验证在模板列表中（注意：真实环境可能有内置模板）
       const templates = await templateManager.listTemplates()
-      const userTemplate = templates.find(t => t.id === 'user-test-template')
+      const userTemplate = templates.find((t) => t.id === 'user-test-template')
       expect(userTemplate).toBeDefined()
 
       // 删除模板
       await templateManager.deleteTemplate('user-test-template')
-      
+
       // 验证已删除
-      await expect(templateManager.getTemplate('user-test-template'))
-        .rejects.toMatchObject({ code: TEMPLATE_ERROR_CODES.NOT_FOUND })
+      await expect(templateManager.getTemplate('user-test-template')).rejects.toMatchObject({
+        code: TEMPLATE_ERROR_CODES.NOT_FOUND,
+      })
     })
   })
 
@@ -194,7 +208,7 @@ describe('Real Components Integration Tests', () => {
 
       // 1. 添加模型
       // 1. 添加测试模型
-      const model = createTextModelConfig('test-model', 'Test Model');
+      const model = createTextModelConfig('test-model', 'Test Model')
       await modelManager.addModel('test-model', model)
 
       // 2. 添加用户模板（避免与内置模板冲突）
@@ -206,8 +220,8 @@ describe('Real Components Integration Tests', () => {
           version: '1.0',
           lastModified: Date.now(),
           templateType: 'optimize' as const,
-          language: 'zh' as const
-        }
+          language: 'zh' as const,
+        },
       }
       await templateManager.saveTemplate(template)
 
@@ -219,7 +233,7 @@ describe('Real Components Integration Tests', () => {
       const retrievedTemplate = await templateManager.getTemplate('user-optimize-template')
       expect(retrievedTemplate).toBeDefined()
       expect(retrievedTemplate.name).toBe('User Optimize Template')
-      
+
       console.log('组件配置验证成功，跳过实际API调用以避免网络依赖')
     }, 5000) // 减少超时时间，因为不再进行API调用
 
@@ -228,8 +242,8 @@ describe('Real Components Integration Tests', () => {
       await storage.clearAll()
 
       // 准备测试数据
-      const model = createTextModelConfig('export-model', 'Export Test Model');
-      
+      const model = createTextModelConfig('export-model', 'Export Test Model')
+
       const template: Template = {
         id: 'user-export-template',
         name: 'User Export Template',
@@ -238,8 +252,8 @@ describe('Real Components Integration Tests', () => {
           version: '1.0',
           lastModified: Date.now(),
           templateType: 'optimize' as const,
-          language: 'zh' as const
-        }
+          language: 'zh' as const,
+        },
       }
 
       const record = {
@@ -251,7 +265,7 @@ describe('Real Components Integration Tests', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'export-model',
-        templateId: 'user-export-template'
+        templateId: 'user-export-template',
       }
 
       // 添加测试数据
@@ -262,7 +276,7 @@ describe('Real Components Integration Tests', () => {
       // 导出数据
       const exportedDataString = await dataManager.exportAllData()
       const exportedData = JSON.parse(exportedDataString)
-      
+
       expect(exportedData.version).toBe(1)
       expect(exportedData.data).toBeDefined()
       expect(exportedData.data.models).toBeDefined()
@@ -279,7 +293,7 @@ describe('Real Components Integration Tests', () => {
       const emptyModels = await modelManager.getAllModels()
       const emptyTemplates = await templateManager.listTemplates()
       const emptyHistory = await historyManager.getRecords()
-      
+
       // 注意：真实环境可能有内置模型和模板，不一定为空
       expect(emptyHistory.length).toBe(0) // 历史记录应该清空
 
@@ -290,13 +304,13 @@ describe('Real Components Integration Tests', () => {
       const restoredModels = await modelManager.getAllModels()
       const restoredTemplates = await templateManager.listTemplates()
       const restoredHistory = await historyManager.getRecords()
-      
+
       expect(restoredModels.length).toBeGreaterThan(0)
       expect(restoredTemplates.length).toBeGreaterThan(0)
       expect(restoredHistory.length).toBe(1)
-      
-      const restoredModel = restoredModels.find(m => m.id === 'export-model')
-      const restoredTemplate = restoredTemplates.find(t => t.id === 'user-export-template')
+
+      const restoredModel = restoredModels.find((m) => m.id === 'export-model')
+      const restoredTemplate = restoredTemplates.find((t) => t.id === 'user-export-template')
       expect(restoredModel).toBeDefined()
       expect(restoredTemplate).toBeDefined()
       expect(restoredHistory[0].id).toBe('export-record')
@@ -314,7 +328,7 @@ describe('Real Components Integration Tests', () => {
         version: 1,
         timestamp: Date.now(),
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       const record2 = {
@@ -326,29 +340,30 @@ describe('Real Components Integration Tests', () => {
         version: 2,
         timestamp: Date.now(),
         modelKey: 'test-model',
-        templateId: 'test-template'
+        templateId: 'test-template',
       }
 
       // 添加第一条记录
       await historyManager.addRecord(record1)
 
       // 尝试添加重复ID的记录应该失败
-      await expect(historyManager.addRecord(record2))
-        .rejects.toThrow('Record with ID duplicate-id already exists')
+      await expect(historyManager.addRecord(record2)).rejects.toThrow(
+        'Record with ID duplicate-id already exists'
+      )
     })
 
     it('应该能正确处理大量数据', async () => {
       const recordCount = 10
       const records: Array<{
-        id: string;
-        originalPrompt: string;
-        optimizedPrompt: string;
-        type: 'optimize';
-        chainId: string;
-        version: number;
-        timestamp: number;
-        modelKey: string;
-        templateId: string;
+        id: string
+        originalPrompt: string
+        optimizedPrompt: string
+        type: 'optimize'
+        chainId: string
+        version: number
+        timestamp: number
+        modelKey: string
+        templateId: string
       }> = []
 
       // 创建多条记录
@@ -362,7 +377,7 @@ describe('Real Components Integration Tests', () => {
           version: i + 1,
           timestamp: Date.now() + i,
           modelKey: 'bulk-model',
-          templateId: 'bulk-template'
+          templateId: 'bulk-template',
         })
       }
 
@@ -398,7 +413,7 @@ describe('Real Components Integration Tests', () => {
           version: 1,
           timestamp: Date.now() + i, // 确保时间戳递增
           modelKey: 'capacity-model',
-          templateId: 'capacity-template'
+          templateId: 'capacity-template',
         })
       }
 
@@ -415,7 +430,7 @@ describe('Real Components Integration Tests', () => {
     it('应该能从损坏的数据中恢复', async () => {
       // 直接在存储中放入无效数据
       await storage.setItem('prompt_models', 'invalid json')
-      
+
       // ModelManager应该能处理无效数据并返回空数组
       const models = await modelManager.getAllModels()
       expect(Array.isArray(models)).toBe(true)
@@ -441,4 +456,4 @@ describe('Real Components Integration Tests', () => {
       expect(Array.isArray(templates)).toBe(true)
     })
   })
-}) 
+})

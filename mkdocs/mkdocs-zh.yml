@@ -18,11 +18,11 @@ theme:
     - navigation.top
     - navigation.footer
   palette:
-    - media: "(prefers-color-scheme: light)"
+    - media: '(prefers-color-scheme: light)'
       scheme: default
       primary: indigo
       accent: indigo
-    - media: "(prefers-color-scheme: dark)"
+    - media: '(prefers-color-scheme: dark)'
       scheme: slate
       primary: indigo
       accent: indigo
@@ -99,7 +99,7 @@ edit_uri: edit/main/mkdocs/docs/zh/
 
 # 页脚与构建
 strict: true
-copyright: "© 2025 Prompt Optimizer"
+copyright: '© 2025 Prompt Optimizer'
 
 extra:
   social:

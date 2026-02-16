@@ -7,11 +7,13 @@
 ## 核心特性
 
 ### 🎯 WCAG 2.1 合规性
+
 - **A级**: 基础可访问性要求
 - **AA级**: 推荐的可访问性标准
 - **AAA级**: 最高级别的可访问性支持
 
 ### ⌨️ 键盘导航
+
 - Tab键循环导航
 - Enter键激活元素
 - Escape键关闭模态框
@@ -19,12 +21,14 @@
 - Home/End键快速定位
 
 ### 🔊 屏幕阅读器支持
+
 - 完整的ARIA标签体系
 - 实时区域状态通知
 - 语义化HTML结构
 - 上下文敏感的描述
 
 ### 👀 视觉辅助
+
 - 高对比度模式
 - 可调节字体大小
 - 聚焦指示器
@@ -40,12 +44,12 @@
 import { useAccessibility } from '@prompt-optimizer/ui'
 
 const {
-  keyboard,      // 键盘导航
-  aria,         // ARIA标签管理
-  announce,     // 屏幕阅读器通知
-  features,     // 可访问性特性检测
-  enableFocusTrap,  // 启用焦点陷阱
-  disableFocusTrap  // 禁用焦点陷阱
+  keyboard, // 键盘导航
+  aria, // ARIA标签管理
+  announce, // 屏幕阅读器通知
+  features, // 可访问性特性检测
+  enableFocusTrap, // 启用焦点陷阱
+  disableFocusTrap, // 禁用焦点陷阱
 } = useAccessibility('MyComponent')
 ```
 
@@ -72,14 +76,10 @@ import { useAccessibility } from '@prompt-optimizer/ui'
 const items = ref([
   { id: 1, name: '选项1' },
   { id: 2, name: '选项2' },
-  { id: 3, name: '选项3' }
+  { id: 3, name: '选项3' },
 ])
 
-const {
-  keyboard,
-  currentFocusIndex,
-  focusableElements
-} = useAccessibility('MenuComponent')
+const { keyboard, currentFocusIndex, focusableElements } = useAccessibility('MenuComponent')
 
 onMounted(() => {
   // 设置可聚焦元素
@@ -101,12 +101,8 @@ onMounted(() => {
     >
       保存
     </button>
-    
-    <div
-      role="status"
-      :aria-live="aria.getLiveRegionText('status')"
-      class="sr-only"
-    >
+
+    <div role="status" :aria-live="aria.getLiveRegionText('status')" class="sr-only">
       {{ statusMessage }}
     </div>
   </div>
@@ -122,7 +118,7 @@ const statusMessage = ref('')
 const handleSave = () => {
   statusMessage.value = '正在保存...'
   announce('正在保存内容', 'polite')
-  
+
   // 模拟保存操作
   setTimeout(() => {
     statusMessage.value = '保存完成'
@@ -157,21 +153,15 @@ import { useFocusManager } from '@prompt-optimizer/ui'
 const containerRef = ref<HTMLElement>()
 const inputValue = ref('')
 
-const {
-  trapFocus,
-  releaseFocus,
-  moveFocusNext,
-  moveFocusPrevious,
-  isTrapped
-} = useFocusManager({
+const { trapFocus, releaseFocus, moveFocusNext, moveFocusPrevious, isTrapped } = useFocusManager({
   container: containerRef,
-  restoreFocus: true
+  restoreFocus: true,
 })
 
 onMounted(() => {
   // 自动启用焦点陷阱
   trapFocus()
-  
+
   // 监听键盘事件
   document.addEventListener('keydown', handleKeydown)
 })
@@ -183,7 +173,7 @@ onUnmounted(() => {
 
 const handleKeydown = (e: KeyboardEvent) => {
   if (!isTrapped.value) return
-  
+
   switch (e.key) {
     case 'Tab':
       e.preventDefault()
@@ -224,7 +214,7 @@ const cancel = () => {
       <h1>应用标题</h1>
       <p>应用内容...</p>
     </main>
-    
+
     <!-- 屏幕阅读器支持组件 -->
     <ScreenReaderSupport
       ref="screenReader"
@@ -299,36 +289,33 @@ onMounted(async () => {
 
 const runAccessibilityTests = async () => {
   isLoading.value = true
-  
+
   try {
     // 运行完整的可访问性测试
     const result = await runTest({
       scope: document.body,
       wcagLevel: 'AA',
-      includeWarnings: true
+      includeWarnings: true,
     })
-    
+
     testResults.value = result
-    
+
     // 报告结果
     console.log('可访问性测试结果:')
     console.log(`总体分数: ${result.score}`)
     console.log(`通过的规则: ${result.passedRules.length}`)
     console.log(`发现的问题: ${result.issues.length}`)
     console.log(`警告: ${result.warnings.length}`)
-    
+
     // 处理严重问题
-    const criticalIssues = result.issues.filter(
-      issue => issue.severity === 'critical'
-    )
-    
+    const criticalIssues = result.issues.filter((issue) => issue.severity === 'critical')
+
     if (criticalIssues.length > 0) {
       console.error('发现严重可访问性问题:')
-      criticalIssues.forEach(issue => {
+      criticalIssues.forEach((issue) => {
         console.error(`- ${issue.rule}: ${issue.message}`)
       })
     }
-    
   } catch (error) {
     console.error('可访问性测试失败:', error)
   } finally {
@@ -341,7 +328,7 @@ const testImageAlt = () => {
   const result = runSingleRule('img-alt')
   if (result.issues.length > 0) {
     console.warn('发现图片缺少alt属性:')
-    result.issues.forEach(issue => {
+    result.issues.forEach((issue) => {
       console.warn(`- ${issue.message}`)
     })
   }
@@ -351,7 +338,7 @@ const testImageAlt = () => {
 const logAvailableRules = () => {
   const rules = getAvailableRules()
   console.log('可用的测试规则:')
-  rules.forEach(rule => {
+  rules.forEach((rule) => {
     console.log(`- ${rule.name} (${rule.wcagLevel}): ${rule.description}`)
   })
 }
@@ -377,7 +364,7 @@ const logAvailableRules = () => {
       </section>
     </article>
   </main>
-  
+
   <!-- ❌ 错误：缺少语义化标签 -->
   <div>
     <div>文章标题</div>
@@ -401,10 +388,8 @@ const logAvailableRules = () => {
   >
     {{ isSaving ? '保存中...' : '保存' }}
   </button>
-  <div id="save-help" class="sr-only">
-    保存当前编辑的文档到本地存储
-  </div>
-  
+  <div id="save-help" class="sr-only">保存当前编辑的文档到本地存储</div>
+
   <!-- ❌ 错误：缺少ARIA标签 -->
   <div @click="handleSave">保存</div>
 </template>
@@ -415,10 +400,7 @@ const logAvailableRules = () => {
 ```vue
 <template>
   <!-- ✅ 正确：完整的键盘支持 -->
-  <div
-    role="tablist"
-    @keydown="handleTabKeydown"
-  >
+  <div role="tablist" @keydown="handleTabKeydown">
     <button
       v-for="(tab, index) in tabs"
       :key="tab.id"
@@ -431,11 +413,8 @@ const logAvailableRules = () => {
       {{ tab.title }}
     </button>
   </div>
-  
-  <div
-    role="tabpanel"
-    :aria-labelledby="`tab-${activeTab}`"
-  >
+
+  <div role="tabpanel" :aria-labelledby="`tab-${activeTab}`">
     {{ tabs[activeTab]?.content }}
   </div>
 </template>
@@ -476,35 +455,22 @@ const handleTabKeydown = (e: KeyboardEvent) => {
         aria-describedby="name-error"
         placeholder="请输入姓名"
       />
-      <div
-        id="name-error"
-        role="alert"
-        class="error-message"
-        v-show="errors.name"
-      >
+      <div id="name-error" role="alert" class="error-message" v-show="errors.name">
         {{ errors.name }}
       </div>
-      
+
       <button type="submit" :disabled="isSubmitting">
         {{ isSubmitting ? '提交中...' : '提交' }}
       </button>
     </form>
-    
+
     <!-- 实时状态区域 -->
-    <div
-      role="status"
-      aria-live="polite"
-      class="sr-only"
-    >
+    <div role="status" aria-live="polite" class="sr-only">
       {{ statusMessage }}
     </div>
-    
+
     <!-- 错误通知区域 -->
-    <div
-      role="alert"
-      aria-live="assertive"
-      class="sr-only"
-    >
+    <div role="alert" aria-live="assertive" class="sr-only">
       {{ errorMessage }}
     </div>
   </div>
@@ -521,11 +487,11 @@ const statusMessage = ref('')
 const errorMessage = ref('')
 
 const formData = reactive({
-  name: ''
+  name: '',
 })
 
 const errors = reactive({
-  name: ''
+  name: '',
 })
 
 const validateForm = () => {
@@ -539,15 +505,15 @@ const handleSubmit = async () => {
     announce('表单验证失败，请检查输入', 'assertive')
     return
   }
-  
+
   isSubmitting.value = true
   statusMessage.value = '正在提交表单...'
   announce('正在提交表单', 'polite')
-  
+
   try {
     // 模拟提交
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
     statusMessage.value = '表单提交成功'
     announce('表单提交成功', 'polite')
   } catch (error) {
@@ -594,13 +560,13 @@ const handleSubmit = async () => {
     --border-color: #000000;
     --focus-color: #0000ff;
   }
-  
+
   .button {
     border: 2px solid var(--border-color);
     background: var(--background-color);
     color: var(--text-color);
   }
-  
+
   .button:focus {
     outline: 3px solid var(--focus-color);
   }
@@ -639,22 +605,22 @@ describe('键盘导航测试', () => {
   it('应该支持Tab键导航', async () => {
     const page = await browser.newPage()
     await page.goto('http://localhost:3000')
-    
+
     // 模拟Tab键导航
     await page.keyboard.press('Tab')
     const activeElement = await page.evaluate(() => document.activeElement?.tagName)
     expect(activeElement).toBe('BUTTON')
-    
+
     // 模拟Enter键激活
     await page.keyboard.press('Enter')
     // 验证操作结果
   })
-  
+
   it('应该支持方向键导航', async () => {
     await page.focus('[role="tablist"] [role="tab"]:first-child')
     await page.keyboard.press('ArrowRight')
-    
-    const activeTab = await page.evaluate(() => 
+
+    const activeTab = await page.evaluate(() =>
       document.activeElement?.getAttribute('aria-selected')
     )
     expect(activeTab).toBe('true')
@@ -670,17 +636,17 @@ describe('屏幕阅读器支持测试', () => {
     const button = await page.$('button')
     const ariaLabel = await button?.getAttribute('aria-label')
     const role = await button?.getAttribute('role')
-    
+
     expect(ariaLabel).toBeTruthy()
     expect(role).toBe('button')
   })
-  
+
   it('应该更新实时区域', async () => {
     await page.click('[data-testid="save-button"]')
-    
+
     const liveRegion = await page.$('[role="status"]')
     const content = await liveRegion?.textContent()
-    
+
     expect(content).toContain('已保存')
   })
 })
@@ -696,27 +662,13 @@ A: 使用实时区域和适当的ARIA标签：
 <template>
   <div>
     <button @click="loadData">加载数据</button>
-    
+
     <!-- 加载状态 -->
-    <div
-      v-if="isLoading"
-      role="status"
-      aria-live="polite"
-    >
-      正在加载数据...
-    </div>
-    
+    <div v-if="isLoading" role="status" aria-live="polite">正在加载数据...</div>
+
     <!-- 动态内容 -->
-    <div
-      v-if="data"
-      role="region"
-      :aria-label="`搜索结果，共${data.length}项`"
-    >
-      <div
-        v-for="item in data"
-        :key="item.id"
-        role="listitem"
-      >
+    <div v-if="data" role="region" :aria-label="`搜索结果，共${data.length}项`">
+      <div v-for="item in data" :key="item.id" role="listitem">
         {{ item.name }}
       </div>
     </div>
@@ -733,7 +685,7 @@ A: 使用字段集、标签关联和错误处理：
   <form @submit.prevent="handleSubmit">
     <fieldset>
       <legend>基本信息</legend>
-      
+
       <div class="field">
         <label for="name">姓名（必填）</label>
         <input
@@ -743,15 +695,8 @@ A: 使用字段集、标签关联和错误处理：
           aria-describedby="name-help name-error"
           required
         />
-        <div id="name-help" class="field-help">
-          请输入您的真实姓名
-        </div>
-        <div
-          v-if="errors.name"
-          id="name-error"
-          role="alert"
-          class="field-error"
-        >
+        <div id="name-help" class="field-help">请输入您的真实姓名</div>
+        <div v-if="errors.name" id="name-error" role="alert" class="field-error">
           {{ errors.name }}
         </div>
       </div>
@@ -775,11 +720,11 @@ A: 包装第三方组件并添加可访问性支持：
     >
       <ThirdPartyChart v-bind="chartProps" />
     </div>
-    
+
     <div id="chart-description" class="sr-only">
       {{ chartDescription }}
     </div>
-    
+
     <!-- 为不支持屏幕阅读器的图表提供数据表格替代 -->
     <details class="chart-alternative">
       <summary>查看图表数据表格</summary>
@@ -804,4 +749,4 @@ A: 包装第三方组件并添加可访问性支持：
 
 ---
 
-*本文档将持续更新，确保涵盖最新的可访问性最佳实践和功能特性。*
+_本文档将持续更新，确保涵盖最新的可访问性最佳实践和功能特性。_

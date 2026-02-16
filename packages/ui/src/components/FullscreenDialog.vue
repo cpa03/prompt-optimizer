@@ -5,12 +5,12 @@
     :title="title"
     size="huge"
     :segmented="{ content: true }"
-    style="width: 90vw; height: 90vh; max-width: 90vw; max-height: 90vh;"
+    style="width: 90vw; height: 90vh; max-width: 90vw; max-height: 90vh"
     :mask-closable="true"
     transform-origin="center"
     content-style="height: 100%; display: flex; flex-direction: column; min-height: 0;"
   >
-    <NFlex vertical style="height: 100%; min-height: 0; overflow: auto;">
+    <NFlex vertical style="height: 100%; min-height: 0; overflow: auto">
       <slot></slot>
     </NFlex>
   </NModal>
@@ -24,12 +24,12 @@ import { NModal, NFlex } from 'naive-ui'
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    required: true
+    required: true,
   },
   title: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -37,7 +37,7 @@ const emit = defineEmits(['update:modelValue'])
 // 双向绑定
 const localVisible = computed({
   get: () => props.modelValue,
-  set: (value: boolean) => emit('update:modelValue', value)
+  set: (value: boolean) => emit('update:modelValue', value),
 })
 </script>
 <style scoped>

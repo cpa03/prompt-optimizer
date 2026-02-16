@@ -20,7 +20,7 @@ const i18n = createI18n({
     'zh-CN': zhCN,
     'zh-TW': zhTW,
     'en-US': enUS,
-  }
+  },
 })
 
 // 配置 Vue Test Utils 全局插件
@@ -30,17 +30,17 @@ config.global.plugins = [i18n]
 // 为了避免在每个测试中都需要手动配置 Naive UI,我们在全局设置中配置它
 config.global.stubs = {
   // 保留 Teleport 以支持 Naive UI 的弹窗组件
-  Teleport: true
+  Teleport: true,
 }
 
 // 创建全局消息 API mock (Naive UI 依赖)
 if (typeof window !== 'undefined') {
-  (window as any).$message = {
+  ;(window as any).$message = {
     success: vi.fn(),
     error: vi.fn(),
     warning: vi.fn(),
     info: vi.fn(),
-    loading: vi.fn()
+    loading: vi.fn(),
   }
 }
 
@@ -48,13 +48,13 @@ if (typeof window !== 'undefined') {
 Object.assign(navigator, {
   clipboard: {
     writeText: vi.fn().mockResolvedValue(undefined),
-    readText: vi.fn().mockResolvedValue('mocked clipboard content')
-  }
+    readText: vi.fn().mockResolvedValue('mocked clipboard content'),
+  },
 })
 
 // Mock document.execCommand for fallback clipboard functionality
 Object.assign(document, {
-  execCommand: vi.fn().mockReturnValue(true)
+  execCommand: vi.fn().mockReturnValue(true),
 })
 
 // Mock window.getComputedStyle (needed for Vue Transition and DOM tests)
@@ -67,10 +67,10 @@ const mockComputedStyle = {
   animationDuration: '',
   animationName: '',
   display: 'block',
-  getPropertyValue: vi.fn().mockReturnValue('')
+  getPropertyValue: vi.fn().mockReturnValue(''),
 }
 Object.assign(window, {
-  getComputedStyle: vi.fn().mockReturnValue(mockComputedStyle)
+  getComputedStyle: vi.fn().mockReturnValue(mockComputedStyle),
 })
 
 // Mock ResizeObserver (commonly used in modern components)
@@ -117,7 +117,7 @@ global.MutationObserver = MockMutationObserver as unknown as typeof MutationObse
 // Mock window.matchMedia (used for responsive design)
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -158,7 +158,7 @@ if (typeof Range !== 'undefined') {
       right: 0,
       width: 0,
       height: 0,
-      toJSON: () => ({})
+      toJSON: () => ({}),
     })
   }
 }

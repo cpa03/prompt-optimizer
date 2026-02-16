@@ -2,7 +2,7 @@ import {
   type UnifiedParameterDefinition,
   type UnifiedParameterValueType,
   isSafeCustomKey,
-  isValueEmpty
+  isValueEmpty,
 } from './parameter-schema'
 
 /**
@@ -37,8 +37,10 @@ export function parseCustomValue(value: string): unknown {
   }
 
   // JSON 对象或数组
-  if ((trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-      (trimmed.startsWith('[') && trimmed.endsWith(']'))) {
+  if (
+    (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+    (trimmed.startsWith('[') && trimmed.endsWith(']'))
+  ) {
     try {
       return JSON.parse(trimmed)
     } catch {
@@ -92,7 +94,7 @@ export function mergeOverrides({
   includeDefaults = false,
   builtInOverrides,
   customOverrides,
-  requestOverrides
+  requestOverrides,
 }: MergeOverridesOptions): Record<string, unknown> {
   const result: Record<string, unknown> = {}
   const schemaMap = new Map(schema.map((def) => [def.name, def]))
@@ -169,7 +171,7 @@ export function validateOverrides({
   schema,
   overrides,
   customOverrides,
-  allowUnknown = true
+  allowUnknown = true,
 }: ValidateOverridesOptions): ParameterValidationResult {
   const errors: ParameterValidationError[] = []
   const warnings: ParameterValidationWarning[] = []
@@ -185,20 +187,20 @@ export function validateOverrides({
           errors.push({
             parameterName: key,
             parameterValue: value,
-            message: `Parameter '${key}' is not defined in schema.`
+            message: `Parameter '${key}' is not defined in schema.`,
           })
         } else {
           if (!isSafeCustomKey(key)) {
             errors.push({
               parameterName: key,
               parameterValue: value,
-              message: `Parameter '${key}' is potentially dangerous and not allowed.`
+              message: `Parameter '${key}' is potentially dangerous and not allowed.`,
             })
           } else {
             warnings.push({
               parameterName: key,
               parameterValue: value,
-              message: `Parameter '${key}' is not defined in schema and will be passed through as-is.`
+              message: `Parameter '${key}' is not defined in schema and will be passed through as-is.`,
             })
           }
         }
@@ -218,7 +220,7 @@ export function validateOverrides({
         errors.push({
           parameterName: key,
           parameterValue: value,
-          message: `Custom parameter '${key}' is potentially dangerous and not allowed.`
+          message: `Custom parameter '${key}' is potentially dangerous and not allowed.`,
         })
         continue
       }
@@ -227,7 +229,7 @@ export function validateOverrides({
         warnings.push({
           parameterName: key,
           parameterValue: value,
-          message: `Custom parameter '${key}' is empty and will be ignored.`
+          message: `Custom parameter '${key}' is empty and will be ignored.`,
         })
       }
     }
@@ -265,7 +267,7 @@ function validateValueAgainstDefinition(
         parameterName: def.name,
         parameterValue: value,
         message: `Parameter '${def.name}' should be a string array, but received ${typeof value}.`,
-        expectedType: 'string'
+        expectedType: 'string',
       }
     }
 
@@ -274,7 +276,7 @@ function validateValueAgainstDefinition(
         parameterName: def.name,
         parameterValue: value,
         message: `Parameter '${def.name}' cannot be an empty array.`,
-        expectedType: 'string'
+        expectedType: 'string',
       }
     }
 
@@ -284,7 +286,7 @@ function validateValueAgainstDefinition(
         parameterName: def.name,
         parameterValue: value,
         message: `Parameter '${def.name}' array entries must all be strings.`,
-        expectedType: 'string'
+        expectedType: 'string',
       }
     }
 
@@ -296,7 +298,7 @@ function validateValueAgainstDefinition(
       parameterName: def.name,
       parameterValue: value,
       message: `Parameter '${def.name}' is empty and will be ignored. Provide a value to override.`,
-      expectedType: def.type
+      expectedType: def.type,
     }
   }
 
@@ -305,7 +307,7 @@ function validateValueAgainstDefinition(
       parameterName: def.name,
       parameterValue: value,
       message: `Parameter '${def.name}' should be of type ${def.type}, but received ${typeof value}.`,
-      expectedType: def.type
+      expectedType: def.type,
     }
   }
 
@@ -319,7 +321,7 @@ function validateValueAgainstDefinition(
         parameterValue: value,
         message: `Parameter '${def.name}' value ${value} is less than minimum value ${min}.`,
         expectedType: def.type,
-        expectedRange: buildExpectedRange(def)
+        expectedRange: buildExpectedRange(def),
       }
     }
 
@@ -329,7 +331,7 @@ function validateValueAgainstDefinition(
         parameterValue: value,
         message: `Parameter '${def.name}' value ${value} is greater than maximum value ${max}.`,
         expectedType: def.type,
-        expectedRange: buildExpectedRange(def)
+        expectedRange: buildExpectedRange(def),
       }
     }
   }
@@ -340,7 +342,7 @@ function validateValueAgainstDefinition(
         parameterName: def.name,
         parameterValue: value,
         message: `Parameter '${def.name}' must be one of: ${def.allowedValues.join(', ')}.`,
-        expectedType: def.type
+        expectedType: def.type,
       }
     }
   }

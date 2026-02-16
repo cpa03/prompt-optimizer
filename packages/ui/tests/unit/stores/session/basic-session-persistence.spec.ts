@@ -10,7 +10,7 @@ describe('Session stores (basic) persistence', () => {
 
     const { pinia } = createTestPinia({
       preferenceService: {
-        get: async <T,>(_key: string, defaultValue: T) => defaultValue,
+        get: async <T>(_key: string, defaultValue: T) => defaultValue,
         set,
         delete: async () => {},
         keys: async () => [],
@@ -20,12 +20,17 @@ describe('Session stores (basic) persistence', () => {
         importData: async () => {},
         getDataType: async () => 'preference',
         validateData: async () => true,
-      } as any
+      } as any,
     })
 
     const store = useBasicSystemSession(pinia)
     store.updatePrompt('p')
-    store.updateOptimizedResult({ optimizedPrompt: 'o', reasoning: 'r', chainId: 'c', versionId: 'v' })
+    store.updateOptimizedResult({
+      optimizedPrompt: 'o',
+      reasoning: 'r',
+      chainId: 'c',
+      versionId: 'v',
+    })
     store.updateTestContent('t')
     store.updateTemplate('tpl')
     store.updateIterateTemplate('tpl-iter')
@@ -38,7 +43,9 @@ describe('Session stores (basic) persistence', () => {
 
     const raw = lastCall?.[1]
     const saved =
-      typeof raw === 'string' ? JSON.parse(raw || '{}') : (raw as Record<string, unknown> | undefined) || {}
+      typeof raw === 'string'
+        ? JSON.parse(raw || '{}')
+        : (raw as Record<string, unknown> | undefined) || {}
     expect(saved).toMatchObject({
       prompt: 'p',
       optimizedPrompt: 'o',
@@ -70,7 +77,7 @@ describe('Session stores (basic) persistence', () => {
         importData: async () => {},
         getDataType: async () => 'preference',
         validateData: async () => true,
-      } as any
+      } as any,
     })
 
     const store = useBasicUserSession(pinia)

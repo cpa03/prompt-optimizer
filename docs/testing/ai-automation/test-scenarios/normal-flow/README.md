@@ -14,11 +14,13 @@
 ## 📋 测试列表
 
 ### 基础功能测试
+
 - **01-basic-setup.md** - 基础设置功能（主题、语言切换等）
 - **02-model-management.md** - 模型管理功能（API配置、测试等）
 - **03-template-management.md** - 模板管理功能（创建、编辑、删除等）
 
 ### 核心功能测试
+
 - **04-prompt-optimization.md** - 系统提示词优化功能（已更新 - 包含结果展示功能测试）✅
 - **04b-user-prompt-optimization.md** - 用户提示词优化功能（已更新 - 包含结果展示功能测试）✅
 - **05-history-management.md** - 历史记录管理功能
@@ -27,25 +29,29 @@
 - **09-context-variables-and-preview.md** - 上下文变量与预览一致性（新增）⭐
 - **10-tools-management-and-advanced-context.md** - 工具管理与高级上下文（新增）⭐
 - **11-context-import-export.md** - 上下文集合导入导出（新增）⭐
- - **12-advanced-context-optimization-and-testing.md** - 全量高级优化与测试（变量/上下文/工具）⭐
+- **12-advanced-context-optimization-and-testing.md** - 全量高级优化与测试（变量/上下文/工具）⭐
 
 ### UI交互功能测试
+
 - **07-ui-interaction-features.md** - UI交互功能独立测试（新增）⭐
 
 ## 🤖 执行说明
 
 ### 执行顺序
+
 建议按照编号顺序执行测试，因为后续测试可能依赖前面的配置：
 
 1. 基础设置 → 2. 模型管理 → 3. 模板管理 → 4. 系统提示词优化 → 4b. 用户提示词优化 → 5. 历史管理 → 6. 数据管理 → 7. UI交互功能
 
 ### 执行频率
+
 - **每日回归** - 执行核心功能测试（04-prompt-optimization.md + 04b-user-prompt-optimization.md，现已包含结果展示功能）
 - **版本发布前** - 执行全部正常流程测试
 - **功能修改后** - 执行相关功能的测试
 - **UI修改后** - 执行UI交互功能测试（07-ui-interaction-features.md）
 
 ### 成功标准
+
 - 所有操作步骤能够成功执行
 - 所有验证点检查通过
 - 没有出现错误提示或异常状态
@@ -54,6 +60,7 @@
 ## 📊 测试报告
 
 每次执行后应生成测试报告，包含：
+
 - 执行时间和环境信息
 - 各个测试的通过/失败状态
 - 发现的问题和改进建议

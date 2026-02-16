@@ -1,24 +1,24 @@
-import { TextModelConfig } from './types';
-import { getAllModels } from './defaults';
-import { ModelError } from './errors';
-import { MODEL_ERROR_CODES } from '../../constants/error-codes';
+import { TextModelConfig } from './types'
+import { getAllModels } from './defaults'
+import { ModelError } from './errors'
+import { MODEL_ERROR_CODES } from '../../constants/error-codes'
 
 /**
  * Electron环境下的配置管理器
  * 确保UI进程和主进程的配置状态完全一致
  */
 export class ElectronConfigManager {
-  private static instance: ElectronConfigManager;
-  private envVars: Record<string, string> = {};
-  private initialized = false;
+  private static instance: ElectronConfigManager
+  private envVars: Record<string, string> = {}
+  private initialized = false
 
   private constructor() {}
 
   static getInstance(): ElectronConfigManager {
     if (!ElectronConfigManager.instance) {
-      ElectronConfigManager.instance = new ElectronConfigManager();
+      ElectronConfigManager.instance = new ElectronConfigManager()
     }
-    return ElectronConfigManager.instance;
+    return ElectronConfigManager.instance
   }
 
   /**
@@ -28,26 +28,26 @@ export class ElectronConfigManager {
     if (typeof window === 'undefined' || !window.electronAPI) {
       throw new ModelError(
         MODEL_ERROR_CODES.CONFIG_ERROR,
-        'ElectronConfigManager can only be used in Electron renderer process',
-      );
+        'ElectronConfigManager can only be used in Electron renderer process'
+      )
     }
 
     try {
-      console.log('[ElectronConfigManager] Syncing environment variables from main process...');
-      this.envVars = await window.electronAPI.config.getEnvironmentVariables();
-      this.initialized = true;
-      console.log('[ElectronConfigManager] Environment variables synced successfully');
+      console.log('[ElectronConfigManager] Syncing environment variables from main process...')
+      this.envVars = await window.electronAPI.config.getEnvironmentVariables()
+      this.initialized = true
+      console.log('[ElectronConfigManager] Environment variables synced successfully')
 
       // 调试输出
-      Object.keys(this.envVars).forEach(key => {
-        const value = this.envVars[key];
+      Object.keys(this.envVars).forEach((key) => {
+        const value = this.envVars[key]
         if (value) {
-          console.log(`[ElectronConfigManager] ${key}: ${value.substring(0, 10)}...`);
+          console.log(`[ElectronConfigManager] ${key}: ${value.substring(0, 10)}...`)
         }
-      });
+      })
     } catch (error) {
-      console.error('[ElectronConfigManager] Failed to sync environment variables:', error);
-      throw error;
+      console.error('[ElectronConfigManager] Failed to sync environment variables:', error)
+      throw error
     }
   }
 
@@ -56,17 +56,19 @@ export class ElectronConfigManager {
    */
   getEnvVar(key: string): string {
     if (!this.initialized) {
-      console.warn(`[ElectronConfigManager] Environment variables not synced yet, returning empty for ${key}`);
-      return '';
+      console.warn(
+        `[ElectronConfigManager] Environment variables not synced yet, returning empty for ${key}`
+      )
+      return ''
     }
-    return this.envVars[key] || '';
+    return this.envVars[key] || ''
   }
 
   /**
    * 检查是否已初始化
    */
   isInitialized(): boolean {
-    return this.initialized;
+    return this.initialized
   }
 
   /**
@@ -78,7 +80,7 @@ export class ElectronConfigManager {
    * @returns TextModelConfig 格式的模型配置
    */
   generateDefaultModels(): Record<string, TextModelConfig> {
-    return getAllModels();
+    return getAllModels()
   }
 }
 
@@ -86,5 +88,5 @@ export class ElectronConfigManager {
  * 检查是否在Electron渲染进程中
  */
 export function isElectronRenderer(): boolean {
-  return typeof window !== 'undefined' && !!window.electronAPI;
+  return typeof window !== 'undefined' && !!window.electronAPI
 }

@@ -34,7 +34,7 @@ export function usePromptHistory(
 ) {
   const toast = useToast()
   const { t } = useI18n()
-  
+
   // 历史记录管理器引用
   const historyManager = computed(() => services.value?.historyManager)
 
@@ -42,7 +42,7 @@ export function usePromptHistory(
   const state = reactive({
     history: [] as PromptChain[],
     showHistory: false,
-    
+
     handleSelectHistory: async (context: HistorySelectionContext) => {
       try {
         const { record, chainId, rootPrompt } = context
@@ -70,65 +70,65 @@ export function usePromptHistory(
     },
 
     handleClearHistory: async () => {
-    try {
-      await historyManager.value!.clearHistory()
-      
-      // 清空当前显示的内容
-      prompt.value = '';
-      optimizedPrompt.value = '';
-      currentChainId.value = '';
-      currentVersions.value = [];
-      currentVersionId.value = '';
-      
-      // 立即更新历史记录，确保UI能够反映最新状态
+      try {
+        await historyManager.value!.clearHistory()
+
+        // 清空当前显示的内容
+        prompt.value = ''
+        optimizedPrompt.value = ''
+        currentChainId.value = ''
+        currentVersions.value = []
+        currentVersionId.value = ''
+
+        // 立即更新历史记录，确保UI能够反映最新状态
         state.history = []
-      toast.success(t('toast.success.historyClear'))
-    } catch (error) {
-      console.error(t('toast.error.clearHistoryFailed'), error)
-      toast.error(t('toast.error.clearHistoryFailed'))
-    }
+        toast.success(t('toast.success.historyClear'))
+      } catch (error) {
+        console.error(t('toast.error.clearHistoryFailed'), error)
+        toast.error(t('toast.error.clearHistoryFailed'))
+      }
     },
 
     handleDeleteChain: async (chainId: string) => {
-    try {
-      // 获取链中的所有记录
-      const allChains = await historyManager.value!.getAllChains()
-      const chain = allChains.find((c) => c.chainId === chainId)
-      
-      if (chain) {
-        // 删除链中的所有记录
-        for (const record of chain.versions) {
-          await historyManager.value!.deleteRecord(record.id)
-        }
-        
-        // 如果当前正在查看的是被删除的链，则清空当前显示
-        if (currentChainId.value === chainId) {
-          prompt.value = '';
-          optimizedPrompt.value = '';
-          currentChainId.value = '';
-          currentVersions.value = [];
-          currentVersionId.value = '';
-        }
-        
-        // 立即更新历史记录，确保UI能够反映最新状态
-        const updatedChains = await historyManager.value!.getAllChains()
+      try {
+        // 获取链中的所有记录
+        const allChains = await historyManager.value!.getAllChains()
+        const chain = allChains.find((c) => c.chainId === chainId)
+
+        if (chain) {
+          // 删除链中的所有记录
+          for (const record of chain.versions) {
+            await historyManager.value!.deleteRecord(record.id)
+          }
+
+          // 如果当前正在查看的是被删除的链，则清空当前显示
+          if (currentChainId.value === chainId) {
+            prompt.value = ''
+            optimizedPrompt.value = ''
+            currentChainId.value = ''
+            currentVersions.value = []
+            currentVersionId.value = ''
+          }
+
+          // 立即更新历史记录，确保UI能够反映最新状态
+          const updatedChains = await historyManager.value!.getAllChains()
           state.history = [...updatedChains]
-        toast.success(t('toast.success.historyChainDeleted'))
+          toast.success(t('toast.success.historyChainDeleted'))
+        }
+      } catch (error) {
+        console.error(t('toast.error.historyChainDeleteFailed'), error)
+        toast.error(t('toast.error.historyChainDeleteFailed'))
       }
-    } catch (error) {
-      console.error(t('toast.error.historyChainDeleteFailed'), error)
-      toast.error(t('toast.error.historyChainDeleteFailed'))
-    }
     },
 
     initHistory: async () => {
-    try {
-      await refreshHistory()
-    } catch (error) {
-      console.error(t('toast.error.loadHistoryFailed'), error)
-      toast.error(t('toast.error.loadHistoryFailed'))
-    }
-  }
+      try {
+        await refreshHistory()
+      } catch (error) {
+        console.error(t('toast.error.loadHistoryFailed'), error)
+        toast.error(t('toast.error.loadHistoryFailed'))
+      }
+    },
   })
 
   // 添加一个刷新历史记录的函数
@@ -138,11 +138,14 @@ export function usePromptHistory(
   }
 
   // Watch history display state
-  watch(() => state.showHistory, async (newVal) => {
-    if (newVal) {
-      await refreshHistory()
+  watch(
+    () => state.showHistory,
+    async (newVal) => {
+      if (newVal) {
+        await refreshHistory()
+      }
     }
-  })
+  )
 
   // Watch version and chain changes, update history
   watch([currentVersions, currentChainId], async (_newValues, _oldValues) => {
@@ -150,11 +153,15 @@ export function usePromptHistory(
   })
 
   // 监听服务实例变化，初始化历史记录
-  watch(services, async () => {
-    if (services.value?.historyManager) {
-      await refreshHistory()
-    }
-  }, { immediate: true })
+  watch(
+    services,
+    async () => {
+      if (services.value?.historyManager) {
+        await refreshHistory()
+      }
+    },
+    { immediate: true }
+  )
 
   return state
-} 
+}

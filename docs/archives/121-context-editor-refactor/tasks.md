@@ -283,6 +283,7 @@
 ## 关键检查点和验收标准
 
 ### 阶段1完成检查
+
 - [ ] ConversationManager现状确认完成，无不必要的修改
 - [ ] 类型定义与默认值实现一致性解决（可选类型 + withDefaults）
 - [ ] maxHeight类型统一为number，px拼接逻辑正确
@@ -290,6 +291,7 @@
 - [ ] 数据绑定保持Vue最佳实践
 
 ### 阶段2完成检查
+
 - [ ] optimizationMode参数传递链路提前建立
 - [ ] 模板管理功能成功迁移到ContextEditor，联调完整
 - [ ] 导入导出功能完整迁移，复用useContextEditor现有能力
@@ -297,12 +299,14 @@
 - [ ] ContextEditor的状态同步机制正常工作
 
 ### 阶段3完成检查
+
 - [ ] Manager和Editor的数据双向同步完全正常
 - [ ] 变量管理跨组件协作体验良好
 - [ ] 系统性能达到预期要求
 - [ ] 端到端用户流程测试全部通过
 
 ### 阶段4完成检查
+
 - [ ] 功能完整性验证通过，无功能丢失
 - [ ] 废弃组件和引用完全清理
 - [ ] 回归测试全部通过
@@ -311,6 +315,7 @@
 ## 工程优化要点
 
 ### 类型与实现一致性策略
+
 ```typescript
 // 推荐：可选类型 + withDefaults
 interface Props {
@@ -318,30 +323,29 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  scanVariables: () => []
+  scanVariables: () => [],
 })
 ```
 
 ### maxHeight处理策略
+
 ```typescript
 // 统一为number类型，组件内部拼接px
 interface Props {
-  maxHeight?: number  // 而不是 number | string
+  maxHeight?: number // 而不是 number | string
 }
 
 // 组件内部
 const style = computed(() => ({
-  maxHeight: props.maxHeight ? `${props.maxHeight}px` : undefined
+  maxHeight: props.maxHeight ? `${props.maxHeight}px` : undefined,
 }))
 ```
 
 ### 轻量化边界控制
+
 ```vue
 <!-- 优先使用NInput自带能力 -->
-<NInput 
-  :autosize="{ minRows: 1, maxRows: 3 }" 
-  @update:value="handleUpdate"
-/>
+<NInput :autosize="{ minRows: 1, maxRows: 3 }" @update:value="handleUpdate" />
 
 <!-- 缺失变量提示保持克制 -->
 <NTag v-if="missingCount > 0" size="small" type="warning">
@@ -350,6 +354,7 @@ const style = computed(() => ({
 ```
 
 ### 任务时序优化
+
 - 2.1.1 提前配置optimizationMode传参
 - 2.2.2 依赖2.1.1的参数进行模板联调
 - 避免开发时链路不完整的问题

@@ -1,12 +1,12 @@
 import { computed, type Ref } from 'vue'
 
-import { PREDEFINED_VARIABLES, type ContextMode } from "@prompt-optimizer/core";
+import { PREDEFINED_VARIABLES, type ContextMode } from '@prompt-optimizer/core'
 
 import {
   findMissingVariables,
   replaceVariablesInContent,
   scanVariableNames,
-} from "../../utils/prompt-variables";
+} from '../../utils/prompt-variables'
 
 /**
  * 提示词预览 Composable
@@ -21,7 +21,7 @@ export function usePromptPreview(
   content: Ref<string>,
   variables: Ref<Record<string, string>>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  contextMode: Ref<ContextMode>,
+  contextMode: Ref<ContextMode>
 ) {
   /**
    * 解析模板中的变量
@@ -32,29 +32,29 @@ export function usePromptPreview(
         builtinVars: new Set<string>(),
         customVars: new Set<string>(),
         allVars: new Set<string>(),
-      };
+      }
     }
 
-    const names = scanVariableNames(content.value);
-    const allVars = new Set<string>(names);
-    const builtinVars = new Set<string>();
-    const customVars = new Set<string>();
+    const names = scanVariableNames(content.value)
+    const allVars = new Set<string>(names)
+    const builtinVars = new Set<string>()
+    const customVars = new Set<string>()
 
-    const predefinedSet = new Set<string>(PREDEFINED_VARIABLES);
+    const predefinedSet = new Set<string>(PREDEFINED_VARIABLES)
     for (const name of names) {
-      if (predefinedSet.has(name)) builtinVars.add(name);
-      else customVars.add(name);
+      if (predefinedSet.has(name)) builtinVars.add(name)
+      else customVars.add(name)
     }
 
-    return { builtinVars, customVars, allVars };
-  });
+    return { builtinVars, customVars, allVars }
+  })
 
   /**
    * 缺失的变量
    */
   const missingVariables = computed(() => {
-    return findMissingVariables(content.value || "", variables.value || {});
-  });
+    return findMissingVariables(content.value || '', variables.value || {})
+  })
 
   /**
    * 渲染后的预览内容
@@ -67,33 +67,33 @@ export function usePromptPreview(
    */
   const previewContent = computed(() => {
     if (!content.value) {
-      return "";
+      return ''
     }
 
     try {
-      const vars = variables.value || {};
+      const vars = variables.value || {}
 
       // Preview behavior: keep placeholders when value is missing/empty.
       // This makes missing variables obvious even though execution blocks them.
-      const filledVars: Record<string, string> = {};
+      const filledVars: Record<string, string> = {}
       for (const [key, value] of Object.entries(vars)) {
-        if (value === undefined) continue;
-        const str = String(value);
-        if (str.trim() === '') continue;
-        filledVars[key] = str;
+        if (value === undefined) continue
+        const str = String(value)
+        if (str.trim() === '') continue
+        filledVars[key] = str
       }
 
-      return replaceVariablesInContent(content.value, filledVars);
+      return replaceVariablesInContent(content.value, filledVars)
     } catch (error) {
-      console.error("[usePromptPreview] Preview rendering failed:", error);
-      return content.value;
+      console.error('[usePromptPreview] Preview rendering failed:', error)
+      return content.value
     }
-  });
+  })
 
   /**
    * 是否有缺失变量
    */
-  const hasMissingVariables = computed(() => missingVariables.value.length > 0);
+  const hasMissingVariables = computed(() => missingVariables.value.length > 0)
 
   /**
    * 变量统计信息
@@ -103,9 +103,8 @@ export function usePromptPreview(
     builtin: parsedVariables.value.builtinVars.size,
     custom: parsedVariables.value.customVars.size,
     missing: missingVariables.value.length,
-    provided:
-      parsedVariables.value.allVars.size - missingVariables.value.length,
-  }));
+    provided: parsedVariables.value.allVars.size - missingVariables.value.length,
+  }))
 
   return {
     /** 解析的变量信息 */
@@ -118,5 +117,5 @@ export function usePromptPreview(
     hasMissingVariables,
     /** 变量统计信息 */
     variableStats,
-  };
+  }
 }

@@ -1,1 +1,1 @@
-export { AbstractAdapterRegistry } from './abstract-registry';
+export { AbstractAdapterRegistry } from './abstract-registry'

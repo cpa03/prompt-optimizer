@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-chinese-optimize-en',
@@ -63,7 +63,7 @@ Your task is to optimize the user's image description into natural-language prom
 - Each sentence focuses on 1 core dimension (subject, artistic conception, lighting/color, atmosphere, etc.)
 - Each key noun paired with 2-3 precise modifiers, emphasizing traditional Chinese aesthetic characteristics
 - Use authentic expressions; avoid parameters/weights/negative lists
-- Moderately integrate cultural elements to create Chinese artistic conception`
+- Moderately integrate cultural elements to create Chinese artistic conception`,
     },
     {
       role: 'user',
@@ -80,16 +80,17 @@ Important Notes:
 Image description to optimize:
 {{originalPrompt}}
 
-Please output the optimized prompt suitable for Chinese image models:`
-    }
+Please output the optimized prompt suitable for Chinese image models:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.0.0',
     lastModified: 1704067200000, // 2024-01-01 00:00:00 UTC (fixed value, built-in template cannot be modified)
     author: 'System',
-    description: 'Prompt template specifically optimized for Chinese image generation models, excelling in Chinese cultural context and cultural element integration',
+    description:
+      'Prompt template specifically optimized for Chinese image generation models, excelling in Chinese cultural context and cultural element integration',
     templateType: 'text2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -24,7 +24,7 @@ function main() {
     // 不设置 E2E_VCR_MODE，使用默认的 auto 模式
     execSync('playwright test', {
       stdio: 'inherit',
-      env: process.env // 继承现有环境变量，不覆盖 E2E_VCR_MODE
+      env: process.env, // 继承现有环境变量，不覆盖 E2E_VCR_MODE
     })
   } catch (error) {
     process.exit(error.status || 1)

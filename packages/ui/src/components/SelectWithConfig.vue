@@ -9,7 +9,7 @@
   >
     <template #empty>
       <slot name="empty">
-        <NSpace vertical align="center" style="padding: 12px 0;">
+        <NSpace vertical align="center" style="padding: 12px 0">
           <NText depth="3">{{ emptyText || t('model.select.noAvailableModels') }}</NText>
           <NButton
             v-if="shouldShowEmptyConfigCTA"
@@ -29,7 +29,7 @@
 
     <template #action>
       <slot name="action">
-        <div v-if="shouldShowConfigAction" style="padding: 8px 12px;">
+        <div v-if="shouldShowConfigAction" style="padding: 8px 12px">
           <NButton quaternary size="small" @click="emitConfig()">
             <template #icon>
               <span>⚙️</span>
@@ -46,7 +46,14 @@
 import { computed, h, useAttrs, toValue, type ComputedRef, type Ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import { NSelect, NSpace, NButton, NText, type SelectOption as NaiveSelectOption, type SelectFilter } from 'naive-ui'
+import {
+  NSelect,
+  NSpace,
+  NButton,
+  NText,
+  type SelectOption as NaiveSelectOption,
+  type SelectFilter,
+} from 'naive-ui'
 
 import type { SelectOption as StandardSelectOption } from '../types/select-options'
 
@@ -78,12 +85,12 @@ const props = withDefaults(defineProps<Props>(), {
   showEmptyConfigCTA: false,
   configText: undefined,
   emptyText: undefined,
-  multiple: false
+  multiple: false,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string | number | Array<string | number> | null]
-  'config': [payload?: Record<string, unknown>]
+  config: [payload?: Record<string, unknown>]
 }>()
 
 const attrs = useAttrs() as Record<string, unknown>
@@ -100,14 +107,14 @@ const mappedOptions = computed(() => {
   const optionsArray = toValue(props.options) || []
   return optionsArray.map((opt: SelectOption) => {
     const primary = props.getPrimary(opt) || ''
-    const secondary = props.getSecondary ? (props.getSecondary(opt) || '') : ''
+    const secondary = props.getSecondary ? props.getSecondary(opt) || '' : ''
     const value = props.getValue(opt)
     return {
       label: primary,
       value,
       raw: opt,
       primary,
-      secondary
+      secondary,
     }
   })
 })
@@ -119,18 +126,21 @@ const renderOptionLabel = (option: { primary: string; secondary: string; raw: Se
   const title = props.selectedTooltip && secondary ? `${primary} · ${secondary}` : undefined
   return h('div', { class: 'swc-opt', title }, [
     h('div', { class: 'swc-primary' }, primary),
-    secondary ? h('div', { class: 'swc-secondary' }, secondary) : null
+    secondary ? h('div', { class: 'swc-secondary' }, secondary) : null,
   ])
 }
 
 // 多选 tag 渲染
 const renderSelectedTag = ({
-  option
+  option,
 }: {
   option: NaiveSelectOption & { primary?: string; secondary?: string }
   handleClose: () => void
 }) => {
-  const title = props.selectedTooltip && option?.secondary ? `${option.primary} · ${option.secondary}` : undefined
+  const title =
+    props.selectedTooltip && option?.secondary
+      ? `${option.primary} · ${option.secondary}`
+      : undefined
   return h('span', { title }, option?.primary || '')
 }
 
@@ -144,8 +154,16 @@ const forwardedAttrs = computed(() => {
       (option?.secondary || '').toLowerCase().includes(p)
     )
   }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { ['onUpdate:value']: _, multiple: attrsMultiple, class: rootClass, ['menu-props']: menuPropsKebab, menuProps, style: rootStyle, ...rest } = attrs as Record<string, unknown>
+  const {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ['onUpdate:value']: _unused,
+    multiple: attrsMultiple,
+    class: rootClass,
+    ['menu-props']: menuPropsKebab,
+    menuProps,
+    style: rootStyle,
+    ...rest
+  } = attrs as Record<string, unknown>
 
   const normalizedMultiple =
     typeof attrsMultiple === 'boolean'
@@ -161,18 +179,19 @@ const forwardedAttrs = computed(() => {
   const normalizedMenuProps = { ...mp, class: mergedMenuClass }
 
   const customFilter = (attrs as Record<string, unknown>).filter
-  const resolvedFilter: SelectFilter = hasCustomFilter && typeof customFilter === 'function'
-    ? (customFilter as SelectFilter)
-    : (internalFilter as unknown as SelectFilter)
- 
+  const resolvedFilter: SelectFilter =
+    hasCustomFilter && typeof customFilter === 'function'
+      ? (customFilter as SelectFilter)
+      : (internalFilter as unknown as SelectFilter)
+
   return {
     filterable: true,
     multiple: normalizedMultiple,
     class: mergedRootClass,
-    style: { minWidth: '160px', ...(rootStyle as Record<string, unknown> || {}) },
+    style: { minWidth: '160px', ...((rootStyle as Record<string, unknown>) || {}) },
     menuProps: normalizedMenuProps,
     ...rest,
-    filter: resolvedFilter
+    filter: resolvedFilter,
   }
 })
 

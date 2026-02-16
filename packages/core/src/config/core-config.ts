@@ -3,7 +3,7 @@
  * Centralized location for all hardcoded values
  */
 
-import { TEST_IMAGES } from './test-data';
+import { TEST_IMAGES } from './test-data'
 
 // ============================================================================
 // Template Configuration
@@ -15,7 +15,7 @@ export const TEMPLATE_CONFIG = {
   idRegex: /^[a-z0-9-]{3,}$/,
   randomSuffixLength: 6,
   maxRetries: 3,
-} as const;
+} as const
 
 // ============================================================================
 // Storage Configuration
@@ -36,7 +36,7 @@ export const STORAGE_CONFIG = {
     baseDelayMs: 100,
     maxDelayMs: 5000,
   },
-} as const;
+} as const
 
 // ============================================================================
 // Preference Configuration
@@ -49,7 +49,7 @@ export const PREFERENCE_CONFIG = {
     selectedUserOptimizeTemplate: 'app:selected-user-optimize-template',
     selectedIterateTemplate: 'app:selected-iterate-template',
   },
-} as const;
+} as const
 
 // ============================================================================
 // Context Configuration
@@ -59,7 +59,7 @@ export const CONTEXT_CONFIG = {
   storeKey: 'ctx:store',
   defaultMode: 'system' as const,
   version: '1.0.0',
-} as const;
+} as const
 
 // ============================================================================
 // Image Configuration
@@ -76,7 +76,7 @@ export const IMAGE_CONFIG = {
     cacheCleanupRatio: 0.9,
   },
   testImageBase64: TEST_IMAGES.LEGACY_PNG,
-} as const;
+} as const
 
 // ============================================================================
 // LLM Configuration
@@ -100,7 +100,7 @@ export const LLM_CONFIG = {
     image2imageOptimize: ['text2imageOptimize', 'userOptimize', 'optimize'],
     imageIterate: ['iterate', 'text2imageOptimize', 'userOptimize'],
   } as const,
-} as const;
+} as const
 
 // ============================================================================
 // Environment Configuration
@@ -113,7 +113,7 @@ export const ENV_CONFIG = {
   limits: {
     maxSuffixLength: 50,
   },
-} as const;
+} as const
 
 // ============================================================================
 // Model Configuration
@@ -123,7 +123,7 @@ export const MODEL_CONFIG = {
   parameterPatterns: {
     allowed: /^[A-Za-z0-9._\-:/]+$/,
   },
-} as const;
+} as const
 
 // ============================================================================
 // HTTP Configuration
@@ -136,7 +136,7 @@ export const HTTP_CONFIG = {
     mustRevalidate: 'must-revalidate',
     maxAge0: 'max-age=0',
   },
-} as const;
+} as const
 
 // ============================================================================
 // SVG Configuration
@@ -144,7 +144,7 @@ export const HTTP_CONFIG = {
 
 export const SVG_CONFIG = {
   namespace: 'http://www.w3.org/2000/svg',
-} as const;
+} as const
 
 // ============================================================================
 // Compare Configuration
@@ -156,7 +156,7 @@ export const COMPARE_CONFIG = {
     added: 'added',
     removed: 'removed',
   },
-} as const;
+} as const
 
 // ============================================================================
 // Service Keys
@@ -165,7 +165,7 @@ export const COMPARE_CONFIG = {
 export const SERVICE_KEYS = {
   models: 'models',
   imageModels: 'image-models',
-} as const;
+} as const
 
 // ============================================================================
 // Image Adapter Configuration
@@ -182,4 +182,4 @@ export const IMAGE_ADAPTER_CONFIG = {
   seedream: {
     sequentialGeneration: 'disabled',
   },
-} as const;
+} as const

@@ -12,29 +12,45 @@
     <NSpace vertical :size="24">
       <!-- Desktop Storage Info -->
       <div v-if="isRunningInElectron() && storageInfo">
-        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px;">
+        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px">
           {{ $t('dataManager.storage.title') }}
         </NText>
         <NCard size="small" :bordered="true">
           <NSpace vertical :size="12">
             <div>
               <NText depth="3" style="font-size: 12px">{{ $t('dataManager.storage.path') }}</NText>
-              <div style="word-break: break-all; font-family: monospace; font-size: 12px; margin-top: 4px;">
+              <div
+                style="
+                  word-break: break-all;
+                  font-family: monospace;
+                  font-size: 12px;
+                  margin-top: 4px;
+                "
+              >
                 {{ storageInfo.userDataPath }}
               </div>
             </div>
-            
+
             <NGrid :cols="3" :x-gap="12">
               <NGridItem>
-                <NStatistic :label="$t('dataManager.storage.mainData')" :value="formatFileSize(storageInfo.mainSizeBytes)">
+                <NStatistic
+                  :label="$t('dataManager.storage.mainData')"
+                  :value="formatFileSize(storageInfo.mainSizeBytes)"
+                >
                 </NStatistic>
               </NGridItem>
               <NGridItem>
-                <NStatistic :label="$t('dataManager.storage.backup')" :value="formatFileSize(storageInfo.backupSizeBytes)">
+                <NStatistic
+                  :label="$t('dataManager.storage.backup')"
+                  :value="formatFileSize(storageInfo.backupSizeBytes)"
+                >
                 </NStatistic>
               </NGridItem>
               <NGridItem>
-                <NStatistic :label="$t('dataManager.storage.total')" :value="formatFileSize(storageInfo.totalBytes)">
+                <NStatistic
+                  :label="$t('dataManager.storage.total')"
+                  :value="formatFileSize(storageInfo.totalBytes)"
+                >
                 </NStatistic>
               </NGridItem>
             </NGrid>
@@ -53,10 +69,10 @@
 
       <!-- 导出功能 -->
       <div>
-        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px;">
+        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px">
           {{ $t('dataManager.export.title') }}
         </NText>
-        <NText :depth="3" style="display: block; margin-bottom: 16px;">
+        <NText :depth="3" style="display: block; margin-bottom: 16px">
           {{ $t('dataManager.export.description') }}
         </NText>
         <NButton
@@ -75,20 +91,20 @@
 
       <!-- 导入功能 -->
       <div>
-        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px;">
+        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px">
           {{ $t('dataManager.import.title') }}
         </NText>
-        <NText :depth="3" style="display: block; margin-bottom: 16px;">
+        <NText :depth="3" style="display: block; margin-bottom: 16px">
           {{ $t('dataManager.import.description') }}
         </NText>
-        
+
         <!-- 文件选择区域 -->
         <!-- 🎨 Palette: Enhanced drag-and-drop with visual feedback -->
         <div
           class="upload-wrapper"
           :class="{
             'is-drag-over': isDragOver,
-            'has-file': selectedFile
+            'has-file': selectedFile,
           }"
           @dragenter="handleDragEnter"
           @dragleave="handleDragLeave"
@@ -106,7 +122,12 @@
                 <div class="upload-icon-wrapper" :class="{ 'is-bouncing': isDragOver }">
                   <NIcon size="48" :depth="3" class="upload-icon">
                     <svg viewBox="0 0 48 48" fill="none" stroke="currentColor">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
                     </svg>
                   </NIcon>
                   <span v-if="isDragOver" class="drop-hint" aria-live="polite">
@@ -125,9 +146,25 @@
                 <div class="file-icon-wrapper">
                   <NIcon size="32" class="file-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M9 15l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
+                      <path
+                        d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <polyline
+                        points="14 2 14 8 20 8"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9 15l2 2 4-4"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="check-path"
+                      />
                     </svg>
                   </NIcon>
                 </div>
@@ -157,7 +194,7 @@
           type="success"
           :loading="isImporting"
           block
-          style="margin-top: 16px;"
+          style="margin-top: 16px"
         >
           <template #icon>
             <span>📤</span>
@@ -168,13 +205,13 @@
 
       <!-- 上下文导入导出功能 -->
       <div>
-        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px;">
+        <NText tag="h3" :depth="1" strong style="font-size: 18px; margin-bottom: 12px">
           {{ $t('dataManager.contexts.title') }}
         </NText>
-        <NText :depth="3" style="display: block; margin-bottom: 16px;">
+        <NText :depth="3" style="display: block; margin-bottom: 16px">
           {{ $t('dataManager.contexts.description') }}
         </NText>
-        
+
         <NSpace vertical :size="12">
           <!-- 上下文导出 -->
           <NButton
@@ -187,9 +224,11 @@
             <template #icon>
               <span>💾</span>
             </template>
-            {{ isContextExporting ? $t('common.exporting') : $t('dataManager.contexts.exportFile') }}
+            {{
+              isContextExporting ? $t('common.exporting') : $t('dataManager.contexts.exportFile')
+            }}
           </NButton>
-          
+
           <NButton
             @click="handleContextExportToClipboard"
             :disabled="isContextExporting"
@@ -200,9 +239,13 @@
             <template #icon>
               <span>📋</span>
             </template>
-            {{ isContextExporting ? $t('common.exporting') : $t('dataManager.contexts.exportClipboard') }}
+            {{
+              isContextExporting
+                ? $t('common.exporting')
+                : $t('dataManager.contexts.exportClipboard')
+            }}
           </NButton>
-          
+
           <!-- 上下文导入 -->
           <!-- 文件导入 -->
           <NUpload
@@ -213,7 +256,7 @@
             @change="handleContextFileChange"
             :custom-request="() => {}"
             :disabled="isContextImporting"
-            style="width: 100%;"
+            style="width: 100%"
           >
             <NButton
               :disabled="isContextImporting"
@@ -224,10 +267,14 @@
               <template #icon>
                 <span>📁</span>
               </template>
-              {{ (isContextImporting && isContextImportingFromFile) ? $t('common.importing') : $t('dataManager.contexts.importFile') }}
+              {{
+                isContextImporting && isContextImportingFromFile
+                  ? $t('common.importing')
+                  : $t('dataManager.contexts.importFile')
+              }}
             </NButton>
           </NUpload>
-          
+
           <!-- 剪贴板导入 -->
           <NButton
             @click="handleContextImportFromClipboard"
@@ -239,7 +286,11 @@
             <template #icon>
               <span>📝</span>
             </template>
-            {{ (isContextImporting && !isContextImportingFromFile) ? $t('common.importing') : $t('dataManager.contexts.importClipboard') }}
+            {{
+              isContextImporting && !isContextImportingFromFile
+                ? $t('common.importing')
+                : $t('dataManager.contexts.importClipboard')
+            }}
           </NButton>
         </NSpace>
       </div>
@@ -257,15 +308,26 @@ import { ref, computed, inject, onMounted, onUnmounted, type Ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import {
-  NModal, NSpace, NText, NButton, NUpload, NUploadDragger,
-  NIcon, NAlert, NCard, NStatistic, NGrid, NGridItem, type UploadFileInfo
+  NModal,
+  NSpace,
+  NText,
+  NButton,
+  NUpload,
+  NUploadDragger,
+  NIcon,
+  NAlert,
+  NCard,
+  NStatistic,
+  NGrid,
+  NGridItem,
+  type UploadFileInfo,
 } from 'naive-ui'
 import { isRunningInElectron, type ContextBundle } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import type { AppServices } from '../types/services'
 
 interface Props {
-  show: boolean;
+  show: boolean
   // dataManager现在通过inject获取，不再需要props
 }
 
@@ -422,9 +484,9 @@ const handleExport = async () => {
     }
 
     isExporting.value = true
-    
+
     const data = await dataManager.exportAllData()
-    
+
     // 创建下载链接
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -435,7 +497,7 @@ const handleExport = async () => {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     toast.success(t('dataManager.export.success'))
   } catch (error) {
     console.error('导出失败:', error)
@@ -472,7 +534,7 @@ const handleImport = async () => {
       return
     }
     await dataManager.importAllData(content)
-    
+
     toast.success(t('dataManager.import.success'))
     emit('imported')
     emit('close')
@@ -510,11 +572,11 @@ const handleContextExportToFile = async () => {
     }
 
     isContextExporting.value = true
-    
+
     // 使用 exportAll 获取 ContextBundle 格式
     const contextBundle = await contextRepo.exportAll()
     const exportContent = JSON.stringify(contextBundle, null, 2)
-    
+
     // 创建下载链接
     const blob = new Blob([exportContent], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -525,7 +587,7 @@ const handleContextExportToFile = async () => {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     toast.success(`已导出 ${contextBundle.contexts.length} 个上下文集合到文件`)
   } catch (error) {
     console.error('上下文文件导出失败:', error)
@@ -551,11 +613,11 @@ const handleContextExportToClipboard = async () => {
     }
 
     isContextExporting.value = true
-    
+
     // 使用 exportAll 获取 ContextBundle 格式
     const contextBundle = await contextRepo.exportAll()
     const exportContent = JSON.stringify(contextBundle, null, 2)
-    
+
     // 复制到剪贴板
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(exportContent)
@@ -570,7 +632,7 @@ const handleContextExportToClipboard = async () => {
       document.execCommand('copy')
       document.body.removeChild(textarea)
     }
-    
+
     toast.success(`已导出 ${contextBundle.contexts.length} 个上下文集合到剪贴板`)
   } catch (error) {
     console.error('上下文剪贴板导出失败:', error)
@@ -606,10 +668,10 @@ const handleContextImportFromFile = async (file: File) => {
 
     isContextImporting.value = true
     isContextImportingFromFile.value = true
-    
+
     // 读取文件内容
     const content = await file.text()
-    
+
     // 解析JSON数据
     let importData: unknown
     try {
@@ -618,7 +680,7 @@ const handleContextImportFromFile = async (file: File) => {
       toast.error('无效的JSON格式，请检查文件内容')
       return
     }
-    
+
     // 使用 importAll 并获取详细统计
     if (!isContextBundle(importData)) {
       toast.error(t('dataManager.context.invalidContextBundle'))
@@ -626,13 +688,14 @@ const handleContextImportFromFile = async (file: File) => {
     }
 
     const result = await contextRepo.importAll(importData, 'replace')
-    
+
     // 显示详细的导入统计
     const stats = []
     if (result.imported > 0) stats.push(`导入 ${result.imported} 个上下文`)
     if (result.skipped > 0) stats.push(`跳过 ${result.skipped} 个`)
-    if (result.predefinedVariablesRemoved > 0) stats.push(`剔除 ${result.predefinedVariablesRemoved} 个预定义变量覆盖`)
-    
+    if (result.predefinedVariablesRemoved > 0)
+      stats.push(`剔除 ${result.predefinedVariablesRemoved} 个预定义变量覆盖`)
+
     const message = stats.length > 0 ? `成功：${stats.join('，')}` : '导入完成'
     toast.success(message)
     emit('imported') // 触发父组件的导入成功事件
@@ -662,7 +725,7 @@ const handleContextImportFromClipboard = async () => {
 
     isContextImporting.value = true
     isContextImportingFromFile.value = false
-    
+
     // 从剪贴板读取内容
     let clipboardContent = ''
     if (navigator.clipboard) {
@@ -671,12 +734,12 @@ const handleContextImportFromClipboard = async () => {
       // 如果无法访问剪贴板，提示用户手动粘贴
       clipboardContent = prompt('请粘贴要导入的上下文数据:') || ''
     }
-    
+
     if (!clipboardContent.trim()) {
       toast.warning('剪贴板内容为空，请先复制要导入的数据')
       return
     }
-    
+
     // 解析JSON数据
     let importData: unknown
     try {
@@ -685,7 +748,7 @@ const handleContextImportFromClipboard = async () => {
       toast.error('无效的JSON格式，请检查数据格式')
       return
     }
-    
+
     // 使用 importAll 并获取详细统计
     if (!isContextBundle(importData)) {
       toast.error(t('dataManager.context.invalidContextBundle'))
@@ -693,13 +756,14 @@ const handleContextImportFromClipboard = async () => {
     }
 
     const result = await contextRepo.importAll(importData, 'replace')
-    
+
     // 显示详细的导入统计
     const stats = []
     if (result.imported > 0) stats.push(`导入 ${result.imported} 个上下文`)
     if (result.skipped > 0) stats.push(`跳过 ${result.skipped} 个`)
-    if (result.predefinedVariablesRemoved > 0) stats.push(`剔除 ${result.predefinedVariablesRemoved} 个预定义变量覆盖`)
-    
+    if (result.predefinedVariablesRemoved > 0)
+      stats.push(`剔除 ${result.predefinedVariablesRemoved} 个预定义变量覆盖`)
+
     const message = stats.length > 0 ? `成功：${stats.join('，')}` : '导入完成'
     toast.success(message)
     emit('imported') // 触发父组件的导入成功事件
@@ -734,8 +798,9 @@ const handleContextImportFromClipboard = async () => {
 .upload-wrapper.is-drag-over :deep(.n-upload-dragger) {
   border-color: var(--n-primary-color, #18a058) !important;
   background: rgba(24, 160, 88, 0.08) !important;
-  box-shadow: 0 0 0 4px rgba(24, 160, 88, 0.15),
-              0 8px 24px rgba(24, 160, 88, 0.15) !important;
+  box-shadow:
+    0 0 0 4px rgba(24, 160, 88, 0.15),
+    0 8px 24px rgba(24, 160, 88, 0.15) !important;
 }
 
 /* File selected state */
@@ -772,7 +837,8 @@ const handleContextImportFromClipboard = async () => {
 }
 
 @keyframes upload-icon-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   25% {
@@ -864,7 +930,8 @@ const handleContextImportFromClipboard = async () => {
 }
 
 @keyframes file-icon-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(24, 160, 88, 0.3);
   }
   50% {

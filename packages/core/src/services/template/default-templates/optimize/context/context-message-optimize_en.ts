@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'context-message-optimize-en',
@@ -81,7 +81,7 @@ After completing optimization, please self-check:
 4. Do not use code blocks to surround the content
 5. Do not add explanations or comments
 6. Keep the same language as the original message
-7. Do not change the basic intent of the original message`
+7. Do not change the basic intent of the original message`,
     },
     {
       role: 'user',
@@ -105,18 +105,19 @@ Message #{{index}} ({{roleLabel}})
 Content: {{#contentTooLong}}{{contentPreview}}... (See message #{{index}} above for full content){{/contentTooLong}}{{^contentTooLong}}{{content}}{{/contentTooLong}}
 {{/selectedMessage}}
 
-Based on the optimization principles and examples, please output the optimized message content directly:`
-    }
+Based on the optimization principles and examples, please output the optimized message content directly:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '2.0.0',
     lastModified: Date.now(),
     author: 'System',
-    description: 'General message optimization template - works for all conversation styles, maintains style consistency (recommended)',
+    description:
+      'General message optimization template - works for all conversation styles, maintains style consistency (recommended)',
     templateType: 'conversationMessageOptimize',
     language: 'en',
     variant: 'context',
-    tags: ['context', 'message', 'optimize', 'enhanced', 'english']
+    tags: ['context', 'message', 'optimize', 'enhanced', 'english'],
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

@@ -25,195 +25,232 @@ import {
 } from '../../constants/provider-ids'
 
 export interface AdvancedParameterDefinition {
-  id: string; // Unique ID across all definitions, e.g., "openai_temperature"
-  name: string; // Actual parameter name used by the SDK, e.g., "temperature"
-  
-  labelKey: string; // i18n key for UI label, e.g., "params.temperature.label"
-  descriptionKey: string; // i18n key for UI description, e.g., "params.temperature.description"
-  
-  type: 'number' | 'string' | 'boolean' | 'integer';
-  
-  defaultValue?: any;
-  
-  minValue?: number;
-  maxValue?: number;
-  step?: number;
-  
-  unit?: string; // e.g., "ms"
-  unitKey?: string; // i18n key for the unit, e.g., "params.tokens.unit"
-  
-  appliesToProviders: string[]; // e.g., [PROVIDER_OPENAI, PROVIDER_DEEPSEEK] or [PROVIDER_GEMINI]
-  
+  id: string // Unique ID across all definitions, e.g., "openai_temperature"
+  name: string // Actual parameter name used by the SDK, e.g., "temperature"
+
+  labelKey: string // i18n key for UI label, e.g., "params.temperature.label"
+  descriptionKey: string // i18n key for UI description, e.g., "params.temperature.description"
+
+  type: 'number' | 'string' | 'boolean' | 'integer'
+
+  defaultValue?: any
+
+  minValue?: number
+  maxValue?: number
+  step?: number
+
+  unit?: string // e.g., "ms"
+  unitKey?: string // i18n key for the unit, e.g., "params.tokens.unit"
+
+  appliesToProviders: string[] // e.g., [PROVIDER_OPENAI, PROVIDER_DEEPSEEK] or [PROVIDER_GEMINI]
+
   // Optional: For string types with predefined choices
-  // allowedValues?: string[]; 
+  // allowedValues?: string[];
   // allowedValuesLabelsKey?: string; // i18n key for labels of allowedValues (if they differ from values)
 }
 
 export const advancedParameterDefinitions: AdvancedParameterDefinition[] = [
   // Common Parameters (can be mapped or used if name matches)
   {
-    id: "common_temperature",
-    name: "temperature",
-    labelKey: "params.temperature.label",
-    descriptionKey: "params.temperature.description",
-    type: "number",
+    id: 'common_temperature',
+    name: 'temperature',
+    labelKey: 'params.temperature.label',
+    descriptionKey: 'params.temperature.description',
+    type: 'number',
     defaultValue: 0.7,
     minValue: 0.0,
     maxValue: 2.0, // Max for OpenAI; Gemini is often 0-1. UI might need to adjust range based on provider.
     step: 0.1,
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_GEMINI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW] 
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_GEMINI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   {
-    id: "common_top_p",
-    name: "top_p", // OpenAI, Zhipu, SiliconFlow use top_p
-    labelKey: "params.top_p.label",
-    descriptionKey: "params.top_p.description",
-    type: "number",
+    id: 'common_top_p',
+    name: 'top_p', // OpenAI, Zhipu, SiliconFlow use top_p
+    labelKey: 'params.top_p.label',
+    descriptionKey: 'params.top_p.description',
+    type: 'number',
     defaultValue: 1.0,
     minValue: 0.0,
     maxValue: 1.0,
     step: 0.01,
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   // OpenAI / OpenAI-Compatible Specific
   {
-    id: "openai_max_tokens",
-    name: "max_tokens",
-    labelKey: "params.max_tokens.label",
-    descriptionKey: "params.max_tokens.description",
-    type: "integer",
+    id: 'openai_max_tokens',
+    name: 'max_tokens',
+    labelKey: 'params.max_tokens.label',
+    descriptionKey: 'params.max_tokens.description',
+    type: 'integer',
     defaultValue: 40000,
     minValue: 1,
     step: 1,
-    unitKey: "params.tokens.unit",
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
+    unitKey: 'params.tokens.unit',
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   {
-    id: "openai_presence_penalty",
-    name: "presence_penalty",
-    labelKey: "params.presence_penalty.label",
-    descriptionKey: "params.presence_penalty.description",
-    type: "number",
+    id: 'openai_presence_penalty',
+    name: 'presence_penalty',
+    labelKey: 'params.presence_penalty.label',
+    descriptionKey: 'params.presence_penalty.description',
+    type: 'number',
     defaultValue: 0,
     minValue: -2.0,
     maxValue: 2.0,
     step: 0.1,
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   {
-    id: "openai_frequency_penalty",
-    name: "frequency_penalty",
-    labelKey: "params.frequency_penalty.label",
-    descriptionKey: "params.frequency_penalty.description",
-    type: "number",
+    id: 'openai_frequency_penalty',
+    name: 'frequency_penalty',
+    labelKey: 'params.frequency_penalty.label',
+    descriptionKey: 'params.frequency_penalty.description',
+    type: 'number',
     defaultValue: 0,
     minValue: -2.0,
     maxValue: 2.0,
     step: 0.1,
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW]
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   {
-    id: "openai_timeout", // This is a client configuration for OpenAI
-    name: "timeout", 
-    labelKey: "params.timeout.label",
-    descriptionKey: "params.timeout.description_openai", // Specific description
-    type: "integer",
+    id: 'openai_timeout', // This is a client configuration for OpenAI
+    name: 'timeout',
+    labelKey: 'params.timeout.label',
+    descriptionKey: 'params.timeout.description_openai', // Specific description
+    type: 'integer',
     defaultValue: 60000,
     minValue: 1000,
     step: 1000,
-    unit: "ms",
-    appliesToProviders: [PROVIDER_OPENAI, PROVIDER_DEEPSEEK, PROVIDER_CUSTOM, PROVIDER_ZHIPU, PROVIDER_SILICONFLOW] 
+    unit: 'ms',
+    appliesToProviders: [
+      PROVIDER_OPENAI,
+      PROVIDER_DEEPSEEK,
+      PROVIDER_CUSTOM,
+      PROVIDER_ZHIPU,
+      PROVIDER_SILICONFLOW,
+    ],
   },
   // Gemini Specific
   {
-    id: "gemini_maxOutputTokens",
-    name: "maxOutputTokens",
-    labelKey: "params.maxOutputTokens.label",
-    descriptionKey: "params.maxOutputTokens.description",
-    type: "integer",
+    id: 'gemini_maxOutputTokens',
+    name: 'maxOutputTokens',
+    labelKey: 'params.maxOutputTokens.label',
+    descriptionKey: 'params.maxOutputTokens.description',
+    type: 'integer',
     defaultValue: 40000,
     minValue: 1,
     step: 1,
-    unitKey: "params.tokens.unit",
-    appliesToProviders: [PROVIDER_GEMINI]
+    unitKey: 'params.tokens.unit',
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   {
-    id: "gemini_topP", // Gemini uses "topP" (capital P)
-    name: "topP",
-    labelKey: "params.top_p.label", // Can share label if meaning is identical
-    descriptionKey: "params.top_p.description", // Can share description
-    type: "number",
+    id: 'gemini_topP', // Gemini uses "topP" (capital P)
+    name: 'topP',
+    labelKey: 'params.top_p.label', // Can share label if meaning is identical
+    descriptionKey: 'params.top_p.description', // Can share description
+    type: 'number',
     defaultValue: 1.0, // Or Gemini's typical default if different
     minValue: 0.0,
     maxValue: 1.0,
     step: 0.01,
-    appliesToProviders: [PROVIDER_GEMINI]
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   {
-    id: "gemini_topK",
-    name: "topK",
-    labelKey: "params.top_k.label",
-    descriptionKey: "params.top_k.description",
-    type: "integer",
+    id: 'gemini_topK',
+    name: 'topK',
+    labelKey: 'params.top_k.label',
+    descriptionKey: 'params.top_k.description',
+    type: 'integer',
     defaultValue: 1, // Gemini default, but often user wants to adjust
     minValue: 1,
     step: 1,
-    appliesToProviders: [PROVIDER_GEMINI]
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   {
-    id: "gemini_candidateCount",
-    name: "candidateCount",
-    labelKey: "params.candidateCount.label",
-    descriptionKey: "params.candidateCount.description",
-    type: "integer",
-    defaultValue: 1, 
+    id: 'gemini_candidateCount',
+    name: 'candidateCount',
+    labelKey: 'params.candidateCount.label',
+    descriptionKey: 'params.candidateCount.description',
+    type: 'integer',
+    defaultValue: 1,
     minValue: 1,
     maxValue: 8, // Check Gemini docs for actual max
     step: 1,
-    appliesToProviders: [PROVIDER_GEMINI]
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   {
-    id: "gemini_stopSequences",
-    name: "stopSequences", // Array of strings
-    labelKey: "params.stopSequences.label",
-    descriptionKey: "params.stopSequences.description",
-    type: "string", // Special handling: array of strings but UI input as comma-separated string
+    id: 'gemini_stopSequences',
+    name: 'stopSequences', // Array of strings
+    labelKey: 'params.stopSequences.label',
+    descriptionKey: 'params.stopSequences.description',
+    type: 'string', // Special handling: array of strings but UI input as comma-separated string
     defaultValue: [], // Array of strings
-    appliesToProviders: [PROVIDER_GEMINI]
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   {
-  id: "gemini_thinkingBudget",
-  name: "thinkingBudget",
-  labelKey: "params.thinkingBudget.label",
-  descriptionKey: "params.thinkingBudget.description",
-  type: "number",
-  minValue: 0,  // 允许0来禁用思考功能
-  maxValue: 8192,
-  step: 1,
-  unitKey: "params.tokens.unit",
-  appliesToProviders: ["gemini"]
+    id: 'gemini_thinkingBudget',
+    name: 'thinkingBudget',
+    labelKey: 'params.thinkingBudget.label',
+    descriptionKey: 'params.thinkingBudget.description',
+    type: 'number',
+    minValue: 0, // 允许0来禁用思考功能
+    maxValue: 8192,
+    step: 1,
+    unitKey: 'params.tokens.unit',
+    appliesToProviders: ['gemini'],
   },
   {
-    id: "gemini_includeThoughts",
-    name: "includeThoughts",
-    labelKey: "params.includeThoughts.label",
-    descriptionKey: "params.includeThoughts.description",
-    type: "boolean",
+    id: 'gemini_includeThoughts',
+    name: 'includeThoughts',
+    labelKey: 'params.includeThoughts.label',
+    descriptionKey: 'params.includeThoughts.description',
+    type: 'boolean',
     defaultValue: false,
-    appliesToProviders: [PROVIDER_GEMINI]
+    appliesToProviders: [PROVIDER_GEMINI],
   },
   // Add more definitions as needed for other parameters and providers.
   // For example, Zhipu specific parameters, Groq, Anthropic etc.
-];
+]
 
 // It might be useful to also export a map for easier lookup by id or name
-// export const advancedParameterDefinitionsMapById: Record<string, AdvancedParameterDefinition> = 
+// export const advancedParameterDefinitionsMapById: Record<string, AdvancedParameterDefinition> =
 //   advancedParameterDefinitions.reduce((acc, def) => {
 //     acc[def.id] = def;
 //     return acc;
 //   }, {} as Record<string, AdvancedParameterDefinition>);
 
-// export const advancedParameterDefinitionsMapByName: Record<string, AdvancedParameterDefinition> = 
+// export const advancedParameterDefinitionsMapByName: Record<string, AdvancedParameterDefinition> =
 //   advancedParameterDefinitions.reduce((acc, def) => {
 //     acc[def.name] = def; // Note: 'name' might not be unique across all providers if we don't make it so
 //     return acc;

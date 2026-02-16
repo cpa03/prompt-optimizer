@@ -1,4 +1,4 @@
-import { Template, MessageTemplate } from '../../../types';
+import { Template, MessageTemplate } from '../../../types'
 
 export const template: Template = {
   id: 'image-general-optimize-en',
@@ -90,7 +90,7 @@ Directly enrich and structure the user's original description; in natural langua
 - Each key noun receives 2–3 precise modifiers to increase information density
 - Do not use parameters/weights/negative lists
 - Do not use lists, code blocks, or JSON
-- Encourage contrast and resonance (light/dark, warm/cool, soft/hard, motion/stillness) to enhance narrative and readability`
+- Encourage contrast and resonance (light/dark, warm/cool, soft/hard, motion/stillness) to enhance narrative and readability`,
     },
     {
       role: 'user',
@@ -105,16 +105,17 @@ Notes:
 Original description:
 {{originalPrompt}}
 
-Please output the optimized prompt:`
-    }
+Please output the optimized prompt:`,
+    },
   ] as MessageTemplate[],
   metadata: {
     version: '1.3.0',
     lastModified: 1704067200000,
     author: 'System',
-    description: 'General natural-language image prompt optimization template; structured natural language to strengthen subject/action/environment anchors/lighting/palette/material/atmosphere and composition/viewpoint; no parameters/weights/negative lists',
+    description:
+      'General natural-language image prompt optimization template; structured natural language to strengthen subject/action/environment anchors/lighting/palette/material/atmosphere and composition/viewpoint; no parameters/weights/negative lists',
     templateType: 'text2imageOptimize',
-    language: 'en'
+    language: 'en',
   },
-  isBuiltin: true
-};
+  isBuiltin: true,
+}

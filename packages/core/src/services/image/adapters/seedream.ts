@@ -5,7 +5,7 @@ import type {
   ImageModel,
   ImageRequest,
   ImageResult,
-  ImageModelConfig
+  ImageModelConfig,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
@@ -28,22 +28,22 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
       corsRestricted: true,
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.seedream,
-      supportsDynamicModels: false,  // 不支持动态获取
+      supportsDynamicModels: false, // 不支持动态获取
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
   getModels(): ImageModel[] {
     const sizes = IMAGE_SIZE_PRESETS.seedream
     const defaults = IMAGE_DEFAULTS.seedream
-    
+
     // 返回静态的模型列表（只保留4.0版本）
     return [
       {
@@ -54,7 +54,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: false
+          multiImage: false,
         },
         parameterDefinitions: [
           {
@@ -63,7 +63,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
             descriptionKey: 'params.size.description',
             type: 'string',
             defaultValue: sizes.default,
-            allowedValues: sizes.available
+            allowedValues: sizes.available,
           },
           {
             name: 'sequential_image_generation',
@@ -71,7 +71,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
             descriptionKey: 'params.sequentialGeneration.description',
             type: 'string',
             defaultValue: 'disabled',
-            allowedValues: ['disabled']
+            allowedValues: ['disabled'],
           },
           {
             name: 'response_format',
@@ -79,30 +79,30 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
             descriptionKey: 'params.responseFormat.description',
             type: 'string',
             defaultValue: defaults.sampleMethod,
-            allowedValues: ['b64_json', 'url']
+            allowedValues: ['b64_json', 'url'],
           },
           {
             name: 'watermark',
             labelKey: 'params.watermark.label',
             descriptionKey: 'params.watermark.description',
             type: 'boolean',
-            defaultValue: false
-          }
+            defaultValue: false,
+          },
         ],
         defaultParameterValues: {
           size: sizes.default,
           sequential_image_generation: 'disabled',
           response_format: defaults.sampleMethod,
-          watermark: false
-        }
-      }
+          watermark: false,
+        },
+      },
     ]
   }
 
   protected getParameterDefinitions(_modelId: string): readonly any[] {
     const sizes = IMAGE_SIZE_PRESETS.seedream
     const defaults = IMAGE_DEFAULTS.seedream
-    
+
     // 所有模型使用统一的参数定义（只保留4.0版本）
     return [
       {
@@ -111,7 +111,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         descriptionKey: 'params.size.description',
         type: 'string',
         defaultValue: sizes.default,
-        allowedValues: sizes.available
+        allowedValues: sizes.available,
       },
       {
         name: 'sequential_image_generation',
@@ -119,7 +119,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         descriptionKey: 'params.sequentialGeneration.description',
         type: 'string',
         defaultValue: 'disabled',
-        allowedValues: ['disabled']
+        allowedValues: ['disabled'],
       },
       {
         name: 'response_format',
@@ -127,36 +127,38 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         descriptionKey: 'params.responseFormat.description',
         type: 'string',
         defaultValue: defaults.sampleMethod,
-        allowedValues: ['b64_json', 'url']
+        allowedValues: ['b64_json', 'url'],
       },
       {
         name: 'watermark',
         labelKey: 'params.watermark.label',
         descriptionKey: 'params.watermark.description',
         type: 'boolean',
-        defaultValue: false
-      }
+        defaultValue: false,
+      },
     ]
   }
 
   protected getDefaultParameterValues(_modelId: string): Record<string, unknown> {
     const sizes = IMAGE_SIZE_PRESETS.seedream
     const defaults = IMAGE_DEFAULTS.seedream
-    
+
     // 所有模型使用统一的默认值
     return {
       size: sizes.default,
       sequential_image_generation: 'disabled',
       response_format: defaults.sampleMethod,
-      watermark: false
+      watermark: false,
     }
   }
 
-  protected getTestImageRequest(testType: 'text2image' | 'image2image'): Omit<ImageRequest, 'configId'> {
+  protected getTestImageRequest(
+    testType: 'text2image' | 'image2image'
+  ): Omit<ImageRequest, 'configId'> {
     if (testType === 'text2image') {
       return {
         prompt: '一朵花',
-        count: 1
+        count: 1,
       }
     }
 
@@ -166,15 +168,18 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
         count: 1,
         inputImage: {
           b64: AbstractImageProviderAdapter.TEST_IMAGE_BASE64.split(',')[1], // 去掉data:前缀
-          mimeType: MIME_TYPES.PNG
-        }
+          mimeType: MIME_TYPES.PNG,
+        },
       }
     }
 
     throw new ImageError(IMAGE_ERROR_CODES.UNSUPPORTED_TEST_TYPE, undefined, { testType })
   }
 
-  protected async doGenerate(request: ImageRequest, config: ImageModelConfig): Promise<ImageResult> {
+  protected async doGenerate(
+    request: ImageRequest,
+    config: ImageModelConfig
+  ): Promise<ImageResult> {
     // 构建请求体（隐藏多图相关参数，强制单图）
     const overrides: Record<string, any> = { ...config.paramOverrides, ...request.paramOverrides }
     delete overrides.n
@@ -184,7 +189,7 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
       prompt: request.prompt,
       sequential_image_generation: IMAGE_ADAPTER_CONFIG.seedream.sequentialGeneration, // 固定禁用组图
       ...overrides,
-      n: 1
+      n: 1,
     }
 
     // 图生图支持：添加图像输入
@@ -196,33 +201,34 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     })
 
     const data = response
 
     // 解析响应
-    const images = data.data?.map((item: any) => ({
-      url: item.url,
-      b64: item.b64_json,
-      mimeType: MIME_TYPES.PNG
-    })) || []
+    const images =
+      data.data?.map((item: any) => ({
+        url: item.url,
+        b64: item.b64_json,
+        mimeType: MIME_TYPES.PNG,
+      })) || []
 
     if (images.length === 0) {
       throw new ImageError(IMAGE_ERROR_CODES.INVALID_RESPONSE_FORMAT)
     }
 
-      return {
+    return {
       images,
       metadata: {
         providerId: 'seedream',
         modelId: config.modelId,
         configId: config.id,
-        usage: data.usage
-      }
+        usage: data.usage,
+      },
     }
   }
 
@@ -237,7 +243,10 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
       } catch {
         errorMessage = response.statusText
       }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Seedream API error: ${response.status} ${errorMessage}`)
+      throw new ImageError(
+        IMAGE_ERROR_CODES.GENERATION_FAILED,
+        `Seedream API error: ${response.status} ${errorMessage}`
+      )
     }
     return await response.json()
   }

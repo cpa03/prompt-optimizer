@@ -15,7 +15,7 @@ import type {
   LLMResponse,
   StreamHandlers,
   ToolDefinition,
-  ParameterDefinition
+  ParameterDefinition,
 } from '../types'
 
 interface ModelOverride {
@@ -34,12 +34,13 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
   {
     id: OPENAI_MODELS.GPT5_MINI,
     name: getModelDisplayName(OPENAI_MODELS.GPT5_MINI),
-    description: 'Fast, capable, and efficient small model with significant improvements in instruction-following and coding',
+    description:
+      'Fast, capable, and efficient small model with significant improvements in instruction-following and coding',
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
-    }
+      maxContextLength: 1047576,
+    },
   },
   {
     id: OPENAI_MODELS.GPT5_1,
@@ -48,9 +49,9 @@ const OPENAI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1047576
-    }
-  }
+      maxContextLength: 1047576,
+    },
+  },
 ]
 
 /**
@@ -84,9 +85,9 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         optional: ['baseURL'],
         fieldTypes: {
           apiKey: 'string',
-          baseURL: 'string'
-        }
-      }
+          baseURL: 'string',
+        },
+      },
     }
   }
 
@@ -103,14 +104,14 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         description: definition.description,
         capabilities: {
           ...baseModel.capabilities,
-          ...(definition.capabilities ?? {})
+          ...(definition.capabilities ?? {}),
         },
         defaultParameterValues: definition.defaultParameterValues
           ? {
               ...(baseModel.defaultParameterValues ?? {}),
-              ...definition.defaultParameterValues
+              ...definition.defaultParameterValues,
             }
-          : baseModel.defaultParameterValues
+          : baseModel.defaultParameterValues,
       }
     })
   }
@@ -150,8 +151,10 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       console.error('[OpenAIAdapter] Failed to fetch models:', error)
 
       // 连接错误处理（包括跨域检测）
-      if (error.message && (error.message.includes('Failed to fetch') ||
-          error.message.includes('Connection error'))) {
+      if (
+        error.message &&
+        (error.message.includes('Failed to fetch') || error.message.includes('Connection error'))
+      ) {
         const isCrossOriginError = this.detectCrossOriginError(error, baseURL)
 
         if (isCrossOriginError) {
@@ -191,7 +194,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 2,
         min: 0,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'top_p',
@@ -205,7 +208,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 1,
         min: 0,
         max: 1,
-        step: 0.01
+        step: 0.01,
       },
       {
         name: 'max_completion_tokens',
@@ -218,7 +221,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         min: 1,
         max: 1000000,
         step: 1,
-        unitKey: 'params.tokens.unit'
+        unitKey: 'params.tokens.unit',
       },
       {
         name: 'max_tokens',
@@ -231,7 +234,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         min: 1,
         max: 1000000,
         step: 1,
-        unitKey: 'params.tokens.unit'
+        unitKey: 'params.tokens.unit',
       },
       {
         name: 'presence_penalty',
@@ -245,7 +248,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 2,
         min: -2,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'frequency_penalty',
@@ -259,7 +262,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 2,
         min: -2,
         max: 2,
-        step: 0.1
+        step: 0.1,
       },
       {
         name: 'logprobs',
@@ -268,7 +271,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         description: 'Return log probabilities of output tokens',
         type: 'boolean',
         defaultValue: false,
-        default: false
+        default: false,
       },
       {
         name: 'top_logprobs',
@@ -280,7 +283,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 20,
         min: 0,
         max: 20,
-        step: 1
+        step: 1,
       },
       {
         name: 'seed',
@@ -292,7 +295,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 2147483647,
         min: 0,
         max: 2147483647,
-        step: 1
+        step: 1,
       },
       {
         name: 'n',
@@ -306,7 +309,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         maxValue: 10,
         min: 1,
         max: 10,
-        step: 1
+        step: 1,
       },
       {
         name: 'timeout',
@@ -321,8 +324,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         min: 1000,
         max: 600000,
         step: 1000,
-        unit: 'ms'
-      }
+        unit: 'ms',
+      },
     ]
   }
 
@@ -410,13 +413,17 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       apiKey: apiKey,
       baseURL: processedBaseURL,
       timeout: timeout,
-      maxRetries: isStream ? TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STREAM_RETRY_REDUCTION : TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STANDARD_RETRY_REDUCTION
+      maxRetries: isStream
+        ? TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STREAM_RETRY_REDUCTION
+        : TIMEOUTS.retry.maxAttempts - RETRY_CONFIG.STANDARD_RETRY_REDUCTION,
     }
 
     // 浏览器环境检测
     if (typeof window !== 'undefined') {
       sdkConfig.dangerouslyAllowBrowser = true
-      console.log('[OpenAIAdapter] Browser environment detected. Setting dangerouslyAllowBrowser=true.')
+      console.log(
+        '[OpenAIAdapter] Browser environment detected. Setting dangerouslyAllowBrowser=true.'
+      )
     }
 
     const instance = new OpenAI(sdkConfig)
@@ -435,13 +442,16 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
    * @returns LLM响应
    * @throws SDK原始错误（保留完整堆栈）
    */
-  protected async doSendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse> {
+  protected async doSendMessage(
+    messages: Message[],
+    config: TextModelConfig
+  ): Promise<LLMResponse> {
     const openai = this.createOpenAIInstance(config, false)
 
     // 格式化消息
     const formattedMessages = messages.map((msg) => ({
       role: msg.role,
-      content: msg.content
+      content: msg.content,
     }))
 
     // 从paramOverrides提取参数，排除特殊字段
@@ -455,7 +465,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
     const completionConfig: any = {
       model: config.modelMeta.id,
       messages: formattedMessages,
-      ...restParams // 展开其他参数
+      ...restParams, // 展开其他参数
     }
 
     try {
@@ -500,8 +510,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         reasoning: reasoning || undefined,
         metadata: {
           model: config.modelMeta.id,
-          finishReason: choice.finish_reason || undefined
-        }
+          finishReason: choice.finish_reason || undefined,
+        },
       }
 
       return result
@@ -581,8 +591,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
             reasoning: fallbackReasoning || processed.reasoning || undefined,
             metadata: {
               model: modelId,
-              finishReason: fallbackJson.choices?.[0]?.finish_reason
-            }
+              finishReason: fallbackJson.choices?.[0]?.finish_reason,
+            },
           }
         }
       } catch {
@@ -602,8 +612,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       reasoning: accumulatedReasoning || processed.reasoning || undefined,
       metadata: {
         model: modelId,
-        finishReason
-      }
+        finishReason,
+      },
     }
   }
 
@@ -614,7 +624,12 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
   private isStreamResponse(response: any): boolean {
     // 首先检查是否为标准的非流式响应格式
     // 如果响应包含 choices 数组且第一个 choice 有 message 属性，则是非流式响应
-    if (response && response.choices && Array.isArray(response.choices) && response.choices.length > 0) {
+    if (
+      response &&
+      response.choices &&
+      Array.isArray(response.choices) &&
+      response.choices.length > 0
+    ) {
       const firstChoice = response.choices[0]
       // 非流式响应有 message 属性，流式响应有 delta 属性
       if (firstChoice && firstChoice.message !== undefined) {
@@ -634,7 +649,10 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
    * 消费流式响应并聚合为完整响应
    * 用于处理强制返回流式响应的 API
    */
-  private async consumeStreamResponse(stream: AsyncIterable<any>, modelId: string): Promise<LLMResponse> {
+  private async consumeStreamResponse(
+    stream: AsyncIterable<any>,
+    modelId: string
+  ): Promise<LLMResponse> {
     let accumulatedContent = ''
     let accumulatedReasoning = ''
     let finishReason: string | undefined
@@ -666,8 +684,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       reasoning: accumulatedReasoning || processed.reasoning || undefined,
       metadata: {
         model: modelId,
-        finishReason
-      }
+        finishReason,
+      },
     }
   }
 
@@ -691,7 +709,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       const formattedMessages = messages.map((msg) => ({
         role: msg.role,
-        content: msg.content
+        content: msg.content,
       }))
 
       const {
@@ -706,7 +724,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         model: config.modelMeta.id,
         messages: formattedMessages,
         stream: true, // 流式标志
-        ...restParams // 用户自定义参数
+        ...restParams, // 用户自定义参数
       }
 
       // 直接使用流式响应
@@ -746,8 +764,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         content: accumulatedContent,
         reasoning: accumulatedReasoning || undefined,
         metadata: {
-          model: config.modelMeta.id
-        }
+          model: config.modelMeta.id,
+        },
       }
 
       callbacks.onComplete(response)
@@ -780,7 +798,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       const formattedMessages = messages.map((msg) => ({
         role: msg.role,
-        content: msg.content
+        content: msg.content,
       }))
 
       const {
@@ -798,7 +816,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         tools: tools,
         tool_choice: 'auto',
         stream: true,
-        ...restParams
+        ...restParams,
       }
 
       const stream = await openai.chat.completions.create(completionConfig)
@@ -827,7 +845,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
                 toolCalls.push({
                   id: '',
                   type: 'function' as const,
-                  function: { name: '', arguments: '' }
+                  function: { name: '', arguments: '' },
                 })
               }
 
@@ -874,7 +892,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         content: accumulatedContent,
         reasoning: accumulatedReasoning || undefined,
         toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
-        metadata: { model: config.modelMeta.id }
+        metadata: { model: config.modelMeta.id },
       }
 
       callbacks.onComplete(response)

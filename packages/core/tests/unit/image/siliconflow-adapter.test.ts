@@ -36,7 +36,7 @@ describe('SiliconFlowImageAdapter', () => {
       expect(Array.isArray(models)).toBe(true)
       expect(models.length).toBeGreaterThan(0)
 
-      const kolorsModel = models.find(m => m.id === 'Kwai-Kolors/Kolors')
+      const kolorsModel = models.find((m) => m.id === 'Kwai-Kolors/Kolors')
       expect(kolorsModel).toBeDefined()
       expect(kolorsModel).toMatchObject({
         id: 'Kwai-Kolors/Kolors',
@@ -45,36 +45,40 @@ describe('SiliconFlowImageAdapter', () => {
         capabilities: {
           text2image: true,
           image2image: true,
-          multiImage: false
+          multiImage: false,
         },
-        parameterDefinitions: expect.any(Array)
+        parameterDefinitions: expect.any(Array),
       })
 
       // 验证 Flux 模型也存在
-      const qwenModel = models.find(m => m.id === 'Qwen/Qwen-Image')
+      const qwenModel = models.find((m) => m.id === 'Qwen/Qwen-Image')
       expect(qwenModel).toBeDefined()
     })
 
     test('should include correct parameters in model definition', () => {
       const models = adapter.getModels()
-      const kolorsModel = models.find(m => m.id === 'Kwai-Kolors/Kolors')
+      const kolorsModel = models.find((m) => m.id === 'Kwai-Kolors/Kolors')
 
       expect(kolorsModel?.parameterDefinitions).toBeDefined()
 
       // 验证 image_size 参数
-      const sizeParam = kolorsModel?.parameterDefinitions?.find(p => p.name === 'image_size')
+      const sizeParam = kolorsModel?.parameterDefinitions?.find((p) => p.name === 'image_size')
       expect(sizeParam).toBeDefined()
       expect(sizeParam?.type).toBe('string')
       expect(sizeParam?.allowedValues).toContain('1024x1024')
 
       // 验证 num_inference_steps 参数
-      const stepsParam = kolorsModel?.parameterDefinitions?.find(p => p.name === 'num_inference_steps')
+      const stepsParam = kolorsModel?.parameterDefinitions?.find(
+        (p) => p.name === 'num_inference_steps'
+      )
       expect(stepsParam).toBeDefined()
       expect(stepsParam?.type).toBe('integer')
       expect(stepsParam?.defaultValue).toBe(20)
 
       // 验证 guidance_scale 参数
-      const guidanceParam = kolorsModel?.parameterDefinitions?.find(p => p.name === 'guidance_scale')
+      const guidanceParam = kolorsModel?.parameterDefinitions?.find(
+        (p) => p.name === 'guidance_scale'
+      )
       expect(guidanceParam).toBeDefined()
       expect(guidanceParam?.type).toBe('number')
       expect(guidanceParam?.defaultValue).toBe(7.5)
@@ -99,13 +103,13 @@ describe('SiliconFlowImageAdapter', () => {
         enabled: true,
         connectionConfig: {
           apiKey: 'test-api-key',
-          baseURL: 'https://api.siliconflow.cn/v1'
+          baseURL: 'https://api.siliconflow.cn/v1',
         },
         paramOverrides: {
           image_size: '1024x1024',
           num_inference_steps: 20,
-          guidance_scale: 7.5
-        }
+          guidance_scale: 7.5,
+        },
       }
 
       const request: ImageRequest = {
@@ -113,8 +117,8 @@ describe('SiliconFlowImageAdapter', () => {
         configId: config.id,
         count: 1,
         paramOverrides: {
-          outputMimeType: 'image/png'
-        }
+          outputMimeType: 'image/png',
+        },
       }
 
       // Mock successful generation response
@@ -123,18 +127,18 @@ describe('SiliconFlowImageAdapter', () => {
           {
             url: 'https://example.com/generated-image.png',
             b64: null,
-            mimeType: 'image/png'
-          }
+            mimeType: 'image/png',
+          },
         ],
         seed: 1234567890,
         timings: {
-          inference: 2.5
-        }
+          inference: 2.5,
+        },
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(mockGenerationResponse)
+        json: () => Promise.resolve(mockGenerationResponse),
       })
 
       const result = await adapter.generate(request, config)
@@ -143,7 +147,7 @@ describe('SiliconFlowImageAdapter', () => {
       expect(result.images).toHaveLength(1)
       expect(result.images[0]).toMatchObject({
         url: expect.any(String),
-        mimeType: 'image/png'
+        mimeType: 'image/png',
       })
       expect(result.metadata).toBeDefined()
       expect(result.metadata?.configId).toBe(config.id)
@@ -163,26 +167,27 @@ describe('SiliconFlowImageAdapter', () => {
         modelId,
         enabled: true,
         connectionConfig: {
-          apiKey: 'test-api-key'
+          apiKey: 'test-api-key',
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'test prompt',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 400,
         statusText: 'Bad Request',
-        json: () => Promise.resolve({
-          error: {
-            message: 'Invalid prompt'
-          }
-        })
+        json: () =>
+          Promise.resolve({
+            error: {
+              message: 'Invalid prompt',
+            },
+          }),
       })
 
       await expect(adapter.generate(request, config)).rejects.toThrow()
@@ -202,17 +207,18 @@ describe('SiliconFlowImageAdapter', () => {
         connectionConfig: {
           // Missing apiKey
         },
-        paramOverrides: {}
+        paramOverrides: {},
       }
 
       const request: ImageRequest = {
         prompt: 'test prompt',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
-      await expect(adapter.generate(request, config))
-        .rejects.toMatchObject({ code: IMAGE_ERROR_CODES.API_KEY_REQUIRED })
+      await expect(adapter.generate(request, config)).rejects.toMatchObject({
+        code: IMAGE_ERROR_CODES.API_KEY_REQUIRED,
+      })
     })
   })
 
@@ -237,19 +243,19 @@ describe('SiliconFlowImageAdapter', () => {
         enabled: true,
         connectionConfig: {
           apiKey: apiKey,
-          baseURL: 'https://api.siliconflow.cn/v1'
+          baseURL: 'https://api.siliconflow.cn/v1',
         },
         paramOverrides: {
           image_size: '1024x1024',
           num_inference_steps: 20,
-          guidance_scale: 7.5
-        }
+          guidance_scale: 7.5,
+        },
       }
 
       const request: ImageRequest = {
         prompt: '星际穿越，黑洞，蒸汽朋克风格，科幻电影场景，高质量，8K分辨率',
         configId: config.id,
-        count: 1
+        count: 1,
       }
 
       const result = await adapter.generate(request, config)

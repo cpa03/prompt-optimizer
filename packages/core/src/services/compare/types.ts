@@ -4,28 +4,28 @@
 export enum ChangeType {
   UNCHANGED = 'unchanged',
   ADDED = 'added',
-  REMOVED = 'removed'
+  REMOVED = 'removed',
 }
 
 /**
  * 文本片段
  */
 export interface TextFragment {
-  text: string;
-  type: ChangeType;
-  index: number;
+  text: string
+  type: ChangeType
+  index: number
 }
 
 /**
  * 对比结果
  */
 export interface CompareResult {
-  fragments: TextFragment[];
+  fragments: TextFragment[]
   summary: {
-    additions: number;
-    deletions: number;
-    unchanged: number;
-  };
+    additions: number
+    deletions: number
+    unchanged: number
+  }
 }
 
 /**
@@ -33,11 +33,11 @@ export interface CompareResult {
  */
 export interface CompareOptions {
   /** 对比粒度：word（单词级）、char（字符级） */
-  granularity: 'word' | 'char';
+  granularity: 'word' | 'char'
   /** 是否忽略空白符 */
-  ignoreWhitespace: boolean;
+  ignoreWhitespace: boolean
   /** 是否区分大小写 */
-  caseSensitive: boolean;
+  caseSensitive: boolean
 }
 
 /**
@@ -55,5 +55,5 @@ export interface ICompareService {
     original: string,
     optimized: string,
     options?: Partial<CompareOptions>
-  ): CompareResult;
-} 
+  ): CompareResult
+}

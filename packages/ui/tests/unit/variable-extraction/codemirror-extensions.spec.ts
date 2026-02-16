@@ -5,7 +5,7 @@ import {
   missingVariableTooltip,
   createThemeExtension,
   createVariableCompletionOption,
-  type VariableDetectionLabels
+  type VariableDetectionLabels,
 } from '../../../src/components/variable-extraction/codemirror-extensions'
 import type { DetectedVariable } from '../../../src/components/variable-extraction/useVariableDetection'
 
@@ -21,7 +21,7 @@ describe('codemirror-extensions', () => {
 
     it('创建插件时不应立即调用 getVariables', () => {
       const mockVariables: DetectedVariable[] = [
-        { name: 'var1', source: 'global', value: 'value1', from: 0, to: 8 }
+        { name: 'var1', source: 'global', value: 'value1', from: 0, to: 8 },
       ]
 
       const getVariables = vi.fn().mockReturnValue(mockVariables)
@@ -31,11 +31,16 @@ describe('codemirror-extensions', () => {
     })
 
     it('应该为不同来源的变量创建插件', () => {
-      const sources: Array<DetectedVariable['source']> = ['global', 'temporary', 'predefined', 'missing']
+      const sources: Array<DetectedVariable['source']> = [
+        'global',
+        'temporary',
+        'predefined',
+        'missing',
+      ]
 
-      sources.forEach(source => {
+      sources.forEach((source) => {
         const mockVariables: DetectedVariable[] = [
-          { name: 'test', source, value: 'value', from: 0, to: 8 }
+          { name: 'test', source, value: 'value', from: 0, to: 8 },
         ]
 
         const getVariables = vi.fn().mockReturnValue(mockVariables)
@@ -54,7 +59,7 @@ describe('codemirror-extensions', () => {
       missingVariable: '缺失变量',
       addToTemporary: '添加到临时变量',
       emptyValue: '(空)',
-      valuePreview: (value: string) => `值: ${value}`
+      valuePreview: (value: string) => `值: ${value}`,
     }
 
     it('应该创建自动完成扩展', () => {
@@ -92,7 +97,7 @@ describe('codemirror-extensions', () => {
         name: 'testVar',
         source: 'global',
         valuePreview: 'preview value',
-        boost: 2
+        boost: 2,
       })
 
       expect(option.label).toBe('testVar')
@@ -102,14 +107,18 @@ describe('codemirror-extensions', () => {
     })
 
     it('应该为不同来源设置正确的补全选项', () => {
-      const sources: Array<'global' | 'temporary' | 'predefined'> = ['global', 'temporary', 'predefined']
+      const sources: Array<'global' | 'temporary' | 'predefined'> = [
+        'global',
+        'temporary',
+        'predefined',
+      ]
 
-      sources.forEach(source => {
+      sources.forEach((source) => {
         const option = createVariableCompletionOption({
           name: 'var',
           source,
           valuePreview: 'value',
-          boost: 1
+          boost: 1,
         })
 
         expect(option).toBeDefined()
@@ -122,7 +131,7 @@ describe('codemirror-extensions', () => {
         name: 'testVar',
         source: 'global',
         valuePreview: 'value',
-        boost: 1
+        boost: 1,
       })
 
       expect(option.apply).toBeDefined()
@@ -138,7 +147,7 @@ describe('codemirror-extensions', () => {
       missingVariable: '该变量尚未定义',
       addToTemporary: '添加到临时变量',
       emptyValue: '(空)',
-      valuePreview: (value: string) => `值: ${value}`
+      valuePreview: (value: string) => `值: ${value}`,
     }
 
     it('应该创建悬浮提示扩展', () => {
@@ -157,7 +166,7 @@ describe('codemirror-extensions', () => {
         borderRadius: '8px',
         textColor: '#333333',
         primaryColor: '#007bff',
-        primaryColorHover: '#0056b3'
+        primaryColorHover: '#0056b3',
       }
 
       const extension = missingVariableTooltip(onAddVariable, mockLabels, customTheme)
@@ -180,7 +189,7 @@ describe('codemirror-extensions', () => {
       textColor3: '#999999',
       primaryColor: '#18a058',
       primaryColorSuppl: '#36ad6a',
-      hoverColor: '#f5f5f5'
+      hoverColor: '#f5f5f5',
     }
 
     it('应该创建主题扩展', () => {
@@ -194,7 +203,7 @@ describe('codemirror-extensions', () => {
       const customThemeVars = {
         ...mockThemeVars,
         primaryColor: '#ff0000',
-        cardColor: '#000000'
+        cardColor: '#000000',
       }
 
       const extension = createThemeExtension(customThemeVars)
@@ -212,7 +221,7 @@ describe('codemirror-extensions', () => {
         missingVariable: '缺失变量',
         addToTemporary: '添加到临时变量',
         emptyValue: '(空)',
-        valuePreview: (value: string) => `值: ${value}`
+        valuePreview: (value: string) => `值: ${value}`,
       }
 
       const mockThemeVars = {
@@ -221,7 +230,7 @@ describe('codemirror-extensions', () => {
         textColor3: '#999999',
         primaryColor: '#18a058',
         primaryColorSuppl: '#36ad6a',
-        hoverColor: '#f5f5f5'
+        hoverColor: '#f5f5f5',
       }
 
       const getVariables = vi.fn().mockReturnValue([])

@@ -28,6 +28,7 @@
 **目标**：将所有服务的单例导出模式（`export const service = new Service()`) 改为工厂函数模式 (`export function createService()`)。
 
 **步骤**：
+
 1.  [x] **`services/storage/factory.ts`**: 移除 `storageProvider` 单例导出。
 2.  [x] **`services/model/manager.ts`**: 移除 `modelManager` 单例导出，并使其工厂函数接收依赖。
 3.  [x] **`services/template/manager.ts`**: 移除 `templateManager` 单例导出，并使其工厂函数接收依赖。
@@ -36,13 +37,13 @@
 
 **期间发现的偏差及处理**：
 
-*   **`TemplateManager` 的深层依赖**：
-    *   **发现**：`TemplateManager` 依赖另一个未被发现的单例 `templateLanguageService`。
-    *   **措施**：对 `services/template/languageService.ts` 进行了相同的重构，移除了单例并创建了 `createTemplateLanguageService` 工厂函数。相应地，`createTemplateManager` 现在接收 `storageProvider` 和 `languageService` 两个实例作为参数。
+- **`TemplateManager` 的深层依赖**：
+  - **发现**：`TemplateManager` 依赖另一个未被发现的单例 `templateLanguageService`。
+  - **措施**：对 `services/template/languageService.ts` 进行了相同的重构，移除了单例并创建了 `createTemplateLanguageService` 工厂函数。相应地，`createTemplateManager` 现在接收 `storageProvider` 和 `languageService` 两个实例作为参数。
 
-*   **`index.ts` 的导出清理**：
-    *   **发现**：`index.ts` 导出了属于应用层的 `electron-proxy.ts` 文件。
-    *   **措施**：清理了 `index.ts`，移除了这些不应由 `core` 包暴露的导出项，使 API 更纯净。
+- **`index.ts` 的导出清理**：
+  - **发现**：`index.ts` 导出了属于应用层的 `electron-proxy.ts` 文件。
+  - **措施**：清理了 `index.ts`，移除了这些不应由 `core` 包暴露的导出项，使 API 更纯净。
 
 ### 阶段二：净化 UI 包，停止导出服务 (已完成) ✅
 
@@ -57,13 +58,13 @@
 
 7.  **文件**: `packages/ui/src/composables/useAppInitializer.ts` (新建)
     - [x] **创建文件**并实现以下逻辑：
-        - 导入所有 `create...` 工厂函数和 Electron 代理类。
-        - 定义 `services` 和 `isInitializing` refs。
-        - 在 `onMounted` 中，通过 `isRunningInElectron()` 判断环境：
-            - **如果为 Electron**：创建所有服务的 **代理** 实例。
-            - **如果为 Web**：创建所有 **真实** 服务实例（包括 `storageProvider`）。
-            - 将所有服务实例聚合到 `services` ref 中。
-            - 更新 `isInitializing` 状态。
+      - 导入所有 `create...` 工厂函数和 Electron 代理类。
+      - 定义 `services` 和 `isInitializing` refs。
+      - 在 `onMounted` 中，通过 `isRunningInElectron()` 判断环境：
+        - **如果为 Electron**：创建所有服务的 **代理** 实例。
+        - **如果为 Web**：创建所有 **真实** 服务实例（包括 `storageProvider`）。
+        - 将所有服务实例聚合到 `services` ref 中。
+        - 更新 `isInitializing` 状态。
 
 ### 阶段四：重构应用入口 (`App.vue`) (已完成) ✅
 
@@ -75,10 +76,10 @@
 
 ## 4. 预期成果 (已达成)
 
--   [x] **无"幽灵"服务**：`Dexie` 将只在Web环境下被创建一次。
--   [x] **清晰的数据流**：依赖关系变为 `useAppInitializer` -> `App.vue` -> `Components`，单向且清晰。
--   [x] **健壮的初始化**：所有服务都在正确的时机、以正确的配置被创建。
--   [x] **彻底解决状态不一致问题**：因为服务实例的创建逻辑是统一且唯一的。
+- [x] **无"幽灵"服务**：`Dexie` 将只在Web环境下被创建一次。
+- [x] **清晰的数据流**：依赖关系变为 `useAppInitializer` -> `App.vue` -> `Components`，单向且清晰。
+- [x] **健壮的初始化**：所有服务都在正确的时机、以正确的配置被创建。
+- [x] **彻底解决状态不一致问题**：因为服务实例的创建逻辑是统一且唯一的。
 
 这个计划将从根本上解决我们发现的架构问题，为项目未来的可维护性和可扩展性奠定坚实的基础。
 
@@ -119,8 +120,8 @@
 2.  **文件**: `packages/core/src/services/model/manager.ts`
     - [x] **删除** (约 L427): `export const modelManager = ...`
     - [x] **修改** (约 L428): `export function createModelManager(storageProvider?: IStorageProvider): ModelManager`
-        - **改为**: `export function createModelManager(storageProvider: IStorageProvider): ModelManager`
-        - **移除**: `storageProvider = storageProvider || StorageFactory.createDefault();`
+      - **改为**: `export function createModelManager(storageProvider: IStorageProvider): ModelManager`
+      - **移除**: `storageProvider = storageProvider || StorageFactory.createDefault();`
 
 3.  **文件**: `packages/core/src/services/template/manager.ts`
     - [x] **删除** (约 L300): `export const templateManager = ...`
@@ -137,39 +138,39 @@
 
 6.  **文件**: `packages/ui/src/index.ts`
     - [x] **删除** (约 L45-53):
-        ```typescript
-        export {
-            templateManager,
-            modelManager,
-            historyManager,
-            dataManager,
-            storageProvider,
-            createLLMService,
-            createPromptService
-        } from '@prompt-optimizer/core'
-        ```
+      ```typescript
+      export {
+        templateManager,
+        modelManager,
+        historyManager,
+        dataManager,
+        storageProvider,
+        createLLMService,
+        createPromptService,
+      } from '@prompt-optimizer/core'
+      ```
     - [x] **新增**: 导出 `createDataManager` 等其他必要的工厂函数。
 
 ### **阶段三：创建统一的应用初始化器**
 
 7.  **文件**: `packages/ui/src/composables/useAppInitializer.ts` (新建)
     - [x] **创建文件**并实现以下逻辑：
-        - 导入所有 `create...` 工厂函数和 Electron 代理类。
-        - 定义 `services` 和 `isInitializing` refs。
-        - 在 `onMounted` 中，通过 `isRunningInElectron()` 判断环境：
-            - **如果为 Electron**：创建所有服务的 **代理** 实例。
-            - **如果为 Web**：创建所有 **真实** 服务实例（包括 `storageProvider`）。
-            - 将所有服务实例聚合到 `services` ref 中。
-            - 更新 `isInitializing` 状态。
+      - 导入所有 `create...` 工厂函数和 Electron 代理类。
+      - 定义 `services` 和 `isInitializing` refs。
+      - 在 `onMounted` 中，通过 `isRunningInElectron()` 判断环境：
+        - **如果为 Electron**：创建所有服务的 **代理** 实例。
+        - **如果为 Web**：创建所有 **真实** 服务实例（包括 `storageProvider`）。
+        - 将所有服务实例聚合到 `services` ref 中。
+        - 更新 `isInitializing` 状态。
 
 ### **阶段四：重构应用入口**
 
 8.  **文件**: `packages/web/src/App.vue` & `packages/extension/src/App.vue`
     - [x] **移除**: 所有对 `modelManager`, `templateManager`, `historyManager` 等服务单例的导入。
     - [x] **替换**:
-        - **旧**: `import { modelManager, ... } from '@prompt-optimizer/ui'`
-        - **新**: `import { useAppInitializer } from '@prompt-optimizer/ui'`
+      - **旧**: `import { modelManager, ... } from '@prompt-optimizer/ui'`
+      - **新**: `import { useAppInitializer } from '@prompt-optimizer/ui'`
     - [x] **调用**: `const { services, isInitializing } = useAppInitializer();`
     - [x] **包裹**: 在模板的根元素上使用 `v-if="!isInitializing"`，并添加一个 `v-else` 的加载状态。
     - [x] **传递**: 将 `services.value` 作为 props 传递给需要的子组件，或在 `composable` 中使用 `services.value.modelManager` 等。
-    - [x] **清理**: 删除 `onMounted` 中手动的初始化逻辑。 
+    - [x] **清理**: 删除 `onMounted` 中手动的初始化逻辑。

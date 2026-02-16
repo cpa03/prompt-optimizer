@@ -12,17 +12,17 @@
 
 ## 测试分层
 
-1) **core 单元/集成（Vitest）**
+1. **core 单元/集成（Vitest）**
 
 - 覆盖：VCR、LLM mock、流式处理等“可纯函数化/可模拟”的逻辑层能力
 - 目标：快速、稳定、可在 CI 强制回放（`VCR_MODE=replay`）
 
-2) **ui 单元/集成（Vitest + Vue Test Utils）**
+2. **ui 单元/集成（Vitest + Vue Test Utils）**
 
 - 覆盖：组合式逻辑（composables）、store 与 UI 之间的数据流、关键交互
 - 关键门禁：任何 `console.error/warn`、`unhandledrejection`、`window error` 都应 fail 测试
 
-3) **浏览器 E2E（Playwright）**
+3. **浏览器 E2E（Playwright）**
 
 - 覆盖：真实浏览器下的启动、路由、关键对话框/操作流程
 - 关键门禁：任何 `pageerror`、`console error/warn` 都应 fail 测试
@@ -76,4 +76,3 @@
 
 - `pnpm test:gate`：pre-commit 运行的 fast gate
 - `pnpm test:gate:full`：CI 或本地手动运行（含 E2E/视觉回归等更重的用例）
-

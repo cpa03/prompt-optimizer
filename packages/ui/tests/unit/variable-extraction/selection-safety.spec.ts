@@ -22,38 +22,38 @@ describe('selection-safety', () => {
     it('应该识别占位符外部的位置', () => {
       const text = 'Hello {{name}}'
 
-      expect(isInsideVariablePlaceholder(text, 0)).toBe(false)  // 'H'
-      expect(isInsideVariablePlaceholder(text, 5)).toBe(false)  // ' '
+      expect(isInsideVariablePlaceholder(text, 0)).toBe(false) // 'H'
+      expect(isInsideVariablePlaceholder(text, 5)).toBe(false) // ' '
     })
 
     it('应该识别占位符内部的位置', () => {
       const text = 'Hello {{name}}'
 
-      expect(isInsideVariablePlaceholder(text, 8)).toBe(true)   // 'n' in name
-      expect(isInsideVariablePlaceholder(text, 11)).toBe(true)  // 'e' in name
+      expect(isInsideVariablePlaceholder(text, 8)).toBe(true) // 'n' in name
+      expect(isInsideVariablePlaceholder(text, 11)).toBe(true) // 'e' in name
     })
 
     it('应该正确处理开始括号位置', () => {
       const text = 'Hello {{name}}'
 
-      expect(isInsideVariablePlaceholder(text, 6)).toBe(false)  // 第一个 '{'
-      expect(isInsideVariablePlaceholder(text, 7)).toBe(false)  // 第二个 '{'
+      expect(isInsideVariablePlaceholder(text, 6)).toBe(false) // 第一个 '{'
+      expect(isInsideVariablePlaceholder(text, 7)).toBe(false) // 第二个 '{'
     })
 
     it('应该正确处理结束括号位置', () => {
       const text = 'Hello {{name}}'
 
-      expect(isInsideVariablePlaceholder(text, 12)).toBe(true)  // 第一个 '}'
-      expect(isInsideVariablePlaceholder(text, 13)).toBe(true)  // 第二个 '}'
+      expect(isInsideVariablePlaceholder(text, 12)).toBe(true) // 第一个 '}'
+      expect(isInsideVariablePlaceholder(text, 13)).toBe(true) // 第二个 '}'
       expect(isInsideVariablePlaceholder(text, 14)).toBe(false) // 结束后
     })
 
     it('应该处理多个变量', () => {
       const text = '{{var1}} and {{var2}}'
 
-      expect(isInsideVariablePlaceholder(text, 3)).toBe(true)   // var1 内部
-      expect(isInsideVariablePlaceholder(text, 9)).toBe(false)  // 两个变量之间
-      expect(isInsideVariablePlaceholder(text, 16)).toBe(true)  // var2 内部
+      expect(isInsideVariablePlaceholder(text, 3)).toBe(true) // var1 内部
+      expect(isInsideVariablePlaceholder(text, 9)).toBe(false) // 两个变量之间
+      expect(isInsideVariablePlaceholder(text, 16)).toBe(true) // var2 内部
     })
 
     it('应该处理嵌套的括号', () => {
@@ -195,11 +195,7 @@ describe('selection-safety', () => {
       return openBraces > closeBraces
     }
 
-    const isOutsideVariableRange = (
-      fullText: string,
-      start: number,
-      length: number
-    ): boolean => {
+    const isOutsideVariableRange = (fullText: string, start: number, length: number): boolean => {
       if (length <= 0) return false
       if (isInsideVariablePlaceholder(fullText, start)) {
         return false
@@ -208,10 +204,7 @@ describe('selection-safety', () => {
       return !isInsideVariablePlaceholder(fullText, endIndex)
     }
 
-    const countOccurrencesOutsideVariables = (
-      fullText: string,
-      searchText: string
-    ): number => {
+    const countOccurrencesOutsideVariables = (fullText: string, searchText: string): number => {
       if (!searchText || !searchText.trim()) return 0
 
       let count = 0
@@ -301,11 +294,7 @@ describe('selection-safety', () => {
       return openBraces > closeBraces
     }
 
-    const isOutsideVariableRange = (
-      fullText: string,
-      start: number,
-      length: number
-    ): boolean => {
+    const isOutsideVariableRange = (fullText: string, start: number, length: number): boolean => {
       if (length <= 0) return false
       if (isInsideVariablePlaceholder(fullText, start)) {
         return false
@@ -330,9 +319,7 @@ describe('selection-safety', () => {
 
         if (isOutsideVariableRange(result, index, searchText.length)) {
           result =
-            result.substring(0, index) +
-            replaceWith +
-            result.substring(index + searchText.length)
+            result.substring(0, index) + replaceWith + result.substring(index + searchText.length)
           position = index + replaceWith.length
         } else {
           position = index + 1
@@ -421,9 +408,9 @@ describe('selection-safety', () => {
 
       const text = '{{var1}}{{var2}}{{var3}}'
 
-      expect(isInsideVariablePlaceholder(text, 3)).toBe(true)   // var1 内部
-      expect(isInsideVariablePlaceholder(text, 8)).toBe(false)  // var1 和 var2 之间
-      expect(isInsideVariablePlaceholder(text, 11)).toBe(true)  // var2 内部
+      expect(isInsideVariablePlaceholder(text, 3)).toBe(true) // var1 内部
+      expect(isInsideVariablePlaceholder(text, 8)).toBe(false) // var1 和 var2 之间
+      expect(isInsideVariablePlaceholder(text, 11)).toBe(true) // var2 内部
     })
 
     it('应该处理变量占位符在文本开头', () => {

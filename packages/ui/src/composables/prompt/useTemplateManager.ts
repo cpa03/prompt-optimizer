@@ -25,9 +25,7 @@ export interface TemplateManagerHooks {
  * IMPORTANT：
  * - 禁止在此处读写 TEMPLATE_SELECTION_KEYS（避免双真源）
  */
-export function useTemplateManager(
-  _services: unknown
-): TemplateManagerHooks {
+export function useTemplateManager(_services: unknown): TemplateManagerHooks {
   void _services
 
   const state = reactive<TemplateManagerHooks>({

@@ -458,10 +458,7 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
         isCompareMode: isCompareMode.value,
         lastActiveAt: lastActiveAt.value,
       }
-      await $services.preferenceService.set(
-        'session/v1/pro-multi',
-        sessionState
-      )
+      await $services.preferenceService.set('session/v1/pro-multi', sessionState)
     } catch (error) {
       console.error('[ProMultiMessageSession] 保存会话失败:', error)
     }
@@ -478,10 +475,7 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
     }
 
     try {
-      const saved = await $services.preferenceService.get<unknown>(
-        'session/v1/pro-multi',
-        null
-      )
+      const saved = await $services.preferenceService.get<unknown>('session/v1/pro-multi', null)
 
       if (saved) {
         const parsed =
@@ -491,19 +485,23 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
         conversationMessagesSnapshot.value = Array.isArray(parsed.conversationMessagesSnapshot)
           ? (parsed.conversationMessagesSnapshot as ConversationMessage[])
           : []
-        selectedMessageId.value = typeof parsed.selectedMessageId === 'string' ? parsed.selectedMessageId : ''
-        optimizedPrompt.value = typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
+        selectedMessageId.value =
+          typeof parsed.selectedMessageId === 'string' ? parsed.selectedMessageId : ''
+        optimizedPrompt.value =
+          typeof parsed.optimizedPrompt === 'string' ? parsed.optimizedPrompt : ''
         reasoning.value = typeof parsed.reasoning === 'string' ? parsed.reasoning : ''
         chainId.value = typeof parsed.chainId === 'string' ? parsed.chainId : ''
         versionId.value = typeof parsed.versionId === 'string' ? parsed.versionId : ''
 
         temporaryVariables.value = sanitizeVariableRecord(parsed.temporaryVariables)
-        messageChainMap.value = (parsed.messageChainMap && typeof parsed.messageChainMap === 'object')
-          ? (parsed.messageChainMap as Record<string, string>)
-          : {}
-        testResults.value = (parsed.testResults && typeof parsed.testResults === 'object')
-          ? (parsed.testResults as TestResults)
-          : null
+        messageChainMap.value =
+          parsed.messageChainMap && typeof parsed.messageChainMap === 'object'
+            ? (parsed.messageChainMap as Record<string, string>)
+            : {}
+        testResults.value =
+          parsed.testResults && typeof parsed.testResults === 'object'
+            ? (parsed.testResults as TestResults)
+            : null
 
         // ==================== v2: 多列 variants ====================
         // 默认状态
@@ -518,7 +516,10 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
               ? (layoutRecord['mainSplitLeftPct'] as number)
               : defaultState.layout.mainSplitLeftPct
           const countRaw = layoutRecord['testColumnCount']
-          const count: TestColumnCount = countRaw === 2 || countRaw === 3 || countRaw === 4 ? countRaw : defaultState.layout.testColumnCount
+          const count: TestColumnCount =
+            countRaw === 2 || countRaw === 3 || countRaw === 4
+              ? countRaw
+              : defaultState.layout.testColumnCount
           layout.value = {
             mainSplitLeftPct: Math.min(50, Math.max(25, Math.round(pct))),
             testColumnCount: count,
@@ -566,7 +567,8 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
             if (!one || typeof one !== 'object') return defaultState.testVariantResults[id]
             const oneRecord = one as Record<string, unknown>
             const r = typeof oneRecord['result'] === 'string' ? (oneRecord['result'] as string) : ''
-            const reasoning = typeof oneRecord['reasoning'] === 'string' ? (oneRecord['reasoning'] as string) : ''
+            const reasoning =
+              typeof oneRecord['reasoning'] === 'string' ? (oneRecord['reasoning'] as string) : ''
             return { result: r, reasoning }
           }
 
@@ -597,7 +599,8 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
         const rawFingerprints = parsed.testVariantLastRunFingerprint
         if (rawFingerprints && typeof rawFingerprints === 'object') {
           const fingerprintRecord = rawFingerprints as Record<string, unknown>
-          const pick = (id: TestVariantId) => (typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : '')
+          const pick = (id: TestVariantId) =>
+            typeof fingerprintRecord[id] === 'string' ? (fingerprintRecord[id] as string) : ''
           testVariantLastRunFingerprint.value = {
             a: pick('a'),
             b: pick('b'),
@@ -614,11 +617,18 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
             ? (parsed.evaluationResults as PersistedEvaluationResults)
             : {}),
         }
-        selectedOptimizeModelKey.value = typeof parsed.selectedOptimizeModelKey === 'string' ? parsed.selectedOptimizeModelKey : ''
-        selectedTestModelKey.value = typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
-        selectedTemplateId.value = typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
-        selectedIterateTemplateId.value = typeof parsed.selectedIterateTemplateId === 'string' ? parsed.selectedIterateTemplateId : null
-        isCompareMode.value = typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
+        selectedOptimizeModelKey.value =
+          typeof parsed.selectedOptimizeModelKey === 'string' ? parsed.selectedOptimizeModelKey : ''
+        selectedTestModelKey.value =
+          typeof parsed.selectedTestModelKey === 'string' ? parsed.selectedTestModelKey : ''
+        selectedTemplateId.value =
+          typeof parsed.selectedTemplateId === 'string' ? parsed.selectedTemplateId : null
+        selectedIterateTemplateId.value =
+          typeof parsed.selectedIterateTemplateId === 'string'
+            ? parsed.selectedIterateTemplateId
+            : null
+        isCompareMode.value =
+          typeof parsed.isCompareMode === 'boolean' ? parsed.isCompareMode : true
         lastActiveAt.value = Date.now()
 
         // 如果 variants 的 modelKey 为空，尝试用 legacy selectedTestModelKey 填充一次
