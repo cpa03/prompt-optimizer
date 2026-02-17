@@ -125,7 +125,6 @@ jobs:
           Phase 0 → Phase 1 → Phase 2 → Phase 3
 
           You MUST fully complete one phase before moving to the next.
-          If a phase is activated, all lower phases MUST NOT run.
 
           ========================
           PHASE 0 — ENTRY DECISION
@@ -355,7 +354,7 @@ jobs:
             ----------------------------------------------------------------
 
             PHASE 1 OUTPUT (MANDATORY)
-            - **Create github issues from all findings**
+            - **Create issues from all findings**
               - Issue title
               - Issue body contain: Evaluation date, Domain score table relevant to issue created, Criteria-level breakdown, Evidence per criterion, file affected
               - Issue label: Category and priority
@@ -416,11 +415,7 @@ jobs:
              - Action
              - Target
              - Result
-          4. Final state:
-             - idle
-             - waiting for human review
-             - blocked (with reason)
-
+             
           ========================
           FAIL-SAFE RULE
           ========================
