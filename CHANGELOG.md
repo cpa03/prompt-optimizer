@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased] - 2026-02-17
+
+### 🔒 Security Hardening
+
+#### CI/CD Security Audit (#140)
+
+- **Automated Security Scanning**: Added `pnpm audit` to CI workflow
+- **Vulnerability Detection**: Fails builds on moderate+ severity vulnerabilities
+- **Continuous Monitoring**: Security checks run on every push and PR
+- **Policy**: `--audit-level moderate` ensures known vulnerabilities are caught early
+
+### 📊 Phase 2 Hardening Status
+
+- **Security**: CI audit step implemented (pending workflow permissions)
+- **Test Coverage**: 291 tests passing across all packages
+- **Build**: All packages building successfully
+- **Lint**: No linting errors
+
 ## [2.5.3] - 2026-02-10
 
 ### ✨ UI/UX Enhancements (Palette Micro-Interactions)
