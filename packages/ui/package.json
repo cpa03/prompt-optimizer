@@ -27,8 +27,8 @@
     "build:win": "vite build",
     "test": "vitest run",
     "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint src --ext .ts,.vue --no-eslintrc --config .eslintrc.json",
-    "lint:fix": "eslint src --ext .ts,.vue --no-eslintrc --config .eslintrc.json --fix"
+    "lint": "eslint src --ext .ts,.vue --config .eslintrc.json",
+    "lint:fix": "eslint src --ext .ts,.vue --config .eslintrc.json --fix"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.19.0",
