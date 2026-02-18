@@ -141,7 +141,7 @@ const triggerFavoriteAnimation = () => {
   isAnimating.value = true
   setTimeout(() => {
     isAnimating.value = false
-  }, 400)
+  }, TIME_CONSTANTS.ICON_BOUNCE_MS)
 }
 
 // 表单数据

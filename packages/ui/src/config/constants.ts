@@ -56,6 +56,13 @@ export const TIME_CONSTANTS = {
   ANIMATION_SHORT_DELAY: getViteEnvInt('VITE_ANIMATION_SHORT_DELAY', 200), // For quick UI transitions like hiding popups
   ANIMATION_THEME_SWITCH: getViteEnvInt('VITE_ANIMATION_THEME_SWITCH', 400), // Theme toggle animation duration
 
+  // Button/touch feedback
+  PRESS_FEEDBACK_MS: getViteEnvInt('VITE_PRESS_FEEDBACK_MS', 150), // Duration for press feedback animation
+  ICON_BOUNCE_MS: getViteEnvInt('VITE_ICON_BOUNCE_MS', 400), // Duration for icon bounce animation
+
+  // Item animations
+  ITEM_APPEAR_DELAY_MS: getViteEnvInt('VITE_ITEM_APPEAR_DELAY_MS', 600), // Delay before marking item as seen (for animation)
+
   // Scroll listener delays
   SCROLL_LISTENER_DELAY_MS: getViteEnvInt('VITE_SCROLL_LISTENER_DELAY_MS', 100),
 } as const

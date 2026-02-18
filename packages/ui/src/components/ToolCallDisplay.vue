@@ -105,6 +105,7 @@ import {
   NAlert,
 } from 'naive-ui'
 import type { ToolCallResult } from '@prompt-optimizer/core'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -157,7 +158,7 @@ watch(
           // Mark as seen after animation duration
           setTimeout(() => {
             seenToolCallIds.value.add(id)
-          }, 600)
+          }, TIME_CONSTANTS.ITEM_APPEAR_DELAY_MS)
         }
       })
     }
