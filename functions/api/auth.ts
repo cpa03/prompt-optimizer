@@ -8,6 +8,89 @@ const COOKIE_CONFIG = {
   SAME_SITE_POLICY: 'Strict',
 }
 
+const RATE_LIMIT = {
+  MAX_ATTEMPTS: 5,
+  WINDOW_MS: 60000,
+  BLOCK_DURATION_MS: 300000,
+}
+
+declare global {
+  interface AuthRateLimitStore {
+    attempts: Map<string, { count: number; firstAttempt: number; blockedUntil?: number }>
+  }
+}
+
+const rateLimitStore: AuthRateLimitStore = {
+  attempts: new Map(),
+}
+
+function generateRequestId(): string {
+  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+}
+
+function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number; remaining?: number } {
+  const now = Date.now()
+  const entry = rateLimitStore.attempts.get(ip)
+
+  if (entry?.blockedUntil && now < entry.blockedUntil) {
+    return { allowed: false, retryAfter: Math.ceil((entry.blockedUntil - now) / 1000) }
+  }
+
+  if (entry?.blockedUntil && now >= entry.blockedUntil) {
+    rateLimitStore.attempts.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (!entry) {
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.attempts.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS - entry.count }
+}
+
+function recordFailedAttempt(ip: string): void {
+  const now = Date.now()
+  const entry = rateLimitStore.attempts.get(ip)
+
+  if (!entry) {
+    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
+  } else if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
+  } else {
+    entry.count++
+    if (entry.count >= RATE_LIMIT.MAX_ATTEMPTS) {
+      entry.blockedUntil = now + RATE_LIMIT.BLOCK_DURATION_MS
+    }
+  }
+
+  if (rateLimitStore.attempts.size > 10000) {
+    const cutoff = now - RATE_LIMIT.WINDOW_MS - RATE_LIMIT.BLOCK_DURATION_MS
+    for (const [key, val] of rateLimitStore.attempts) {
+      if (val.firstAttempt < cutoff) {
+        rateLimitStore.attempts.delete(key)
+      }
+    }
+  }
+}
+
+function clearRateLimit(ip: string): void {
+  rateLimitStore.attempts.delete(ip)
+}
+
+function getClientIP(request: Request): string {
+  return (
+    request.headers.get('CF-Connecting-IP') ||
+    request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
+    request.headers.get('X-Real-IP') ||
+    'unknown'
+  )
+}
+
 function timingSafeEqual(a: string, b: string): boolean {
   if (typeof a !== 'string' || typeof b !== 'string') {
     return false
@@ -50,13 +133,21 @@ const securityHeaders = {
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context
+  const requestId = generateRequestId()
   const origin = request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(origin)
+  const clientIP = getClientIP(request)
+
+  const baseHeaders = {
+    ...corsHeaders,
+    ...securityHeaders,
+    'X-Request-ID': requestId,
+  }
 
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
-      headers: { ...corsHeaders, ...securityHeaders },
+      headers: baseHeaders,
     })
   }
 
@@ -72,14 +163,32 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          ...corsHeaders,
-          ...securityHeaders,
+          ...baseHeaders,
         },
       }
     )
   }
 
   if (request.method === 'POST') {
+    const rateLimitResult = checkRateLimit(clientIP)
+    if (!rateLimitResult.allowed) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Too many attempts. Please try again later.',
+          retryAfter: rateLimitResult.retryAfter,
+        }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': String(rateLimitResult.retryAfter || 60),
+            ...baseHeaders,
+          },
+        }
+      )
+    }
+
     try {
       const body = (await request.json()) as { password?: string; action?: string }
 
@@ -93,8 +202,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             status: 400,
             headers: {
               'Content-Type': 'application/json',
-              ...corsHeaders,
-              ...securityHeaders,
+              ...baseHeaders,
             },
           }
         )
@@ -113,14 +221,14 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               status: 400,
               headers: {
                 'Content-Type': 'application/json',
-                ...corsHeaders,
-                ...securityHeaders,
+                ...baseHeaders,
               },
             }
           )
         }
 
         if (timingSafeEqual(password!, accessPassword)) {
+          clearRateLimit(clientIP)
           const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
           const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=authenticated; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
 
@@ -134,23 +242,25 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               headers: {
                 'Content-Type': 'application/json',
                 'Set-Cookie': cookieValue,
-                ...corsHeaders,
-                ...securityHeaders,
+                ...baseHeaders,
               },
             }
           )
         } else {
+          recordFailedAttempt(clientIP)
+          const remaining = checkRateLimit(clientIP).remaining || 0
+
           return new Response(
             JSON.stringify({
               success: false,
               message: 'Invalid password',
+              attemptsRemaining: remaining,
             }),
             {
               status: 401,
               headers: {
                 'Content-Type': 'application/json',
-                ...corsHeaders,
-                ...securityHeaders,
+                ...baseHeaders,
               },
             }
           )
@@ -166,8 +276,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            ...corsHeaders,
-            ...securityHeaders,
+            ...baseHeaders,
           },
         }
       )
@@ -176,8 +285,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         status: 400,
         headers: {
           'Content-Type': 'application/json',
-          ...corsHeaders,
-          ...securityHeaders,
+          ...baseHeaders,
         },
       })
     }
@@ -188,6 +296,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     const action = url.searchParams.get('action')
 
     if (action === 'logout') {
+      clearRateLimit(clientIP)
       const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`
 
       return new Response(
@@ -200,8 +309,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
           headers: {
             'Content-Type': 'application/json',
             'Set-Cookie': cookieValue,
-            ...corsHeaders,
-            ...securityHeaders,
+            ...baseHeaders,
           },
         }
       )
@@ -216,8 +324,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         status: 400,
         headers: {
           'Content-Type': 'application/json',
-          ...corsHeaders,
-          ...securityHeaders,
+          ...baseHeaders,
         },
       }
     )
@@ -227,8 +334,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     status: 405,
     headers: {
       'Content-Type': 'application/json',
-      ...corsHeaders,
-      ...securityHeaders,
+      ...baseHeaders,
     },
   })
 }

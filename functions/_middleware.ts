@@ -185,6 +185,9 @@ function generateAuthPage(isChinese: boolean): string {
 </html>`
 }
 
+const CONTENT_SECURITY_POLICY =
+  "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
 const EXCLUDED_PATHS = ['/api/', '/_next/static', '/_next/image', '/favicon.ico', '/assets/']
 
 function shouldExcludePath(pathname: string): boolean {
@@ -245,6 +248,10 @@ export async function onRequest(context: {
       'Cache-Control': COOKIE_CONFIG.CACHE_CONTROL,
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Permissions-Policy':
+        'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+      'Content-Security-Policy': CONTENT_SECURITY_POLICY,
     },
   })
 }
