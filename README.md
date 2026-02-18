@@ -345,7 +345,7 @@ pnpm dev:fresh        # 完整重置并重新启动开发环境
 - [ ] 支持工作区/项目管理
 - [ ] 支持提示词收藏和模板管理
 
-详细的项目状态可查看 [项目状态文档](docs/project-status.md)
+详细的项目状态可查看 [项目状态文档](docs/project/project-status.md)
 
 ## 📖 相关文档
 

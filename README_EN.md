@@ -350,7 +350,7 @@ pnpm dev:fresh        # Complete reset and restart development environment
 - [ ] Support for workspace/project management
 - [ ] Support for prompt favorites and template management
 
-For detailed project status, see [Project Status Document](docs/project-status.md)
+For detailed project status, see [Project Status Document](docs/project/project-status.md)
 
 ## 📖 Related Documentation
 
