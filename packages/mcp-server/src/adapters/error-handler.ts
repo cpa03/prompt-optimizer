@@ -19,46 +19,52 @@ export const MCP_ERROR_CODES = {
 export class MCPErrorHandler {
   /**
    * 转换 Core 模块错误为 MCP 错误
+   * 支持处理 Error 对象和非 Error 值
    */
-  static convertCoreError(error: Error): McpError {
-    // 优化相关错误
+  static convertCoreError(error: Error | unknown): McpError {
+    const errorName = error instanceof Error ? error.name || 'Error' : 'UnknownError'
+    const errorMessage = error instanceof Error ? error.message || 'Unknown error' : String(error)
+
+    if (!(error instanceof Error)) {
+      return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `内部错误: ${errorMessage}`, {
+        originalError: errorName,
+      })
+    }
+
     if (
-      error.name.includes('OptimizationError') ||
-      error.name.includes('IterationError') ||
-      error.name.includes('TestError')
+      errorName.includes('OptimizationError') ||
+      errorName.includes('IterationError') ||
+      errorName.includes('TestError')
     ) {
       return new McpError(
         MCP_ERROR_CODES.PROMPT_OPTIMIZATION_FAILED,
-        `提示词优化失败: ${error.message}`,
-        { originalError: error.name }
+        `提示词优化失败: ${errorMessage}`,
+        { originalError: errorName }
       )
     }
 
-    // 参数验证错误
     if (
-      error.message.includes('必须是') ||
-      error.message.includes('不能为空') ||
-      error.message.includes('过长')
+      errorMessage.includes('必须是') ||
+      errorMessage.includes('不能为空') ||
+      errorMessage.includes('过长')
     ) {
-      return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, error.message, {
-        originalError: error.name,
+      return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, errorMessage, {
+        originalError: errorName,
       })
     }
 
-    // 配置相关错误
     if (
-      error.message.includes('Model') ||
-      error.message.includes('API key') ||
-      error.message.includes('Template')
+      errorMessage.includes('Model') ||
+      errorMessage.includes('API key') ||
+      errorMessage.includes('Template')
     ) {
-      return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `配置错误: ${error.message}`, {
-        originalError: error.name,
+      return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `配置错误: ${errorMessage}`, {
+        originalError: errorName,
       })
     }
 
-    // 默认内部错误
-    return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `内部错误: ${error.message}`, {
-      originalError: error.name,
+    return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `内部错误: ${errorMessage}`, {
+      originalError: errorName,
     })
   }
 

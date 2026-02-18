@@ -88,5 +88,43 @@ describe('MCP Server Tools', () => {
       expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
       expect(mcpError.message).toContain('测试内部错误')
     })
+
+    it('应该正确处理非Error对象', () => {
+      const mcpError = MCPErrorHandler.convertCoreError('字符串错误')
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+      expect(mcpError.message).toContain('字符串错误')
+    })
+
+    it('应该正确处理null值', () => {
+      const mcpError = MCPErrorHandler.convertCoreError(null)
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+      expect(mcpError.message).toContain('内部错误')
+    })
+
+    it('应该正确处理undefined值', () => {
+      const mcpError = MCPErrorHandler.convertCoreError(undefined)
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+      expect(mcpError.message).toContain('内部错误')
+    })
+
+    it('应该正确处理空name属性的Error', () => {
+      const error = new Error('测试错误')
+      error.name = ''
+      const mcpError = MCPErrorHandler.convertCoreError(error)
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+      expect(mcpError.message).toContain('测试错误')
+    })
+
+    it('应该正确处理配置相关错误', () => {
+      const error = new Error('Model not found')
+      const mcpError = MCPErrorHandler.convertCoreError(error)
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+      expect(mcpError.message).toContain('配置错误')
+    })
   })
 })
