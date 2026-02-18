@@ -3,6 +3,64 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { ResponsiveConfig } from '../../types/components'
 import { BREAKPOINTS, SPACING } from '../../config/constants'
 
+type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+
+const GRID_CONFIG_MAP: Record<Breakpoint, { cols: number; xGap: number; yGap: number }> = {
+  xs: { cols: 1, xGap: SPACING.SM, yGap: SPACING.SM },
+  sm: { cols: 1, xGap: SPACING.MD, yGap: SPACING.MD },
+  md: { cols: 2, xGap: SPACING.LG, yGap: SPACING.LG },
+  lg: { cols: 2, xGap: SPACING.XL, yGap: SPACING.XL },
+  xl: { cols: 3, xGap: SPACING.XXL, yGap: SPACING.XXL },
+}
+
+const SPACE_SIZE_MAP: Record<Breakpoint, 'small' | 'medium' | 'large'> = {
+  xs: 'small',
+  sm: 'small',
+  md: 'medium',
+  lg: 'medium',
+  xl: 'large',
+}
+
+const BUTTON_SIZE_MAP: Record<Breakpoint, 'small' | 'medium'> = {
+  xs: 'small',
+  sm: 'small',
+  md: 'medium',
+  lg: 'medium',
+  xl: 'medium',
+}
+
+const INPUT_SIZE_MAP: Record<Breakpoint, 'small' | 'medium'> = {
+  xs: 'small',
+  sm: 'medium',
+  md: 'medium',
+  lg: 'medium',
+  xl: 'medium',
+}
+
+const MODAL_WIDTH_MAP: Record<Breakpoint, string> = {
+  xs: '95vw',
+  sm: '90vw',
+  md: '80vw',
+  lg: '70vw',
+  xl: '60vw',
+}
+
+const CARD_PADDING_MAP: Record<Breakpoint, string> = {
+  xs: '12px',
+  sm: '16px',
+  md: '20px',
+  lg: '20px',
+  xl: '20px',
+}
+
+const FONT_SIZE_MAP: Record<Breakpoint, { small: string; medium: string; large: string }> = {
+  xs: { small: '12px', medium: '14px', large: '16px' },
+  sm: { small: '13px', medium: '15px', large: '17px' },
+  md: { small: '14px', medium: '16px', large: '18px' },
+  lg: { small: '14px', medium: '16px', large: '18px' },
+  xl: { small: '14px', medium: '16px', large: '18px' },
+}
+
 /**
  * 响应式布局 Composable
  * 提供断点检测和响应式配置
@@ -11,7 +69,6 @@ import { BREAKPOINTS, SPACING } from '../../config/constants'
 export function useResponsive() {
   const windowWidth = ref(window.innerWidth)
 
-  // 断点配置 - 使用集中常量
   const breakpoints = {
     xs: 0,
     sm: BREAKPOINTS.MOBILE,
@@ -20,13 +77,11 @@ export function useResponsive() {
     xl: BREAKPOINTS.LARGE,
   }
 
-  // 更新窗口宽度
   const updateWidth = () => {
     windowWidth.value = window.innerWidth
   }
 
-  // 当前断点
-  const currentBreakpoint = computed(() => {
+  const currentBreakpoint = computed((): Breakpoint => {
     const width = windowWidth.value
     if (width >= breakpoints.xl) return 'xl'
     if (width >= breakpoints.lg) return 'lg'
@@ -35,12 +90,10 @@ export function useResponsive() {
     return 'xs'
   })
 
-  // 设备类型检测
   const isMobile = computed(() => currentBreakpoint.value === 'xs')
   const isTablet = computed(() => currentBreakpoint.value === 'sm')
   const isDesktop = computed(() => ['md', 'lg', 'xl'].includes(currentBreakpoint.value))
 
-  // 响应式配置
   const responsiveConfig = computed(
     (): ResponsiveConfig => ({
       breakpoints,
@@ -51,117 +104,15 @@ export function useResponsive() {
     })
   )
 
-  // 响应式网格配置 - 使用集中间距常量
-  const gridConfig = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return { cols: 1, xGap: SPACING.SM, yGap: SPACING.SM }
-      case 'sm':
-        return { cols: 1, xGap: SPACING.MD, yGap: SPACING.MD }
-      case 'md':
-        return { cols: 2, xGap: SPACING.LG, yGap: SPACING.LG }
-      case 'lg':
-        return { cols: 2, xGap: SPACING.XL, yGap: SPACING.XL }
-      case 'xl':
-        return { cols: 3, xGap: SPACING.XXL, yGap: SPACING.XXL }
-      default:
-        return { cols: 1, xGap: SPACING.MD, yGap: SPACING.MD }
-    }
-  })
-
-  // 响应式间距
-  const spaceSize = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return 'small' as const
-      case 'sm':
-        return 'small' as const
-      case 'md':
-        return 'medium' as const
-      case 'lg':
-        return 'medium' as const
-      case 'xl':
-        return 'large' as const
-      default:
-        return 'medium' as const
-    }
-  })
-
-  // 响应式按钮大小
-  const buttonSize = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return 'small' as const
-      case 'sm':
-        return 'small' as const
-      default:
-        return 'medium' as const
-    }
-  })
-
-  // 响应式输入框大小
-  const inputSize = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return 'small' as const
-      case 'sm':
-        return 'medium' as const
-      default:
-        return 'medium' as const
-    }
-  })
-
-  // 响应式模态框宽度
-  const modalWidth = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return '95vw'
-      case 'sm':
-        return '90vw'
-      case 'md':
-        return '80vw'
-      case 'lg':
-        return '70vw'
-      case 'xl':
-        return '60vw'
-      default:
-        return '80vw'
-    }
-  })
-
-  // 响应式卡片内边距
-  const cardPadding = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return '12px'
-      case 'sm':
-        return '16px'
-      default:
-        return '20px'
-    }
-  })
-
-  // 是否应该使用垂直布局
-  const shouldUseVerticalLayout = computed(() => {
-    return isMobile.value || isTablet.value
-  })
-
-  // 是否应该使用紧凑模式
-  const shouldUseCompactMode = computed(() => {
-    return isMobile.value
-  })
-
-  // 响应式字体大小
-  const fontSize = computed(() => {
-    switch (currentBreakpoint.value) {
-      case 'xs':
-        return { small: '12px', medium: '14px', large: '16px' }
-      case 'sm':
-        return { small: '13px', medium: '15px', large: '17px' }
-      default:
-        return { small: '14px', medium: '16px', large: '18px' }
-    }
-  })
+  const gridConfig = computed(() => GRID_CONFIG_MAP[currentBreakpoint.value])
+  const spaceSize = computed(() => SPACE_SIZE_MAP[currentBreakpoint.value])
+  const buttonSize = computed(() => BUTTON_SIZE_MAP[currentBreakpoint.value])
+  const inputSize = computed(() => INPUT_SIZE_MAP[currentBreakpoint.value])
+  const modalWidth = computed(() => MODAL_WIDTH_MAP[currentBreakpoint.value])
+  const cardPadding = computed(() => CARD_PADDING_MAP[currentBreakpoint.value])
+  const fontSize = computed(() => FONT_SIZE_MAP[currentBreakpoint.value])
+  const shouldUseVerticalLayout = computed(() => isMobile.value || isTablet.value)
+  const shouldUseCompactMode = computed(() => isMobile.value)
 
   onMounted(() => {
     window.addEventListener('resize', updateWidth)
@@ -172,15 +123,12 @@ export function useResponsive() {
   })
 
   return {
-    // 基础响应式状态
     windowWidth,
     currentBreakpoint,
     isMobile,
     isTablet,
     isDesktop,
     responsiveConfig,
-
-    // 组件配置
     gridConfig,
     spaceSize,
     buttonSize,
@@ -188,12 +136,8 @@ export function useResponsive() {
     modalWidth,
     cardPadding,
     fontSize,
-
-    // 布局决策
     shouldUseVerticalLayout,
     shouldUseCompactMode,
-
-    // 断点配置
     breakpoints,
   }
 }

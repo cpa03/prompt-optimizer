@@ -46,31 +46,28 @@ export function useTagSuggestions() {
    * @returns 过滤后的标签建议列表
    */
   const filterTags = (query: string, excludeTags: string[] = []): TagSuggestion[] => {
+    const excludeSet = new Set(excludeTags.map((t) => t.toLowerCase()))
+
     if (!query) {
-      // 如果没有输入，返回所有未选中的标签，按使用次数排序
       return allTags.value
-        .filter((tag) => !excludeTags.includes(tag.value))
+        .filter((tag) => !excludeSet.has(tag.value.toLowerCase()))
         .sort((a, b) => b.count - a.count)
     }
 
-    // 模糊搜索匹配
     const lowerQuery = query.toLowerCase()
+    const lowerQueryLen = lowerQuery.length
+
     return allTags.value
       .filter((tag) => {
-        // 排除已选中的标签
-        if (excludeTags.includes(tag.value)) {
-          return false
-        }
-        // 包含查询字符串
-        return tag.value.toLowerCase().includes(lowerQuery)
+        const lowerValue = tag.value.toLowerCase()
+        return !excludeSet.has(lowerValue) && lowerValue.includes(lowerQuery)
       })
       .sort((a, b) => {
-        // 优先匹配前缀
-        const aStartsWith = a.value.toLowerCase().startsWith(lowerQuery)
-        const bStartsWith = b.value.toLowerCase().startsWith(lowerQuery)
-        if (aStartsWith && !bStartsWith) return -1
-        if (!aStartsWith && bStartsWith) return 1
-        // 其次按使用次数排序
+        const aLower = a.value.toLowerCase()
+        const bLower = b.value.toLowerCase()
+        const aStartsWith = aLower.slice(0, lowerQueryLen) === lowerQuery
+        const bStartsWith = bLower.slice(0, lowerQueryLen) === lowerQuery
+        if (aStartsWith !== bStartsWith) return aStartsWith ? -1 : 1
         return b.count - a.count
       })
   }
@@ -80,23 +77,19 @@ export function useTagSuggestions() {
    * @param limit 返回数量限制
    * @param excludeTags 需要排除的标签
    */
+  const sortedByCount = computed(() => [...allTags.value].sort((a, b) => b.count - a.count))
+
   const getPopularTags = computed(() => {
     return (limit = 10, excludeTags: string[] = []): TagSuggestion[] => {
-      return allTags.value
-        .filter((tag) => !excludeTags.includes(tag.value))
-        .sort((a, b) => b.count - a.count)
+      const excludeSet = new Set(excludeTags.map((t) => t.toLowerCase()))
+      return sortedByCount.value
+        .filter((tag) => !excludeSet.has(tag.value.toLowerCase()))
         .slice(0, limit)
     }
   })
 
-  /**
-   * 获取最近使用的标签(暂时与热门标签相同，未来可以基于时间戳优化)
-   * @param limit 返回数量限制
-   * @param excludeTags 需要排除的标签
-   */
   const getRecentTags = computed(() => {
     return (limit = 10, excludeTags: string[] = []): TagSuggestion[] => {
-      // TODO: 未来可以基于收藏的更新时间来优化这个逻辑
       return getPopularTags.value(limit, excludeTags)
     }
   })
