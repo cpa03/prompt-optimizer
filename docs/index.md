@@ -209,8 +209,13 @@ Workspace directories contain active development work and investigations:
 
 ## Audit Reports
 
-- **[Phase 1 Audit 2025-02-13](audits/phase-1-audit-2025-02-13.md)** - Previous audit
-- **[Phase 1 Comprehensive Audit 2026-02-14](audits/phase-1-comprehensive-audit-2026-02-14.md)** - Latest comprehensive audit
+All audit reports are consolidated in the `audit/` directory:
+
+- **[Phase 1 Audit 2025-02-13](audit/phase-1-audit-2025-02-13.md)** - Previous audit
+- **[Phase 1 Comprehensive Audit 2026-02-14](audit/phase-1-comprehensive-audit-2026-02-14.md)** - Latest comprehensive audit
+- **[Phase 1 Diagnostic Report](audit/phase-1-diagnostic-report.md)** - Diagnostic findings
+- **[Phase 2 Report 2026-02-17](audit/phase-2-report-2026-02-17.md)** - Phase 2 progress
+- **[Phase 2 Security Hardening 2026-02-18](audit/phase2-security-hardening-2026-02-18.md)** - Security improvements
 
 ---
 
@@ -241,7 +246,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-14  
+**Last Updated:** 2026-02-18  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
