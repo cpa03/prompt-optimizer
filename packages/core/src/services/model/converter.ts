@@ -3,13 +3,9 @@ import type { ITextAdapterRegistry } from '../llm/types'
 import { splitOverridesBySchema } from './parameter-utils'
 import { ModelError } from './errors'
 import { MODEL_ERROR_CODES } from '../../constants/error-codes'
-import { PROVIDER_URLS, PROVIDER_ID_MAP } from '../../config'
+import { PROVIDER_URLS } from '../../config'
 import { MODEL_CONTEXT_LIMITS } from '../../constants/templates'
-import {
-  getProviderIdFromLegacy,
-  PROVIDER_IDS,
-  DEFAULT_PROVIDER_ID,
-} from '../../constants/provider-ids'
+import { getProviderIdFromLegacy, PROVIDER_IDS } from '../../constants/provider-ids'
 
 /**
  * 将传统 ModelConfig 转换为 TextModelConfig（使用 Registry 获取元数据）

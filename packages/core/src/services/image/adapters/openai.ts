@@ -11,7 +11,6 @@ import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import {
   PROVIDER_URLS,
-  IMAGE_SIZE_PRESETS,
   MIME_TYPES,
   PROVIDER_API_KEY_URLS,
   getTestPrompt,

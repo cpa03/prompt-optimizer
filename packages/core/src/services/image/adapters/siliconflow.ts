@@ -12,8 +12,6 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
-  IMAGE_SIZE_PRESETS,
-  IMAGE_DEFAULTS,
   MIME_TYPES,
   getTestPrompt,
   getSiliconFlowKolorsParameterDefinitions,
