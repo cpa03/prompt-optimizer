@@ -485,6 +485,14 @@ export class FileStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取所有存储键
+   */
+  async keys(): Promise<string[]> {
+    await this.ensureInitialized()
+    return Array.from(this.data.keys())
+  }
+
+  /**
    * 原子性数据更新 - 增强版
    * 确保读-修改-写操作的原子性，防止并发问题
    */

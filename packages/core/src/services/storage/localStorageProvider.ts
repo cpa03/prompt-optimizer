@@ -168,6 +168,27 @@ export class LocalStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取所有存储键
+   */
+  public async keys(): Promise<string[]> {
+    const release = await this.lock.acquire('__keys__')
+    try {
+      const keys: string[] = []
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key !== null) {
+          keys.push(key)
+        }
+      }
+      return keys
+    } catch (error) {
+      throw new StorageError('Failed to get all keys', 'read')
+    } finally {
+      release()
+    }
+  }
+
+  /**
    * 批量操作
    * @param operations 批量操作列表
    */

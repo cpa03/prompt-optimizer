@@ -106,6 +106,14 @@ export class MemoryStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取所有存储键
+   * @returns 所有键的数组
+   */
+  async keys(): Promise<string[]> {
+    return Array.from(this.storage.keys())
+  }
+
+  /**
    * 检查是否包含指定键
    * @param key 存储键
    * @returns 是否包含该键
@@ -115,7 +123,7 @@ export class MemoryStorageProvider implements IStorageProvider {
   }
 
   /**
-   * 获取所有存储键
+   * 获取所有存储键（同步版本，向后兼容）
    * @returns 所有键的数组
    */
   getAllKeys(): string[] {

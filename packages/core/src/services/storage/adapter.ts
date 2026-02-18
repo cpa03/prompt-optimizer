@@ -29,6 +29,16 @@ export class StorageAdapter implements IStorageProvider {
   }
 
   /**
+   * 获取所有存储键
+   */
+  async keys(): Promise<string[]> {
+    if ('keys' in this.baseProvider && typeof this.baseProvider.keys === 'function') {
+      return (this.baseProvider as any).keys()
+    }
+    throw new StorageError('Base provider does not support keys() operation', 'read')
+  }
+
+  /**
    * 隐藏式数据更新 - 内部实现原子性
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
