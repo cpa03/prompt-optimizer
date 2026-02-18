@@ -1,0 +1,173 @@
+version: 2
+
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: 'deps'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'devops-engineer'
+    groups:
+      production-dependencies:
+        dependency-type: 'production'
+        update-types:
+          - 'minor'
+          - 'patch'
+      development-dependencies:
+        dependency-type: 'development'
+        update-types:
+          - 'minor'
+          - 'patch'
+    ignore:
+      - dependency-name: 'electron'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/core'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(core)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'core'
+      - 'devops-engineer'
+    groups:
+      core-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/ui'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(ui)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'ui'
+      - 'devops-engineer'
+    groups:
+      ui-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/web'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(web)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'web'
+      - 'devops-engineer'
+    groups:
+      web-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/extension'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(ext)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'extension'
+      - 'devops-engineer'
+    groups:
+      extension-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/desktop'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(desktop)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'desktop'
+      - 'devops-engineer'
+    groups:
+      desktop-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/mcp-server'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'deps(mcp)'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'mcp-server'
+      - 'devops-engineer'
+    groups:
+      mcp-dependencies:
+        patterns:
+          - '*'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Asia/Shanghai'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
+    labels:
+      - 'github-actions'
+      - 'dependencies'
+      - 'devops-engineer'
+    groups:
+      github-actions:
+        patterns:
+          - '*'
