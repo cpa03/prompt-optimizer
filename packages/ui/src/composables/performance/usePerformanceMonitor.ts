@@ -29,6 +29,8 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   let performanceObserver: PerformanceObserver | null = null
   let resizeObserver: ResizeObserver | null = null
   let mutationObserver: MutationObserver | null = null
+  // Store interval reference for proper cleanup
+  let memoryInterval: ReturnType<typeof setInterval> | null = null
 
   // 记录渲染开始时间
   const startRender = () => {
@@ -139,6 +141,11 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
   const startMonitoring = () => {
     if (typeof performance === 'undefined') return
 
+    // 防止重复调用创建多个interval
+    if (memoryInterval !== null) {
+      clearInterval(memoryInterval)
+    }
+
     // 标记渲染开始
     performance.mark(`${componentName}-render-start`)
     startRender()
@@ -162,11 +169,7 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     }
 
     // 定期更新内存使用情况
-    const memoryInterval = setInterval(updateMemoryUsage, TIME_CONSTANTS.MEMORY_CHECK_INTERVAL_MS)
-
-    onUnmounted(() => {
-      clearInterval(memoryInterval)
-    })
+    memoryInterval = setInterval(updateMemoryUsage, TIME_CONSTANTS.MEMORY_CHECK_INTERVAL_MS)
   }
 
   // 观察DOM变化
@@ -248,6 +251,10 @@ export function usePerformanceMonitor(componentName: string = 'Unknown') {
     performanceObserver?.disconnect()
     resizeObserver?.disconnect()
     mutationObserver?.disconnect()
+    if (memoryInterval !== null) {
+      clearInterval(memoryInterval)
+      memoryInterval = null
+    }
   })
 
   return {
