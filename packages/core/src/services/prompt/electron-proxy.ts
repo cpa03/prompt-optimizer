@@ -7,12 +7,8 @@ import {
 } from './types'
 import { PromptRecord } from '../history/types'
 import { safeSerializeForIPC } from '../../utils/ipc-serialization'
+import { isRunningInElectron } from '../../utils/environment'
 import { ServiceDependencyError } from './errors'
-
-// Helper function to check if running in Electron renderer process
-function isRunningInElectron(): boolean {
-  return typeof window !== 'undefined' && typeof (window as any).electronAPI !== 'undefined'
-}
 
 /**
  * Proxy for using PromptService in Electron renderer process.
