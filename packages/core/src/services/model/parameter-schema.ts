@@ -6,6 +6,7 @@
 /**
  * 危险键名列表（小写比较）
  * - 阻止用户注入原型链或可执行上下文
+ * - 防止敏感配置被用户参数覆盖
  */
 export const DANGEROUS_PARAM_KEY_PATTERNS = [
   '__proto__',
@@ -30,6 +31,17 @@ export const DANGEROUS_PARAM_KEY_PATTERNS = [
   'base_url',
   'endpoint',
   'url',
+  'require',
+  'import',
+  'global',
+  'window',
+  'document',
+  'fetch',
+  'axios',
+  'http',
+  'https',
+  'websocket',
+  'ws',
 ] as const
 
 export type UnifiedParameterValueType = 'string' | 'number' | 'integer' | 'boolean'

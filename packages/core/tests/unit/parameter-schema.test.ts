@@ -46,6 +46,13 @@ describe('parameter-schema helpers', () => {
     }
   })
 
+  it('blocks newly added security patterns', () => {
+    const newPatterns = ['require', 'import', 'global', 'window', 'fetch', 'http', 'websocket']
+    for (const pattern of newPatterns) {
+      expect(isSafeCustomKey(pattern)).toBe(false)
+    }
+  })
+
   it('allows interface shape compilation', () => {
     const definition: UnifiedParameterDefinition = {
       name: 'temperature',
