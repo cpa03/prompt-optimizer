@@ -58,5 +58,8 @@ RUN dos2unix /start-services.sh
 
 EXPOSE 80
 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:${NGINX_PORT:-80}/ && curl -f http://localhost:${NGINX_PORT:-80}/mcp || exit 1
+
 # 使用自定义启动脚本
 CMD ["sh", "/start-services.sh"]
