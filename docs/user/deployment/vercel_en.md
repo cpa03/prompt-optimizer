@@ -2,10 +2,10 @@
 
 ### Deployment Method Comparison
 
-| Deployment Method    | Advantages                                           | Disadvantages                                                                            |
-| -------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| One-click Deployment | Quick and convenient, no additional setup required   | Cannot automatically sync updates from the source project                                |
-| Fork and Import      | Can track source project updates, easier to maintain | First deployment requires manual root directory fix to enable Vercel proxy functionality |
+| Deployment Method    | Advantages                                           | Disadvantages                                                              |
+| -------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------- |
+| One-click Deployment | Quick and convenient, no additional setup required   | Cannot automatically sync updates from the source project                  |
+| Fork and Import      | Can track source project updates, easier to maintain | First deployment requires manual root directory fix to enable API Function |
 
 ### Recommended Method: Fork the Project and Import to Vercel (Recommended)
 
@@ -27,7 +27,7 @@ This method allows you to track project updates, making it easier to sync the la
 
 3. **Fix the root directory setting (Strongly recommended)**
    - When deployed through import, although the project's `vercel.json` file already contains related fixes to make basic functionality work
-   - To enable **Vercel proxy functionality** (a key feature for solving cross-origin issues), you need to manually fix the root directory:
+   - To enable **password protection functionality**, you need to manually fix the root directory:
 
    a. After the project is deployed, go to project settings
 
@@ -71,7 +71,7 @@ If you only need quick deployment and don't care about subsequent updates, you c
 
 2. Follow Vercel's guidance to complete the deployment process
 
-   **Advantage:** With one-click deployment, Vercel can automatically correctly identify the root directory, no manual fixing required, and all features (including Vercel proxy) can work normally.
+   **Advantage:** With one-click deployment, Vercel can automatically correctly identify the root directory, no manual fixing required, and all features (including password protection) can work normally.
 
 ### Password Protected Access
 
@@ -81,29 +81,26 @@ When the `ACCESS_PASSWORD` environment variable is configured, your site will en
 - Access to the application is granted after entering the correct password
 - The system will set a cookie to remember the user, eliminating the need to re-enter the password for a period of time
 
-### About Vercel Proxy Functionality
+### About Cross-Origin Issues
 
-Prompt Optimizer supports using Edge Runtime proxy to solve cross-origin issues when deployed on Vercel.
+> ⚠️ **Note**: Due to security reasons (SSRF vulnerability risk), we have **completely removed** the built-in proxy functionality in v1.x.
 
-1. **Confirm proxy functionality is available**
-   - If using one-click deployment: proxy functionality should be directly available
-   - If using import deployment: you need to complete the "Fix root directory setting" and "Redeploy" steps mentioned above
-   - Open "Model Management" in the application
-   - Select the target model -> "Edit", at this point you should see the "Use Vercel Proxy" option
-   - If you don't see this option, it means the Vercel Function is not correctly deployed, please check the root directory setting
+#### Recommended Solutions
 
-2. **Enable proxy functionality**
-   - Check the "Use Vercel Proxy" option
-   - Save the configuration
+If you encounter cross-origin issues, please use the following solutions:
 
-3. **Proxy principle**
-   - Request flow: Browser → Vercel Edge Runtime → Model service provider
-   - Solves the cross-origin limitation when browsers directly access APIs
-   - Proxy functionality is based on Vercel Function implementation, dependent on the `/api` path
+1. **Desktop Application** (Recommended)
+   - No cross-origin restrictions
+   - Runs locally, more secure
+   - Supports all LLM APIs
 
-4. **Notes**
-   - Some model service providers may restrict requests from Vercel
-   - If restrictions are encountered, it is recommended to use a self-deployed API relay service
+2. **Self-hosted Reverse Proxy**
+   - Use tools like Nginx, Caddy
+   - Full control over security policies
+
+3. **LLM Provider's Own Proxy**
+   - Some providers offer CORS-friendly endpoints
+   - Check the corresponding provider's documentation
 
 ### Common Issues
 
@@ -113,12 +110,12 @@ Prompt Optimizer supports using Edge Runtime proxy to solve cross-origin issues 
 
 2. **Cannot connect to model API**
    - Confirm the API key is correctly configured
-   - Try enabling Vercel proxy functionality
-   - Check if the model service provider restricts Vercel requests
+   - Check if the model service provider has CORS restrictions
+   - Consider using the desktop application to solve cross-origin issues
 
-3. **"Use Vercel Proxy" option not displayed**
-   - If using import deployment: check if you have cleared the root directory setting and redeployed
-   - Check if there are any Function-related error messages in the deployment logs
+3. **Password protection not working**
+   - Check if you have cleared the root directory setting and redeployed
+   - Confirm the `ACCESS_PASSWORD` environment variable is correctly set
 
 4. **How to update a deployed project**
    - If forked and imported: sync the fork and wait for automatic deployment
