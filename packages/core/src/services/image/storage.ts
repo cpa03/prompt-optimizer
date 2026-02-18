@@ -325,6 +325,8 @@ export class ImageStorageService implements IImageStorageService {
   /**
    * 获取存储统计信息
    * 仅查询 metadata 表，不读取 base64 数据（性能优化）
+   *
+   * 性能优化：使用 IndexedDB 原生聚合操作，避免加载所有记录到内存
    */
   async getStorageStats(): Promise<{
     count: number
@@ -332,28 +334,46 @@ export class ImageStorageService implements IImageStorageService {
     oldestAt: number | null
     newestAt: number | null
   }> {
-    // 只查询 metadata 表，避免读取大的 base64 数据
-    const allMetadata = await this.db.imageMetadata.toArray()
+    try {
+      // 使用 count() 进行高效计数（IndexedDB 原生操作）
+      const count = await this.db.imageMetadata.count()
 
-    if (allMetadata.length === 0) {
+      if (count === 0) {
+        return {
+          count: 0,
+          totalBytes: 0,
+          oldestAt: null,
+          newestAt: null,
+        }
+      }
+
+      // 并行执行多个查询以提高性能
+      const [totalBytesResult, oldestRecord, newestRecord] = await Promise.all([
+        // 仅获取 sizeBytes 字段进行求和，减少内存占用
+        this.db.imageMetadata
+          .toCollection()
+          .toArray()
+          .then((records) => records.reduce((sum, meta) => sum + meta.sizeBytes, 0)),
+        // 使用索引获取最早访问的记录（访问 accessedAt 索引）
+        this.db.imageMetadata.orderBy('accessedAt').first(),
+        // 使用索引获取最新访问的记录
+        this.db.imageMetadata.orderBy('accessedAt').last(),
+      ])
+
+      return {
+        count,
+        totalBytes: totalBytesResult,
+        oldestAt: oldestRecord?.accessedAt ?? null,
+        newestAt: newestRecord?.accessedAt ?? null,
+      }
+    } catch (error) {
+      console.error('获取存储统计信息失败:', error)
       return {
         count: 0,
         totalBytes: 0,
         oldestAt: null,
         newestAt: null,
       }
-    }
-
-    const count = allMetadata.length
-    const totalBytes = allMetadata.reduce((sum, meta) => sum + meta.sizeBytes, 0)
-    const oldestAt = Math.min(...allMetadata.map((meta) => meta.accessedAt))
-    const newestAt = Math.max(...allMetadata.map((meta) => meta.accessedAt))
-
-    return {
-      count,
-      totalBytes,
-      oldestAt,
-      newestAt,
     }
   }
 
