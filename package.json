@@ -119,7 +119,7 @@
       "builder-util-runtime": "9.2.10",
       "glob": "^10.4.6",
       "@modelcontextprotocol/sdk": "^1.25.2",
-      "tar": "^7.5.3",
+      "tar": "^7.5.8",
       "qs": "^6.14.2"
     }
   }
