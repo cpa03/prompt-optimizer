@@ -89,9 +89,11 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 
 import { useI18n } from 'vue-i18n'
+import { useDebounceFn } from '@vueuse/core'
 import { NLayout, NLayoutHeader, NLayoutContent, NFlex, NImage, NText } from 'naive-ui'
 import ToastUI from './Toast.vue'
 import logoImage from '../assets/logo.jpg'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -118,16 +120,21 @@ const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
 }
 
+const debouncedUpdateWindowWidth = useDebounceFn(
+  updateWindowWidth,
+  TIME_CONSTANTS.DEFAULT_DEBOUNCE_MS
+)
+
 onMounted(() => {
   if (typeof window !== 'undefined') {
     windowWidth.value = window.innerWidth
-    window.addEventListener('resize', updateWindowWidth)
+    window.addEventListener('resize', debouncedUpdateWindowWidth, { passive: true })
   }
 })
 
 onUnmounted(() => {
   if (typeof window !== 'undefined') {
-    window.removeEventListener('resize', updateWindowWidth)
+    window.removeEventListener('resize', debouncedUpdateWindowWidth)
   }
 })
 
