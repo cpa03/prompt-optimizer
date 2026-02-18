@@ -162,7 +162,7 @@ import {
   Folder,
 } from '@vicons/tabler'
 import { useToast } from '../composables/ui/useToast'
-import { COMPONENT_CONSTANTS } from '../config/constants'
+import { COMPONENT_CONSTANTS, TIME_CONSTANTS } from '../config/constants'
 import { useI18n } from 'vue-i18n'
 import type { FavoriteCategory } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
@@ -429,7 +429,7 @@ const handleConfirmDelete = async () => {
 
   try {
     // Wait for animation to complete before actual deletion
-    await new Promise((resolve) => setTimeout(resolve, 200))
+    await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.ANIMATION_SHORT_DELAY))
 
     // 递归删除所有子分类
     const deleteWithChildren = async (categoryId: string) => {

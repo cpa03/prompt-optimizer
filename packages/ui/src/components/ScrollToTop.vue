@@ -37,6 +37,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -126,7 +127,7 @@ const cleanupScrollListener = () => {
 
 onMounted(() => {
   // Delay initialization to ensure DOM is ready
-  setTimeout(initScrollListener, 100)
+  setTimeout(initScrollListener, TIME_CONSTANTS.SCROLL_LISTENER_DELAY_MS)
 })
 
 onUnmounted(() => {
