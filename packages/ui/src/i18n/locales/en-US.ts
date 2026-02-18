@@ -51,6 +51,7 @@ export default {
     expand: 'Expand',
     collapse: 'Collapse',
     hide: 'Hide',
+    help: 'Help',
     clear: 'Clear',
     createdAt: 'Created at',
     version: 'V{version}',
