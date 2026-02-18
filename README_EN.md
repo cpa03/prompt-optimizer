@@ -120,26 +120,28 @@ Download the latest version from [GitHub Releases](https://github.com/linshenkx/
 
 <details>
 <summary>Click to view Docker deployment commands</summary>
+
 ```bash
 # Run container (default configuration)
 docker run -d -p 8081:80 --restart unless-stopped --name prompt-optimizer linshen/prompt-optimizer
 
 # Run container (with API key configuration and password protection)
-
 docker run -d -p 8081:80 \
- -e VITE_OPENAI_API_KEY=your_key \
- -e ACCESS_USERNAME=your_username \ # Optional, defaults to "admin"
--e ACCESS_PASSWORD=your_password \ # Set access password
---restart unless-stopped \
- --name prompt-optimizer \
- linshen/prompt-optimizer
+  -e VITE_OPENAI_API_KEY=your_key \
+  -e ACCESS_USERNAME=your_username \  # Optional, defaults to "admin"
+  -e ACCESS_PASSWORD=your_password \  # Set access password
+  --restart unless-stopped \
+  --name prompt-optimizer \
+  linshen/prompt-optimizer
+```
 
-````
 </details>
 
 ### 6. Docker Compose Deployment
+
 <details>
 <summary>Click to view Docker Compose deployment steps</summary>
+
 ```bash
 # 1. Clone the repository
 git clone https://github.com/linshenkx/prompt-optimizer.git
@@ -166,9 +168,9 @@ docker compose up -d
 docker compose logs -f
 
 # 5. Access the service
-Web Interface: http://localhost:8081
-MCP Server: http://localhost:8081/mcp
-````
+# Web Interface: http://localhost:8081
+# MCP Server: http://localhost:8081/mcp
+```
 
 </details>
 
@@ -503,3 +505,7 @@ If this project is helpful to you, please consider giving it a Star ⭐️
 - Submit an Issue
 - Create a Pull Request
 - Join the discussion group
+
+```
+
+```
