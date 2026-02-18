@@ -219,4 +219,23 @@ const handlePrimaryAction = () => {
     row-gap: 8px;
   }
 }
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .tcb-tags,
+  :deep(.tcb-right .n-switch),
+  :deep(.tcb-right .n-button--primary-type) {
+    transition: none;
+  }
+
+  .tcb-tags:hover,
+  :deep(.tcb-right .n-switch:hover:not(.n-switch--disabled)),
+  :deep(.tcb-right .n-button--primary-type:hover:not(:disabled):not(.n-button--loading)) {
+    transform: none;
+  }
+
+  :deep(.tcb-right .n-button--loading.n-button--primary-type::after) {
+    animation: none;
+  }
+}
 </style>
