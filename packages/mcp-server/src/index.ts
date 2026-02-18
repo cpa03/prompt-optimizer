@@ -443,6 +443,8 @@ async function main() {
               transports[sessionId] = httpTransport
             },
             // MCP 协议不需要复杂的 CORS 配置，允许所有来源
+            // 注意: 如果部署在公网环境，建议通过反向代理（如 nginx）限制 CORS
+            // 或修改 allowedOrigins 为具体的允许域名列表
             allowedOrigins: ['*'],
             enableDnsRebindingProtection: false,
           })
