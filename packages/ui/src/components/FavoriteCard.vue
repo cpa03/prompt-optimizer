@@ -358,7 +358,7 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import { useDebounceFn } from '@vueuse/core'
 import {
@@ -424,6 +424,48 @@ const descriptionTriggerRef = ref<HTMLElement | null>(null)
 // 缓存 rect 结果，避免频繁计算
 const cachedContentRect = ref<DOMRect | null>(null)
 const cachedDescriptionRect = ref<DOMRect | null>(null)
+
+// 🎨 Palette: Enhanced interaction states for visual feedback
+const copySuccess = ref(false)
+const useSuccess = ref(false)
+const hoveredAction = ref<string | null>(null)
+const focusedAction = ref<string | null>(null)
+
+// 🎨 Palette: Detect modifier key based on platform for keyboard shortcuts
+const isMac = computed(
+  () => typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+)
+const modifierKey = computed(() => (isMac.value ? '⌘' : 'Ctrl'))
+
+// 🎨 Palette: Show keyboard shortcut hint on hover or focus
+const showShortcutHint = (action: string) =>
+  (hoveredAction.value === action || focusedAction.value === action) &&
+  !copySuccess.value &&
+  !useSuccess.value
+
+// 🎨 Palette: Handle copy with visual success feedback
+const handleCopy = async () => {
+  try {
+    await navigator.clipboard.writeText(props.favorite.content)
+    copySuccess.value = true
+    emit('copy', props.favorite)
+    setTimeout(() => {
+      copySuccess.value = false
+    }, 1500)
+  } catch {
+    // Fallback: emit copy event for parent to handle
+    emit('copy', props.favorite)
+  }
+}
+
+// 🎨 Palette: Handle use with visual success feedback
+const handleUse = () => {
+  useSuccess.value = true
+  emit('use', props.favorite)
+  setTimeout(() => {
+    useSuccess.value = false
+  }, 1500)
+}
 
 const getViewportWidth = () => {
   if (typeof window !== 'undefined') {
