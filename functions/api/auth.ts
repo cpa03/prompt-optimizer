@@ -8,19 +8,55 @@ const COOKIE_CONFIG = {
   SAME_SITE_POLICY: 'Strict',
 }
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+function timingSafeEqual(a: string, b: string): boolean {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return false
+  }
+  if (a.length !== b.length) {
+    return false
+  }
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
+function validateBody(body: unknown, requiredFields: string[]): boolean {
+  if (!body || typeof body !== 'object') {
+    return false
+  }
+  const obj = body as Record<string, unknown>
+  return requiredFields.every(
+    (field) => field in obj && typeof obj[field] === 'string' && (obj[field] as string).length > 0
+  )
+}
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowedOrigins = origin || '*'
+  return {
+    'Access-Control-Allow-Origin': allowedOrigins,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    Vary: 'Origin',
+  }
+}
+
+const securityHeaders = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context
+  const origin = request.headers.get('Origin')
+  const corsHeaders = getCorsHeaders(origin)
 
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, ...securityHeaders },
     })
   }
 
@@ -37,6 +73,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         headers: {
           'Content-Type': 'application/json',
           ...corsHeaders,
+          ...securityHeaders,
         },
       }
     )
@@ -44,16 +81,48 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
 
   if (request.method === 'POST') {
     try {
-      const body = (await request.json()) as {
-        password?: string
-        action?: string
+      const body = (await request.json()) as { password?: string; action?: string }
+
+      if (!validateBody(body, ['action'])) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: 'Invalid request body',
+          }),
+          {
+            status: 400,
+            headers: {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+              ...securityHeaders,
+            },
+          }
+        )
       }
+
       const { password, action } = body
 
       if (action === 'verify') {
-        if (password === accessPassword) {
+        if (!validateBody(body, ['password'])) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              message: 'Password is required',
+            }),
+            {
+              status: 400,
+              headers: {
+                'Content-Type': 'application/json',
+                ...corsHeaders,
+                ...securityHeaders,
+              },
+            }
+          )
+        }
+
+        if (timingSafeEqual(password!, accessPassword)) {
           const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
-          const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=${accessPassword}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
+          const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=authenticated; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
 
           return new Response(
             JSON.stringify({
@@ -66,6 +135,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
                 'Content-Type': 'application/json',
                 'Set-Cookie': cookieValue,
                 ...corsHeaders,
+                ...securityHeaders,
               },
             }
           )
@@ -80,17 +150,34 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               headers: {
                 'Content-Type': 'application/json',
                 ...corsHeaders,
+                ...securityHeaders,
               },
             }
           )
         }
       }
+
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: 'Invalid action',
+        }),
+        {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            ...corsHeaders,
+            ...securityHeaders,
+          },
+        }
+      )
     } catch {
-      return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+      return new Response(JSON.stringify({ success: false, message: 'Invalid request body' }), {
         status: 400,
         headers: {
           'Content-Type': 'application/json',
           ...corsHeaders,
+          ...securityHeaders,
         },
       })
     }
@@ -114,17 +201,34 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             'Content-Type': 'application/json',
             'Set-Cookie': cookieValue,
             ...corsHeaders,
+            ...securityHeaders,
           },
         }
       )
     }
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Invalid action',
+      }),
+      {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders,
+          ...securityHeaders,
+        },
+      }
+    )
   }
 
-  return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  return new Response(JSON.stringify({ success: false, error: 'Method not allowed' }), {
     status: 405,
     headers: {
       'Content-Type': 'application/json',
       ...corsHeaders,
+      ...securityHeaders,
     },
   })
 }
