@@ -193,7 +193,6 @@ export class CoreServicesManager {
         console.error('   Please check if your API keys are valid.')
       }
     } catch {
-      // 如果检查环境变量失败，显示通用提示
       console.error('💡 Please ensure you have set valid API keys.')
     }
   }
