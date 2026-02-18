@@ -11,7 +11,7 @@
  */
 
 export * from './useCurrentMode'
-export * from './useFunctionMode'
+export { useFunctionMode, type FunctionMode } from './useFunctionMode'
 export * from './useBasicSubMode'
 export * from './useProSubMode'
 export * from './useImageSubMode'

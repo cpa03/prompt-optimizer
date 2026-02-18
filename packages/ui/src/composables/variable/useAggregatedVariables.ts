@@ -18,7 +18,7 @@
  * - 统一变量访问：不需要关心变量来源，直接获取最终值
  */
 
-import { computed, type ComputedRef, type Ref } from 'vue'
+import { computed, type ComputedRef } from 'vue'
 import { useTemporaryVariables } from './useTemporaryVariables'
 import type { VariableManagerHooks } from '../prompt/useVariableManager'
 import { PREDEFINED_VARIABLES } from '../../types/variable'

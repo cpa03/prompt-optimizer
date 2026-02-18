@@ -103,8 +103,8 @@ export function useTestModeConfig(
 
       // 验证配置
       requiresTestContent: false,
-      canStartTest: (testContent: string, hasPrompt: boolean) => {
-        return hasPrompt // 只需要有提示词即可
+      canStartTest: (_testContent: string, hasPrompt: boolean) => {
+        return hasPrompt
       },
     },
   }

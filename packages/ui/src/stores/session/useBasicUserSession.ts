@@ -6,7 +6,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { getPiniaServices } from '../../plugins/pinia'
 import { TEMPLATE_SELECTION_KEYS } from '@prompt-optimizer/core'
 import {
