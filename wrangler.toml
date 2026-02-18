@@ -1,0 +1,27 @@
+# Cloudflare Workers/Pages Configuration
+# This configuration enables deployment to Cloudflare Pages
+
+name = "prompt-optimizer"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages configuration
+pages_build_output_dir = "packages/web/dist"
+
+# Environment variables (set via Cloudflare dashboard or wrangler secret)
+# [vars]
+# ACCESS_PASSWORD = ""
+
+# Build configuration for Cloudflare Pages
+[build]
+command = "pnpm build"
+
+# Development configuration
+[dev]
+port = 8788
+local_protocol = "http"
+
+# KV namespace for session storage (optional, for production use)
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = "your-kv-namespace-id"
