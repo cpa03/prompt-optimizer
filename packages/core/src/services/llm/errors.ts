@@ -5,17 +5,39 @@
 
 import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 
+/**
+ * Error options for error chaining support
+ * Compatible with ES2022+ ErrorOptions for forward compatibility
+ */
+interface ErrorOptionsWithCause {
+  cause?: unknown
+}
+
+/**
+ * Sets the cause property on an error for error chaining
+ */
+function setErrorCause(error: Error, cause: unknown): void {
+  if (cause !== undefined) {
+    ;(error as any).cause = cause
+  }
+}
+
 export class BaseError extends Error {
   public readonly code: string
   public readonly params?: ErrorParams
 
-  constructor(code: string, message?: string, params?: ErrorParams) {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
     super(message ? `[${code}] ${message}` : `[${code}]`)
     this.name = this.constructor.name
     this.code = code
-    // Prefer structured params for UI translation; fall back to message as {details}.
     this.params = params ?? (message ? { details: message } : undefined)
-    Object.setPrototypeOf(this, new.target.prototype) // Ensure correct prototype chain | 确保原型链正确
+    Object.setPrototypeOf(this, new.target.prototype)
+    setErrorCause(this, options?.cause)
   }
 }
 
@@ -24,8 +46,8 @@ export class BaseError extends Error {
  * API错误 - 用于表示API调用过程中的错误
  */
 export class APIError extends BaseError {
-  constructor(message: string) {
-    super(LLM_ERROR_CODES.API_ERROR, message)
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(LLM_ERROR_CODES.API_ERROR, message, undefined, options)
   }
 }
 
@@ -34,8 +56,8 @@ export class APIError extends BaseError {
  * 请求配置错误 - 用于表示请求配置验证失败的错误
  */
 export class RequestConfigError extends BaseError {
-  constructor(message: string) {
-    super(LLM_ERROR_CODES.CONFIG_ERROR, message)
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(LLM_ERROR_CODES.CONFIG_ERROR, message, undefined, options)
   }
 }
 
@@ -44,8 +66,8 @@ export class RequestConfigError extends BaseError {
  * 验证错误 - 用于表示参数验证失败的错误
  */
 export class ValidationError extends BaseError {
-  constructor(message: string) {
-    super(LLM_ERROR_CODES.VALIDATION_ERROR, message)
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(LLM_ERROR_CODES.VALIDATION_ERROR, message, undefined, options)
   }
 }
 
@@ -54,8 +76,8 @@ export class ValidationError extends BaseError {
  * 初始化错误 - 用于表示服务初始化失败的错误
  */
 export class InitializationError extends BaseError {
-  constructor(message: string) {
-    super(LLM_ERROR_CODES.INITIALIZATION_ERROR, message)
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(LLM_ERROR_CODES.INITIALIZATION_ERROR, message, undefined, options)
   }
 }
 
@@ -67,12 +89,17 @@ export class LLMError extends Error {
   public readonly code: string
   public readonly params?: ErrorParams
 
-  constructor(code: string, message?: string, params?: ErrorParams) {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
     super(message ? `[${code}] ${message}` : `[${code}]`)
     this.name = 'LLMError'
     this.code = code
-    // Prefer structured params for UI translation; fall back to message as {details}.
     this.params = params ?? (message ? { details: message } : undefined)
+    setErrorCause(this, options?.cause)
   }
 }
 
@@ -81,8 +108,8 @@ export class LLMError extends Error {
  * 模型配置错误
  */
 export class ModelConfigError extends LLMError {
-  constructor(message: string) {
-    super(LLM_ERROR_CODES.CONFIG_ERROR, message)
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(LLM_ERROR_CODES.CONFIG_ERROR, message, undefined, options)
     this.name = 'ModelConfigError'
   }
 }

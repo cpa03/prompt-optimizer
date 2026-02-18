@@ -6,6 +6,22 @@ import type { ErrorParams } from '../../constants/error-codes'
 export type PromptErrorParams = ErrorParams
 
 /**
+ * Error options for error chaining support
+ */
+interface ErrorOptionsWithCause {
+  cause?: unknown
+}
+
+/**
+ * Sets the cause property on an error for error chaining
+ */
+function setErrorCause(error: Error, cause: unknown): void {
+  if (cause !== undefined) {
+    ;(error as any).cause = cause
+  }
+}
+
+/**
  * 提示词服务基础错误
  *
  * code: i18n key (e.g. "error.prompt.optimization")
@@ -15,11 +31,17 @@ export class PromptError extends Error {
   public readonly code: string
   public readonly params?: PromptErrorParams
 
-  constructor(code: string, message?: string, params?: PromptErrorParams) {
+  constructor(
+    code: string,
+    message?: string,
+    params?: PromptErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
     super(message ? `[${code}] ${message}` : `[${code}]`)
     this.name = 'PromptError'
     this.code = code
     this.params = params
+    setErrorCause(this, options?.cause)
   }
 }
 
@@ -27,8 +49,8 @@ export class PromptError extends Error {
  * 优化错误
  */
 export class OptimizationError extends PromptError {
-  constructor(originalPrompt: string, details?: string) {
-    super('error.prompt.optimization', details, { details })
+  constructor(originalPrompt: string, details?: string, options?: ErrorOptionsWithCause) {
+    super('error.prompt.optimization', details, { details }, options)
     this.name = 'OptimizationError'
     this.originalPrompt = originalPrompt
   }
@@ -40,8 +62,13 @@ export class OptimizationError extends PromptError {
  * 迭代错误
  */
 export class IterationError extends PromptError {
-  constructor(originalPrompt: string, iterateInput: string, details?: string) {
-    super('error.prompt.iteration', details, { details })
+  constructor(
+    originalPrompt: string,
+    iterateInput: string,
+    details?: string,
+    options?: ErrorOptionsWithCause
+  ) {
+    super('error.prompt.iteration', details, { details }, options)
     this.name = 'IterationError'
     this.originalPrompt = originalPrompt
     this.iterateInput = iterateInput
@@ -55,8 +82,13 @@ export class IterationError extends PromptError {
  * 测试错误
  */
 export class TestError extends PromptError {
-  constructor(prompt: string, testInput: string, details?: string) {
-    super('error.prompt.test', details, { details })
+  constructor(
+    prompt: string,
+    testInput: string,
+    details?: string,
+    options?: ErrorOptionsWithCause
+  ) {
+    super('error.prompt.test', details, { details }, options)
     this.name = 'TestError'
     this.prompt = prompt
     this.testInput = testInput
@@ -70,8 +102,8 @@ export class TestError extends PromptError {
  * 服务依赖错误
  */
 export class ServiceDependencyError extends PromptError {
-  constructor(serviceName: string, details?: string) {
-    super('error.prompt.service_dependency', details, { details })
+  constructor(serviceName: string, details?: string, options?: ErrorOptionsWithCause) {
+    super('error.prompt.service_dependency', details, { details }, options)
     this.name = 'ServiceDependencyError'
     this.serviceName = serviceName
   }
