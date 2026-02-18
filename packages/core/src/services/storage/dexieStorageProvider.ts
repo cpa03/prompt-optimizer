@@ -108,13 +108,13 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 获取所有存储键
+   * 优化：使用 primaryKeys() 代替 toArray()，避免加载所有值到内存
    */
   async keys(): Promise<string[]> {
     await this.initialize()
 
     try {
-      const records = await this.db.storage.toArray()
-      return records.map((record) => record.key)
+      return await this.db.storage.toCollection().primaryKeys()
     } catch (error) {
       console.error('获取所有键失败:', error)
       throw new StorageError('Failed to get all keys', 'read')
@@ -377,6 +377,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 获取存储统计信息
+   * 优化：避免加载所有记录到内存，使用流式处理计算大小
    */
   async getStorageInfo(): Promise<{
     itemCount: number
@@ -389,9 +390,12 @@ export class DexieStorageProvider implements IStorageProvider {
       const itemCount = await this.db.storage.count()
       const lastRecord = await this.db.storage.orderBy('timestamp').last()
 
-      // 估算存储大小（粗略计算）
-      const allRecords = await this.db.storage.toArray()
-      const estimatedSize = allRecords.reduce((total, record) => total + record.value.length, 0)
+      let estimatedSize = 0
+      if (itemCount > 0) {
+        await this.db.storage.each((record) => {
+          estimatedSize += record.value.length
+        })
+      }
 
       return {
         itemCount,
