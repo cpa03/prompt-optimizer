@@ -46,6 +46,10 @@ export const STORAGE_CONSTRAINTS = {
 
   // Maximum storage size for providers (in bytes, default 5MB for localStorage)
   MAX_STORAGE_SIZE_BYTES: getEnvInt('STORAGE_MAX_SIZE_MB', 5) * 1024 * 1024,
+
+  // Async lock constraints
+  LOCK_MAX_ATTEMPTS: getEnvInt('STORAGE_LOCK_MAX_ATTEMPTS', 100),
+  LOCK_RETRY_DELAY_MS: getEnvInt('STORAGE_LOCK_RETRY_DELAY_MS', 10),
 } as const
 
 // Prompt constraints - now environment-configurable

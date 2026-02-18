@@ -11,7 +11,7 @@ class AsyncLock {
   async acquire(key: string): Promise<() => void> {
     // 等待现有锁完成，带最大重试限制防止无限循环
     let attempts = 0
-    const maxAttempts = 100 // 防止无限循环的安全限制
+    const maxAttempts = STORAGE_CONSTRAINTS.LOCK_MAX_ATTEMPTS
 
     while (this.locks.has(key)) {
       attempts++
@@ -31,7 +31,7 @@ class AsyncLock {
           lockError
         )
         // 短暂延迟后重试，避免CPU忙等
-        await new Promise((resolve) => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, STORAGE_CONSTRAINTS.LOCK_RETRY_DELAY_MS))
       }
     }
 
