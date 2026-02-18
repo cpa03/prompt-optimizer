@@ -12,7 +12,6 @@ import {
   isDarkTheme,
   getCurrentThemeId,
   getThemeConfig,
-  type ThemeConfig,
 } from '../../config/naive-theme'
 
 /**

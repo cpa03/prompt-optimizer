@@ -11,7 +11,7 @@
  * @param optimizationMode - 优化模式（'system' | 'user'）
  * @param templateType - 优化模板类型（'optimize' | 'userOptimize'）
  */
-import { ref, computed, type Ref, type ComputedRef } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import type { AppServices } from '../../types/services'
 import type {
   OptimizationRequest,

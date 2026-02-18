@@ -14,7 +14,7 @@
  */
 
 import { defineStore } from 'pinia'
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { getPiniaServices } from '../../plugins/pinia'
 import { TEMPLATE_SELECTION_KEYS } from '@prompt-optimizer/core'
 import {
@@ -123,7 +123,7 @@ const createDefaultState = (): BasicSystemSessionState => ({
   testResults: null,
   layout: {
     mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT,
-    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT,
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT as TestColumnCount,
   },
   testVariants: [
     { id: 'a', version: 0, modelKey: '' },
@@ -173,7 +173,7 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
   // 测试布局与列配置（使用集中常量）
   const layout = ref<BasicSystemLayoutConfig>({
     mainSplitLeftPct: LAYOUT_CONSTANTS.SPLIT_PANEL.DEFAULT_LEFT_PCT,
-    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT,
+    testColumnCount: LAYOUT_CONSTANTS.TEST_COLUMN.DEFAULT_COUNT as TestColumnCount,
   })
   const testVariants = ref<TestVariantConfig[]>([
     { id: 'a', version: 0, modelKey: '' },
