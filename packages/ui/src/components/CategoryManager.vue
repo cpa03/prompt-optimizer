@@ -114,9 +114,7 @@
       :mask-closable="false"
       @positive-click="handleConfirmDelete"
     >
-      <p
-        v-html="t('favorites.categoryManager.deleteWarning', { name: deletingCategory?.name })"
-      ></p>
+      <p v-html="sanitizedDeleteWarning"></p>
       <p v-if="deletingCategoryHasChildren" style="color: var(--n-color-error)">
         {{
           t('favorites.categoryManager.deleteChildrenWarning', {
@@ -166,6 +164,7 @@ import { COMPONENT_CONSTANTS, TIME_CONSTANTS } from '../config/constants'
 import { useI18n } from 'vue-i18n'
 import type { FavoriteCategory } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
+import DOMPurify from 'dompurify'
 
 const services = inject<Ref<AppServices | null> | null>('services', null)
 const message = useToast()
@@ -195,6 +194,15 @@ const saving = ref(false)
 const deleteDialogVisible = ref(false)
 const deletingCategory = ref<FavoriteCategory | null>(null)
 const deletingCategoryUsageCount = ref(0)
+
+const sanitizedDeletingCategoryName = computed(() => {
+  if (!deletingCategory.value?.name) return ''
+  return DOMPurify.sanitize(deletingCategory.value.name, { ALLOWED_TAGS: [] })
+})
+
+const sanitizedDeleteWarning = computed(() => {
+  return t('favorites.categoryManager.deleteWarning', { name: sanitizedDeletingCategoryName.value })
+})
 
 // 🎨 Palette: Category removal animation state
 const removingCategoryId = ref<string | null>(null)
