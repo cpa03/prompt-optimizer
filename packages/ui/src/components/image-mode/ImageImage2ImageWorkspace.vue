@@ -2289,11 +2289,8 @@ const handleTextModelSelectFocus = async () => {
 }
 
 onMounted(async () => {
-  console.log('[ImageImage2ImageWorkspace] Starting initialization...')
-  console.log('[ImageImage2ImageWorkspace] Services available:', !!services?.value)
   try {
     await initialize()
-    console.log('[ImageImage2ImageWorkspace] Initialization completed successfully')
   } catch (error) {
     console.error('[ImageImage2ImageWorkspace] Initialization failed:', error)
   }
@@ -2312,7 +2309,6 @@ onMounted(async () => {
 
 // 清理
 onUnmounted(() => {
-  console.log('[ImageImage2ImageWorkspace] Cleaning up...')
   if (typeof window !== 'undefined') {
     window.removeEventListener('image-workspace-refresh-iterate-select', refreshIterateHandler)
     window.removeEventListener('image-workspace-refresh-text-models', refreshTextModelsHandler)

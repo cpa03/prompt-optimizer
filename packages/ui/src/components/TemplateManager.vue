@@ -1196,10 +1196,8 @@ const processedPreview = computed(() => {
 const loadTemplates = async () => {
   isLoading.value = true
   try {
-    // 统一使用异步方法
     const allTemplates = await getTemplateManager.value.listTemplates()
     templates.value = allTemplates
-    console.log('加载到的提示词:', templates.value)
   } catch (error) {
     console.error('加载提示词失败:', error)
     toast.error('加载提示词失败')

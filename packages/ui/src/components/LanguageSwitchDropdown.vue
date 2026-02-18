@@ -163,10 +163,8 @@ const handleLanguageSelect = async (key: string) => {
   // 保存用户偏好
   try {
     await setPreference(UI_SETTINGS_KEYS.PREFERRED_LANGUAGE, selectedLanguage.locale)
-    console.log(`[LanguageSwitchDropdown] Language switched to: ${selectedLanguage.label}`)
   } catch (error) {
     console.error('[LanguageSwitchDropdown] Failed to save language preference:', error)
-    // 语言切换仍然生效，只是偏好设置保存失败
   }
 }
 

@@ -2189,7 +2189,6 @@ onMounted(() => {
     }
 
     // Services 和 Pinia 均已就绪，清除超时定时器并停止监听
-    console.log('[PromptOptimizerApp] Services 和 Pinia 均已就绪，开始恢复会话')
     if (initTimeoutId !== null) {
       window.clearTimeout(initTimeoutId)
       initTimeoutId = null

@@ -2051,11 +2051,8 @@ const handleTextModelSelectFocus = async () => {
 }
 
 onMounted(async () => {
-  console.log('[ImageText2ImageWorkspace] Starting initialization...')
-  console.log('[ImageText2ImageWorkspace] Services available:', !!services?.value)
   try {
     await initialize()
-    console.log('[ImageText2ImageWorkspace] Initialization completed successfully')
   } catch (error) {
     console.error('[ImageText2ImageWorkspace] Initialization failed:', error)
   }
