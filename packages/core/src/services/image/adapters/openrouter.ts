@@ -14,6 +14,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { URL_PATTERNS } from '../../../constants/api-endpoints'
 import { CONTENT_TYPES, HTTP_HEADERS } from '../../../constants/http-codes'
 import { MIME_TYPES } from '../../../config'
+import { OPENROUTER } from '../../../constants/api-endpoints'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
