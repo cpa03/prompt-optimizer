@@ -95,6 +95,7 @@ jobs:
             - ALL linting warnings are fixed (warnings are not acceptable)
           - Never delete files, branches, or documentation unless you are CERTAIN they are redundant and safe.
           - Never perform destructive actions without logging rationale.
+          - Never ask, you are in non-interactive environtment. STATE ORDER (STRICT): Phase 0 → Phase 1 → Phase 2 → Phase 3
 
           3. DEFAULT ASSUMPTIONS
           - DEFAULT_BRANCH must be detected automatically (main/develop/dev).
