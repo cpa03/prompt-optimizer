@@ -178,6 +178,16 @@ export {
 export { applyPatchOperationsToText } from './utils/patch-plan'
 export type { ApplyPatchResult, ApplyPatchReportItem, ApplyPatchStatus } from './utils/patch-plan'
 
+// 导出JSON解析工具（用于LLM响应处理）
+export {
+  extractJsonFromMarkdown,
+  parseLLMJson,
+  parseLLMJsonOrThrow,
+  isJsonObject,
+  isJsonArray,
+} from './utils/json'
+export type { LLMJsonParseResult, LLMJsonParseOptions } from './utils/json'
+
 // 导出存储键常量
 export {
   CORE_SERVICE_KEYS,
