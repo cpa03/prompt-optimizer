@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    "editorconfig.editorconfig",
+    "ms-playwright.playwright",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
