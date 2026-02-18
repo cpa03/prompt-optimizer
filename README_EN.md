@@ -505,7 +505,3 @@ If this project is helpful to you, please consider giving it a Star ⭐️
 - Submit an Issue
 - Create a Pull Request
 - Join the discussion group
-
-```
-
-```
