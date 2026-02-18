@@ -156,15 +156,21 @@ export class HistoryManager implements IHistoryManager {
    */
   async getIterationChain(recordId: string): Promise<PromptRecord[]> {
     const allRecords = await this.getRecords()
+
+    const recordMap = new Map<string, PromptRecord>()
+    for (const record of allRecords) {
+      recordMap.set(record.id, record)
+    }
+
     const chain: PromptRecord[] = []
-    let currentId = recordId
+    let currentId: string | undefined = recordId
 
     while (currentId) {
-      const record = allRecords.find((r) => r.id === currentId)
+      const record = recordMap.get(currentId)
       if (!record) break
 
       chain.unshift(record)
-      currentId = record.previousId ?? ''
+      currentId = record.previousId
     }
 
     return chain
