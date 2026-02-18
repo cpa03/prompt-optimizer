@@ -2,6 +2,9 @@ import { TextModelConfig } from './types'
 import { getAllModels } from './defaults'
 import { ModelError } from './errors'
 import { MODEL_ERROR_CODES } from '../../constants/error-codes'
+import { createDebugLogger } from '../../utils/debug'
+
+const logger = createDebugLogger('electron-config')
 
 /**
  * Electron环境下的配置管理器
@@ -33,20 +36,20 @@ export class ElectronConfigManager {
     }
 
     try {
-      console.log('[ElectronConfigManager] Syncing environment variables from main process...')
+      logger.log('Syncing environment variables from main process...')
       this.envVars = await window.electronAPI.config.getEnvironmentVariables()
       this.initialized = true
-      console.log('[ElectronConfigManager] Environment variables synced successfully')
+      logger.log('Environment variables synced successfully')
 
       // 调试输出
       Object.keys(this.envVars).forEach((key) => {
         const value = this.envVars[key]
         if (value) {
-          console.log(`[ElectronConfigManager] ${key}: ${value.substring(0, 10)}...`)
+          logger.log(key + ':', value.substring(0, 10) + '...')
         }
       })
     } catch (error) {
-      console.error('[ElectronConfigManager] Failed to sync environment variables:', error)
+      logger.error('Failed to sync environment variables:', error)
       throw error
     }
   }
@@ -56,9 +59,7 @@ export class ElectronConfigManager {
    */
   getEnvVar(key: string): string {
     if (!this.initialized) {
-      console.warn(
-        `[ElectronConfigManager] Environment variables not synced yet, returning empty for ${key}`
-      )
+      logger.warn('Environment variables not synced yet, returning empty for', key)
       return ''
     }
     return this.envVars[key] || ''
