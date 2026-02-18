@@ -2,7 +2,7 @@
 # https://developers.cloudflare.com/workers/wrangler/configuration/
 
 name = "prompt-optimizer"
-compatibility_date = "2024-01-01"
+compatibility_date = "2025-02-18"
 compatibility_flags = ["nodejs_compat"]
 
 # Pages configuration
@@ -13,11 +13,26 @@ pages_build_output_dir = "packages/web/dist"
 enabled = true
 head_sampling_rate = 0.1
 
+# Logs configuration for better debugging
+[logs]
+level = "info"
+
 # Development configuration
 [dev]
 port = 8788
 local_protocol = "http"
 ip = "localhost"
+
+# Static asset rules for better caching
+# These rules apply to files in the build output directory
+[[routes]]
+pattern = "assets/*"
+custom_domain = false
+
+# Headers for static assets (configured in _headers file or Pages settings)
+# Cache static assets for 1 year (immutable)
+# HTML files: no cache (always fresh)
+# JS/CSS: cache with revalidation
 
 # Environment variables (set via Cloudflare dashboard or wrangler secret)
 # [vars]
@@ -26,8 +41,21 @@ ip = "localhost"
 # Production environment (optional override)
 # [env.production]
 # name = "prompt-optimizer-prod"
+# routes = [
+#   { pattern = "prompt-optimizer.example.com/*", custom_domain = true }
+# ]
 
-# KV namespace for session storage (optional, for production use)
+# KV namespace for distributed rate limiting (recommended for production)
+# Without KV, rate limiting is per-isolate and won't work across edge locations
+# To enable: 
+# 1. Create KV namespace: wrangler kv:namespace create SESSIONS
+# 2. Uncomment below and add the returned namespace ID
 # [[kv_namespaces]]
 # binding = "SESSIONS"
 # id = "your-kv-namespace-id"
+
+# D1 database for persistent storage (optional)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "prompt-optimizer-db"
+# database_id = "your-d1-database-id"

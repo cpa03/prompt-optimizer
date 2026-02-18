@@ -1,5 +1,22 @@
+/**
+ * Cloudflare Pages Authentication API
+ *
+ * IMPORTANT: Rate Limiting Limitation
+ * The current rate limiting implementation uses in-memory storage (Map).
+ * In Cloudflare's edge environment, each Worker isolate has its own memory,
+ * so rate limiting is NOT distributed across edge locations.
+ *
+ * For production use with distributed rate limiting:
+ * 1. Enable KV namespace in wrangler.toml (see commented section)
+ * 2. Implement rate limiting using KV with TTL
+ * 3. Alternatively, use Cloudflare's Rate Limiting product
+ *
+ * @see https://developers.cloudflare.com/waf/rate-limiting-rules/
+ */
+
 export interface Env {
   ACCESS_PASSWORD?: string
+  SESSIONS?: KVNamespace
 }
 
 const COOKIE_CONFIG = {
@@ -128,7 +145,10 @@ function getCorsHeaders(origin: string | null): Record<string, string> {
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
