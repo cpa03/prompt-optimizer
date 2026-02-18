@@ -1,4 +1,6 @@
 import type { IStorageProvider } from './types'
+import { StorageError } from './errors'
+import { isStructuredErrorLike } from '../../utils/error'
 
 /**
  * 内存存储提供者
@@ -14,8 +16,12 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 存储值或null
    */
   async getItem(key: string): Promise<string | null> {
-    const value = this.storage.get(key)
-    return value !== undefined ? value : null
+    try {
+      const value = this.storage.get(key)
+      return value !== undefined ? value : null
+    } catch (error) {
+      throw new StorageError(`Failed to get storage item: ${key}`, 'read')
+    }
   }
 
   /**
@@ -24,7 +30,11 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param value 存储值
    */
   async setItem(key: string, value: string): Promise<void> {
-    this.storage.set(key, value)
+    try {
+      this.storage.set(key, value)
+    } catch (error) {
+      throw new StorageError(`Failed to set storage item: ${key}`, 'write')
+    }
   }
 
   /**
@@ -32,14 +42,22 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param key 存储键
    */
   async removeItem(key: string): Promise<void> {
-    this.storage.delete(key)
+    try {
+      this.storage.delete(key)
+    } catch (error) {
+      throw new StorageError(`Failed to remove storage item: ${key}`, 'delete')
+    }
   }
 
   /**
    * 清空所有存储项
    */
   async clearAll(): Promise<void> {
-    this.storage.clear()
+    try {
+      this.storage.clear()
+    } catch (error) {
+      throw new StorageError('Failed to clear all storage items', 'clear')
+    }
   }
 
   /**
@@ -48,21 +66,44 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @param modifier 修改函数
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
-    const currentValue = await this.getItem(key)
-    let parsedValue: T | null = null
+    try {
+      const currentValue = await this.getItem(key)
+      let parsedValue: T | null = null
 
-    if (currentValue) {
-      try {
-        parsedValue = JSON.parse(currentValue) as T
-      } catch (parseError) {
-        throw new Error(
-          `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`
-        )
+      if (currentValue) {
+        try {
+          parsedValue = JSON.parse(currentValue) as T
+        } catch (parseError) {
+          throw new StorageError(
+            `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`,
+            'read'
+          )
+        }
       }
-    }
 
-    const newValue = modifier(parsedValue)
-    await this.setItem(key, JSON.stringify(newValue))
+      const newValue = modifier(parsedValue)
+      await this.setItem(key, JSON.stringify(newValue))
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+
+      if (isStructuredErrorLike(error)) {
+        throw error
+      }
+
+      if (
+        error instanceof Error &&
+        (error.name.includes('Error') ||
+          error.constructor.name !== 'Error' ||
+          error.message.includes('Model') ||
+          error.message.includes('not found') ||
+          error.message.includes('not exist'))
+      ) {
+        throw error
+      }
+      throw new StorageError(`Failed to update data: ${key}`, 'write')
+    }
   }
 
   /**
@@ -76,12 +117,19 @@ export class MemoryStorageProvider implements IStorageProvider {
       value?: string
     }>
   ): Promise<void> {
-    for (const op of operations) {
-      if (op.operation === 'set' && op.value !== undefined) {
-        await this.setItem(op.key, op.value)
-      } else if (op.operation === 'remove') {
-        await this.removeItem(op.key)
+    try {
+      for (const op of operations) {
+        if (op.operation === 'set' && op.value !== undefined) {
+          await this.setItem(op.key, op.value)
+        } else if (op.operation === 'remove') {
+          await this.removeItem(op.key)
+        }
       }
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError('Failed to perform batch update', 'write')
     }
   }
 
@@ -93,7 +141,7 @@ export class MemoryStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true,
       supportsBatch: true,
-      maxStorageSize: undefined, // 内存存储没有固定限制
+      maxStorageSize: undefined,
     }
   }
 
@@ -110,7 +158,11 @@ export class MemoryStorageProvider implements IStorageProvider {
    * @returns 所有键的数组
    */
   async keys(): Promise<string[]> {
-    return Array.from(this.storage.keys())
+    try {
+      return Array.from(this.storage.keys())
+    } catch (error) {
+      throw new StorageError('Failed to get all keys', 'read')
+    }
   }
 
   /**
