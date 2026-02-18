@@ -7,6 +7,20 @@ const COOKIE_CONFIG = {
   CACHE_CONTROL: 'no-cache, no-store, must-revalidate',
 }
 
+function timingSafeEqual(a: string, b: string): boolean {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return false
+  }
+  if (a.length !== b.length) {
+    return false
+  }
+  let result = 0
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return result === 0
+}
+
 function generateAuthPage(isChinese: boolean): string {
   const text = {
     title: isChinese ? '访问验证 - Prompt Optimizer' : 'Access Verification - Prompt Optimizer',
@@ -241,7 +255,7 @@ export async function onRequest(context: {
 
     if (accessTokenCookie) {
       const accessToken = accessTokenCookie.split('=')[1]?.trim()
-      authenticated = accessToken === 'authenticated'
+      authenticated = timingSafeEqual(accessToken, 'authenticated')
     }
   }
 
