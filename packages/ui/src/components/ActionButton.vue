@@ -41,6 +41,7 @@ import { computed, ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NButton } from 'naive-ui'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -115,10 +116,10 @@ const handleClick = () => {
     clearTimeout(pressTimeout.value)
   }
 
-  // 150ms 后恢复状态，创造微妙的"按下-弹起"视觉效果
+  // Release press state after press feedback duration, creating subtle "press-release" visual feedback
   pressTimeout.value = window.setTimeout(() => {
     isPressed.value = false
-  }, 150)
+  }, TIME_CONSTANTS.PRESS_FEEDBACK_MS)
 
   // 触发点击事件
   emit('click')

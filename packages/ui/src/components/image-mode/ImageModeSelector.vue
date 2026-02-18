@@ -59,6 +59,7 @@
 import { ref } from 'vue'
 import { NButtonGroup, NButton } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
+import { TIME_CONSTANTS } from '../../config/constants'
 
 export type ImageMode = 'text2image' | 'image2image'
 
@@ -96,16 +97,16 @@ const handleModeChange = (mode: ImageMode) => {
   if (pressTimeout) clearTimeout(pressTimeout)
   if (animationTimeout) clearTimeout(animationTimeout)
 
-  // Release pressed state after 150ms
+  // Release pressed state after press feedback duration
   pressTimeout = window.setTimeout(() => {
     pressedMode.value = null
-  }, 150)
+  }, TIME_CONSTANTS.PRESS_FEEDBACK_MS)
 
   // Trigger bounce animation on the icon
   animatingMode.value = mode
   animationTimeout = window.setTimeout(() => {
     animatingMode.value = null
-  }, 400)
+  }, TIME_CONSTANTS.ICON_BOUNCE_MS)
 
   emit('update:modelValue', mode)
   emit('change', mode)

@@ -42,7 +42,7 @@ import { computed, ref, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton } from 'naive-ui'
-import { UI_DIMENSIONS } from '../config/constants'
+import { UI_DIMENSIONS, TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -106,7 +106,7 @@ const handleConfirm = () => {
     isVisible.value = false
     isClosing.value = false
     emit('confirm')
-  }, 150)
+  }, TIME_CONSTANTS.PRESS_FEEDBACK_MS)
 }
 
 // 添加关闭动画状态
@@ -120,7 +120,7 @@ const handleCancel = () => {
     isVisible.value = false
     isClosing.value = false
     emit('cancel')
-  }, 150)
+  }, TIME_CONSTANTS.PRESS_FEEDBACK_MS)
 }
 
 const handleAfterLeave = () => {
