@@ -2,24 +2,9 @@
  * Prompt module error params for i18n interpolation.
  */
 import type { ErrorParams } from '../../constants/error-codes'
+import { type ErrorOptionsWithCause, setErrorCause } from '../llm/errors'
 
 export type PromptErrorParams = ErrorParams
-
-/**
- * Error options for error chaining support
- */
-interface ErrorOptionsWithCause {
-  cause?: unknown
-}
-
-/**
- * Sets the cause property on an error for error chaining
- */
-function setErrorCause(error: Error, cause: unknown): void {
-  if (cause !== undefined) {
-    ;(error as any).cause = cause
-  }
-}
 
 /**
  * 提示词服务基础错误
