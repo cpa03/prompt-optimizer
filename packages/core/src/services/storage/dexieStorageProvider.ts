@@ -107,6 +107,21 @@ export class DexieStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取所有存储键
+   */
+  async keys(): Promise<string[]> {
+    await this.initialize()
+
+    try {
+      const records = await this.db.storage.toArray()
+      return records.map((record) => record.key)
+    } catch (error) {
+      console.error('获取所有键失败:', error)
+      throw new StorageError('Failed to get all keys', 'read')
+    }
+  }
+
+  /**
    * 设置存储项
    */
   async setItem(key: string, value: string): Promise<void> {

@@ -136,6 +136,25 @@ describe('存储实现通用测试', () => {
           expect(result1).toBeNull()
           expect(result2).toBeNull()
         })
+
+        it('应该能够获取所有存储键', async () => {
+          await storageProvider.setItem('key1', 'value1')
+          await storageProvider.setItem('key2', 'value2')
+          await storageProvider.setItem('key3', 'value3')
+
+          const allKeys = await storageProvider.keys()
+
+          expect(allKeys).toContain('key1')
+          expect(allKeys).toContain('key2')
+          expect(allKeys).toContain('key3')
+          expect(allKeys.length).toBeGreaterThanOrEqual(3)
+        })
+
+        it('应该在空存储时返回空数组', async () => {
+          await storageProvider.clearAll()
+          const allKeys = await storageProvider.keys()
+          expect(allKeys).toEqual([])
+        })
       })
 
       describe('原子操作测试', () => {

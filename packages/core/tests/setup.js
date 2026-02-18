@@ -43,6 +43,13 @@ const localStorageMock = {
   clear: vi.fn(() => {
     localStorageMock.store.clear()
   }),
+  get length() {
+    return localStorageMock.store.size
+  },
+  key: vi.fn((index) => {
+    const keys = Array.from(localStorageMock.store.keys())
+    return keys[index] ?? null
+  }),
 }
 
 // 全局注入 localStorage
