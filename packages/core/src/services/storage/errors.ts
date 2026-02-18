@@ -17,6 +17,22 @@ const STORAGE_OPERATION_TO_CODE: Record<
   lock: STORAGE_ERROR_CODES.LOCK_ERROR,
 }
 
+/**
+ * Error options for error chaining support
+ */
+interface ErrorOptionsWithCause {
+  cause?: unknown
+}
+
+/**
+ * Sets the cause property on an error for error chaining
+ */
+function setErrorCause(error: Error, cause: unknown): void {
+  if (cause !== undefined) {
+    ;(error as any).cause = cause
+  }
+}
+
 export class StorageError extends Error {
   public readonly code: string
   public readonly params?: ErrorParams
@@ -24,12 +40,14 @@ export class StorageError extends Error {
   constructor(
     message: string,
     public readonly operation: StorageOperation,
-    params?: ErrorParams
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
   ) {
     const code = STORAGE_OPERATION_TO_CODE[operation]
     super(message ? `[${code}] ${message}` : `[${code}]`)
     this.name = 'StorageError'
     this.code = code
     this.params = params ?? (message ? { details: message } : undefined)
+    setErrorCause(this, options?.cause)
   }
 }
