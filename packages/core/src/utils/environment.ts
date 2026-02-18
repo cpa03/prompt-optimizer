@@ -4,6 +4,9 @@
 
 import { TIMEOUTS } from '../config/timeouts'
 import { ENV_CONFIG } from '../config/core-config'
+import { createDebugLogger } from './debug'
+
+const logger = createDebugLogger('environment')
 
 // 常量定义
 export const CUSTOM_API_PATTERN = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/
@@ -145,14 +148,14 @@ export function isRunningInElectron(): boolean {
   // 第一步：检查环境变量（最高优先级）
   const platformEnv = getEnvVar('VITE_APP_PLATFORM')
   if (platformEnv) {
-    console.log('[isRunningInElectron] Using platform from env:', platformEnv)
+    logger.log('Using platform from env:', platformEnv)
     return platformEnv === 'electron'
   }
 
   // 自动检测：优先检查electronAPI
   const hasElectronAPI = typeof (window as any).electronAPI !== 'undefined'
   if (hasElectronAPI) {
-    console.log('[isRunningInElectron] Verdict: true (via electronAPI)')
+    logger.log('Verdict: true (via electronAPI)')
     return true
   }
 
@@ -163,11 +166,11 @@ export function isRunningInElectron(): boolean {
     (window as any).process?.versions?.electron
 
   if (hasValidElectronProcess) {
-    console.log('[isRunningInElectron] Verdict: true (via process.versions.electron)')
+    logger.log('Verdict: true (via process.versions.electron)')
     return true
   }
 
-  console.log('[isRunningInElectron] Verdict: false (no Electron features detected)')
+  logger.log('Verdict: false (no Electron features detected)')
   return false
 }
 
@@ -185,7 +188,7 @@ export function isElectronApiReady(): boolean {
   const hasPreferenceApi =
     hasElectronAPI && typeof window_any.electronAPI.preference !== 'undefined'
 
-  console.log('[isElectronApiReady] API readiness check:', {
+  logger.log('API readiness check:', {
     hasElectronAPI,
     hasPreferenceApi,
   })
@@ -205,21 +208,21 @@ export function waitForElectronApi(
   return new Promise((resolve) => {
     // 如果已经就绪，立即返回
     if (isElectronApiReady()) {
-      console.log('[waitForElectronApi] API already ready')
+      logger.log('API already ready')
       resolve(true)
       return
     }
 
-    console.log('[waitForElectronApi] Waiting for Electron API...')
+    logger.log('Waiting for Electron API...')
     const startTime = Date.now()
     const checkInterval = setInterval(() => {
       if (isElectronApiReady()) {
         clearInterval(checkInterval)
-        console.log('[waitForElectronApi] API ready after', Date.now() - startTime, 'ms')
+        logger.log('API ready after', Date.now() - startTime, 'ms')
         resolve(true)
       } else if (Date.now() - startTime > timeout) {
         clearInterval(checkInterval)
-        console.warn('[waitForElectronApi] Timeout waiting for Electron API after', timeout, 'ms')
+        logger.warn('Timeout waiting for Electron API after', timeout, 'ms')
         resolve(false)
       }
     }, 50) // 每50ms检查一次
@@ -292,7 +295,7 @@ export function scanCustomModelEnvVars(
       })
     }
   } catch (error) {
-    console.warn('[scanCustomModelEnvVars] Failed to access import.meta.env:', error)
+    logger.warn('Failed to access import.meta.env:', error)
   }
 
   // 优先级2（中等）: process.env（Node.js环境）
@@ -314,7 +317,7 @@ export function scanCustomModelEnvVars(
     })
   }
 
-  console.log(`[scanCustomModelEnvVars] Environment sources loaded`)
+  logger.log('Environment sources loaded')
 
   // 使用预定义的正则表达式模式
   const customApiPattern = CUSTOM_API_PATTERN
@@ -330,7 +333,7 @@ export function scanCustomModelEnvVars(
 
       // 验证后缀名（不能为空，不能包含特殊字符，不能超过长度限制）
       if (!suffix || suffix.length > MAX_SUFFIX_LENGTH || !SUFFIX_PATTERN.test(suffix)) {
-        console.warn(`[scanCustomModelEnvVars] Invalid suffix in ${key}: ${suffix}`)
+        logger.warn('Invalid suffix in', key + ':', suffix)
         return
       }
 
@@ -356,7 +359,7 @@ export function scanCustomModelEnvVars(
           customModels[suffix].model = value
           break
         default:
-          console.warn(`[scanCustomModelEnvVars] Unknown config type: ${configType} in ${key}`)
+          logger.warn('Unknown config type:', configType, 'in', key)
           break
       }
     }
@@ -373,28 +376,28 @@ export function scanCustomModelEnvVars(
 
       // 输出警告信息
       if (validation.warnings.length > 0) {
-        console.warn(`[scanCustomModelEnvVars] Warnings for ${suffix}:`)
+        logger.warn('Warnings for ' + suffix + ':')
         validation.warnings.forEach((warning) => {
-          console.warn(`  - ${warning}`)
+          logger.warn('  -', warning)
         })
       }
     } else {
-      console.error(`[scanCustomModelEnvVars] Skipping ${suffix} due to validation errors:`)
+      logger.error('Skipping ' + suffix + ' due to validation errors:')
       validation.errors.forEach((error) => {
-        console.error(`  - ${error}`)
+        logger.error('  -', error)
       })
 
       if (validation.warnings.length > 0) {
-        console.warn(`[scanCustomModelEnvVars] Additional warnings for ${suffix}:`)
+        logger.warn('Additional warnings for ' + suffix + ':')
         validation.warnings.forEach((warning) => {
-          console.warn(`  - ${warning}`)
+          logger.warn('  -', warning)
         })
       }
     }
   })
 
-  console.log(
-    `[scanCustomModelEnvVars] Found ${Object.keys(validModels).length} valid custom models:`,
+  logger.log(
+    'Found ' + Object.keys(validModels).length + ' valid custom models:',
     Object.keys(validModels)
   )
 
@@ -412,5 +415,5 @@ export function scanCustomModelEnvVars(
  */
 export function clearCustomModelEnvCache(): void {
   cachedCustomModels = null
-  console.log('[clearCustomModelEnvCache] Cache cleared')
+  logger.log('Cache cleared')
 }

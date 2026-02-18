@@ -6,6 +6,9 @@
  */
 
 import { CORE_ERROR_CODES, type ErrorParams } from '../constants/error-codes'
+import { createDebugLogger } from './debug'
+
+const logger = createDebugLogger('ipc')
 
 class IpcSerializationError extends Error {
   public readonly code: string
@@ -40,7 +43,7 @@ export function safeSerializeForIPC<T>(obj: T): T {
   try {
     return JSON.parse(JSON.stringify(obj))
   } catch (error) {
-    console.error('[IPC Serialization] Failed to serialize object:', error)
+    logger.error('Failed to serialize object:', error)
     const details = error instanceof Error ? error.message : String(error)
     throw new IpcSerializationError(`Failed to serialize object for IPC: ${details}`)
   }
@@ -56,10 +59,10 @@ export function safeSerializeForIPC<T>(obj: T): T {
 export function debugIPCSerializability(obj: any, label: string = 'object'): void {
   try {
     JSON.stringify(obj)
-    console.log(`[IPC Debug] ${label} is serializable`)
+    logger.log(label, 'is serializable')
   } catch (error) {
-    console.error(`[IPC Debug] ${label} is NOT serializable:`, error)
-    console.error(`[IPC Debug] Object:`, obj)
+    logger.error(label, 'is NOT serializable:', error)
+    logger.error('Object:', obj)
   }
 }
 
