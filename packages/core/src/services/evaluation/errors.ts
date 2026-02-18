@@ -4,21 +4,21 @@
  */
 
 import { EVALUATION_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { BaseError, type ErrorOptionsWithCause } from '../llm/errors'
 
 /**
  * Base error class for evaluation service
  * 评估服务基础错误类
+ * Extends BaseError for consistent error handling across all services
  */
-export class EvaluationError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
-  constructor(code: string, params?: ErrorParams, message?: string) {
-    // Fallback message includes code for debugging when not translated
-    super(message ? `[${code}] ${message}` : `[${code}]`)
-    this.name = 'EvaluationError'
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
+export class EvaluationError extends BaseError {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
+    super(code, message, params, options)
   }
 }
 
@@ -28,8 +28,7 @@ export class EvaluationError extends Error {
  */
 export class EvaluationValidationError extends EvaluationError {
   constructor(message: string) {
-    super(EVALUATION_ERROR_CODES.VALIDATION_ERROR, undefined, message)
-    this.name = 'EvaluationValidationError'
+    super(EVALUATION_ERROR_CODES.VALIDATION_ERROR, message)
   }
 }
 
@@ -39,8 +38,7 @@ export class EvaluationValidationError extends EvaluationError {
  */
 export class EvaluationModelError extends EvaluationError {
   constructor(modelKey: string) {
-    super(EVALUATION_ERROR_CODES.MODEL_NOT_FOUND, { context: modelKey })
-    this.name = 'EvaluationModelError'
+    super(EVALUATION_ERROR_CODES.MODEL_NOT_FOUND, undefined, { context: modelKey })
   }
 }
 
@@ -50,8 +48,7 @@ export class EvaluationModelError extends EvaluationError {
  */
 export class EvaluationTemplateError extends EvaluationError {
   constructor(templateId: string) {
-    super(EVALUATION_ERROR_CODES.TEMPLATE_NOT_FOUND, { context: templateId })
-    this.name = 'EvaluationTemplateError'
+    super(EVALUATION_ERROR_CODES.TEMPLATE_NOT_FOUND, undefined, { context: templateId })
   }
 }
 
@@ -61,8 +58,7 @@ export class EvaluationTemplateError extends EvaluationError {
  */
 export class EvaluationParseError extends EvaluationError {
   constructor(message: string) {
-    super(EVALUATION_ERROR_CODES.PARSE_ERROR, undefined, message)
-    this.name = 'EvaluationParseError'
+    super(EVALUATION_ERROR_CODES.PARSE_ERROR, message)
   }
 }
 
@@ -71,11 +67,7 @@ export class EvaluationParseError extends EvaluationError {
  * 评估执行错误（LLM 调用失败等）
  */
 export class EvaluationExecutionError extends EvaluationError {
-  constructor(
-    message: string,
-    public readonly cause?: Error
-  ) {
-    super(EVALUATION_ERROR_CODES.EXECUTION_ERROR, undefined, message)
-    this.name = 'EvaluationExecutionError'
+  constructor(message: string, cause?: Error) {
+    super(EVALUATION_ERROR_CODES.EXECUTION_ERROR, message, undefined, { cause })
   }
 }

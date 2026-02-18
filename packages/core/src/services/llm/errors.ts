@@ -9,7 +9,7 @@ import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
  * Error options for error chaining support
  * Compatible with ES2022+ ErrorOptions for forward compatibility
  */
-interface ErrorOptionsWithCause {
+export interface ErrorOptionsWithCause {
   cause?: unknown
 }
 
