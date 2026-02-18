@@ -1616,14 +1616,7 @@ watch(
 
 // 生命周期钩子
 onMounted(async () => {
-  console.log('[TemplateManager.vue] Component is mounted.')
-  console.log('[TemplateManager.vue] Injected services:', services)
-  if (services?.value) {
-    console.log(
-      '[TemplateManager.vue] TemplateManager instance from services:',
-      getTemplateManager.value
-    )
-  } else {
+  if (!services?.value) {
     console.error('[TemplateManager.vue] Services not available on mount.')
   }
   await loadTemplates()

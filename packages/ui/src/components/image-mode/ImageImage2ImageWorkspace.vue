@@ -1829,8 +1829,6 @@ const clearUploadedImage = () => {
 
 // 处理收藏保存请求 - 调用 App.vue 提供的统一接口
 const handleSaveFavorite = (data: { content: string; originalContent?: string }) => {
-  console.log('[ImageImage2ImageWorkspace] handleSaveFavorite triggered:', data)
-
   if (appHandleSaveFavorite) {
     appHandleSaveFavorite(data)
   } else {
@@ -1875,13 +1873,10 @@ const handleRestoreFavorite = async (event: Event) => {
   if (!(event instanceof CustomEvent)) {
     return
   }
-  console.log('[ImageImage2ImageWorkspace] handleRestoreFavorite triggered:', event.detail)
   const { content } = event.detail as RestoreFavoriteDetail
 
   // 设置原始提示词
   originalPrompt.value = content
-
-  console.log('[ImageImage2ImageWorkspace] Favorite restored successfully')
 }
 
 type ImageWorkspaceRestoreDetail = {
@@ -1969,9 +1964,6 @@ if (typeof window !== 'undefined') {
     handleRestoreFavorite as EventListener
   )
   window.addEventListener('image-workspace-restore', handleRestoreHistory as EventListener)
-  console.log(
-    '[ImageImage2ImageWorkspace] Favorite restore event listener registered immediately on component creation'
-  )
 }
 
 const refreshImageModels = async () => {

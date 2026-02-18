@@ -1572,17 +1572,12 @@ const restoreFromHistory = async (payload: unknown) => {
   const { chain, record, conversationSnapshot, message } = payload
   try {
     if (conversationSnapshot?.length) {
-      let mappingCount = 0
       conversationSnapshot.forEach((snapshotMsg) => {
         if (snapshotMsg.id && snapshotMsg.chainId) {
           // 🔧 Codex 修复：使用纯 messageId 作为 key，与 useConversationOptimization 统一
           conversationOptimization.messageChainMap.value.set(snapshotMsg.id, snapshotMsg.chainId)
-          mappingCount += 1
         }
       })
-      if (mappingCount > 0) {
-        console.log(`[ContextSystemWorkspace] 已重建 ${mappingCount} 个消息的优化链映射关系`)
-      }
     }
 
     if (!message) {
