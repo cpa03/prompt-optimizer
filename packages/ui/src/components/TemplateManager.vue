@@ -1199,7 +1199,6 @@ const loadTemplates = async () => {
     // 统一使用异步方法
     const allTemplates = await getTemplateManager.value.listTemplates()
     templates.value = allTemplates
-    console.log('加载到的提示词:', templates.value)
   } catch (error) {
     console.error('加载提示词失败:', error)
     toast.error('加载提示词失败')
@@ -1618,14 +1617,7 @@ watch(
 
 // 生命周期钩子
 onMounted(async () => {
-  console.log('[TemplateManager.vue] Component is mounted.')
-  console.log('[TemplateManager.vue] Injected services:', services)
-  if (services?.value) {
-    console.log(
-      '[TemplateManager.vue] TemplateManager instance from services:',
-      getTemplateManager.value
-    )
-  } else {
+  if (!services?.value) {
     console.error('[TemplateManager.vue] Services not available on mount.')
   }
   await loadTemplates()

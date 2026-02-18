@@ -717,7 +717,6 @@ const copyVariableName = async (name: string) => {
   try {
     const formattedName = formatVariableName(name)
     await copyText(formattedName)
-    console.log(`[VariableManagerModal] Copied variable name: ${formattedName}`)
   } catch (error) {
     console.error('[VariableManagerModal] Failed to copy variable name:', error)
   }
