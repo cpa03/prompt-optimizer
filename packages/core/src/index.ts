@@ -61,6 +61,7 @@ export type {
 } from './services/llm/types'
 export { LLMService, createLLMService } from './services/llm/service'
 export { TextAdapterRegistry, createTextAdapterRegistry } from './services/llm/adapters/registry'
+export { AbstractAdapterRegistry } from './services/adapters/abstract-registry'
 export { ElectronLLMProxy } from './services/llm/electron-proxy'
 export * from './services/llm/errors'
 
