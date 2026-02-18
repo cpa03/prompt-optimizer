@@ -6,6 +6,7 @@
  */
 
 import { config } from 'dotenv'
+import * as logger from '../utils/logging.js'
 
 // 备用环境变量加载（preload-env.js 已经处理了主要加载）
 config()
@@ -32,7 +33,7 @@ function scanDynamicCustomEnvVars(): Record<string, string> {
 
       // 验证后缀名（不能为空，不能包含特殊字符，不能超过长度限制）
       if (!suffix || suffix.length > MAX_SUFFIX_LENGTH || !SUFFIX_PATTERN.test(suffix)) {
-        console.warn(`[MCP Environment] Invalid suffix in ${key}: ${suffix}`)
+        logger.warn(`[MCP Environment] Invalid suffix in ${key}: ${suffix}`)
         return
       }
 
@@ -42,7 +43,7 @@ function scanDynamicCustomEnvVars(): Record<string, string> {
     }
   })
 
-  console.log(
+  logger.info(
     `[MCP Environment] Found ${Object.keys(dynamicMappings).length} dynamic custom environment variables`
   )
 
@@ -74,7 +75,7 @@ const allEnvMappings = {
 Object.entries(allEnvMappings).forEach(([viteKey, mcpKey]) => {
   if (process.env[viteKey] && !process.env[mcpKey]) {
     process.env[mcpKey] = process.env[viteKey]
-    console.log(`[MCP Environment] Mapped ${viteKey} -> ${mcpKey}`)
+    logger.info(`[MCP Environment] Mapped ${viteKey} -> ${mcpKey}`)
   }
 })
 

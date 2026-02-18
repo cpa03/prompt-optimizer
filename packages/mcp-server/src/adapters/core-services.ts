@@ -172,28 +172,28 @@ export class CoreServicesManager {
 
       if (setVars.length === 0) {
         // 没有设置任何环境变量
-        console.error('💡 No API keys found. Please set at least one:')
-        console.error('   VITE_OPENAI_API_KEY=your-openai-key')
-        console.error('   VITE_GEMINI_API_KEY=your-gemini-key')
-        console.error('   VITE_DEEPSEEK_API_KEY=your-deepseek-key')
-        console.error('   VITE_ZHIPU_API_KEY=your-zhipu-key')
-        console.error('   VITE_SILICONFLOW_API_KEY=your-siliconflow-key')
-        console.error('   VITE_CUSTOM_API_KEY=your-custom-key')
-        console.error('   Or dynamic custom models:')
-        console.error('   VITE_CUSTOM_API_KEY_qwen3=your-qwen-key')
-        console.error('   VITE_CUSTOM_API_KEY_claude=your-claude-key')
+        logger.error('💡 No API keys found. Please set at least one:')
+        logger.error('   VITE_OPENAI_API_KEY=your-openai-key')
+        logger.error('   VITE_GEMINI_API_KEY=your-gemini-key')
+        logger.error('   VITE_DEEPSEEK_API_KEY=your-deepseek-key')
+        logger.error('   VITE_ZHIPU_API_KEY=your-zhipu-key')
+        logger.error('   VITE_SILICONFLOW_API_KEY=your-siliconflow-key')
+        logger.error('   VITE_CUSTOM_API_KEY=your-custom-key')
+        logger.error('   Or dynamic custom models:')
+        logger.error('   VITE_CUSTOM_API_KEY_qwen3=your-qwen-key')
+        logger.error('   VITE_CUSTOM_API_KEY_claude=your-claude-key')
       } else {
         // 有设置但可能无效
-        console.error('💡 Found API keys but no models are enabled:')
+        logger.error('💡 Found API keys but no models are enabled:')
         setVars.forEach((key) => {
           const value = process.env[key]
           const masked = value ? '[CONFIGURED]' : 'empty'
-          console.error(`   ${key}=${masked}`)
+          logger.error(`   ${key}=${masked}`)
         })
-        console.error('   Please check if your API keys are valid.')
+        logger.error('   Please check if your API keys are valid.')
       }
     } catch {
-      console.error('💡 Please ensure you have set valid API keys.')
+      logger.error('💡 Please ensure you have set valid API keys.')
     }
   }
 
