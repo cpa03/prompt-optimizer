@@ -12,6 +12,7 @@ const {
   TIMEOUTS,
   MAX_SAVE_TIME,
   EMERGENCY_EXIT_TIME,
+  PROXY_CONFIG,
 } = require('./constants')
 
 // 从package.json读取仓库信息
@@ -95,4 +96,5 @@ module.exports = {
   TIMEOUTS,
   MAX_SAVE_TIME,
   EMERGENCY_EXIT_TIME,
+  PROXY_CONFIG,
 }

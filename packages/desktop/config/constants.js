@@ -65,6 +65,13 @@ const TIMEOUTS = {
 const MAX_SAVE_TIME = TIMEOUTS.service.saveOperation
 const EMERGENCY_EXIT_TIME = TIMEOUTS.service.emergencyExit
 
+// 代理测试配置
+const PROXY_CONFIG = {
+  // 用于测试系统代理解析的目标URL
+  // 使用通用域名避免对特定服务的依赖
+  TEST_URL: process.env.PROXY_TEST_URL || 'https://www.example.com',
+}
+
 module.exports = {
   IPC_EVENTS,
   PREFERENCE_KEYS,
@@ -73,4 +80,5 @@ module.exports = {
   TIMEOUTS,
   MAX_SAVE_TIME,
   EMERGENCY_EXIT_TIME,
+  PROXY_CONFIG,
 }
