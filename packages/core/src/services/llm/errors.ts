@@ -9,14 +9,14 @@ import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
  * Error options for error chaining support
  * Compatible with ES2022+ ErrorOptions for forward compatibility
  */
-interface ErrorOptionsWithCause {
+export interface ErrorOptionsWithCause {
   cause?: unknown
 }
 
 /**
  * Sets the cause property on an error for error chaining
  */
-function setErrorCause(error: Error, cause: unknown): void {
+export function setErrorCause(error: Error, cause: unknown): void {
   if (cause !== undefined) {
     ;(error as any).cause = cause
   }

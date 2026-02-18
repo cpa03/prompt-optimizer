@@ -2,6 +2,7 @@
  * 存储错误类
  */
 import { STORAGE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { type ErrorOptionsWithCause, setErrorCause } from '../llm/errors'
 
 type StorageOperation = 'read' | 'write' | 'delete' | 'clear' | 'config' | 'lock'
 
@@ -15,22 +16,6 @@ const STORAGE_OPERATION_TO_CODE: Record<
   clear: STORAGE_ERROR_CODES.CLEAR_ERROR,
   config: STORAGE_ERROR_CODES.CONFIG_ERROR,
   lock: STORAGE_ERROR_CODES.LOCK_ERROR,
-}
-
-/**
- * Error options for error chaining support
- */
-interface ErrorOptionsWithCause {
-  cause?: unknown
-}
-
-/**
- * Sets the cause property on an error for error chaining
- */
-function setErrorCause(error: Error, cause: unknown): void {
-  if (cause !== undefined) {
-    ;(error as any).cause = cause
-  }
 }
 
 export class StorageError extends Error {
