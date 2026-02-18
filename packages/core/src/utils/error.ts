@@ -21,6 +21,8 @@ export interface StructuredErrorLike {
   name?: string
   /** Stack trace for debugging */
   stack?: string
+  /** Underlying cause of the error (for error chaining) */
+  cause?: unknown
 }
 
 /**
@@ -78,7 +80,11 @@ export function toErrorWithCode(
   fallbackMessage = 'Unknown error'
 ): Error & Partial<StructuredErrorLike> {
   if (value instanceof Error) {
-    return value as Error & Partial<StructuredErrorLike>
+    const err = value as Error & Partial<StructuredErrorLike>
+    if ('code' in err && typeof err.code === 'string') {
+      return err
+    }
+    return err
   }
 
   if (isStructuredErrorLike(value)) {
@@ -94,6 +100,9 @@ export function toErrorWithCode(
     }
     if (typeof value.stack === 'string') {
       err.stack = value.stack
+    }
+    if (value.cause !== undefined) {
+      err.cause = value.cause
     }
     return err
   }

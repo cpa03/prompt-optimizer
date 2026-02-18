@@ -77,6 +77,13 @@ describe('error utilities', () => {
         const result = toErrorWithCode(originalError)
         expect(result.params).toEqual({ key: 'value' })
       })
+
+      it('should preserve cause property on Error instances', () => {
+        const rootCause = new Error('root cause')
+        const originalError = new Error('test error', { cause: rootCause })
+        const result = toErrorWithCode(originalError)
+        expect(result.cause).toBe(rootCause)
+      })
     })
 
     describe('with StructuredErrorLike objects', () => {
@@ -150,6 +157,33 @@ describe('error utilities', () => {
         }
         const result = toErrorWithCode(structuredError)
         expect(result.stack).toBe('custom stack trace')
+      })
+
+      it('should preserve cause property for error chaining', () => {
+        const rootCause = new Error('root cause')
+        const structuredError: StructuredErrorLike = {
+          code: 'ERR_001',
+          message: 'Wrapped error',
+          cause: rootCause,
+        }
+        const result = toErrorWithCode(structuredError)
+        expect(result.cause).toBe(rootCause)
+      })
+
+      it('should preserve cause property with nested error chain', () => {
+        const level3 = new Error('level 3 error')
+        const level2: StructuredErrorLike = {
+          code: 'ERR_LEVEL_2',
+          message: 'Level 2 error',
+          cause: level3,
+        }
+        const level1: StructuredErrorLike = {
+          code: 'ERR_LEVEL_1',
+          message: 'Level 1 error',
+          cause: level2,
+        }
+        const result = toErrorWithCode(level1)
+        expect(result.cause).toBe(level1.cause)
       })
 
       it('should ignore non-object params', () => {
