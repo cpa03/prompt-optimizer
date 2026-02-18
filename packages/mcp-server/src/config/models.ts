@@ -3,7 +3,7 @@
  * 完全复用 core 包的模型管理功能
  */
 
-import { ModelManager, defaultModels, ModelConfig } from '@prompt-optimizer/core'
+import { ModelManager } from '@prompt-optimizer/core'
 
 /**
  * 为 MCP 服务器设置默认模型
@@ -13,6 +13,9 @@ export async function setupDefaultModel(
   modelManager: ModelManager,
   preferredProvider?: string
 ): Promise<void> {
+  // 动态导入 defaultModels，确保环境变量已经加载
+  const { defaultModels } = await import('@prompt-optimizer/core')
+
   // 获取所有可用的默认模型（已启用的）
   const availableModels = Object.entries(defaultModels).filter(([, config]) => config.enabled)
 
@@ -20,7 +23,7 @@ export async function setupDefaultModel(
     throw new Error('No enabled models found in core defaultModels')
   }
 
-  let selectedModel: [string, ModelConfig] | undefined
+  let selectedModel: [string, (typeof defaultModels)[keyof typeof defaultModels]] | undefined
 
   // 1. 如果指定了 preferredProvider，尝试匹配
   if (preferredProvider) {
@@ -49,10 +52,8 @@ export async function setupDefaultModel(
   const mcpModelKey = `mcp-default`
 
   try {
-    // 尝试更新现有模型
     await modelManager.updateModel(mcpModelKey, finalConfig)
   } catch {
-    // 如果模型不存在，则添加新模型
     await modelManager.addModel(mcpModelKey, finalConfig)
   }
 }
