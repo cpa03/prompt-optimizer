@@ -245,8 +245,8 @@
 
 <script setup lang="ts">
 import { ref, watch, computed, type PropType } from 'vue'
-
 import { useI18n } from 'vue-i18n'
+import { TIME_CONSTANTS } from '../config/constants'
 import {
   NModal,
   NScrollbar,
@@ -374,7 +374,7 @@ const reuse = async (record: PromptRecord, chain: PromptRecordChain) => {
   }
 
   // Wait for visual feedback animation
-  await new Promise((resolve) => setTimeout(resolve, 400))
+  await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.ANIMATION_THEME_SWITCH))
 
   emit('reuse', {
     record,
@@ -440,7 +440,7 @@ const deleteChain = async (chainId: string) => {
   removingChainId.value = chainId
 
   // Wait for animation to complete before actual deletion
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.ANIMATION_SHORT_DELAY))
 
   emit('deleteChain', chainId)
   removingChainId.value = null
