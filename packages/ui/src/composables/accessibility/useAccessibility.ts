@@ -208,45 +208,66 @@ export function useAccessibility(componentName: string = 'Component') {
     }
   }
 
-  // 检测辅助功能偏好
+  let reduceMotionQuery: MediaQueryList | null = null
+  let highContrastQuery: MediaQueryList | null = null
+  let handleReduceMotionChange: ((e: MediaQueryListEvent) => void) | null = null
+  let handleHighContrastChange: ((e: MediaQueryListEvent) => void) | null = null
+  let handleMouseMove: (() => void) | null = null
+  let handleKeydown: (() => void) | null = null
+
+  const cleanupAccessibilityListeners = () => {
+    if (reduceMotionQuery && handleReduceMotionChange) {
+      reduceMotionQuery.removeEventListener('change', handleReduceMotionChange)
+    }
+    if (highContrastQuery && handleHighContrastChange) {
+      highContrastQuery.removeEventListener('change', handleHighContrastChange)
+    }
+    if (handleMouseMove) {
+      document.removeEventListener('mousemove', handleMouseMove)
+    }
+    if (handleKeydown) {
+      document.removeEventListener('keydown', handleKeydown)
+    }
+  }
+
   const detectAccessibilityFeatures = () => {
     if (typeof window === 'undefined') return
 
-    // 检测动画偏好
     if (window.matchMedia) {
-      const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+      reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
       features.value.reduceMotion = reduceMotionQuery.matches
 
-      const highContrastQuery = window.matchMedia('(prefers-contrast: high)')
+      highContrastQuery = window.matchMedia('(prefers-contrast: high)')
       features.value.highContrast = highContrastQuery.matches
 
-      // 监听变化
-      reduceMotionQuery.addEventListener('change', (e) => {
+      handleReduceMotionChange = (e: MediaQueryListEvent) => {
         features.value.reduceMotion = e.matches
-      })
+      }
+      reduceMotionQuery.addEventListener('change', handleReduceMotionChange)
 
-      highContrastQuery.addEventListener('change', (e) => {
+      handleHighContrastChange = (e: MediaQueryListEvent) => {
         features.value.highContrast = e.matches
-      })
+      }
+      highContrastQuery.addEventListener('change', handleHighContrastChange)
     }
 
-    // 检测屏幕阅读器
     features.value.screenReaderMode =
       window.navigator.userAgent.includes('NVDA') ||
       window.navigator.userAgent.includes('JAWS') ||
       !!document.querySelector('[data-screen-reader]')
 
-    // 检测仅键盘用户
     let hasMouseMovement = false
-    const handleMouseMove = () => {
+    handleMouseMove = () => {
       if (!hasMouseMovement) {
         hasMouseMovement = true
         features.value.keyboardOnly = false
-        document.removeEventListener('mousemove', handleMouseMove)
+        if (handleMouseMove) {
+          document.removeEventListener('mousemove', handleMouseMove)
+        }
       }
     }
 
-    const handleKeydown = () => {
+    handleKeydown = () => {
       if (!hasMouseMovement) {
         features.value.keyboardOnly = true
       }
@@ -297,6 +318,7 @@ export function useAccessibility(componentName: string = 'Component') {
 
   onUnmounted(() => {
     document.removeEventListener('keydown', keyboard.handleKeyPress)
+    cleanupAccessibilityListeners()
     disableFocusTrap()
   })
 
