@@ -9,6 +9,13 @@
     :mask-closable="true"
     transform-origin="center"
     content-style="height: 100%; display: flex; flex-direction: column; min-height: 0;"
+    :trap-focus="true"
+    :auto-focus="true"
+    :block-scroll="true"
+    :close-on-esc="true"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="title || 'Dialog'"
   >
     <NFlex vertical style="height: 100%; min-height: 0; overflow: auto">
       <slot></slot>
