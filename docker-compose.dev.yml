@@ -39,3 +39,34 @@ services:
       # Basic认证配置（可选）
       - ACCESS_USERNAME=${ACCESS_USERNAME:-admin}
       - ACCESS_PASSWORD=${ACCESS_PASSWORD:-123456}
+    # DevOps: Resource limits for development (more relaxed than production)
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # DevOps: Logging configuration with rotation
+    logging:
+      driver: json-file
+      options:
+        max-size: '20m'
+        max-file: '5'
+        labels: 'service,environment'
+        tag: '{{.Name}}'
+    # DevOps: Security hardening
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # DevOps: Network isolation
+    networks:
+      - prompt-optimizer-dev-network
+    # DevOps: Graceful shutdown
+    stop_grace_period: 30s
+
+networks:
+  prompt-optimizer-dev-network:
+    driver: bridge
