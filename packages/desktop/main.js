@@ -31,6 +31,7 @@ const {
   PREFERENCE_KEYS,
   DEFAULT_CONFIG,
   PORTS,
+  PROXY_CONFIG,
 } = require('./config/update-config')
 const path = require('path')
 
@@ -225,7 +226,7 @@ async function setupGlobalProxyDispatcherFromSystem() {
   let rawResolve = 'DIRECT'
   try {
     // 确保 session 可用（需在 app ready 之后调用）
-    const targetUrl = 'https://www.example.com'
+    const targetUrl = PROXY_CONFIG.TEST_URL
     const result = await session.defaultSession.resolveProxy(targetUrl)
     // result 形如："PROXY host:port; SOCKS5 host:port; DIRECT"
     rawResolve = result || 'DIRECT'
