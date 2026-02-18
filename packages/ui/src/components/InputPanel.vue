@@ -10,7 +10,13 @@
         <!-- 🆕 帮助提示图标 -->
         <NPopover v-if="helpText" trigger="hover" placement="right" :show-arrow="true">
           <template #trigger>
-            <NButton text size="tiny" :focusable="false" class="help-icon-btn">
+            <NButton
+              text
+              size="tiny"
+              :focusable="false"
+              class="help-icon-btn"
+              :aria-label="$t('common.help')"
+            >
               <template #icon>
                 <NIcon :size="SPACING.LG" class="help-icon">
                   <svg
@@ -44,6 +50,7 @@
           @click="$emit('extract-variables')"
           :loading="extracting"
           :disabled="extracting || !modelValue.trim()"
+          :aria-label="$t('evaluation.variableExtraction.extractButton')"
           ghost
           round
         >
@@ -77,6 +84,7 @@
           size="small"
           @click="$emit('open-preview')"
           :title="$t('common.preview')"
+          :aria-label="$t('common.preview')"
           ghost
           round
         >
@@ -109,6 +117,7 @@
           size="small"
           @click="openFullscreen"
           :title="$t('common.expand')"
+          :aria-label="$t('common.expand')"
           ghost
           round
         >

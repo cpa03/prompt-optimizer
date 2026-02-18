@@ -50,6 +50,7 @@ export default {
     expand: '展开',
     collapse: '收起',
     hide: '隐藏',
+    help: '帮助',
     clear: '清空',
     createdAt: '创建于',
     version: 'V{version}',
