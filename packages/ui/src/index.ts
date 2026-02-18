@@ -255,6 +255,7 @@ export {
   createImageModelManager,
   ImageService,
   createImageService,
+  AbstractAdapterRegistry,
 } from '@prompt-optimizer/core'
 
 // 导出数据转换工具和类型
