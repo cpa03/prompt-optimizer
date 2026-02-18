@@ -14,6 +14,8 @@ import { TEMPLATE_CONFIG } from '../../config/core-config'
  */
 export class TemplateManager implements ITemplateManager {
   private readonly staticLoader: StaticLoader
+  private builtinTemplatesCache: Record<string, Template> | null = null
+  private builtinTemplatesCacheKey: BuiltinTemplateLanguage | null = null
 
   constructor(
     private storageProvider: IStorageProvider,
@@ -204,17 +206,21 @@ export class TemplateManager implements ITemplateManager {
    * Get built-in templates based on current language setting
    */
   private async getBuiltinTemplates(): Promise<Record<string, Template>> {
-    // Get current language from template language service
     const currentLanguage = await this.languageService.getCurrentLanguage()
 
-    // Get appropriate template set based on language
+    if (this.builtinTemplatesCache && this.builtinTemplatesCacheKey === currentLanguage) {
+      return this.builtinTemplatesCache
+    }
+
     const templateSet = await this.getTemplateSet(currentLanguage)
 
-    // Mark all templates as built-in
     const builtinTemplates: Record<string, Template> = {}
     for (const [id, template] of Object.entries(templateSet)) {
       builtinTemplates[id] = { ...template, isBuiltin: true }
     }
+
+    this.builtinTemplatesCache = builtinTemplates
+    this.builtinTemplatesCacheKey = currentLanguage
 
     return builtinTemplates
   }
@@ -293,6 +299,8 @@ export class TemplateManager implements ITemplateManager {
    */
   async changeBuiltinTemplateLanguage(language: BuiltinTemplateLanguage): Promise<void> {
     await this.languageService.setLanguage(language)
+    this.builtinTemplatesCache = null
+    this.builtinTemplatesCacheKey = null
   }
 
   /**

@@ -95,10 +95,8 @@ import logoImage from '../assets/logo.jpg'
 
 const { t } = useI18n()
 
-// Logo图片配置
 const logoSrc = logoImage
 
-// 创建简单的SVG fallback logo
 const createFallbackSvg = () => {
   const svg = `data:image/svg+xml,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
@@ -111,33 +109,44 @@ const createFallbackSvg = () => {
 
 const fallbackLogoSrc = createFallbackSvg()
 
-// 响应式Logo尺寸 - 使用更智能的检测
 const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1024)
+
+let resizeTimeout: ReturnType<typeof setTimeout> | null = null
 
 const updateWindowWidth = () => {
   windowWidth.value = window.innerWidth
 }
 
+const debouncedUpdateWindowWidth = () => {
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout)
+  }
+  resizeTimeout = setTimeout(updateWindowWidth, 100)
+}
+
 onMounted(() => {
   if (typeof window !== 'undefined') {
     windowWidth.value = window.innerWidth
-    window.addEventListener('resize', updateWindowWidth)
+    window.addEventListener('resize', debouncedUpdateWindowWidth, { passive: true })
   }
 })
 
 onUnmounted(() => {
   if (typeof window !== 'undefined') {
-    window.removeEventListener('resize', updateWindowWidth)
+    window.removeEventListener('resize', debouncedUpdateWindowWidth)
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout)
+    }
   }
 })
 
 const logoSize = computed(() => {
   if (windowWidth.value < 480) {
-    return 20 // 超小屏幕
+    return 20
   } else if (windowWidth.value < 640) {
-    return 24 // 小屏幕
+    return 24
   }
-  return 28 // 默认尺寸
+  return 28
 })
 </script>
 
