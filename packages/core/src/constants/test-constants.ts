@@ -35,6 +35,12 @@ export const TIMEOUTS = {
   // Maximum delays for page loads
   PAGE_LOAD: 2000,
 
+  // API rate limit delay (10 seconds)
+  RATE_LIMIT_DELAY: 10 * 1000,
+
+  // File write debounce delay for storage operations
+  FILE_WRITE_DELAY: 600,
+
   // Playwright-specific timeouts
   playwright: {
     ELEMENT_APPEAR: 15000,

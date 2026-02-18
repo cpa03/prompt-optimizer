@@ -3,6 +3,7 @@ import * as fs from 'fs/promises'
 import * as path from 'path'
 import { FileStorageProvider } from '../../src/services/storage/fileStorageProvider'
 import { StorageError } from '../../src/services/storage/errors'
+import { TIMEOUTS } from '../../src/constants/test-constants.js'
 
 describe('FileStorageProvider - Real File System Integration', () => {
   let provider: FileStorageProvider
@@ -39,7 +40,7 @@ describe('FileStorageProvider - Real File System Integration', () => {
       await provider.setItem('test-key', 'test-value')
 
       // 等待延迟写入完成
-      await new Promise((resolve) => setTimeout(resolve, 600))
+      await new Promise((resolve) => setTimeout(resolve, TIMEOUTS.FILE_WRITE_DELAY))
 
       // 验证文件被创建
       await expect(fs.access(storageFile)).resolves.toBeUndefined()

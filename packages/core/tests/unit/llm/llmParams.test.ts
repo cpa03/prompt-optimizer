@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
 import { createLLMService, ModelManager, LocalStorageProvider } from '../../../src/index.js'
 import { validateLLMParams } from '../../../src/services/model/validation'
+import { TIMEOUTS } from '../../../src/constants/test-constants.js'
 import type { ModelConfig } from '../../../src/services/model/types'
 import dotenv from 'dotenv'
 import path from 'path'
@@ -479,13 +480,13 @@ describe.skipIf(!RUN_REAL_API)('LLM Parameters (llmParams) Functionality', () =>
     // Gemini specific parameters
     describe('Gemini Specific Parameters', () => {
       beforeEach(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10000)) // 等待 10 秒
+        await new Promise((resolve) => setTimeout(resolve, TIMEOUTS.RATE_LIMIT_DELAY)) // 等待 10 秒
       })
 
       if (hasGeminiKey && geminiConfig) {
         it('should accept valid maxOutputTokens for Gemini provider', async () => {
           // 添加间隔，避免频率限制，先等10秒
-          await new Promise((resolve) => setTimeout(resolve, 10000))
+          await new Promise((resolve) => setTimeout(resolve, TIMEOUTS.RATE_LIMIT_DELAY))
           const storage = new LocalStorageProvider()
           const modelManager = new ModelManager(storage)
           await modelManager.ensureInitialized()
@@ -513,7 +514,7 @@ describe.skipIf(!RUN_REAL_API)('LLM Parameters (llmParams) Functionality', () =>
         }, 60000)
         it('should accept valid candidateCount for Gemini provider', async () => {
           // 添加间隔，避免频率限制，先等10秒
-          await new Promise((resolve) => setTimeout(resolve, 10000))
+          await new Promise((resolve) => setTimeout(resolve, TIMEOUTS.RATE_LIMIT_DELAY))
           const storage = new LocalStorageProvider()
           const modelManager = new ModelManager(storage)
           await modelManager.ensureInitialized()
