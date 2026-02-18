@@ -97,7 +97,6 @@
       "memory": 1024
     }
   },
-  "regions": ["iad1", "sfo1", "gru1"],
   "framework": null,
   "github": {
     "silent": true

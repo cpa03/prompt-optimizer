@@ -7,41 +7,44 @@ This PR includes small but impactful improvements to the Vercel deployment confi
 ## Changes Made
 
 ### 1. **Simplified Build Commands** ✨
-   - **Before**: Complex conditional logic checking for extension directory
-   - **After**: Clean and straightforward `pnpm install && pnpm build`
-   - **Benefit**: More reliable builds, easier to understand and maintain
+
+- **Before**: Complex conditional logic checking for extension directory
+- **After**: Clean and straightforward `pnpm install && pnpm build`
+- **Benefit**: More reliable builds, easier to understand and maintain
 
 ### 2. **Simplified Install Command** 📦
-   - **Before**: Duplicated logic with unnecessary @vercel/analytics installation
-   - **After**: Simple `pnpm install`
-   - **Benefit**: Faster installs, less complexity, Vercel handles analytics automatically
+
+- **Before**: Duplicated logic with unnecessary @vercel/analytics installation
+- **After**: Simple `pnpm install`
+- **Benefit**: Faster installs, less complexity, Vercel handles analytics automatically
 
 ### 3. **Added Function Memory Configuration** 🧠
-   - Added `memory: 1024` to API functions
-   - **Benefit**: Better performance for API endpoints, more consistent execution
 
-### 4. **Added Multi-Region Support** 🌍
-   - Added regions: `iad1` (US East), `sfo1` (US West), `gru1` (Brazil)
-   - **Benefit**: Better global performance, reduced latency for international users
+- Added `memory: 1024` to API functions
+- **Benefit**: Better performance for API endpoints, more consistent execution
 
-### 5. **Enhanced API Security Headers** 🔒
-   - Added dedicated security headers for `/api/*` routes:
-     - Cache-Control: Prevent caching of dynamic API responses
-     - X-Content-Type-Options: Prevent MIME type sniffing
-     - X-Frame-Options: Prevent clickjacking
-   - **Benefit**: Better security for API endpoints
+### 4. **Enhanced API Security Headers** 🔒
 
-### 6. **Added X-XSS-Protection Header** 🛡️
-   - Added to global headers
-   - **Benefit**: Additional layer of XSS protection for older browsers
+- Added dedicated security headers for `/api/*` routes:
+  - Cache-Control: Prevent caching of dynamic API responses
+  - X-Content-Type-Options: Prevent MIME type sniffing
+  - X-Frame-Options: Prevent clickjacking
+- **Benefit**: Better security for API endpoints
 
-### 7. **Framework Configuration** 🏗️
-   - Added `"framework": null` to explicitly specify no framework auto-detection
-   - **Benefit**: Clearer configuration, prevents potential conflicts
+### 5. **Added X-XSS-Protection Header** 🛡️
+
+- Added to global headers
+- **Benefit**: Additional layer of XSS protection for older browsers
+
+### 6. **Framework Configuration** 🏗️
+
+- Added `"framework": null` to explicitly specify no framework auto-detection
+- **Benefit**: Clearer configuration, prevents potential conflicts
 
 ## Technical Details
 
 ### Build Command Improvements
+
 ```diff
 - "buildCommand": "if [[ $(pwd) == */packages/extension ]]; then cd ../.. && pnpm build && mkdir -p packages/extension/packages/web && cp -r packages/web/dist packages/extension/packages/web/dist; else pnpm build; fi"
 + "buildCommand": "pnpm install && pnpm build"
@@ -50,6 +53,7 @@ This PR includes small but impactful improvements to the Vercel deployment confi
 The complex conditional was attempting to handle extension builds, but since the output directory is always `packages/web/dist`, this logic was unnecessary and error-prone.
 
 ### Function Configuration
+
 ```diff
   "functions": {
     "api/**/*.js": {
@@ -63,18 +67,6 @@ The complex conditional was attempting to handle extension builds, but since the
 
 Explicit memory allocation ensures consistent performance for API functions.
 
-### Region Selection
-```json
-"regions": ["iad1", "sfo1", "gru1"]
-```
-
-Selected regions provide:
-- **iad1** (US East - Virginia): East coast coverage
-- **sfo1** (US West - San Francisco): West coast coverage  
-- **gru1** (Brazil - São Paulo): South America coverage
-
-This covers major user bases while keeping costs manageable.
-
 ## Testing
 
 - ✅ JSON syntax validated
@@ -85,8 +77,8 @@ This covers major user bases while keeping costs manageable.
 ## Benefits
 
 1. **Maintainability**: Simpler configuration is easier to debug and update
-2. **Performance**: Multi-region deployment reduces latency globally
-3. **Security**: Enhanced headers provide better protection
+2. **Performance**: Optimized function memory allocation improves API response times
+3. **Security**: Enhanced headers provide better protection for API endpoints
 4. **Reliability**: Explicit memory allocation prevents resource-related failures
 5. **Cost**: Efficient build process reduces build time and costs
 
