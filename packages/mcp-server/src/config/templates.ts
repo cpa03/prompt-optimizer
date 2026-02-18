@@ -4,6 +4,7 @@
  */
 
 import { TemplateManager } from '@prompt-optimizer/core'
+import * as logger from '../utils/logging.js'
 
 /**
  * 获取默认模板 ID
@@ -57,7 +58,7 @@ export async function getTemplateOptions(
 
     return options
   } catch (error) {
-    console.error(`Failed to get template options for ${templateType}:`, error)
+    logger.error(`Failed to get template options for ${templateType}:`, error as Error)
     return []
   }
 }
