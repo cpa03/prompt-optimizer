@@ -26,7 +26,7 @@
     "dev:desktop:fresh": "npm-run-all kill:dev clean pnpm-install dev:desktop",
     "dev:desktop:parallel": "concurrently -k -p \"[{name}]\" -n \"WEB,DESKTOP\" \"pnpm -F @prompt-optimizer/web dev\" \"pnpm -F @prompt-optimizer/desktop dev\"",
     "test": "npm-run-all -s test:unit test:e2e:smart",
-    "test:unit": "pnpm -r test --run --passWithNoTests",
+    "test:unit": "pnpm -F @prompt-optimizer/core build && pnpm -r test --run --passWithNoTests",
     "test:e2e": "playwright test",
     "test:e2e:smart": "node scripts/smart-e2e.js",
     "test:e2e:record": "cross-env E2E_VCR_MODE=record playwright test",
