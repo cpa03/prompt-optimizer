@@ -8,7 +8,7 @@ import { isDevelopment } from './environment'
 
 type LogLevel = 'debug' | 'log' | 'warn' | 'error'
 
-interface DebugLogger {
+export interface DebugLogger {
   debug: (...args: unknown[]) => void
   log: (...args: unknown[]) => void
   warn: (...args: unknown[]) => void

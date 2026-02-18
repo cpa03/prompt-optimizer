@@ -178,6 +178,21 @@ export {
 export { applyPatchOperationsToText } from './utils/patch-plan'
 export type { ApplyPatchResult, ApplyPatchReportItem, ApplyPatchStatus } from './utils/patch-plan'
 
+// 导出调试日志工具 (DX improvement)
+export {
+  createDebugLogger,
+  isDebugLoggingEnabled,
+  enableDebugNamespace,
+  disableDebugNamespace,
+  enableGlobalDebug,
+  disableGlobalDebug,
+} from './utils/debug'
+export type { DebugLogger } from './utils/debug'
+
+// 导出错误处理工具 (DX improvement)
+export { toErrorWithCode, isStructuredErrorLike } from './utils/error'
+export type { StructuredErrorLike } from './utils/error'
+
 // 导出存储键常量
 export {
   CORE_SERVICE_KEYS,
