@@ -144,55 +144,15 @@ export * from './services/preference/types'
 export { ElectronPreferenceServiceProxy } from './services/preference/electron-proxy'
 export { PreferenceService, createPreferenceService } from './services/preference/service'
 
-// 导出环境检测工具
-export {
-  isRunningInElectron,
-  isElectronApiReady,
-  waitForElectronApi,
-  isBrowser,
-  isDevelopment,
-  getEnvVar,
-  scanCustomModelEnvVars,
-  clearCustomModelEnvCache,
-  CUSTOM_API_PATTERN,
-  SUFFIX_PATTERN,
-  MAX_SUFFIX_LENGTH,
-} from './utils/environment'
-export type {
-  CustomModelEnvConfig,
-  ValidatedCustomModelEnvConfig,
-  ValidationResult,
-} from './utils/environment'
+// 导出工具函数 (统一从 utils/index.ts 导出，提升模块化)
+export * from './utils'
+
+// 导出模型验证类型
 export type {
   LLMValidationResult,
   ValidationError,
   ValidationWarning,
 } from './services/model/validation'
-export { validateCustomModelConfig } from './utils/environment'
-
-// 导出IPC序列化工具
-export {
-  safeSerializeForIPC,
-  debugIPCSerializability,
-  safeSerializeArgs,
-} from './utils/ipc-serialization'
-export { applyPatchOperationsToText } from './utils/patch-plan'
-export type { ApplyPatchResult, ApplyPatchReportItem, ApplyPatchStatus } from './utils/patch-plan'
-
-// 导出调试日志工具 (DX improvement)
-export {
-  createDebugLogger,
-  isDebugLoggingEnabled,
-  enableDebugNamespace,
-  disableDebugNamespace,
-  enableGlobalDebug,
-  disableGlobalDebug,
-} from './utils/debug'
-export type { DebugLogger } from './utils/debug'
-
-// 导出错误处理工具 (DX improvement)
-export { toErrorWithCode, isStructuredErrorLike } from './utils/error'
-export type { StructuredErrorLike } from './utils/error'
 
 // 导出存储键常量
 export {
