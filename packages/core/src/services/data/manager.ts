@@ -10,6 +10,7 @@ import {
   DataInvalidJsonError,
 } from './errors'
 import { toErrorWithCode } from '../../utils/error'
+import { safeJsonParse } from '../../utils/json'
 
 /**
  * 数据导入导出管理器
@@ -90,7 +91,7 @@ export class DataManager implements IDataManager {
     let exportData: any
 
     try {
-      exportData = JSON.parse(dataString)
+      exportData = safeJsonParse(dataString)
     } catch (error) {
       throw new DataInvalidJsonError(error instanceof Error ? error.message : String(error))
     }
