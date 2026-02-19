@@ -14,6 +14,9 @@ import { TEMPLATE_CONFIG } from '../../config/core-config'
  */
 export class TemplateManager implements ITemplateManager {
   private readonly staticLoader: StaticLoader
+  // 缓存内置模板，避免重复创建对象
+  private builtinTemplatesCache: Record<string, Template> | null = null
+  private builtinTemplatesCacheLanguage: BuiltinTemplateLanguage | null = null
 
   constructor(
     private storageProvider: IStorageProvider,
@@ -202,19 +205,27 @@ export class TemplateManager implements ITemplateManager {
 
   /**
    * Get built-in templates based on current language setting
+   * 优化：使用缓存避免重复创建内置模板对象
    */
   private async getBuiltinTemplates(): Promise<Record<string, Template>> {
-    // Get current language from template language service
+    // 获取当前语言
     const currentLanguage = await this.languageService.getCurrentLanguage()
 
-    // Get appropriate template set based on language
-    const templateSet = await this.getTemplateSet(currentLanguage)
+    // 如果缓存存在且语言未变化，直接返回缓存
+    if (this.builtinTemplatesCache && this.builtinTemplatesCacheLanguage === currentLanguage) {
+      return this.builtinTemplatesCache
+    }
 
-    // Mark all templates as built-in
+    // 获取模板集并标记为内置
+    const templateSet = await this.getTemplateSet(currentLanguage)
     const builtinTemplates: Record<string, Template> = {}
     for (const [id, template] of Object.entries(templateSet)) {
       builtinTemplates[id] = { ...template, isBuiltin: true }
     }
+
+    // 更新缓存
+    this.builtinTemplatesCache = builtinTemplates
+    this.builtinTemplatesCacheLanguage = currentLanguage
 
     return builtinTemplates
   }
@@ -293,6 +304,9 @@ export class TemplateManager implements ITemplateManager {
    */
   async changeBuiltinTemplateLanguage(language: BuiltinTemplateLanguage): Promise<void> {
     await this.languageService.setLanguage(language)
+    // 清除缓存以强制重新加载新语言的模板
+    this.builtinTemplatesCache = null
+    this.builtinTemplatesCacheLanguage = null
   }
 
   /**

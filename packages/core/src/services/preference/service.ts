@@ -181,22 +181,31 @@ export class PreferenceService implements IPreferenceService {
 
   /**
    * 获取所有偏好设置
+   * 优化：使用 Promise.all 并行获取所有值，提升性能
    * @returns 包含所有偏好设置的键值对对象（使用原始键名，不带前缀）
    */
   async getAll(): Promise<Record<string, string>> {
     try {
       const allKeys = await this.keys()
-      const result: Record<string, string> = {}
 
-      for (const key of allKeys) {
-        try {
-          const value = await this.get(key, null)
-          if (value !== null) {
-            result[key] = String(value)
+      // 并行获取所有值，提升性能
+      const entries = await Promise.all(
+        allKeys.map(async (key) => {
+          try {
+            const value = await this.get(key, null)
+            return [key, value !== null ? String(value) : null] as const
+          } catch (error) {
+            console.warn(`[PreferenceService] Failed to get preference for key "${key}":`, error)
+            return [key, null] as const
           }
-        } catch (error) {
-          console.warn(`[PreferenceService] Failed to get preference for key "${key}":`, error)
-          // 继续处理其他键，不因单个键失败而中断
+        })
+      )
+
+      // 过滤掉 null 值并构建结果对象
+      const result: Record<string, string> = {}
+      for (const [key, value] of entries) {
+        if (value !== null) {
+          result[key] = value
         }
       }
 
