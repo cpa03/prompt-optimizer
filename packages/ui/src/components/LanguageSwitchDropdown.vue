@@ -4,6 +4,7 @@
     @select="handleLanguageSelect"
     placement="bottom-end"
     trigger="click"
+    @update:show="(show: boolean) => (isDropdownOpen = show)"
   >
     <NButton
       quaternary
@@ -12,6 +13,8 @@
       :title="currentLanguageLabel"
       :aria-label="currentLanguageLabel"
       :aria-pressed="isAnimating"
+      :aria-expanded="isDropdownOpen"
+      aria-haspopup="listbox"
     >
       <template #icon>
         <div class="language-icon-wrapper" :class="{ 'is-animating': isAnimating }">
@@ -93,6 +96,7 @@ const { setPreference } = usePreferences(services)
 // Animation state for micro-interactions
 const isAnimating = ref(false)
 const lastLocale = ref('')
+const isDropdownOpen = ref(false)
 
 // 语言选项配置 - 为未来扩展预留接口
 type SupportedLocale = 'zh-CN' | 'zh-TW' | 'en-US'
