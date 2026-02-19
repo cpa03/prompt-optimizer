@@ -311,6 +311,7 @@ import {
   EXTERNAL_URLS,
   TIMEOUTS,
 } from '@prompt-optimizer/core'
+import { TIME_CONSTANTS, ANIMATION_CONSTANTS } from '../../config/constants'
 
 // 1. 基础 composables
 const hljsInstance = hljs
@@ -355,7 +356,7 @@ const promptRefreshForNewDeploy = async (reason: unknown) => {
 
     const ok = window.confirm(t('toast.warning.chunkLoadRefreshConfirm'))
     if (!ok) {
-      toast.warning(t('toast.warning.chunkLoadRefreshDeclined'), 8000)
+      toast.warning(t('toast.warning.chunkLoadRefreshDeclined'), TIME_CONSTANTS.TOAST_DURATION_LONG)
       return
     }
 
@@ -1785,7 +1786,7 @@ const handleDataImported = () => {
   useToast().success(t('dataManager.import.successWithRefresh'))
   setTimeout(() => {
     window.location.reload()
-  }, 1500)
+  }, ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS)
 }
 
 // 监听变量管理器关闭

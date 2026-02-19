@@ -398,6 +398,7 @@ import {
   NText,
 } from 'naive-ui'
 import { parseCustomValue, type UnifiedParameterDefinition } from '@prompt-optimizer/core'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const props = defineProps({
   schema: {
@@ -450,12 +451,12 @@ const handleRemoveWithConfirm = (key: string) => {
 
     removeConfirmKey.value = key
 
-    // Auto-cancel confirmation after 3 seconds
+    // Auto-cancel confirmation after toast duration
     confirmTimeout.value = window.setTimeout(() => {
       if (removeConfirmKey.value === key) {
         removeConfirmKey.value = null
       }
-    }, 3000)
+    }, TIME_CONSTANTS.TOAST_DURATION)
   }
 }
 

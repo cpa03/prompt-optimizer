@@ -2,6 +2,9 @@
  * Date utility functions
  * Centralizes date formatting across the application
  */
+import { CALCULATION_CONSTANTS } from '../config/constants'
+
+const { MS_PER_SECOND, MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
 
 /**
  * Format a timestamp to a localized date string
@@ -40,12 +43,12 @@ export function formatRelativeTime(timestamp: number): string {
   const date = new Date(timestamp)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const days = Math.floor(diff / MS_PER_DAY)
 
   if (days === 0) {
-    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const hours = Math.floor(diff / MS_PER_HOUR)
     if (hours === 0) {
-      const minutes = Math.floor(diff / (1000 * 60))
+      const minutes = Math.floor(diff / MS_PER_MINUTE)
       return minutes <= 1 ? '刚刚' : `${minutes}分钟前`
     }
     return `${hours}小时前`
