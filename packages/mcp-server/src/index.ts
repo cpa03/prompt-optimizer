@@ -476,49 +476,6 @@ async function main() {
       // 存储每个会话的传输实例
       const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {}
 
-      // Health check endpoint for reliability monitoring
-      app.get('/health', (_req, res) => {
-        res.status(200).json({
-          status: 'healthy',
-          timestamp: new Date().toISOString(),
-          uptime: process.uptime(),
-          version: '0.1.0',
-          activeSessions: Object.keys(transports).length,
-        })
-      })
-
-      // Readiness check endpoint for Kubernetes/orchestrator probing
-      app.get('/ready', async (_req, res) => {
-        try {
-          const healthStatus = await coreServices.getHealthStatus()
-          if (healthStatus.initialized) {
-            res.status(200).json({
-              status: 'ready',
-              timestamp: new Date().toISOString(),
-              services: healthStatus.services,
-            })
-          } else {
-            res.status(503).json({
-              status: 'not_ready',
-              reason: 'Core services not initialized',
-            })
-          }
-        } catch (error) {
-          res.status(503).json({
-            status: 'not_ready',
-            reason: (error as Error).message,
-          })
-        }
-      })
-
-      // Liveness check endpoint - minimal check for container restart decisions
-      app.get('/live', (_req, res) => {
-        res.status(200).json({
-          status: 'alive',
-          timestamp: new Date().toISOString(),
-        })
-      })
-
       // 处理 POST 请求（客户端到服务器通信）
       app.post('/mcp', rateLimitMiddleware, async (req, res) => {
         // 检查现有会话ID
