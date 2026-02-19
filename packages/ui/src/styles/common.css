@@ -22,7 +22,7 @@ button:focus-visible,
 .n-button:focus-visible {
   outline: 2px solid var(--n-primary-color, #18a058);
   outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(24, 160, 88, 0.15);
+  box-shadow: 0 0 0 4px var(--focus-ring-color, rgba(24, 160, 88, 0.15));
 }
 
 /* 输入框焦点状态 */
@@ -40,7 +40,15 @@ a:focus-visible {
   border-radius: 2px;
 }
 
-/* 减少动画偏好支持 */
+/* Interactive element cursor */
+[role='button'],
+button:not(:disabled),
+.n-button:not(:disabled),
+a:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Reduce animation for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *:focus-visible {
     transition: none;

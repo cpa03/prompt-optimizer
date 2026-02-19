@@ -104,6 +104,7 @@ export default {
     export: '匯出',
     next: '下一步',
     scrollToTop: '回到頂部',
+    skipToMain: '跳轉到主要內容',
   },
   actions: {
     copy: '複製',

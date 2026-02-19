@@ -106,6 +106,7 @@ export default {
     export: 'Export',
     next: 'Next',
     scrollToTop: 'Scroll to top',
+    skipToMain: 'Skip to main content',
   },
   actions: {
     copy: 'Copy',
