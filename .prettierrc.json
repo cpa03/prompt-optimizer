@@ -5,6 +5,6 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "arrowParens": "always",
-  "endOfLine": "auto",
+  "endOfLine": "lf",
   "vueIndentScriptAndStyle": false
 }
