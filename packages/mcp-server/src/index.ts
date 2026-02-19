@@ -584,65 +584,6 @@ async function main() {
         await httpTransport.handleRequest(req, res)
       })
 
-      // Health check endpoint for container orchestration (Docker, Kubernetes)
-      app.get('/health', async (_req, res) => {
-        try {
-          const healthStatus = await coreServices.getHealthStatus()
-          const allServicesHealthy = Object.values(healthStatus.services).every((v) => v === true)
-
-          if (healthStatus.initialized && allServicesHealthy) {
-            res.status(200).json({
-              status: 'healthy',
-              timestamp: new Date().toISOString(),
-              ...healthStatus,
-            })
-          } else {
-            res.status(503).json({
-              status: 'unhealthy',
-              timestamp: new Date().toISOString(),
-              ...healthStatus,
-            })
-          }
-        } catch (error) {
-          res.status(503).json({
-            status: 'unhealthy',
-            timestamp: new Date().toISOString(),
-            error: (error as Error).message,
-          })
-        }
-      })
-
-      // Readiness probe endpoint for Kubernetes
-      app.get('/ready', async (_req, res) => {
-        try {
-          const healthStatus = await coreServices.getHealthStatus()
-          if (healthStatus.initialized) {
-            res.status(200).json({
-              ready: true,
-              timestamp: new Date().toISOString(),
-            })
-          } else {
-            res.status(503).json({
-              ready: false,
-              timestamp: new Date().toISOString(),
-            })
-          }
-        } catch {
-          res.status(503).json({
-            ready: false,
-            timestamp: new Date().toISOString(),
-          })
-        }
-      })
-
-      // Liveness probe endpoint for Kubernetes
-      app.get('/live', (_req, res) => {
-        res.status(200).json({
-          alive: true,
-          timestamp: new Date().toISOString(),
-        })
-      })
-
       logger.info('Setting up HTTP server listener...')
       const httpServer = app.listen(port, () => {
         logger.info(`MCP Server running on HTTP port ${port} with session management`)
