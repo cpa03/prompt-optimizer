@@ -11,13 +11,14 @@ RUN pnpm run build
 RUN pnpm mcp:build
 
 FROM nginx:stable-alpine
-# 安装htpasswd工具、dos2unix和supervisor
-RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs npm gettext curl
 
-# 安装pnpm
-RUN npm install -g pnpm
+LABEL org.opencontainers.image.source="https://github.com/linshenkx/prompt-optimizer"
+LABEL org.opencontainers.image.description="Prompt Optimizer - AI prompt optimization tool"
+LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 
-# 复制Nginx配置
+RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs npm gettext curl && \
+    npm install -g pnpm
+
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # 复制Web应用
@@ -40,21 +41,17 @@ ENV NGINX_PORT=80
 # 设置MCP服务器工作目录
 WORKDIR /app/mcp-server
 
-# 复制并设置启动脚本
 COPY docker/generate-config.sh /docker-entrypoint.d/40-generate-config.sh
 COPY docker/generate-auth.sh /docker-entrypoint.d/30-generate-auth.sh
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/start-services.sh /start-services.sh
 
-# 确保脚本有执行权限
-RUN chmod +x /docker-entrypoint.d/40-generate-config.sh
-RUN chmod +x /docker-entrypoint.d/30-generate-auth.sh
-RUN chmod +x /start-services.sh
-
-# 转换可能的Windows行尾符为Unix格式
-RUN dos2unix /docker-entrypoint.d/40-generate-config.sh
-RUN dos2unix /docker-entrypoint.d/30-generate-auth.sh
-RUN dos2unix /start-services.sh
+RUN chmod +x /docker-entrypoint.d/40-generate-config.sh \
+    /docker-entrypoint.d/30-generate-auth.sh \
+    /start-services.sh && \
+    dos2unix /docker-entrypoint.d/40-generate-config.sh \
+    /docker-entrypoint.d/30-generate-auth.sh \
+    /start-services.sh
 
 EXPOSE 80
 
