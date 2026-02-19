@@ -95,7 +95,38 @@ The deployment follows security best practices:
 
 - Runs with minimal capabilities (`cap_drop: ALL`)
 - Prevents privilege escalation (`allowPrivilegeEscalation: false`)
+- Runs as non-root user (`runAsNonRoot: true`, `runAsUser: 101`)
+- Read-only root filesystem with ephemeral volumes for writable paths
+- Seccomp profile enabled (`RuntimeDefault`)
+- Uses dedicated ServiceAccount with `automountServiceAccountToken: false`
+- Pod Security Standards enforced at namespace level (`restricted` profile)
+- Network policies restrict traffic flow
 - Uses TLS for external access (via Ingress)
+
+### ServiceAccount
+
+The deployment uses a dedicated ServiceAccount `prompt-optimizer` with:
+
+- `automountServiceAccountToken: false` - No automatic token mounting for security
+
+### Resource Governance
+
+The namespace has ResourceQuota and LimitRange configured:
+
+**ResourceQuota (prompt-optimizer-quota):**
+
+- Max 10 pods
+- Max 4 CPU / 8 CPU (requests/limits)
+- Max 4Gi / 8Gi memory (requests/limits)
+- Max 5 persistent volume claims
+- Max 10 secrets, 10 configmaps, 5 services
+
+**LimitRange (prompt-optimizer-limits):**
+
+- Container defaults: 500m CPU, 512Mi memory
+- Container requests: 100m CPU, 128Mi memory
+- Container max: 2 CPU, 1Gi memory
+- PVC: 1Gi - 10Gi storage range
 
 ## Troubleshooting
 
@@ -122,9 +153,11 @@ kubectl get events -n prompt-optimizer --sort-by='.lastTimestamp'
 
 1. **Change default password**: Update `ACCESS_PASSWORD` in the secret
 2. **Use proper TLS**: Configure cert-manager for automatic certificate management
-3. **Add network policies**: Restrict inter-namespace communication
-4. **Configure resource quotas**: Set namespace-level resource limits
+3. **Review network policies**: Adjust NetworkPolicy to match your infrastructure
+4. **Configure resource quotas**: The namespace has ResourceQuota set; adjust limits as needed
 5. **Enable monitoring**: Add Prometheus annotations for metrics collection
+6. **Review Pod Security**: The namespace enforces `restricted` Pod Security Standards
+7. **Audit ServiceAccount**: Review and minimize permissions if custom RBAC is needed
 
 ## Auto-Scaling (HPA)
 
