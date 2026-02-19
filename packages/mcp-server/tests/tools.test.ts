@@ -134,5 +134,96 @@ describe('MCP Server Tools', () => {
       expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_MODEL_UNAVAILABLE)
       expect(mcpError.message).toContain('AI 模型不可用')
     })
+
+    describe('AI Error Classification', () => {
+      it('应该正确识别AI速率限制错误', () => {
+        const error = new Error('Rate limit exceeded, status 429')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_RATE_LIMITED)
+        expect(mcpError.message).toContain('AI 服务请求频率超限')
+      })
+
+      it('应该正确识别AI超时错误', () => {
+        const error = new Error('Request timeout: ETIMEDOUT')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT)
+        expect(mcpError.message).toContain('AI 服务响应超时')
+      })
+
+      it('应该正确识别AI认证错误', () => {
+        const error = new Error('Unauthorized: invalid API key')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED)
+        expect(mcpError.message).toContain('AI 服务认证失败')
+      })
+
+      it('应该正确识别AI上下文长度错误', () => {
+        const error = new Error('Context length exceeded: max tokens')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTEXT_LENGTH_EXCEEDED)
+        expect(mcpError.message).toContain('AI 上下文长度超限')
+      })
+    })
+
+    describe('isRetryableError', () => {
+      it('应该正确识别可重试错误 - 速率限制', () => {
+        const mcpError = MCPErrorHandler.createRateLimitError()
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别可重试错误 - 服务不可用', () => {
+        const mcpError = MCPErrorHandler.createServiceUnavailableError()
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别可重试错误 - 超时', () => {
+        const error = new Error('timeout')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别不可重试错误 - 认证失败', () => {
+        const error = new Error('unauthorized')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别不可重试错误 - 内部错误', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(false)
+      })
+    })
+
+    describe('createRateLimitError', () => {
+      it('应该创建默认速率限制错误', () => {
+        const mcpError = MCPErrorHandler.createRateLimitError()
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_RATE_LIMITED)
+        expect(mcpError.message).toContain('AI 服务请求频率超限')
+      })
+
+      it('应该创建自定义消息的速率限制错误', () => {
+        const mcpError = MCPErrorHandler.createRateLimitError('自定义速率限制消息')
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_RATE_LIMITED)
+        expect(mcpError.message).toContain('自定义速率限制消息')
+      })
+    })
+
+    describe('createServiceUnavailableError', () => {
+      it('应该创建默认服务不可用错误', () => {
+        const mcpError = MCPErrorHandler.createServiceUnavailableError()
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.SERVICE_UNAVAILABLE)
+        expect(mcpError.message).toContain('服务暂时不可用')
+      })
+
+      it('应该创建自定义消息的服务不可用错误', () => {
+        const mcpError = MCPErrorHandler.createServiceUnavailableError('自定义服务不可用消息')
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.SERVICE_UNAVAILABLE)
+        expect(mcpError.message).toContain('自定义服务不可用消息')
+      })
+    })
   })
 })
