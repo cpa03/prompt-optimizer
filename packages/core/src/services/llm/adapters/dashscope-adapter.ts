@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { PROVIDER_DASHSCOPE } from '../../../constants'
 
 interface ModelOverride {
@@ -73,7 +74,7 @@ export class DashScopeAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.dashscope,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://bailian.console.aliyun.com/#/api-key',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.dashscope,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

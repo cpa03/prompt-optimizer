@@ -2,6 +2,7 @@ import OpenAI from 'openai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { TIMEOUTS } from '../../../config/timeouts'
 import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
@@ -79,7 +80,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.openai,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://platform.openai.com/api-keys',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.openai,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

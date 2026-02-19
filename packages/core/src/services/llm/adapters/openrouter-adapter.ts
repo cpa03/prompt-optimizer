@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { PROVIDER_OPENROUTER } from '../../../constants'
 
 interface ModelOverride {
@@ -33,7 +34,7 @@ export class OpenRouterAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.openrouter,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://openrouter.ai/settings/keys',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.openrouter,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],
