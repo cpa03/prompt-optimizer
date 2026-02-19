@@ -27,20 +27,15 @@ import {
   createDefaultEvaluationResults,
   type PersistedEvaluationResults,
 } from '../../types/evaluation'
+import {
+  type TestPanelVersionValue,
+  type TestVariantId,
+  type TestColumnCount,
+  type TestVariantConfig,
+  type TestVariantLastRunFingerprint,
+} from './types/test-variant'
 
 type ImageResultItem = ImageResult['images'][number]
-
-/**
- * image 模式测试面板的版本选择：
- * - 0: v0（原始提示词）
- * - >=1: v1..vn（历史链版本号）
- * - 'latest': 跟随最新 vn
- */
-export type TestPanelVersionValue = 0 | number | 'latest'
-
-export type TestVariantId = 'a' | 'b' | 'c' | 'd'
-
-export type TestColumnCount = 2 | 3 | 4
 
 export interface ImageWorkspaceLayoutConfig {
   /** 主布局左侧宽度（百分比，25..50） */
@@ -49,17 +44,7 @@ export interface ImageWorkspaceLayoutConfig {
   testColumnCount: TestColumnCount
 }
 
-export interface TestVariantConfig {
-  id: TestVariantId
-  /** 提示词版本（v0 / vN / latest） */
-  version: TestPanelVersionValue
-  /** 图像模型配置 key（configId） */
-  modelKey: string
-}
-
 export type TestVariantResults = Record<TestVariantId, ImageResult | null>
-
-export type TestVariantLastRunFingerprint = Record<TestVariantId, string>
 
 export interface ImageImage2ImageSessionState {
   originalPrompt: string

@@ -17,6 +17,13 @@ import {
   createDefaultEvaluationResults,
   type PersistedEvaluationResults,
 } from '../../types/evaluation'
+import {
+  type TestPanelVersionValue,
+  type TestVariantId,
+  type TestColumnCount,
+  type TestVariantConfig,
+  type TestVariantLastRunFingerprint,
+} from './types/test-variant'
 
 export interface TestResults {
   originalResult: string
@@ -24,6 +31,20 @@ export interface TestResults {
   optimizedResult: string
   optimizedReasoning: string
 }
+
+export interface ProMultiLayoutConfig {
+  /** 主布局左侧宽度（百分比，25..50） */
+  mainSplitLeftPct: number
+  /** 测试区列数（2..4） */
+  testColumnCount: TestColumnCount
+}
+
+export interface TestVariantResult {
+  result: string
+  reasoning: string
+}
+
+export type TestVariantResults = Record<TestVariantId, TestVariantResult>
 
 /**
  * Pro-MultiMessage 会话状态
@@ -57,40 +78,6 @@ export interface ProMultiMessageSessionState {
   isCompareMode: boolean
   lastActiveAt: number
 }
-
-/**
- * pro-multi 测试面板的版本选择（针对“当前选中消息”）：
- * - 0: v0（原始消息内容）
- * - >=1: v1..vn（历史链版本号）
- * - 'latest': 跟随最新 vn
- */
-export type TestPanelVersionValue = 0 | number | 'latest'
-
-export type TestVariantId = 'a' | 'b' | 'c' | 'd'
-
-export type TestColumnCount = 2 | 3 | 4
-
-export interface ProMultiLayoutConfig {
-  /** 主布局左侧宽度（百分比，25..50） */
-  mainSplitLeftPct: number
-  /** 测试区列数（2..4） */
-  testColumnCount: TestColumnCount
-}
-
-export interface TestVariantConfig {
-  id: TestVariantId
-  version: TestPanelVersionValue
-  modelKey: string
-}
-
-export interface TestVariantResult {
-  result: string
-  reasoning: string
-}
-
-export type TestVariantResults = Record<TestVariantId, TestVariantResult>
-
-export type TestVariantLastRunFingerprint = Record<TestVariantId, string>
 
 /**
  * 默认状态
