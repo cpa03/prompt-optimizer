@@ -1,6 +1,10 @@
 <template>
   <!-- 使用ToastUI包装整个布局以提供NMessageProvider -->
   <ToastUI>
+    <!-- Skip to main content link for keyboard accessibility -->
+    <a href="#main-content" class="skip-link">{{
+      t('common.skipToMain') || 'Skip to main content'
+    }}</a>
     <NLayout
       style="
         position: fixed;
@@ -73,7 +77,7 @@
           style="flex: 1; min-height: 0; overflow: hidden"
           content-style="height: 100%; max-height: 100%; min-height: 0; box-sizing: border-box; padding: 24px clamp(16px, 2vw, 48px) 40px; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;"
         >
-          <div class="main-content-wrapper">
+          <div id="main-content" class="main-content-wrapper" tabindex="-1">
             <slot name="main"></slot>
           </div>
         </NLayoutContent>
@@ -149,6 +153,38 @@ const logoSize = computed(() => {
 </script>
 
 <style>
+/* Skip to main content link - accessibility enhancement */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 16px;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--primary-color, #18a058);
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 0 0 6px 6px;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.dark .skip-link {
+  background: var(--primary-color, #63e2b7);
+  color: #1a1a1a;
+}
+
+/* Focus outline when jumping to main content */
+#main-content:focus {
+  outline: none;
+}
+
 .main-content-wrapper {
   width: 100%;
   margin: 0;

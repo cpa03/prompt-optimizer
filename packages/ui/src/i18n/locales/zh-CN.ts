@@ -103,6 +103,7 @@ export default {
     export: '导出',
     next: '下一步',
     scrollToTop: '回到顶部',
+    skipToMain: '跳转到主要内容',
   },
   actions: {
     copy: '复制',
