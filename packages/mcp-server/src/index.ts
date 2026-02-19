@@ -45,6 +45,11 @@ import { ParameterValidator } from './adapters/parameter-adapter.js'
 import { getTemplateOptions, getDefaultTemplateId } from './config/templates.js'
 import { randomUUID } from 'node:crypto'
 import express from 'express'
+import {
+  createRateLimiter,
+  getClientIdentifier,
+  type RateLimitResult,
+} from './utils/rate-limiter.js'
 
 // 创建服务器实例的工厂函数
 async function createServerInstance(config: MCPServerConfig) {
@@ -417,16 +422,49 @@ async function main() {
     // 启动传输层
     if (transport === 'http') {
       logger.info('Starting HTTP server with session management...')
-      // 使用 Express 和会话管理支持多客户端连接
       const app = express()
       app.use(express.json())
       logger.info('Express app configured')
+
+      const rateLimiter = createRateLimiter({
+        windowMs: 60 * 1000,
+        maxRequests: 100,
+      })
+
+      const rateLimitMiddleware = (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+      ) => {
+        const clientId = getClientIdentifier(req)
+        const result: RateLimitResult = rateLimiter.check(clientId)
+
+        res.setHeader('X-RateLimit-Limit', '100')
+        res.setHeader('X-RateLimit-Remaining', result.remaining.toString())
+        res.setHeader('X-RateLimit-Reset', Math.ceil(result.resetTime / 1000).toString())
+
+        if (!result.allowed) {
+          res.setHeader('Retry-After', result.retryAfter?.toString() || '60')
+          res.status(429).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32000,
+              message: 'Too Many Requests: Rate limit exceeded. Please retry later.',
+              data: { retryAfter: result.retryAfter },
+            },
+            id: null,
+          })
+          return
+        }
+
+        next()
+      }
 
       // 存储每个会话的传输实例
       const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {}
 
       // 处理 POST 请求（客户端到服务器通信）
-      app.post('/mcp', async (req, res) => {
+      app.post('/mcp', rateLimitMiddleware, async (req, res) => {
         // 检查现有会话ID
         const sessionId = req.headers['mcp-session-id'] as string | undefined
         let httpTransport: StreamableHTTPServerTransport
