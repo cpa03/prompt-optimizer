@@ -167,3 +167,83 @@ export function sanitizeObject<T>(obj: T): T {
 
   return result as T
 }
+
+/**
+ * Pattern for sensitive field names that should be redacted.
+ * Matches common naming conventions for sensitive data fields.
+ */
+const SENSITIVE_FIELD_PATTERNS = [
+  /^api[-_]?key$/i,
+  /^apikey$/i,
+  /^secret[-_]?key$/i,
+  /^secret$/i,
+  /^password$/i,
+  /^passwd$/i,
+  /^token$/i,
+  /^access[-_]?token$/i,
+  /^refresh[-_]?token$/i,
+  /^auth[-_]?token$/i,
+  /^bearer$/i,
+  /^authorization$/i,
+  /^credential$/i,
+  /^private[-_]?key$/i,
+  /^api[-_]?secret$/i,
+  /^client[-_]?secret$/i,
+]
+
+const REDACTED_PLACEHOLDER = '[REDACTED]'
+
+/**
+ * Checks if a field name matches a sensitive pattern.
+ * @param key - The field name to check
+ * @returns true if the field name is sensitive
+ */
+function isSensitiveField(key: string): boolean {
+  return SENSITIVE_FIELD_PATTERNS.some((pattern) => pattern.test(key))
+}
+
+/**
+ * Redacts sensitive fields from an object for safe logging or error messages.
+ * This prevents accidental exposure of API keys, tokens, passwords, and other
+ * sensitive data in logs and error messages.
+ *
+ * @param obj - The object to redact
+ * @param maxDepth - Maximum recursion depth (default: 5, prevents stack overflow)
+ * @returns A new object with sensitive values replaced by [REDACTED]
+ *
+ * @example
+ * ```typescript
+ * const config = { apiKey: 'sk-secret-123', model: 'gpt-4' }
+ * const safe = redactSensitiveFields(config)
+ * // { apiKey: '[REDACTED]', model: 'gpt-4' }
+ *
+ * // Use for safe error messages
+ * throw new APIError(`API error: ${JSON.stringify(redactSensitiveFields(error.response.data))}`)
+ * ```
+ */
+export function redactSensitiveFields<T>(obj: T, maxDepth: number = 5): T {
+  if (maxDepth <= 0) {
+    return obj
+  }
+
+  if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map((item) => redactSensitiveFields(item, maxDepth - 1)) as T
+  }
+
+  const result: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    if (isSensitiveField(key)) {
+      result[key] = REDACTED_PLACEHOLDER
+    } else if (typeof value === 'object' && value !== null) {
+      result[key] = redactSensitiveFields(value, maxDepth - 1)
+    } else {
+      result[key] = value
+    }
+  }
+
+  return result as T
+}
