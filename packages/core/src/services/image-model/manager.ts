@@ -103,10 +103,13 @@ export class ImageModelManager implements IImageModelManager {
       }
     } catch (e) {
       // 初始化失败时，尽量写入默认项，避免空列表
+      console.error('[ImageModelManager] Initialization failed, attempting to write defaults:', e)
       try {
         const defaults = getDefaultImageModels(this.registry)
         await this.storage.setItem(this.storageKey, JSON.stringify(defaults))
-      } catch {}
+      } catch (fallbackError) {
+        console.error('[ImageModelManager] Failed to write fallback defaults:', fallbackError)
+      }
     }
   }
 

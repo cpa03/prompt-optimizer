@@ -18,6 +18,8 @@ import {
   getSiliconFlowQwenParameterDefinitions,
   getSiliconFlowDefaultParameterValues,
 } from '../../../config'
+import { withRetry, createTimeoutSignal } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -256,32 +258,59 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
 
   private async apiCall(config: ImageModelConfig, endpoint: string, options: any) {
     const url = this.resolveEndpointUrl(config, endpoint)
-    const response = await fetch(url, options)
-    if (!response.ok) {
-      let bodyText = ''
-      try {
-        bodyText = await response.text()
-      } catch {
-        bodyText = ''
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
+
+    return withRetry(
+      async (signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
+        try {
+          const combinedOptions = {
+            ...options,
+            signal: timeoutSignal,
+          }
+
+          const response = await fetch(url, combinedOptions)
+
+          if (!response.ok) {
+            let bodyText = ''
+            try {
+              bodyText = await response.text()
+            } catch {
+              bodyText = ''
+            }
+
+            const headers: any = (response as any)?.headers
+            const getHeader = (name: string) => (headers?.get ? headers.get(name) : undefined)
+            const requestId =
+              getHeader('x-request-id') ||
+              getHeader('x-siliconflow-request-id') ||
+              getHeader('cf-ray') ||
+              getHeader('x-amzn-requestid') ||
+              getHeader('x-requestid')
+
+            const error = new ImageError(
+              IMAGE_ERROR_CODES.GENERATION_FAILED,
+              `SiliconFlow API error: ${response.status} ${response.statusText}` +
+                (requestId ? ` (requestId=${requestId})` : '') +
+                (bodyText ? `\n\n${bodyText}` : '')
+            )
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
+        }
+      },
+      {
+        maxAttempts: 3,
+        baseDelayMs: 1000,
+        maxDelayMs: 10000,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
-
-      const headers: any = (response as any)?.headers
-      const getHeader = (name: string) => (headers?.get ? headers.get(name) : undefined)
-      const requestId =
-        getHeader('x-request-id') ||
-        getHeader('x-siliconflow-request-id') ||
-        getHeader('cf-ray') ||
-        getHeader('x-amzn-requestid') ||
-        getHeader('x-requestid')
-
-      throw new ImageError(
-        IMAGE_ERROR_CODES.GENERATION_FAILED,
-        `SiliconFlow API error: ${response.status} ${response.statusText}` +
-          (requestId ? ` (requestId=${requestId})` : '') +
-          (bodyText ? `\n\n${bodyText}` : '')
-      )
-    }
-    return await response.json()
+    )
   }
 
   protected getParameterDefinitions(modelId: string): readonly ImageParameterDefinition[] {
