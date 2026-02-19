@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm install && pnpm build",
+  "buildCommand": "pnpm build",
   "outputDirectory": "packages/web/dist",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install && pnpm i @vercel/analytics -w",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
@@ -116,7 +116,8 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "master": true
+      "master": true,
+      "develop": true
     }
   },
   "env": {
