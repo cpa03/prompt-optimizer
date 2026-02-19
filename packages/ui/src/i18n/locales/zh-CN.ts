@@ -102,6 +102,7 @@ export default {
     import: '导入',
     export: '导出',
     next: '下一步',
+    scrollToTop: '回到顶部',
   },
   actions: {
     copy: '复制',
@@ -215,6 +216,9 @@ export default {
         copiedAll: '已复制内容',
         shareComingSoon: '分享功能即将上线',
         categoryManagementComingSoon: '分类管理功能将在后续版本提供',
+        favorite: '添加到收藏',
+        unfavorite: '取消收藏',
+        favorited: '已收藏',
       },
       preview: {
         title: '收藏详情',

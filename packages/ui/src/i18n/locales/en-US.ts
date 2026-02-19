@@ -105,6 +105,7 @@ export default {
     import: 'Import',
     export: 'Export',
     next: 'Next',
+    scrollToTop: 'Scroll to top',
   },
   actions: {
     copy: 'Copy',
@@ -223,6 +224,9 @@ export default {
         copiedAll: 'Content copied',
         shareComingSoon: 'Share feature coming soon',
         categoryManagementComingSoon: 'Category management coming in a future version',
+        favorite: 'Add to Favorites',
+        unfavorite: 'Remove from Favorites',
+        favorited: 'Favorited',
       },
       preview: {
         title: 'Favorite Details',

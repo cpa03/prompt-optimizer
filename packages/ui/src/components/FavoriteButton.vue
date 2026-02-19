@@ -4,7 +4,9 @@
     :size="size"
     :disabled="loading"
     @click="handleToggleFavorite"
-    :title="isFavorited ? '取消收藏' : '添加到收藏'"
+    :title="isFavorited ? t('favorites.actions.unfavorite') : t('favorites.actions.favorite')"
+    :aria-label="isFavorited ? t('favorites.actions.unfavorite') : t('favorites.actions.favorite')"
+    :aria-pressed="isFavorited"
     class="favorite-button"
     :class="{ 'favorite-pulse': isAnimating }"
   >
@@ -14,7 +16,7 @@
         <Star v-else />
       </n-icon>
     </template>
-    {{ isFavorited ? '已收藏' : '收藏' }}
+    {{ isFavorited ? t('favorites.actions.favorited') : t('favorites.actions.favorite') }}
   </n-button>
 
   <!-- 收藏对话框 -->
@@ -79,6 +81,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, inject, watch, type Ref } from 'vue'
 
+import { useI18n } from 'vue-i18n'
 import {
   NButton,
   NIcon,
@@ -97,6 +100,8 @@ import { Star, Stars } from '@vicons/tabler'
 import type { FavoriteCategory } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
 import { TIME_CONSTANTS } from '../config/constants'
+
+const { t } = useI18n()
 
 interface Props {
   /** 提示词内容 */
@@ -434,6 +439,12 @@ watch(
   transform: scale(1.05);
 }
 
+/* Focus-visible ring for keyboard navigation accessibility */
+.favorite-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.4);
+}
+
 /* 收藏按钮脉冲动画 */
 .favorite-pulse {
   animation: favorite-pulse 0.4s ease-out;
@@ -465,6 +476,25 @@ watch(
   }
   100% {
     transform: rotate(360deg) scale(1);
+  }
+}
+
+/* Respect user motion preferences for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .favorite-button {
+    transition: none;
+  }
+
+  .favorite-button:hover {
+    transform: none;
+  }
+
+  .favorite-pulse {
+    animation: none;
+  }
+
+  .favorite-icon-spin {
+    animation: none;
   }
 }
 
