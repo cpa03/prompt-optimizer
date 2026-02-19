@@ -93,8 +93,8 @@
 ### 系统要求
 
 - Windows 10/11, macOS, or Linux
-- Node.js 18+
-- pnpm 8+
+- Node.js 18+ (18/20/22 supported)
+- pnpm >= 10.6.1
 
 ### 启动步骤
 

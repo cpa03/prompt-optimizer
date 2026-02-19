@@ -844,8 +844,8 @@ const processedContent = computed(() => {
 
 ### 6.1 开发环境
 
-- Node.js >= 18.0.0
-- pnpm >= 8.15.0
+- Node.js >= 18.0.0 (18/20/22 supported)
+- pnpm >= 10.6.1
 - VS Code
   - Volar 1.8.x
   - ESLint
