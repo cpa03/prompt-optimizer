@@ -14,12 +14,8 @@ import { BaseError } from '../llm/errors'
 import { IMAGE_ERROR_CODES } from '../../constants/error-codes'
 import { mergeOverrides } from '../model/parameter-utils'
 import { ImageError } from './errors'
-import { toErrorWithCode } from '../../utils/error'
+import { toErrorWithCode, isRecord } from '../../utils/error'
 import { CONSTRAINTS } from '../../config'
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
-}
 
 export class ImageService implements IImageService {
   private readonly registry: IImageAdapterRegistry

@@ -28,7 +28,7 @@ export interface StructuredErrorLike {
  * @param value - The value to check
  * @returns True if the value is a non-null object
  */
-function isRecord(value: unknown): value is RecordLike {
+export function isRecord(value: unknown): value is RecordLike {
   return typeof value === 'object' && value !== null
 }
 
