@@ -10,6 +10,12 @@ Thank you for your interest in contributing to Prompt Optimizer! This document p
 - pnpm >= 10.6.1 (package manager - required)
 - Git
 
+> **Note:** The pnpm version must be consistent across all configuration files:
+>
+> - `package.json` (`packageManager` field)
+> - `.github/workflows/test.yml` (`pnpm/action-setup` version)
+> - `.github/workflows/release.yml` (`PNPM_VERSION` env variable)
+
 ### Initial Setup
 
 ```bash
