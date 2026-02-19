@@ -557,17 +557,21 @@ async function main() {
       const gracefulShutdown = (signal: string) => {
         console.log(`Received ${signal}, shutting down gracefully...`)
 
+        // Stop the rate limiter cleanup timer
+        rateLimiter.stop()
+
         // Stop accepting new connections
         httpServer.close(() => {
           console.log('HTTP server closed')
           process.exit(0)
         })
 
-        // Force close after timeout
-        setTimeout(() => {
+        // Force close after timeout (use unref to not prevent process exit)
+        const forceExitTimer = setTimeout(() => {
           console.warn('Forcing shutdown after timeout')
           process.exit(1)
         }, 10000)
+        forceExitTimer.unref()
 
         // Close all active sessions
         const sessionIds = Object.keys(transports)

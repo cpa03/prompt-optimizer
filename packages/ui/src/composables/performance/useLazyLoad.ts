@@ -233,12 +233,16 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
       const img = new Image()
 
       const handleLoad = () => {
+        img.removeEventListener('load', handleLoad)
+        img.removeEventListener('error', handleError)
         element.classList.remove('lazy-loading')
         element.classList.add('lazy-loaded')
         if (onLoad) onLoad()
       }
 
       const handleError = (error: Event) => {
+        img.removeEventListener('load', handleLoad)
+        img.removeEventListener('error', handleError)
         element.classList.remove('lazy-loading')
         element.classList.add('lazy-error')
         if (onError) onError(error)
@@ -289,10 +293,20 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
         return
       }
 
+      const cleanupImage = (
+        img: HTMLImageElement,
+        loadHandler: () => void,
+        errorHandler: () => void
+      ) => {
+        img.removeEventListener('load', loadHandler)
+        img.removeEventListener('error', errorHandler)
+      }
+
       urls.forEach((url, _index) => {
         const img = new Image()
 
         const handleComplete = () => {
+          cleanupImage(img, handleComplete, handleError)
           loaded++
           if (onProgress) {
             onProgress(loaded, total)
@@ -307,11 +321,13 @@ export function useLazyLoad(options: LazyLoadOptions = {}) {
           }
         }
 
-        img.addEventListener('load', handleComplete)
-        img.addEventListener('error', () => {
+        const handleError = () => {
           hasError = true
           handleComplete()
-        })
+        }
+
+        img.addEventListener('load', handleComplete)
+        img.addEventListener('error', handleError)
 
         img.src = url
       })
