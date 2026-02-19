@@ -1,11 +1,80 @@
 import { COOKIE_CONFIG } from '../scripts/config/constants.js'
 
-/**
- * Timing-safe string comparison to prevent timing attacks
- * @param {string} a - First string
- * @param {string} b - Second string
- * @returns {boolean} - Whether strings are equal
- */
+const RATE_LIMIT = {
+  MAX_ATTEMPTS: 5,
+  WINDOW_MS: 60000,
+  BLOCK_DURATION_MS: 300000,
+}
+
+const rateLimitStore = new Map()
+
+function generateRequestId() {
+  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+}
+
+function getClientIP(req) {
+  return (
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.connection?.remoteAddress ||
+    'unknown'
+  )
+}
+
+function checkRateLimit(ip) {
+  const now = Date.now()
+  const entry = rateLimitStore.get(ip)
+
+  if (entry?.blockedUntil && now < entry.blockedUntil) {
+    return { allowed: false, retryAfter: Math.ceil((entry.blockedUntil - now) / 1000) }
+  }
+
+  if (entry?.blockedUntil && now >= entry.blockedUntil) {
+    rateLimitStore.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (!entry) {
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS - entry.count }
+}
+
+function recordFailedAttempt(ip) {
+  const now = Date.now()
+  const entry = rateLimitStore.get(ip)
+
+  if (!entry) {
+    rateLimitStore.set(ip, { count: 1, firstAttempt: now })
+  } else if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.set(ip, { count: 1, firstAttempt: now })
+  } else {
+    entry.count++
+    if (entry.count >= RATE_LIMIT.MAX_ATTEMPTS) {
+      entry.blockedUntil = now + RATE_LIMIT.BLOCK_DURATION_MS
+    }
+  }
+
+  if (rateLimitStore.size > 10000) {
+    const cutoff = now - RATE_LIMIT.WINDOW_MS - RATE_LIMIT.BLOCK_DURATION_MS
+    for (const [key, val] of rateLimitStore) {
+      if (val.firstAttempt < cutoff) {
+        rateLimitStore.delete(key)
+      }
+    }
+  }
+}
+
+function clearRateLimit(ip) {
+  rateLimitStore.delete(ip)
+}
+
 function timingSafeEqual(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') {
     return false
@@ -20,12 +89,6 @@ function timingSafeEqual(a, b) {
   return result === 0
 }
 
-/**
- * Validate request body for required fields
- * @param {object} body - Request body
- * @param {string[]} requiredFields - Required field names
- * @returns {boolean} - Whether body is valid
- */
 function validateBody(body, requiredFields) {
   if (!body || typeof body !== 'object') {
     return false
@@ -35,12 +98,23 @@ function validateBody(body, requiredFields) {
   )
 }
 
-export default function handler(req, res) {
-  // Set security headers
-  res.setHeader('X-Content-Type-Options', 'nosniff')
-  res.setHeader('X-Frame-Options', 'DENY')
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+}
 
-  // Set CORS headers - restrict to same origin in production
+export default function handler(req, res) {
+  const requestId = generateRequestId()
+  const clientIP = getClientIP(req)
+
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    res.setHeader(key, value)
+  })
+  res.setHeader('X-Request-ID', requestId)
+
   const isProduction = process.env.NODE_ENV === 'production'
   const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
   res.setHeader('Access-Control-Allow-Origin', corsOrigin)
@@ -55,7 +129,6 @@ export default function handler(req, res) {
 
   const accessPassword = process.env.ACCESS_PASSWORD
 
-  // If no password is configured, return success
   if (!accessPassword) {
     return res.status(200).json({
       success: true,
@@ -64,9 +137,29 @@ export default function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { password, action } = req.body || {}
+    const rateLimitResult = checkRateLimit(clientIP)
+    if (!rateLimitResult.allowed) {
+      res.setHeader('Retry-After', String(rateLimitResult.retryAfter || 60))
+      return res.status(429).json({
+        success: false,
+        message: 'Too many attempts. Please try again later.',
+        retryAfter: rateLimitResult.retryAfter,
+      })
+    }
 
-    if (!validateBody(req.body, ['action'])) {
+    let body
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
+    } catch {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid JSON body',
+      })
+    }
+
+    const { password, action } = body || {}
+
+    if (!validateBody(body, ['action'])) {
       return res.status(400).json({
         success: false,
         message: 'Invalid request body',
@@ -74,16 +167,15 @@ export default function handler(req, res) {
     }
 
     if (action === 'verify') {
-      if (!validateBody(req.body, ['password'])) {
+      if (!validateBody(body, ['password'])) {
         return res.status(400).json({
           success: false,
           message: 'Password is required',
         })
       }
 
-      // Use timing-safe comparison to prevent timing attacks
       if (timingSafeEqual(password, accessPassword)) {
-        // Set cookie to remember user authentication state
+        clearRateLimit(clientIP)
         const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
         const secureFlag = isProduction ? '; Secure' : ''
         res.setHeader('Set-Cookie', [
@@ -95,10 +187,13 @@ export default function handler(req, res) {
           message: 'Authentication successful',
         })
       } else {
-        // Use same response time for invalid password to prevent timing attacks
+        recordFailedAttempt(clientIP)
+        const remaining = checkRateLimit(clientIP).remaining || 0
+
         return res.status(401).json({
           success: false,
           message: 'Invalid password',
+          attemptsRemaining: remaining,
         })
       }
     }
@@ -113,7 +208,7 @@ export default function handler(req, res) {
     const { action } = req.query || {}
 
     if (action === 'logout') {
-      // Clear cookie
+      clearRateLimit(clientIP)
       res.setHeader('Set-Cookie', [
         `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`,
       ])
