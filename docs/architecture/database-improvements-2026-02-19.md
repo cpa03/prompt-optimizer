@@ -182,6 +182,32 @@ export function validateStorageValue(value: string): void {
 
 **Compatibility**: ✅ No breaking changes. Validation now consistent across all providers.
 
+### 5. Consistent Capabilities API (NEW)
+
+**Problem**: `DexieStorageProvider` was missing the `getCapabilities()` method while other storage providers implemented it.
+
+**Solution**: Added `getCapabilities()` method to `DexieStorageProvider` for API consistency.
+
+**Benefits**:
+
+- Consistent API across all storage providers
+- Enables programmatic capability detection
+- No breaking changes
+
+**Implementation**:
+
+```typescript
+getCapabilities() {
+  return {
+    supportsAtomic: true,  // Dexie supports atomic transactions
+    supportsBatch: true,   // Dexie supports bulk operations
+    maxStorageSize: undefined,  // IndexedDB has large storage limits
+  }
+}
+```
+
+**Compatibility**: ✅ No breaking changes. New method follows existing interface contract.
+
 ## Performance Impact
 
 The improvements have **minimal to positive** performance impact:

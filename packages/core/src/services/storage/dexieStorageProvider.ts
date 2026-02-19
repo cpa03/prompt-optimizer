@@ -777,6 +777,17 @@ export class DexieStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取存储能力信息
+   */
+  getCapabilities() {
+    return {
+      supportsAtomic: true,
+      supportsBatch: true,
+      maxStorageSize: undefined,
+    }
+  }
+
+  /**
    * 关闭数据库连接
    */
   async close(): Promise<void> {
