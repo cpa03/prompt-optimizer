@@ -127,7 +127,14 @@ async function runImageStorageGcNow(
 ) {
   const referenced = await collectReferencedImageIds(preferenceService)
   const allMetadata = await imageStorageService.listAllMetadata()
-  const orphanIds = allMetadata.map((m) => m.id).filter((id) => !referenced.has(id))
+
+  const orphanIds: string[] = []
+  for (let i = 0; i < allMetadata.length; i++) {
+    const id = allMetadata[i].id
+    if (!referenced.has(id)) {
+      orphanIds.push(id)
+    }
+  }
 
   if (orphanIds.length === 0) return
   await imageStorageService.deleteImages(orphanIds)
