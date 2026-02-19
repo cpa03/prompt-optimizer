@@ -4,7 +4,7 @@
  */
 import { CALCULATION_CONSTANTS } from '../config/constants'
 
-const { MS_PER_SECOND, MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
+const { MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
 
 /**
  * Format a timestamp to a localized date string

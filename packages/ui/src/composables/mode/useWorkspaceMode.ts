@@ -13,13 +13,13 @@ import type { AppServices } from '../../types/services'
 import { usePreferences } from '../storage/usePreferenceManager'
 import { UI_SETTINGS_KEYS } from '@prompt-optimizer/core'
 
-export type FunctionMode = 'basic' | 'pro' | 'image' | 'context'
+export type WorkspaceFunctionMode = 'basic' | 'pro' | 'image' | 'context'
 export type BasicSubMode = 'user' | 'system'
 export type ProSubMode = 'user' | 'system' | 'context-user' | 'context-system'
 export type ImageSubMode = 'text2image' | 'image2image'
 
 export interface WorkspaceModeState {
-  functionMode: FunctionMode
+  functionMode: WorkspaceFunctionMode
   basicSubMode: BasicSubMode
   proSubMode: ProSubMode
   imageSubMode: ImageSubMode
@@ -27,7 +27,7 @@ export interface WorkspaceModeState {
 
 export interface UseWorkspaceModeApi {
   // State (readonly)
-  functionMode: Ref<FunctionMode>
+  functionMode: Ref<WorkspaceFunctionMode>
   basicSubMode: Ref<BasicSubMode>
   proSubMode: Ref<ProSubMode>
   imageSubMode: Ref<ImageSubMode>
@@ -40,7 +40,7 @@ export interface UseWorkspaceModeApi {
   currentWorkspace: Ref<string>
 
   // Actions
-  setFunctionMode: (mode: FunctionMode) => Promise<void>
+  setFunctionMode: (mode: WorkspaceFunctionMode) => Promise<void>
   setBasicSubMode: (mode: BasicSubMode) => Promise<void>
   setProSubMode: (mode: ProSubMode) => Promise<void>
   setImageSubMode: (mode: ImageSubMode) => Promise<void>
@@ -55,7 +55,7 @@ export interface UseWorkspaceModeApi {
   ensureInitialized: () => Promise<void>
 
   // Validation
-  isValidFunctionMode: (mode: unknown) => mode is FunctionMode
+  isValidFunctionMode: (mode: unknown) => mode is WorkspaceFunctionMode
   isValidBasicSubMode: (mode: unknown) => mode is BasicSubMode
   isValidProSubMode: (mode: unknown) => mode is ProSubMode
   isValidImageSubMode: (mode: unknown) => mode is ImageSubMode
@@ -65,13 +65,13 @@ export interface UseWorkspaceModeApi {
 let singletonState: {
   initialized: boolean
   initializing: Promise<void> | null
-  functionMode: Ref<FunctionMode>
+  functionMode: Ref<WorkspaceFunctionMode>
   basicSubMode: Ref<BasicSubMode>
   proSubMode: Ref<ProSubMode>
   imageSubMode: Ref<ImageSubMode>
 } | null = null
 
-const VALID_FUNCTION_MODES: FunctionMode[] = ['basic', 'pro', 'image', 'context']
+const VALID_FUNCTION_MODES: WorkspaceFunctionMode[] = ['basic', 'pro', 'image', 'context']
 const VALID_BASIC_SUB_MODES: BasicSubMode[] = ['user', 'system']
 const VALID_PRO_SUB_MODES: ProSubMode[] = ['user', 'system', 'context-user', 'context-system']
 const VALID_IMAGE_SUB_MODES: ImageSubMode[] = ['text2image', 'image2image']
@@ -82,7 +82,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
     singletonState = {
       initialized: false,
       initializing: null,
-      functionMode: ref<FunctionMode>('basic'),
+      functionMode: ref<WorkspaceFunctionMode>('basic'),
       basicSubMode: ref<BasicSubMode>('user'),
       proSubMode: ref<ProSubMode>('user'),
       imageSubMode: ref<ImageSubMode>('text2image'),
@@ -92,8 +92,8 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
   const { getPreference, setPreference } = usePreferences(services)
 
   // Validation functions
-  const isValidFunctionMode = (mode: unknown): mode is FunctionMode =>
-    typeof mode === 'string' && VALID_FUNCTION_MODES.includes(mode as FunctionMode)
+  const isValidFunctionMode = (mode: unknown): mode is WorkspaceFunctionMode =>
+    typeof mode === 'string' && VALID_FUNCTION_MODES.includes(mode as WorkspaceFunctionMode)
 
   const isValidBasicSubMode = (mode: unknown): mode is BasicSubMode =>
     typeof mode === 'string' && VALID_BASIC_SUB_MODES.includes(mode as BasicSubMode)
@@ -139,7 +139,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
         // Load all mode preferences
         const [savedFunctionMode, savedBasicSubMode, savedProSubMode, savedImageSubMode] =
           await Promise.all([
-            getPreference<FunctionMode>(UI_SETTINGS_KEYS.FUNCTION_MODE, 'basic'),
+            getPreference<WorkspaceFunctionMode>(UI_SETTINGS_KEYS.FUNCTION_MODE, 'basic'),
             getPreference<BasicSubMode>('basic-sub-mode', 'user'),
             getPreference<ProSubMode>('pro-sub-mode', 'user'),
             getPreference<ImageSubMode>('image-sub-mode', 'text2image'),
@@ -180,7 +180,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
   }
 
   // Mode setters with validation
-  const setFunctionMode = async (mode: FunctionMode): Promise<void> => {
+  const setFunctionMode = async (mode: WorkspaceFunctionMode): Promise<void> => {
     if (!isValidFunctionMode(mode)) {
       throw new Error(`Invalid function mode: ${mode}`)
     }
@@ -243,7 +243,7 @@ export function useWorkspaceMode(services: Ref<AppServices | null>): UseWorkspac
 
   return {
     // State (readonly)
-    functionMode: readonly(singletonState.functionMode) as Ref<FunctionMode>,
+    functionMode: readonly(singletonState.functionMode) as Ref<WorkspaceFunctionMode>,
     basicSubMode: readonly(singletonState.basicSubMode) as Ref<BasicSubMode>,
     proSubMode: readonly(singletonState.proSubMode) as Ref<ProSubMode>,
     imageSubMode: readonly(singletonState.imageSubMode) as Ref<ImageSubMode>,
