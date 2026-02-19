@@ -21,6 +21,8 @@
             class="flex items-center justify-center gap-1 theme-toggle-btn"
             :aria-label="ariaLabel"
             :title="buttonTitle"
+            :aria-expanded="isDropdownOpen"
+            aria-haspopup="listbox"
             @mouseenter="isHovered = true"
             @mouseleave="isHovered = false"
             @focus="isFocused = true"
