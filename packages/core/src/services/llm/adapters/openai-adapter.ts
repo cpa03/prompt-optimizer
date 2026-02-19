@@ -7,6 +7,7 @@ import { RETRY_CONFIG } from '../../../constants/templates'
 import { LLM_CONFIG } from '../../../config/core-config'
 import { OPENAI_MODELS, getModelDisplayName } from '../../../constants/models'
 import { PROVIDER_OPENAI } from '../../../constants'
+import { redactSensitiveFields } from '../../../utils'
 import type {
   TextProvider,
   TextModel,
@@ -166,7 +167,9 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       // API返回的错误信息
       if (error.response?.data) {
-        throw new APIError(`API error: ${JSON.stringify(error.response.data)}`)
+        throw new APIError(
+          `API error: ${JSON.stringify(redactSensitiveFields(error.response.data))}`
+        )
       }
 
       // 其他错误,保持原始信息

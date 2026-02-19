@@ -4,6 +4,7 @@ import {
   safeJsonParseNullish,
   isDangerousKey,
   sanitizeObject,
+  redactSensitiveFields,
 } from '../../../src/utils/json'
 
 describe('safeJsonParse', () => {
@@ -216,5 +217,185 @@ describe('sanitizeObject', () => {
     expect(sanitizeObject('string')).toBe('string')
     expect(sanitizeObject(42)).toBe(42)
     expect(sanitizeObject(true)).toBe(true)
+  })
+})
+
+describe('redactSensitiveFields', () => {
+  describe('basic redaction', () => {
+    it('should redact apiKey field', () => {
+      const input = { apiKey: 'sk-secret-12345', model: 'gpt-4' }
+      const result = redactSensitiveFields(input)
+
+      expect(result.apiKey).toBe('[REDACTED]')
+      expect(result.model).toBe('gpt-4')
+    })
+
+    it('should redact various apiKey naming conventions', () => {
+      const testCases = [
+        { apiKey: 'secret' },
+        { api_key: 'secret' },
+        { 'api-key': 'secret' },
+        { APIKEY: 'secret' },
+        { ApiKey: 'secret' },
+      ]
+
+      testCases.forEach((input) => {
+        const result = redactSensitiveFields(input)
+        const values = Object.values(result)
+        expect(values[0]).toBe('[REDACTED]')
+      })
+    })
+
+    it('should redact password fields', () => {
+      const input = { password: 'my-secret-password', username: 'user' }
+      const result = redactSensitiveFields(input)
+
+      expect(result.password).toBe('[REDACTED]')
+      expect(result.username).toBe('user')
+    })
+
+    it('should redact token fields', () => {
+      const input = { token: 'bearer-token-123', name: 'test' }
+      const result = redactSensitiveFields(input)
+
+      expect(result.token).toBe('[REDACTED]')
+      expect(result.name).toBe('test')
+    })
+
+    it('should redact secret fields', () => {
+      const input = { secret: 'my-secret', secretKey: 'key-123', public: 'data' }
+      const result = redactSensitiveFields(input)
+
+      expect(result.secret).toBe('[REDACTED]')
+      expect(result.secretKey).toBe('[REDACTED]')
+      expect(result.public).toBe('data')
+    })
+  })
+
+  describe('nested objects', () => {
+    it('should redact sensitive fields in nested objects', () => {
+      const input = {
+        config: {
+          apiKey: 'nested-secret',
+          model: 'gpt-4',
+        },
+        name: 'test',
+      }
+      const result = redactSensitiveFields(input)
+
+      expect(result.config.apiKey).toBe('[REDACTED]')
+      expect(result.config.model).toBe('gpt-4')
+      expect(result.name).toBe('test')
+    })
+
+    it('should redact deeply nested sensitive fields', () => {
+      const input = {
+        level1: {
+          level2: {
+            level3: {
+              password: 'deep-secret',
+              data: 'public',
+            },
+          },
+        },
+      }
+      const result = redactSensitiveFields(input)
+
+      expect(result.level1.level2.level3.password).toBe('[REDACTED]')
+      expect(result.level1.level2.level3.data).toBe('public')
+    })
+
+    it('should respect maxDepth parameter', () => {
+      const input = {
+        level1: {
+          level2: {
+            level3: {
+              password: 'secret',
+            },
+          },
+        },
+      }
+      const result = redactSensitiveFields(input, 2)
+
+      expect(result.level1.level2.level3.password).toBe('secret')
+    })
+  })
+
+  describe('arrays', () => {
+    it('should redact sensitive fields in arrays', () => {
+      const input = [
+        { apiKey: 'key1', name: 'item1' },
+        { apiKey: 'key2', name: 'item2' },
+      ]
+      const result = redactSensitiveFields(input)
+
+      expect(result[0].apiKey).toBe('[REDACTED]')
+      expect(result[0].name).toBe('item1')
+      expect(result[1].apiKey).toBe('[REDACTED]')
+      expect(result[1].name).toBe('item2')
+    })
+  })
+
+  describe('primitives and edge cases', () => {
+    it('should return primitives unchanged', () => {
+      expect(redactSensitiveFields(null)).toBe(null)
+      expect(redactSensitiveFields(undefined)).toBe(undefined)
+      expect(redactSensitiveFields('string')).toBe('string')
+      expect(redactSensitiveFields(42)).toBe(42)
+      expect(redactSensitiveFields(true)).toBe(true)
+    })
+
+    it('should return empty object unchanged', () => {
+      const input = {}
+      const result = redactSensitiveFields(input)
+
+      expect(result).toEqual({})
+    })
+
+    it('should handle objects without sensitive fields', () => {
+      const input = { name: 'test', count: 5, enabled: true }
+      const result = redactSensitiveFields(input)
+
+      expect(result).toEqual(input)
+    })
+  })
+
+  describe('common API response patterns', () => {
+    it('should redact authorization header patterns', () => {
+      const input = {
+        headers: {
+          Authorization: 'Bearer secret-token',
+          'Content-Type': 'application/json',
+        },
+      }
+      const result = redactSensitiveFields(input)
+
+      expect(result.headers.Authorization).toBe('[REDACTED]')
+      expect(result.headers['Content-Type']).toBe('application/json')
+    })
+
+    it('should redact OAuth-related fields', () => {
+      const input = {
+        accessToken: 'token-123',
+        refreshToken: 'refresh-456',
+        expiresIn: 3600,
+      }
+      const result = redactSensitiveFields(input)
+
+      expect(result.accessToken).toBe('[REDACTED]')
+      expect(result.refreshToken).toBe('[REDACTED]')
+      expect(result.expiresIn).toBe(3600)
+    })
+
+    it('should redact credential fields', () => {
+      const input = {
+        credential: 'my-credential',
+        otherData: 'public',
+      }
+      const result = redactSensitiveFields(input)
+
+      expect(result.credential).toBe('[REDACTED]')
+      expect(result.otherData).toBe('public')
+    })
   })
 })

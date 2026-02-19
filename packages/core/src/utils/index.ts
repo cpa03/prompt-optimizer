@@ -69,7 +69,13 @@ export { toErrorWithCode, isStructuredErrorLike } from './error'
 export type { StructuredErrorLike } from './error'
 
 // JSON utilities
-export { safeJsonParse, safeJsonParseNullish, isDangerousKey, sanitizeObject } from './json'
+export {
+  safeJsonParse,
+  safeJsonParseNullish,
+  isDangerousKey,
+  sanitizeObject,
+  redactSensitiveFields,
+} from './json'
 export type { SafeJsonParseOptions } from './json'
 
 // Retry utilities
