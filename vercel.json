@@ -1,10 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
   "buildCommand": "pnpm install && pnpm build",
   "outputDirectory": "packages/web/dist",
   "installCommand": "pnpm install",
   "cleanUrls": true,
   "trailingSlash": false,
+  "regions": ["iad1", "sfo1", "fra1", "hnd1", "syd1"],
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -90,6 +92,10 @@
         {
           "key": "Cross-Origin-Opener-Policy",
           "value": "same-origin"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
         }
       ]
     }
@@ -98,18 +104,22 @@
     "api/**/*.js": {
       "runtime": "nodejs20.x",
       "maxDuration": 10,
-      "memory": 1024
+      "memory": 1024,
+      "includeFiles": "scripts/config/**/*.js"
     }
   },
-  "framework": null,
   "github": {
     "silent": true
   },
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "master": true
+      "master": true,
+      "develop": true
     }
+  },
+  "skewProtection": {
+    "enabled": true
   },
   "env": {
     "VITE_VERCEL_DEPLOYMENT": "true"
