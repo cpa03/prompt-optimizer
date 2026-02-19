@@ -20,8 +20,7 @@
 <script setup lang="ts">
 import { NButton, NFlex } from 'naive-ui'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const emit = defineEmits<{
+defineEmits<{
   'open-tool-manager': []
 }>()
 </script>

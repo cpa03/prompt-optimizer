@@ -72,6 +72,13 @@ import { SPACING, UI_DIMENSIONS } from '../config/constants'
 
 const { t } = useI18n()
 
+interface Emits {
+  (e: 'update:modelValue', value: string): void
+  (e: 'change', value: string): void
+  (e: 'category-updated'): void
+}
+const emit = defineEmits<Emits>()
+
 const services = inject<Ref<AppServices | null> | null>('services', null)
 
 // 🎨 Palette: Interaction states for enhanced UX

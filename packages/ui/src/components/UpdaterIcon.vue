@@ -14,7 +14,7 @@
             class="update-button"
             :class="{
               'has-update': state.hasUpdate,
-              'is-checking': state.isChecking,
+              'is-checking': state.isCheckingUpdate,
               'is-downloading': state.isDownloading,
             }"
           >
@@ -24,7 +24,7 @@
                 class="update-icon-wrapper"
                 :class="{
                   'pulse-animation': state.hasUpdate && !state.isDownloading,
-                  'spin-animation': state.isChecking,
+                  'spin-animation': state.isCheckingUpdate,
                   'bounce-animation': state.isDownloaded,
                 }"
               >
@@ -60,7 +60,11 @@
 
                 <!-- 🎨 Palette: Download progress indicator -->
                 <svg
-                  v-if="state.isDownloading && state.downloadProgress > 0"
+                  v-if="
+                    state.isDownloading &&
+                    state.downloadProgress &&
+                    state.downloadProgress.percent > 0
+                  "
                   class="progress-ring"
                   viewBox="0 0 24 24"
                 >
@@ -118,15 +122,15 @@ const { state } = useUpdater()
 const showModal = ref(false)
 
 // 🎨 Palette: Tooltip placement
-const tooltipPlacement = computed(() => 'bottom')
+const tooltipPlacement = 'bottom' as const
 
 // 🎨 Palette: Dynamic ARIA labels for accessibility
 const buttonAriaLabel = computed(() => {
-  if (state.isChecking) return t('updater.checkingAriaLabel', '正在检查更新')
-  if (state.isDownloading)
+  if (state.isCheckingUpdate) return t('updater.checkingAriaLabel', '正在检查更新')
+  if (state.isDownloading && state.downloadProgress)
     return t(
       'updater.downloadingAriaLabel',
-      { progress: state.downloadProgress },
+      { progress: state.downloadProgress.percent },
       '正在下载更新 {progress}%'
     )
   if (state.isDownloaded) return t('updater.readyToInstallAriaLabel', '更新已下载，点击安装')
@@ -136,31 +140,40 @@ const buttonAriaLabel = computed(() => {
 
 // 🎨 Palette: Dynamic button title
 const buttonTitle = computed(() => {
-  if (state.isChecking) return t('updater.checking', '正在检查...')
-  if (state.isDownloading)
-    return t('updater.downloading', { progress: state.downloadProgress }, '下载中 {progress}%')
+  if (state.isCheckingUpdate) return t('updater.checking', '正在检查...')
+  if (state.isDownloading && state.downloadProgress)
+    return t(
+      'updater.downloading',
+      { progress: state.downloadProgress.percent },
+      '下载中 {progress}%'
+    )
   if (state.isDownloaded) return t('updater.readyToInstall', '点击安装更新')
   if (state.hasUpdate) return t('updater.newVersionAvailable', '新版本可用！')
   return t('updater.checkForUpdates', '检查更新')
 })
 
 // 🎨 Palette: Tooltip content
+const availableVersion = computed(() => state.stableVersion || state.prereleaseVersion)
 const tooltipTitle = computed(() => {
-  if (state.isChecking) return t('updater.checkingTooltip', '正在检查更新...')
+  if (state.isCheckingUpdate) return t('updater.checkingTooltip', '正在检查更新...')
   if (state.isDownloading) return t('updater.downloadingTooltip', '正在下载更新')
   if (state.isDownloaded) return t('updater.readyTooltip', '更新已准备就绪！')
-  if (state.hasUpdate)
-    return t('updater.availableTooltip', { version: state.latestVersion }, '发现新版本 {version}')
+  if (state.hasUpdate && availableVersion.value)
+    return t(
+      'updater.availableTooltip',
+      { version: availableVersion.value },
+      '发现新版本 {version}'
+    )
   return t('updater.upToDateTooltip', '已是最新版本')
 })
 
 // 🎨 Palette: Tooltip subtitle
 const tooltipSubtitle = computed(() => {
-  if (state.isDownloading && state.downloadProgress > 0) {
-    return `${state.downloadProgress}%`
+  if (state.isDownloading && state.downloadProgress && state.downloadProgress.percent > 0) {
+    return `${state.downloadProgress.percent}%`
   }
-  if (state.hasUpdate && state.latestVersion) {
-    return state.latestVersion
+  if (state.hasUpdate && availableVersion.value) {
+    return availableVersion.value
   }
   return ''
 })
@@ -168,8 +181,9 @@ const tooltipSubtitle = computed(() => {
 // 🎨 Palette: Progress ring calculations
 const circumference = 2 * Math.PI * 10 // r=10
 const progressOffset = computed(() => {
-  if (!state.isDownloading || state.downloadProgress <= 0) return circumference
-  return circumference - (state.downloadProgress / 100) * circumference
+  if (!state.isDownloading || !state.downloadProgress || state.downloadProgress.percent <= 0)
+    return circumference
+  return circumference - (state.downloadProgress.percent / 100) * circumference
 })
 
 // 切换模态框显示

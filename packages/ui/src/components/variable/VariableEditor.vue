@@ -273,9 +273,9 @@ const valueInputStatus = computed(() => {
 
 const nameLengthStatus = computed(() => {
   const len = formData.value.name.length
-  if (len > 50) return { depth: 3, class: 'exceeded' }
-  if (len > 40) return { depth: 2, class: 'warning' }
-  return { depth: 3, class: 'normal' }
+  if (len > 50) return { depth: 3 as const, class: 'exceeded' }
+  if (len > 40) return { depth: 2 as const, class: 'warning' }
+  return { depth: 3 as const, class: 'normal' }
 })
 
 const isValueNearLimit = computed(() => formData.value.value.length > 4000)

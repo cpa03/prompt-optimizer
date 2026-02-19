@@ -38,7 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { NSelect, NButton, NSpace, NText } from 'naive-ui'
 import type { OptimizationMode, Template, TemplateMetadata } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
-import { TIME_CONSTANTS } from '../config/constants'
+import { UI_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -155,7 +155,7 @@ const handleTemplateSelect = (value: string | null) => {
     }
     recentlySelectedTimeout.value = setTimeout(() => {
       recentlySelected.value = null
-    }, TIME_CONSTANTS.FEEDBACK_DURATION_MS)
+    }, UI_CONSTANTS.FEEDBACK_DURATION_MS)
 
     emit('update:modelValue', template)
     emit('select', template, true)
