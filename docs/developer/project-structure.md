@@ -1,6 +1,6 @@
 # 项目结构文档
 
-> **注意:** 本文档专注于项目的文件和目录结构。关于技术栈详情和实现流程，请参考 [技术文档](./technical-documentation.md)。
+> **注意:** 本文档专注于项目的文件和目录结构。关于技术栈详情和实现流程，请参考 [技术文档](./technical-development-guide.md)。
 
 ## 1. 项目整体架构
 
@@ -44,7 +44,7 @@ prompt-optimizer/
 - `development-guidelines.md` - 开发指南
 - `project-status.md` - 项目状态
 - `project-structure.md` - 项目结构
-- `technical-documentation.md` - 技术文档
+- `technical-development-guide.md` - 技术开发指南
 - `prd.md` - 产品需求文档
 - `CHANGELOG.md` - 更新日志
 
