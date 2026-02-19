@@ -9,6 +9,9 @@
     :style="modalStyle"
     :class="modalClass"
     @after-leave="handleAfterLeave"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="title || t('common.title')"
   >
     <template #header>
       <slot name="title">{{ title || t('common.title') }}</slot>

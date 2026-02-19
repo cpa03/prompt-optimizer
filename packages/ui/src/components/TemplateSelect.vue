@@ -9,6 +9,8 @@
       size="medium"
       @focus="handleFocus"
       filterable
+      :aria-label="t('template.select')"
+      :aria-busy="!isReady"
     >
       <template #empty>
         <NSpace vertical align="center" class="py-4">
