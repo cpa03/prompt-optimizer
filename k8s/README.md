@@ -125,3 +125,52 @@ kubectl get events -n prompt-optimizer --sort-by='.lastTimestamp'
 3. **Add network policies**: Restrict inter-namespace communication
 4. **Configure resource quotas**: Set namespace-level resource limits
 5. **Enable monitoring**: Add Prometheus annotations for metrics collection
+
+## Auto-Scaling (HPA)
+
+The deployment includes a HorizontalPodAutoscaler (HPA) that automatically scales the application based on:
+
+| Metric | Target Utilization | Min Replicas | Max Replicas |
+| ------ | ------------------ | ------------ | ------------ |
+| CPU    | 70%                | 1            | 5            |
+| Memory | 80%                | 1            | 5            |
+
+### HPA Behavior
+
+- **Scale Up**: Adds up to 100% or 2 pods every 15 seconds after 60s stabilization
+- **Scale Down**: Removes up to 10% every 60 seconds after 300s stabilization
+
+To check HPA status:
+
+```bash
+kubectl get hpa -n prompt-optimizer
+kubectl describe hpa prompt-optimizer-hpa -n prompt-optimizer
+```
+
+## High Availability (PDB)
+
+A PodDisruptionBudget (PDB) ensures at least 1 pod is always available during:
+
+- Node maintenance
+- Cluster upgrades
+- Voluntary disruptions
+
+To check PDB status:
+
+```bash
+kubectl get pdb -n prompt-optimizer
+kubectl describe pdb prompt-optimizer-pdb -n prompt-optimizer
+```
+
+## Network Security
+
+A NetworkPolicy restricts traffic:
+
+- **Ingress**: Only allows traffic from the ingress-nginx namespace
+- **Egress**: Allows DNS queries and external API calls only
+
+To modify for your environment, edit the NetworkPolicy:
+
+```bash
+kubectl edit networkpolicy prompt-optimizer-netpol -n prompt-optimizer
+```
