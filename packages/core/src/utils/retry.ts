@@ -183,18 +183,18 @@ export async function withTimeout<T>(
 
 export const RETRY_PRESETS = {
   aggressive: {
-    maxAttempts: 5,
-    baseDelayMs: 500,
-    maxDelayMs: 5000,
+    maxAttempts: TIMEOUTS.retry.maxAttempts,
+    baseDelayMs: Math.floor(TIMEOUTS.retry.defaultDelay / 2),
+    maxDelayMs: TIMEOUTS.retry.maxDelay / 2,
   },
   standard: {
-    maxAttempts: 3,
-    baseDelayMs: 1000,
-    maxDelayMs: 10000,
+    maxAttempts: Math.ceil(TIMEOUTS.retry.maxAttempts / 2),
+    baseDelayMs: TIMEOUTS.retry.defaultDelay,
+    maxDelayMs: TIMEOUTS.retry.maxDelay,
   },
   conservative: {
-    maxAttempts: 2,
-    baseDelayMs: 2000,
-    maxDelayMs: 20000,
+    maxAttempts: Math.ceil(TIMEOUTS.retry.maxAttempts / 3),
+    baseDelayMs: TIMEOUTS.retry.defaultDelay * 2,
+    maxDelayMs: TIMEOUTS.retry.maxDelay * 2,
   },
 } as const

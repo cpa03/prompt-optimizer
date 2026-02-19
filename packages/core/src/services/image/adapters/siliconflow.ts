@@ -18,7 +18,7 @@ import {
   getSiliconFlowQwenParameterDefinitions,
   getSiliconFlowDefaultParameterValues,
 } from '../../../config'
-import { withRetry, createTimeoutSignal } from '../../../utils/retry'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
 import { TIMEOUTS } from '../../../config/timeouts'
 
 export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
@@ -305,9 +305,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
         }
       },
       {
-        maxAttempts: 3,
-        baseDelayMs: 1000,
-        maxDelayMs: 10000,
+        ...RETRY_PRESETS.standard,
         retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
     )
