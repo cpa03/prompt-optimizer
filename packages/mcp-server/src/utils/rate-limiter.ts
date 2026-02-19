@@ -49,6 +49,9 @@ class RateLimiter {
     this.cleanupTimer = setInterval(() => {
       this.cleanup()
     }, this.config.cleanupIntervalMs)
+    if (this.cleanupTimer) {
+      this.cleanupTimer.unref()
+    }
   }
 
   private cleanup(): void {
