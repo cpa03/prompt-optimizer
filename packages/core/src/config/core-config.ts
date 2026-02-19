@@ -84,7 +84,7 @@ export const IMAGE_CONFIG = {
 
 export const LLM_CONFIG = {
   streaming: {
-    doneMarkers: ['data: [DONE]', 'data:[DONE]'],
+    doneMarkers: ['data: [DONE]', 'data:[DONE]'] as string[],
   },
   prompt: {
     previewRatio: 0.75,
