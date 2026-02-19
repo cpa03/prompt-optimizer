@@ -37,7 +37,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NButton, NIcon } from 'naive-ui'
-import { TIME_CONSTANTS } from '../config/constants'
+import { TIME_CONSTANTS, Z_INDEX, SPACING, ANIMATION_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -138,27 +138,32 @@ onUnmounted(() => {
 <style scoped>
 /* 🎨 Palette: Scroll-to-top button with micro-animations */
 .scroll-to-top-btn {
-  z-index: 100;
+  --z-index-overlay: v-bind('Z_INDEX.DROPDOWN');
+  --spacing-fixed: v-bind('SPACING.XXXL + "px"');
+  --spacing-absolute: v-bind('SPACING.LG + "px"');
+  --transition-duration: v-bind('ANIMATION_CONSTANTS.HOVER_TRANSITION_MS + "ms"');
+
+  z-index: var(--z-index-overlay);
   width: 44px;
   height: 44px;
   box-shadow:
     0 4px 12px rgba(0, 0, 0, 0.15),
     0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all calc(var(--transition-duration) * 1.5) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Fixed positioning for window scroll */
 .scroll-to-top-btn.is-fixed {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: var(--spacing-fixed);
+  right: var(--spacing-fixed);
 }
 
 /* Absolute positioning for container scroll */
 .scroll-to-top-btn.is-absolute {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: var(--spacing-absolute);
+  right: var(--spacing-absolute);
 }
 
 .scroll-to-top-btn:hover {
@@ -174,7 +179,7 @@ onUnmounted(() => {
 
 /* Icon animation on hover */
 .scroll-icon {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform calc(var(--transition-duration) * 1.5) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .scroll-to-top-btn:hover .scroll-icon {
