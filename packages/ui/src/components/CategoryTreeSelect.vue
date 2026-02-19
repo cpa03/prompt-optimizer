@@ -114,6 +114,12 @@ const props = withDefaults(defineProps<Props>(), {
   showAllOption: false,
 })
 
+const emit = defineEmits<{
+  'update:modelValue': [value: string]
+  change: [value: string]
+  'category-updated': []
+}>()
+
 // 内部状态
 const internalValue = ref(props.modelValue)
 const categories = ref<FavoriteCategory[]>([])
