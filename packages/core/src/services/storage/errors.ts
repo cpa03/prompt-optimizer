@@ -55,7 +55,7 @@ export const STORAGE_VALIDATION = {
 
 export function validateStorageKey(
   key: string,
-  reservedKeys: string[] = STORAGE_VALIDATION.RESERVED_KEYS
+  reservedKeys: readonly string[] = STORAGE_VALIDATION.RESERVED_KEYS
 ): void {
   if (!key || typeof key !== 'string') {
     throw new StorageError('Key must be a non-empty string', 'validation')
