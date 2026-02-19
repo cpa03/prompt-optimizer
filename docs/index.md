@@ -159,9 +159,9 @@ pnpm build
 - **[Prompt Optimization Guide](workspace/prompt-optimization-guide-lyra.md)**
 - **[Standardization Todo](workspace/standardization-optimization-todolist.md)**
 
-### BMad Method
+### Testing Resources
 
-- **[BROCULA Guide](../BROCULA.md)** - Automated testing and validation
+- See [Testing Guide](testing/README.md) for testing documentation
 
 ---
 
