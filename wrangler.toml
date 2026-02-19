@@ -27,6 +27,12 @@ port = 8788
 local_protocol = "http"
 ip = "localhost"
 
+# TypeScript rules for functions directory
+# Allows wrangler to properly handle .ts files in functions/
+[[rules]]
+type = "ESModule"
+globs = ["functions/**/*.ts"]
+
 # Performance optimization: Enable HTTP/3
 # https://developers.cloudflare.com/network/http3/
 # Note: This is configured at the Cloudflare dashboard level for Pages projects
