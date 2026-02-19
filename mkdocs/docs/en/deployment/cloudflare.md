@@ -103,9 +103,11 @@ Cloudflare will automatically configure SSL certificates.
 
 ### Differences from Vercel Deployment
 
-1. **Different Cookie Name**:
+1. **Platform-Aware Cookie Name**:
+   - The application automatically detects the deployment platform
    - Vercel: `vercel_access_token`
    - Cloudflare: `cf_access_token`
+   - Detection is based on `CF_PAGES` environment variable set by Cloudflare
 
 2. **Environment Variables**:
    - Both support configuration in Dashboard
@@ -114,6 +116,12 @@ Cloudflare will automatically configure SSL certificates.
 3. **Function Runtime**:
    - Vercel: Node.js Runtime
    - Cloudflare: Edge Runtime (V8 isolates)
+
+4. **Static Asset Configuration**:
+   - Cloudflare: Uses `_headers` and `_redirects` files in public directory
+   - These files provide caching rules and SPA routing support
+   - Static assets cached for 1 year with immutable flag
+   - HTML pages have no-cache to ensure fresh content
 
 ### Limitations
 

@@ -8,6 +8,10 @@ compatibility_flags = ["nodejs_compat"]
 # Pages configuration
 pages_build_output_dir = "packages/web/dist"
 
+# Enable enhanced Cloudflare features
+[placement]
+mode = "smart"
+
 # Observability (Cloudflare best practice)
 [observability]
 enabled = true
@@ -23,16 +27,12 @@ port = 8788
 local_protocol = "http"
 ip = "localhost"
 
-# Static asset rules for better caching
-# These rules apply to files in the build output directory
-[[routes]]
-pattern = "assets/*"
-custom_domain = false
+# Performance optimization: Enable HTTP/3
+# https://developers.cloudflare.com/network/http3/
+# Note: This is configured at the Cloudflare dashboard level for Pages projects
 
-# Headers for static assets (configured in _headers file or Pages settings)
-# Cache static assets for 1 year (immutable)
-# HTML files: no cache (always fresh)
-# JS/CSS: cache with revalidation
+# Asset caching rules are configured via _headers file in packages/web/public/
+# This follows Cloudflare best practices for Pages projects
 
 # Environment variables (set via Cloudflare dashboard or wrangler secret)
 # [vars]

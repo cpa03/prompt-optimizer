@@ -40,7 +40,10 @@ export const APP_ROUTES = {
 
 // Cookie configuration
 export const COOKIE_CONFIG = {
-  ACCESS_TOKEN_NAME: 'vercel_access_token',
+  // Platform-aware cookie naming: Vercel uses 'vercel_access_token',
+  // Cloudflare uses 'cf_access_token'
+  // Detect platform based on environment variable or default to vercel for backward compatibility
+  ACCESS_TOKEN_NAME: process.env.CF_PAGES ? 'cf_access_token' : 'vercel_access_token',
   DEFAULT_MAX_AGE: 86400, // 24 hours in seconds
   SAME_SITE_POLICY: 'Strict',
   CACHE_CONTROL: 'no-cache, no-store, must-revalidate',
