@@ -159,7 +159,9 @@ describe('Database Architecture Improvements - Validation Logic', () => {
     it('should generate consistent FNV-1a checksums for known values', () => {
       expect(calculateChecksum('')).toBe('811c9dc5')
       expect(calculateChecksum('a')).toBe('e40c292c')
-      expect(calculateChecksum('test')).toBe('1e0d8221')
+      expect(calculateChecksum('test')).toBe('afd071e5')
+      expect(calculateChecksum('hello')).toBe('4f9f2cab')
+      expect(calculateChecksum('world')).toBe('37a3e893')
     })
 
     it('should generate good distribution for similar strings', () => {

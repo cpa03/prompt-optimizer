@@ -500,24 +500,22 @@ export class DexieStorageProvider implements IStorageProvider {
     updateFn: (currentValue: T | null) => T
   ): Promise<void> {
     try {
-      // 使用更安全的事务处理方式
       await this.db.transaction('rw', this.db.storage, async (tx) => {
         try {
-          // 读取当前值
           const currentRecord = await tx.table('storage').get(key)
           const currentValue = currentRecord?.value ? (JSON.parse(currentRecord.value) as T) : null
 
-          // 应用更新函数 - 确保同步执行
           const newValue = updateFn(currentValue)
+          const valueStr = JSON.stringify(newValue)
 
-          // 写入新值
           await tx.table('storage').put({
             key,
-            value: JSON.stringify(newValue),
+            value: valueStr,
             timestamp: Date.now(),
+            size: valueStr.length,
+            checksum: this.calculateChecksum(valueStr),
           })
         } catch (innerError) {
-          // 事务内部错误，让事务回滚
           console.error(`事务内部操作失败 (${key}):`, innerError)
           throw innerError
         }
@@ -525,7 +523,6 @@ export class DexieStorageProvider implements IStorageProvider {
     } catch (error) {
       console.error(`原子更新失败 (${key}):`, error)
 
-      // 如果是Dexie事务错误，提供更详细的错误信息
       if (this.isError(error) && error.name === 'PrematureCommitError') {
         throw new StorageError(
           `Database transaction error for key ${key}: ${error.message}. Please try again.`,
@@ -717,7 +714,7 @@ export class DexieStorageProvider implements IStorageProvider {
       let estimatedSize = 0
       if (itemCount > 0) {
         await this.db.storage.each((record) => {
-          estimatedSize += record.value.length
+          estimatedSize += record.size ?? record.value?.length ?? 0
         })
       }
 
@@ -768,6 +765,8 @@ export class DexieStorageProvider implements IStorageProvider {
         key,
         value,
         timestamp: Date.now(),
+        size: value.length,
+        checksum: this.calculateChecksum(value),
       }))
 
       await this.db.storage.bulkPut(records)
