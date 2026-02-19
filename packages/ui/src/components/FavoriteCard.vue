@@ -376,6 +376,9 @@ import { Copy, PlayerPlay, Eye, Edit, Trash, Check } from '@vicons/tabler'
 import { useI18n } from 'vue-i18n'
 import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core'
 import { useTooltipTheme } from '../composables/ui/useTooltipTheme'
+import { ANIMATION_CONSTANTS, CALCULATION_CONSTANTS } from '../config/constants'
+
+const { MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
 
 const { t } = useI18n()
 
@@ -451,7 +454,7 @@ const handleCopy = async () => {
     emit('copy', props.favorite)
     setTimeout(() => {
       copySuccess.value = false
-    }, 1500)
+    }, ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS)
   } catch {
     // Fallback: emit copy event for parent to handle
     emit('copy', props.favorite)
@@ -464,7 +467,7 @@ const handleUse = () => {
   emit('use', props.favorite)
   setTimeout(() => {
     useSuccess.value = false
-  }, 1500)
+  }, ANIMATION_CONSTANTS.COPY_SUCCESS_DURATION_MS)
 }
 
 const getViewportWidth = () => {
@@ -700,12 +703,12 @@ const formatDate = (timestamp: number) => {
   const date = new Date(timestamp)
   const now = new Date()
   const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const days = Math.floor(diff / MS_PER_DAY)
 
   if (days === 0) {
-    const hours = Math.floor(diff / (1000 * 60 * 60))
+    const hours = Math.floor(diff / MS_PER_HOUR)
     if (hours === 0) {
-      const minutes = Math.floor(diff / (1000 * 60))
+      const minutes = Math.floor(diff / MS_PER_MINUTE)
       return minutes <= 1
         ? t('favorites.manager.time.justNow')
         : t('favorites.manager.time.minutesAgo', { minutes })
