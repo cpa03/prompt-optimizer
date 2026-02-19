@@ -136,7 +136,7 @@ export * from './services/compare/errors'
 
 // 导出数据管理相关
 export { DataManager, createDataManager } from './services/data/manager'
-export type { IDataManager } from './services/data/manager'
+export type { IDataManager } from './services/data/types'
 export { ElectronDataManagerProxy } from './services/data/electron-proxy'
 
 // 导出偏好设置服务相关
