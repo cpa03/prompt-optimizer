@@ -3,8 +3,32 @@
  * 所有服务的统一导出入口
  */
 
-// 核心LLM服务
-export * from './llm'
+// 核心LLM服务 - 使用显式导出避免类型冲突
+export {
+  // LLM 服务
+  LLMService,
+  createLLMService,
+  TextAdapterRegistry,
+  createTextAdapterRegistry,
+  ElectronLLMProxy,
+  // LLM 类型
+  type ILLMService,
+  type Message,
+  type StreamHandlers,
+  type LLMResponse,
+  type ModelInfo,
+  type ModelOption,
+  type ITextAdapterRegistry,
+  type ITextProviderAdapter,
+} from './llm'
+// 从 llm 单独导出可能冲突的类型（使用别名区分）
+export type {
+  ConnectionSchema as LLMConnectionSchema,
+  TextProvider as LLMTextProvider,
+  TextModel as LLMTextModel,
+  TextModelConfig as LLMTextModelConfig,
+  ParameterDefinition as LLMParameterDefinition,
+} from './llm'
 
 // 模型管理服务
 export * from './model'

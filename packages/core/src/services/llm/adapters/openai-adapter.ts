@@ -542,7 +542,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       }
 
       // 跳过 [DONE] 标记（兼容 data: [DONE] 和 data:[DONE]）
-      if (LLM_CONFIG.streaming.doneMarkers.includes(trimmed)) {
+      if ((LLM_CONFIG.streaming.doneMarkers as readonly string[]).includes(trimmed)) {
         continue
       }
 
