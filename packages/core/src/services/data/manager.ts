@@ -3,6 +3,7 @@ import { IModelManager } from '../model/types'
 import { ITemplateManager } from '../template/types'
 import { IPreferenceService } from '../preference/types'
 import { ContextRepo } from '../context/types'
+import type { IDataManager } from './types'
 import {
   DataExportFailedError,
   DataImportPartialFailedError,
@@ -22,23 +23,6 @@ import { safeJsonParse } from '../../utils/json'
  */
 
 // 旧版本兼容性处理现在由各个服务自己负责
-
-/**
- * 数据管理器接口
- */
-export interface IDataManager {
-  /**
-   * 导出所有数据
-   * @returns JSON格式的数据字符串
-   */
-  exportAllData(): Promise<string>
-
-  /**
-   * 导入所有数据
-   * @param dataString JSON格式的数据字符串
-   */
-  importAllData(dataString: string): Promise<void>
-}
 
 export class DataManager implements IDataManager {
   private modelManager: IModelManager
