@@ -147,6 +147,18 @@ let pendingGcServices: {
 } | null = null
 
 /**
+ * Cancel any pending garbage collection scheduled by scheduleImageStorageGc.
+ * Useful for cleanup during component unmounting or test teardown.
+ */
+export function cancelPendingImageStorageGc(): void {
+  if (gcTimer) {
+    clearTimeout(gcTimer)
+    gcTimer = null
+    pendingGcServices = null
+  }
+}
+
+/**
  * Best-effort schedule for image storage GC.
  * Coalesces multiple calls into a single run and serializes with saveSession().
  */
@@ -172,4 +184,8 @@ export function scheduleImageStorageGc(
       }
     })
   }, opts?.delayMs ?? 0)
+
+  if (gcTimer && typeof gcTimer.unref === 'function') {
+    gcTimer.unref()
+  }
 }
