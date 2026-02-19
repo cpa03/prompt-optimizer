@@ -7,7 +7,6 @@
 - 快速开始指南（待创建） - 开发环境搭建和项目启动
 - [技术开发指南](./technical-development-guide.md) - 完整的技术栈和开发规范
 - [项目结构](./project-structure.md) - 项目文件和目录组织说明
-- [AI开发流程规范](./ai-development-workflow.md) - AI辅助开发的标准化流程
 - [通用开发经验](./general-experience.md) - 项目开发中的通用经验与最佳实践
 
 ## 📱 平台开发指南
@@ -36,7 +35,7 @@
 ## 🔧 故障排查
 
 - [通用排查清单](./troubleshooting/general-checklist.md) - 常见问题的排查步骤
-- [排查指南索引](./troubleshooting/README.md)（待创建） - 所有排查文档的索引
+- [排查指南索引](./troubleshooting/README.md) - 所有排查文档的索引
 
 ## 🤝 贡献指南
 
