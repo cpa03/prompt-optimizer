@@ -8,7 +8,7 @@ import type { AppServices } from '../../types/services'
  * @param optimizeModelSelect 优化模型选择器引用
  * @param testModelSelect 测试模型选择器引用
  * @param loadModels 加载模型的函数
- * @param initTemplateSelection 初始化模板选择的函数
+ * @param _initTemplateSelection 初始化模板选择的函数 (reserved for future use)
  * @returns 模态框管理相关方法和状态
  */
 interface ModelSelectRef {
