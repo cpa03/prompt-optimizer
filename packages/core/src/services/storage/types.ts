@@ -20,4 +20,18 @@ export interface IStorageProvider {
     supportsBatch: boolean
     maxStorageSize?: number
   }
+
+  verifyIntegrity?(key: string): Promise<boolean>
+  repairCorruptedData?(): Promise<{
+    repaired: number
+    failed: number
+    details: Array<{ key: string; action: string; error?: string }>
+  }>
+  getDatabaseStats?(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }>
 }
