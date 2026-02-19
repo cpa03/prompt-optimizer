@@ -10,7 +10,33 @@ interface StorageRecord {
   key: string
   value: string
   timestamp?: number
+  size?: number
+  checksum?: string
 }
+
+/**
+ * 数据库元数据接口
+ */
+interface DatabaseMetadata {
+  version: number
+  createdAt: number
+  lastMigrationAt?: number
+  migrationHistory: Array<{
+    version: number
+    timestamp: number
+    description: string
+  }>
+}
+
+/**
+ * 数据库配置常量
+ */
+const DB_CONFIG = {
+  currentVersion: 2,
+  metadataKey: '__db_metadata__',
+  maxKeyLength: 1024,
+  maxValueSize: 50 * 1024 * 1024, // 50MB
+} as const
 
 /**
  * 获取数据库名称
@@ -41,10 +67,23 @@ class PromptOptimizerDB extends Dexie {
   constructor() {
     super(getDatabaseName())
 
-    // 定义数据库结构
-    this.version(1).stores({
-      storage: 'key, value, timestamp',
-    })
+    // 定义数据库结构 - 版本2新增字段
+    this.version(2)
+      .stores({
+        storage: 'key, value, timestamp, size, checksum',
+      })
+      .upgrade((tx) => {
+        // 数据库迁移：从版本1升级到版本2
+        console.log('[Database] Upgrading from version 1 to version 2')
+        // 添加新字段的默认值
+        tx.table('storage')
+          .toCollection()
+          .modify((record) => {
+            if (!record.size) {
+              record.size = record.value ? record.value.length : 0
+            }
+          })
+      })
   }
 }
 
@@ -68,12 +107,94 @@ export class DexieStorageProvider implements IStorageProvider {
     this.db = new PromptOptimizerDB()
     this.dbOpened = this.db
       .open()
-      .then(() => undefined)
+      .then(async () => {
+        // 初始化数据库元数据
+        await this.initializeMetadata()
+        return undefined
+      })
       .catch((error) => {
         console.error('Failed to open Dexie database:', error)
         // 抛出错误以使所有后续操作失败
         throw error
       })
+  }
+
+  /**
+   * 初始化数据库元数据
+   */
+  private async initializeMetadata(): Promise<void> {
+    try {
+      const metadata = await this.db.storage.get(DB_CONFIG.metadataKey)
+      if (!metadata) {
+        const now = Date.now()
+        await this.db.storage.put({
+          key: DB_CONFIG.metadataKey,
+          value: JSON.stringify({
+            version: DB_CONFIG.currentVersion,
+            createdAt: now,
+            migrationHistory: [
+              {
+                version: DB_CONFIG.currentVersion,
+                timestamp: now,
+                description: 'Database initialized with version 2 schema',
+              },
+            ],
+          } as DatabaseMetadata),
+          timestamp: now,
+          size: 0,
+        })
+      }
+    } catch (error) {
+      console.warn('[Database] Failed to initialize metadata:', error)
+      // 不抛出错误，允许数据库继续工作
+    }
+  }
+
+  /**
+   * 验证键名
+   */
+  private validateKey(key: string): void {
+    if (!key || typeof key !== 'string') {
+      throw new StorageError('Key must be a non-empty string', 'validation')
+    }
+    if (key.length > DB_CONFIG.maxKeyLength) {
+      throw new StorageError(
+        `Key length exceeds maximum allowed size of ${DB_CONFIG.maxKeyLength}`,
+        'validation'
+      )
+    }
+    if (key === DB_CONFIG.metadataKey) {
+      throw new StorageError('Cannot use reserved metadata key', 'validation')
+    }
+  }
+
+  /**
+   * 验证值
+   */
+  private validateValue(value: string): void {
+    if (typeof value !== 'string') {
+      throw new StorageError('Value must be a string', 'validation')
+    }
+    if (value.length > DB_CONFIG.maxValueSize) {
+      throw new StorageError(
+        `Value size ${value.length} exceeds maximum allowed size of ${DB_CONFIG.maxValueSize}`,
+        'validation'
+      )
+    }
+  }
+
+  /**
+   * 计算校验和
+   */
+  private calculateChecksum(value: string): string {
+    let hash = 0
+    for (let i = 0; i < value.length; i++) {
+      const char = value.charCodeAt(i)
+      hash = (hash << 5) - hash + char
+      hash = hash & hash // Convert to 32-bit integer
+    }
+    // Ensure positive hex value
+    return Math.abs(hash).toString(16)
   }
 
   /**
@@ -98,9 +219,13 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
+      this.validateKey(key)
       const record = await this.db.storage.get(key)
       return record?.value ?? null
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       console.error(`获取存储项失败 (${key}):`, error)
       throw new StorageError(`Failed to get item: ${key}`, 'read')
     }
@@ -128,12 +253,23 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
+      this.validateKey(key)
+      this.validateValue(value)
+
+      const checksum = this.calculateChecksum(value)
+      const size = value.length
+
       await this.db.storage.put({
         key,
         value,
         timestamp: Date.now(),
+        size,
+        checksum,
       })
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       console.error(`设置存储项失败 (${key}):`, error)
       throw new StorageError(`Failed to set item: ${key}`, 'write')
     }
@@ -146,10 +282,74 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
+      this.validateKey(key)
       await this.db.storage.delete(key)
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       console.error(`删除存储项失败 (${key}):`, error)
       throw new StorageError(`Failed to remove item: ${key}`, 'delete')
+    }
+  }
+
+  /**
+   * 验证数据完整性
+   */
+  async verifyIntegrity(key: string): Promise<boolean> {
+    await this.initialize()
+
+    try {
+      const record = await this.db.storage.get(key)
+      if (!record || !record.checksum) {
+        return true // 没有checksum的旧数据视为有效
+      }
+
+      const calculatedChecksum = this.calculateChecksum(record.value)
+      return calculatedChecksum === record.checksum
+    } catch (error) {
+      console.error(`验证数据完整性失败 (${key}):`, error)
+      return false
+    }
+  }
+
+  /**
+   * 获取数据库统计信息
+   */
+  async getDatabaseStats(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }> {
+    await this.initialize()
+
+    try {
+      const records = await this.db.storage.toArray()
+      const itemCount = records.length
+      const totalSize = records.reduce((sum, r) => sum + (r.size || r.value?.length || 0), 0)
+      const timestamps = records.map((r) => r.timestamp).filter((t): t is number => t != null)
+      const oldestRecord = timestamps.length > 0 ? Math.min(...timestamps) : null
+      const newestRecord = timestamps.length > 0 ? Math.max(...timestamps) : null
+      const averageRecordSize = itemCount > 0 ? totalSize / itemCount : 0
+
+      return {
+        itemCount,
+        totalSize,
+        oldestRecord,
+        newestRecord,
+        averageRecordSize,
+      }
+    } catch (error) {
+      console.error('获取数据库统计信息失败:', error)
+      return {
+        itemCount: 0,
+        totalSize: 0,
+        oldestRecord: null,
+        newestRecord: null,
+        averageRecordSize: 0,
+      }
     }
   }
 
@@ -332,6 +532,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 批量更新操作
+   * 优化：添加验证和性能统计
    */
   async batchUpdate(
     operations: Array<{
@@ -342,7 +543,22 @@ export class DexieStorageProvider implements IStorageProvider {
   ): Promise<void> {
     await this.initialize()
 
+    // 预验证所有操作
+    for (const { key, operation, value } of operations) {
+      this.validateKey(key)
+      if (operation === 'set') {
+        if (value === undefined) {
+          throw new StorageError(
+            `Value is required for 'set' operation on key: ${key}`,
+            'validation'
+          )
+        }
+        this.validateValue(value)
+      }
+    }
+
     try {
+      const startTime = Date.now()
       await this.db.transaction('rw', this.db.storage, async () => {
         const updates: Array<StorageRecord> = []
         const deletions: string[] = []
@@ -353,6 +569,8 @@ export class DexieStorageProvider implements IStorageProvider {
               key,
               value,
               timestamp: Date.now(),
+              size: value.length,
+              checksum: this.calculateChecksum(value),
             })
           } else if (operation === 'remove') {
             deletions.push(key)
@@ -369,10 +587,102 @@ export class DexieStorageProvider implements IStorageProvider {
           await this.db.storage.bulkDelete(deletions)
         }
       })
+
+      const duration = Date.now() - startTime
+      if (duration > 1000) {
+        console.warn(
+          `[Database] Batch update took ${duration}ms for ${operations.length} operations`
+        )
+      }
     } catch (error) {
       console.error('批量更新失败:', error)
       throw new StorageError('Failed to perform batch update', 'write')
     }
+  }
+
+  /**
+   * 修复损坏的数据
+   */
+  async repairCorruptedData(): Promise<{
+    repaired: number
+    failed: number
+    details: Array<{ key: string; action: string; error?: string }>
+  }> {
+    await this.initialize()
+
+    const result = {
+      repaired: 0,
+      failed: 0,
+      details: [] as Array<{ key: string; action: string; error?: string }>,
+    }
+
+    try {
+      const allRecords = await this.db.storage.toArray()
+
+      for (const record of allRecords) {
+        // 跳过元数据记录
+        if (record.key === DB_CONFIG.metadataKey) {
+          continue
+        }
+
+        // 检查数据完整性
+        if (record.checksum) {
+          const isValid = await this.verifyIntegrity(record.key)
+          if (!isValid) {
+            try {
+              // 尝试重新计算checksum
+              const newChecksum = this.calculateChecksum(record.value)
+              await this.db.storage.update(record.key, {
+                checksum: newChecksum,
+                size: record.value.length,
+              })
+              result.repaired++
+              result.details.push({
+                key: record.key,
+                action: 'checksum_repaired',
+              })
+            } catch (error) {
+              result.failed++
+              result.details.push({
+                key: record.key,
+                action: 'repair_failed',
+                error: error instanceof Error ? error.message : 'Unknown error',
+              })
+            }
+          }
+        } else {
+          // 旧数据没有checksum，添加checksum
+          try {
+            const checksum = this.calculateChecksum(record.value)
+            await this.db.storage.update(record.key, {
+              checksum,
+              size: record.value.length,
+            })
+            result.repaired++
+            result.details.push({
+              key: record.key,
+              action: 'checksum_added',
+            })
+          } catch (error) {
+            result.failed++
+            result.details.push({
+              key: record.key,
+              action: 'checksum_add_failed',
+              error: error instanceof Error ? error.message : 'Unknown error',
+            })
+          }
+        }
+      }
+
+      console.log(
+        `[Database] Repair completed: ${result.repaired} repaired, ${result.failed} failed`
+      )
+    } catch (error) {
+      console.error('数据修复失败:', error)
+      throw new StorageError('Failed to repair corrupted data', 'repair')
+    }
+
+    return result
   }
 
   /**

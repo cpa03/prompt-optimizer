@@ -4,7 +4,15 @@
 import { STORAGE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 import { type ErrorOptionsWithCause, setErrorCause } from '../llm/errors'
 
-type StorageOperation = 'read' | 'write' | 'delete' | 'clear' | 'config' | 'lock'
+type StorageOperation =
+  | 'read'
+  | 'write'
+  | 'delete'
+  | 'clear'
+  | 'config'
+  | 'lock'
+  | 'validation'
+  | 'repair'
 
 const STORAGE_OPERATION_TO_CODE: Record<
   StorageOperation,
@@ -16,6 +24,8 @@ const STORAGE_OPERATION_TO_CODE: Record<
   clear: STORAGE_ERROR_CODES.CLEAR_ERROR,
   config: STORAGE_ERROR_CODES.CONFIG_ERROR,
   lock: STORAGE_ERROR_CODES.LOCK_ERROR,
+  validation: STORAGE_ERROR_CODES.CONFIG_ERROR, // Use CONFIG_ERROR for validation errors
+  repair: STORAGE_ERROR_CODES.CONFIG_ERROR, // Use CONFIG_ERROR for repair errors
 }
 
 export class StorageError extends Error {
