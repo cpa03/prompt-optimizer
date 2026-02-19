@@ -1,0 +1,11 @@
+# SPA Routing - Redirect all non-file requests to index.html
+# This ensures Vue Router handles all routes correctly
+
+# API routes should not be redirected
+/api/*  /api/:splat  200
+
+# Static assets should not be redirected
+/assets/*  /assets/:splat  200
+
+# All other routes go to index.html for SPA routing
+/*  /index.html  200
