@@ -4,7 +4,7 @@ import { ImportExportError } from '../../interfaces/import-export'
 import { IMPORT_EXPORT_ERROR_CODES } from '../../constants/error-codes'
 import { VALIDATION_CONSTRAINTS } from '../../constants/constraints'
 import { StorageError } from '../storage/errors'
-import { toErrorWithCode } from '../../utils/error'
+import { toErrorWithCode, getErrorMessage } from '../../utils/error'
 import { PREFERENCE_CONFIG } from '../../config/core-config'
 
 // 需要导出的UI配置键 - 白名单验证
@@ -101,8 +101,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      const details = error instanceof Error ? error.message : String(error)
-      throw new StorageError(`Failed to get preference: ${details}`, 'read')
+      throw new StorageError(`Failed to get preference: ${getErrorMessage(error)}`, 'read')
     }
   }
 
@@ -124,8 +123,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      const details = error instanceof Error ? error.message : String(error)
-      throw new StorageError(`Failed to set preference: ${details}`, 'write')
+      throw new StorageError(`Failed to set preference: ${getErrorMessage(error)}`, 'write')
     }
   }
 
@@ -144,8 +142,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      const details = error instanceof Error ? error.message : String(error)
-      throw new StorageError(`Failed to delete preference: ${details}`, 'delete')
+      throw new StorageError(`Failed to delete preference: ${getErrorMessage(error)}`, 'delete')
     }
   }
 
@@ -174,8 +171,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      const details = error instanceof Error ? error.message : String(error)
-      throw new StorageError(`Failed to clear preferences: ${details}`, 'clear')
+      throw new StorageError(`Failed to clear preferences: ${getErrorMessage(error)}`, 'clear')
     }
   }
 
@@ -206,8 +202,7 @@ export class PreferenceService implements IPreferenceService {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      const details = error instanceof Error ? error.message : String(error)
-      throw new StorageError(`Failed to get all preferences: ${details}`, 'read')
+      throw new StorageError(`Failed to get all preferences: ${getErrorMessage(error)}`, 'read')
     }
   }
 

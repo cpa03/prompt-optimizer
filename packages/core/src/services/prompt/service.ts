@@ -14,6 +14,7 @@ import { IHistoryManager } from '../history/types'
 import { OptimizationError, IterationError, TestError, ServiceDependencyError } from './errors'
 import { TemplateProcessor, TemplateContext } from '../template/processor'
 import { PROMPT_CONSTRAINTS } from '../../constants/constraints'
+import { getErrorMessage, toError } from '../../utils/error'
 
 /**
  * Default template IDs used by the system
@@ -165,8 +166,10 @@ export class PromptService implements IPromptService {
 
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new OptimizationError(request.targetPrompt, `Optimization failed: ${errorMessage}`)
+      throw new OptimizationError(
+        request.targetPrompt,
+        `Optimization failed: ${getErrorMessage(error)}`
+      )
     }
   }
 
@@ -249,8 +252,7 @@ export class PromptService implements IPromptService {
 
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new OptimizationError('', `Message optimization failed: ${errorMessage}`)
+      throw new OptimizationError('', `Message optimization failed: ${getErrorMessage(error)}`)
     }
   }
 
@@ -287,8 +289,11 @@ export class PromptService implements IPromptService {
       try {
         template = await this.templateManager.getTemplate(templateId || DEFAULT_TEMPLATES.ITERATE)
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        throw new IterationError(originalPrompt, iterateInput, `Iteration failed: ${errorMessage}`)
+        throw new IterationError(
+          originalPrompt,
+          iterateInput,
+          `Iteration failed: ${getErrorMessage(error)}`
+        )
       }
 
       if (!template?.content) {
@@ -342,8 +347,11 @@ export class PromptService implements IPromptService {
 
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new IterationError(originalPrompt, iterateInput, `Iteration failed: ${errorMessage}`)
+      throw new IterationError(
+        originalPrompt,
+        iterateInput,
+        `Iteration failed: ${getErrorMessage(error)}`
+      )
     }
   }
 
@@ -381,8 +389,7 @@ export class PromptService implements IPromptService {
 
       return result
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new TestError(systemPrompt, userPrompt, `Test failed: ${errorMessage}`)
+      throw new TestError(systemPrompt, userPrompt, `Test failed: ${getErrorMessage(error)}`)
     }
   }
 
@@ -440,8 +447,7 @@ export class PromptService implements IPromptService {
         onError: callbacks.onError,
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new TestError(systemPrompt, userPrompt, `Test failed: ${errorMessage}`)
+      throw new TestError(systemPrompt, userPrompt, `Test failed: ${getErrorMessage(error)}`)
     }
   }
 
@@ -521,14 +527,16 @@ export class PromptService implements IPromptService {
             callbacks.onComplete(response)
           } catch (error) {
             // 如果验证失败，调用错误回调
-            callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+            callbacks.onError(toError(error))
           }
         },
         onError: callbacks.onError,
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new OptimizationError(request.targetPrompt, `Optimization failed: ${errorMessage}`)
+      throw new OptimizationError(
+        request.targetPrompt,
+        `Optimization failed: ${getErrorMessage(error)}`
+      )
     }
   }
 
@@ -623,14 +631,13 @@ export class PromptService implements IPromptService {
             callbacks.onComplete(response)
           } catch (error) {
             // 如果验证失败，调用错误回调
-            callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+            callbacks.onError(toError(error))
           }
         },
         onError: callbacks.onError,
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new OptimizationError('', `Message optimization failed: ${errorMessage}`)
+      throw new OptimizationError('', `Message optimization failed: ${getErrorMessage(error)}`)
     }
   }
 
@@ -668,8 +675,11 @@ export class PromptService implements IPromptService {
       try {
         template = await this.templateManager.getTemplate(templateId)
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error)
-        throw new IterationError(originalPrompt, iterateInput, `Iteration failed: ${errorMessage}`)
+        throw new IterationError(
+          originalPrompt,
+          iterateInput,
+          `Iteration failed: ${getErrorMessage(error)}`
+        )
       }
 
       if (!template?.content) {
@@ -731,14 +741,17 @@ export class PromptService implements IPromptService {
             handlers.onComplete(response)
           } catch (error) {
             // 如果验证失败，调用错误回调
-            handlers.onError(error instanceof Error ? error : new Error(String(error)))
+            handlers.onError(toError(error))
           }
         },
         onError: handlers.onError,
       })
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      throw new IterationError(originalPrompt, iterateInput, `Iteration failed: ${errorMessage}`)
+      throw new IterationError(
+        originalPrompt,
+        iterateInput,
+        `Iteration failed: ${getErrorMessage(error)}`
+      )
     }
   }
 
@@ -927,7 +940,7 @@ export class PromptService implements IPromptService {
         })
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorMessage = getErrorMessage(error)
       console.error('[PromptService] Custom conversation test error:', errorMessage)
 
       // 通过回调传递错误

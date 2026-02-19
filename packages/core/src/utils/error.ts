@@ -108,3 +108,56 @@ export function toErrorWithCode(
 
   return new Error(String(value))
 }
+
+/**
+ * Extracts a string error message from an unknown value.
+ * This is a utility function to reduce repetitive error message extraction patterns.
+ *
+ * @param error - The unknown value to extract a message from
+ * @returns A string representation of the error
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await someOperation()
+ * } catch (err) {
+ *   const message = getErrorMessage(err)
+ *   console.error(message)
+ * }
+ * ```
+ */
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message
+  }
+  if (typeof error === 'string') {
+    return error
+  }
+  return String(error)
+}
+
+/**
+ * Converts an unknown value to an Error instance.
+ * Useful for error handling in catch blocks.
+ *
+ * @param error - The unknown value to convert
+ * @returns An Error instance
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await someOperation()
+ * } catch (err) {
+ *   throw toError(err)
+ * }
+ * ```
+ */
+export function toError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error
+  }
+  if (typeof error === 'string') {
+    return new Error(error)
+  }
+  return new Error(String(error))
+}

@@ -9,7 +9,7 @@ import {
   DataInvalidFormatError,
   DataInvalidJsonError,
 } from './errors'
-import { toErrorWithCode } from '../../utils/error'
+import { toErrorWithCode, getErrorMessage } from '../../utils/error'
 import { safeJsonParse } from '../../utils/json'
 
 /**
@@ -76,7 +76,7 @@ export class DataManager implements IDataManager {
       if (typeof (error as any)?.code === 'string') {
         throw toErrorWithCode(error)
       }
-      throw new DataExportFailedError(error instanceof Error ? error.message : String(error))
+      throw new DataExportFailedError(getErrorMessage(error))
     }
 
     const exportFormat = {
@@ -93,7 +93,7 @@ export class DataManager implements IDataManager {
     try {
       exportData = safeJsonParse(dataString)
     } catch (error) {
-      throw new DataInvalidJsonError(error instanceof Error ? error.message : String(error))
+      throw new DataInvalidJsonError(getErrorMessage(error))
     }
 
     if (!exportData || typeof exportData !== 'object' || Array.isArray(exportData)) {
@@ -144,7 +144,7 @@ export class DataManager implements IDataManager {
           await service.importData(dataToImport[dataKey])
           console.log(`Successfully imported ${dataKey}`)
         } catch (error) {
-          const errorMessage = `Failed to import ${dataKey}: ${error instanceof Error ? error.message : String(error)}`
+          const errorMessage = `Failed to import ${dataKey}: ${getErrorMessage(error)}`
           errors.push(errorMessage)
           console.error(errorMessage, error)
         }
