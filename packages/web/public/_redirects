@@ -1,0 +1,9 @@
+# Cloudflare Pages Redirects Configuration
+# https://developers.cloudflare.com/pages/platform/redirects/
+
+# SPA routing - redirect all non-file requests to index.html
+# This ensures client-side routing works correctly
+/*    /index.html   200
+
+# Note: Cloudflare Pages will automatically serve static files if they exist
+# This redirect only applies when a file is not found
