@@ -18,7 +18,7 @@ import {
   getDashScopeEditParameterDefinitions,
   getDashScopeDefaultParameterValues,
 } from '../../../config'
-import { withRetry, createTimeoutSignal } from '../../../utils/retry'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
 import { TIMEOUTS } from '../../../config/timeouts'
 
 /**
@@ -341,9 +341,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
         }
       },
       {
-        maxAttempts: 3,
-        baseDelayMs: 1000,
-        maxDelayMs: 10000,
+        ...RETRY_PRESETS.standard,
         retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
     )
