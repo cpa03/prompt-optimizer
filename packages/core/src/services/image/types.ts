@@ -63,6 +63,9 @@ export interface ImageModelConfig {
    */
   customParamOverrides?: Record<string, unknown>
 
+  // 超时配置（可选）
+  timeoutMs?: number // 请求超时时间（毫秒）
+
   // 自包含数据（新增）
   provider: ImageProvider // 完整的提供商信息副本
   model: ImageModel // 完整的模型信息副本
