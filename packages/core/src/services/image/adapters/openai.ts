@@ -17,6 +17,8 @@ import {
   getOpenAIParameterDefinitions,
   getOpenAIDefaultParameterValues,
 } from '../../../config'
+import { withRetry, createTimeoutSignal } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -98,6 +100,13 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     request: ImageRequest,
     config: ImageModelConfig
   ): Promise<ImageResult> {
+    if (!config.connectionConfig?.apiKey) {
+      throw new ImageError(
+        IMAGE_ERROR_CODES.CONNECTION_FAILED,
+        'API key is required. Please configure your OpenAI API key in settings.'
+      )
+    }
+
     const hasInputImage = !!request.inputImage
 
     if (hasInputImage) {
@@ -243,22 +252,47 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
 
   private async apiCall(config: ImageModelConfig, endpoint: string, options: any) {
     const url = this.resolveEndpointUrl(config, endpoint)
-    const response = await fetch(url, options)
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
-    if (!response.ok) {
-      // 直接穿透错误，保持与其他适配器一致
-      let errorMessage = `OpenAI API error: ${response.status} ${response.statusText}`
-      try {
-        const errorData = await response.json()
-        if (errorData.error?.message) {
-          errorMessage = errorData.error.message
+    return withRetry(
+      async (signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
+        try {
+          const combinedOptions = {
+            ...options,
+            signal: timeoutSignal,
+          }
+
+          const response = await fetch(url, combinedOptions)
+
+          if (!response.ok) {
+            let errorMessage = `OpenAI API error: ${response.status} ${response.statusText}`
+            try {
+              const errorData = await response.json()
+              if (errorData.error?.message) {
+                errorMessage = errorData.error.message
+              }
+            } catch {
+              // Ignore JSON parse errors, use default message
+            }
+
+            const error = new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
         }
-      } catch {
-        // 忽略JSON解析错误，使用默认错误消息
+      },
+      {
+        maxAttempts: 3,
+        baseDelayMs: 1000,
+        maxDelayMs: 10000,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
-    }
-
-    return await response.json()
+    )
   }
 }
