@@ -3,9 +3,23 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN npm install -g corepack@latest && corepack enable
 
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/core/package.json ./packages/core/
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/web/package.json ./packages/web/
+COPY packages/mcp-server/package.json ./packages/mcp-server/
+WORKDIR /app
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
 FROM base AS build
 COPY . /app
 WORKDIR /app
+COPY --from=deps /app/node_modules /app/node_modules
+COPY --from=deps /app/packages/core/node_modules /app/packages/core/node_modules
+COPY --from=deps /app/packages/ui/node_modules /app/packages/ui/node_modules
+COPY --from=deps /app/packages/web/node_modules /app/packages/web/node_modules
+COPY --from=deps /app/packages/mcp-server/node_modules /app/packages/mcp-server/node_modules
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 RUN pnpm mcp:build
