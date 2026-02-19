@@ -830,3 +830,12 @@ export const useImageImage2ImageSession = defineStore('imageImage2ImageSession',
 })
 
 export type ImageImage2ImageSessionApi = ReturnType<typeof useImageImage2ImageSession>
+
+// Re-export test variant types for convenience
+export type {
+  TestPanelVersionValue,
+  TestVariantId,
+  TestColumnCount,
+  TestVariantConfig,
+  TestVariantLastRunFingerprint,
+} from './types/test-variant'

@@ -740,3 +740,12 @@ export const useImageText2ImageSession = defineStore('imageText2ImageSession', (
 })
 
 export type ImageText2ImageSessionApi = ReturnType<typeof useImageText2ImageSession>
+
+// Re-export test variant types for convenience
+export type {
+  TestPanelVersionValue,
+  TestVariantId,
+  TestColumnCount,
+  TestVariantConfig,
+  TestVariantLastRunFingerprint,
+} from './types/test-variant'
