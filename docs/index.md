@@ -205,6 +205,20 @@ Workspace directories contain active development work and investigations:
 - `workspace-template/` - Templates and scratchpads
 - `workspace-trpc/` - tRPC-related work
 
+### Workspace Templates
+
+Standard templates for consistent documentation:
+
+- **[User Story Template](workspace-template/user-story-template.md)** - User story tracking format
+- **[Todo Template](workspace-template/todo-template.md)** - Task management template (Chinese)
+- **[Todo Template EN](workspace-template/todo-template-en.md)** - Task management template (English)
+- **[Experience Template](workspace-template/experience-template.md)** - Development experience records
+- **[Scratchpad Template](workspace-template/scratchpad-template.md)** - Quick notes template
+- **[Bug Report](workspace-template/bug.md)** - Bug tracking log
+- **[Task Log](workspace-template/task.md)** - Detailed task tracking
+- **[BroCula Report](workspace-template/brocula-report.md)** - Browser console report
+- **[TestGuard Report](workspace-template/testguard-report.md)** - Test suite report
+
 ---
 
 ## Audit Reports
@@ -246,7 +260,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-18  
+**Last Updated:** 2026-02-19  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
