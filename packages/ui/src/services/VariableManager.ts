@@ -69,8 +69,11 @@ export class VariableManager implements IVariableManager {
   private _onDataLoaded?: () => void
 
   // 变量扫描缓存
+  // @ts-expect-error Reserved for future cache optimization
   private scanCache: Map<string, ScanCacheEntry> = new Map()
+  // @ts-expect-error Reserved for future cache optimization
   private readonly CACHE_EXPIRY_MS = TIME_CONSTANTS.CACHE_EXPIRY_MS // 5分钟缓存
+  // @ts-expect-error Reserved for future cache optimization
   private readonly MAX_CACHE_SIZE = VALIDATION_CONSTRAINTS.MAX_CACHE_SIZE // 最大缓存条目数
 
   constructor(private preferenceService: IPreferenceService) {

@@ -25,14 +25,12 @@ export interface HistoryManagerHooks {
  * @returns HistoryManagerHooks
  */
 export function useHistoryManager(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  services: Ref<AppServices | null>,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  prompt: Ref<string>,
-  optimizedPrompt: Ref<string>,
-  currentChainId: Ref<string | null>,
-  currentVersions: Ref<PromptRecordChain['versions']>,
-  currentVersionId: Ref<string | null>,
+  _services: Ref<AppServices | null>,
+  _prompt: Ref<string>,
+  _optimizedPrompt: Ref<string>,
+  _currentChainId: Ref<string | null>,
+  _currentVersions: Ref<PromptRecordChain['versions']>,
+  _currentVersionId: Ref<string | null>,
   handleSelectHistoryBase: (historyItem: PromptRecord) => void,
   handleClearHistoryBase: () => void,
   handleDeleteChainBase: (chainId: string) => void
