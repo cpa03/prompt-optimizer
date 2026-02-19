@@ -118,14 +118,17 @@ describe('Database Architecture Improvements - Validation Logic', () => {
 
   describe('Checksum Calculation', () => {
     const calculateChecksum = (value: string): string => {
-      let hash = 0
+      const FNV_PRIME = 0x01000193
+      const FNV_OFFSET_BASIS = 0x811c9dc5
+
+      let hash = FNV_OFFSET_BASIS
+
       for (let i = 0; i < value.length; i++) {
-        const char = value.charCodeAt(i)
-        hash = (hash << 5) - hash + char
-        hash = hash & hash // Convert to 32-bit integer
+        hash ^= value.charCodeAt(i)
+        hash = Math.imul(hash, FNV_PRIME)
       }
-      // Ensure positive hex value
-      return Math.abs(hash).toString(16)
+
+      return (hash >>> 0).toString(16).padStart(8, '0')
     }
 
     it('should generate consistent checksums for identical values', () => {
@@ -143,15 +146,28 @@ describe('Database Architecture Improvements - Validation Logic', () => {
       expect(checksum1).not.toBe(checksum2)
     })
 
-    it('should generate checksums of consistent length', () => {
+    it('should generate 8-character hexadecimal checksums', () => {
       const shortValue = 'short'
       const longValue = 'a'.repeat(10000)
       const checksum1 = calculateChecksum(shortValue)
       const checksum2 = calculateChecksum(longValue)
 
-      // Checksums should be hex strings
-      expect(checksum1).toMatch(/^[0-9a-f]+$/)
-      expect(checksum2).toMatch(/^[0-9a-f]+$/)
+      expect(checksum1).toMatch(/^[0-9a-f]{8}$/)
+      expect(checksum2).toMatch(/^[0-9a-f]{8}$/)
+    })
+
+    it('should generate consistent FNV-1a checksums for known values', () => {
+      expect(calculateChecksum('')).toBe('811c9dc5')
+      expect(calculateChecksum('a')).toBe('e40c292c')
+      expect(calculateChecksum('test')).toBe('1e0d8221')
+    })
+
+    it('should generate good distribution for similar strings', () => {
+      const values = ['cat', 'bat', 'hat', 'rat', 'mat', 'sat', 'pat']
+      const checksums = values.map(calculateChecksum)
+
+      const uniqueChecksums = new Set(checksums)
+      expect(uniqueChecksums.size).toBe(values.length)
     })
   })
 

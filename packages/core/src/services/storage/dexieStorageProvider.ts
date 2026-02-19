@@ -473,18 +473,18 @@ export class DexieStorageProvider implements IStorageProvider {
     updateFn: (currentValue: T | null) => T
   ): Promise<void> {
     try {
-      // 读取当前值
       const currentRecord = await this.db.storage.get(key)
       const currentValue = currentRecord?.value ? (JSON.parse(currentRecord.value) as T) : null
 
-      // 应用更新函数
       const newValue = updateFn(currentValue)
+      const valueStr = JSON.stringify(newValue)
 
-      // 直接写入新值（不使用事务）
       await this.db.storage.put({
         key,
-        value: JSON.stringify(newValue),
+        value: valueStr,
         timestamp: Date.now(),
+        size: valueStr.length,
+        checksum: this.calculateChecksum(valueStr),
       })
     } catch (error) {
       console.error(`简单更新失败 (${key}):`, error)
@@ -626,23 +626,22 @@ export class DexieStorageProvider implements IStorageProvider {
     }
 
     try {
-      const allRecords = await this.db.storage.toArray()
+      const startTime = Date.now()
+      let processedCount = 0
 
-      for (const record of allRecords) {
-        // 跳过元数据记录
+      await this.db.storage.each(async (record) => {
         if (record.key === DB_CONFIG.metadataKey) {
-          continue
+          return
         }
 
-        // 检查数据完整性
+        processedCount++
+
         if (record.checksum) {
-          const isValid = await this.verifyIntegrity(record.key)
-          if (!isValid) {
+          const calculatedChecksum = this.calculateChecksum(record.value)
+          if (calculatedChecksum !== record.checksum) {
             try {
-              // 尝试重新计算checksum
-              const newChecksum = this.calculateChecksum(record.value)
               await this.db.storage.update(record.key, {
-                checksum: newChecksum,
+                checksum: calculatedChecksum,
                 size: record.value.length,
               })
               result.repaired++
@@ -660,7 +659,6 @@ export class DexieStorageProvider implements IStorageProvider {
             }
           }
         } else {
-          // 旧数据没有checksum，添加checksum
           try {
             const checksum = this.calculateChecksum(record.value)
             await this.db.storage.update(record.key, {
@@ -681,6 +679,13 @@ export class DexieStorageProvider implements IStorageProvider {
             })
           }
         }
+      })
+
+      const duration = Date.now() - startTime
+      if (duration > 500) {
+        console.warn(
+          `[Database] repairCorruptedData took ${duration}ms for ${processedCount} items`
+        )
       }
 
       console.log(
