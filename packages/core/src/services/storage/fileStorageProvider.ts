@@ -1,5 +1,5 @@
 import { IStorageProvider } from './types'
-import { StorageError } from './errors'
+import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { STORAGE_CONFIG } from '../../config/core-config'
 
 // Dynamic imports for Node.js modules (only loaded in Electron environment)
@@ -460,19 +460,44 @@ export class FileStorageProvider implements IStorageProvider {
 
   async getItem(key: string): Promise<string | null> {
     await this.ensureInitialized()
-    return this.data.get(key) || null
+    try {
+      validateStorageKey(key)
+      return this.data.get(key) || null
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to get storage item: ${key}`, 'read')
+    }
   }
 
   async setItem(key: string, value: string): Promise<void> {
     await this.ensureInitialized()
-    this.data.set(key, value)
-    this.scheduleWrite() // 延迟写入
+    try {
+      validateStorageKey(key)
+      validateStorageValue(value)
+      this.data.set(key, value)
+      this.scheduleWrite()
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to set storage item: ${key}`, 'write')
+    }
   }
 
   async removeItem(key: string): Promise<void> {
     await this.ensureInitialized()
-    this.data.delete(key)
-    this.scheduleWrite() // 延迟写入
+    try {
+      validateStorageKey(key)
+      this.data.delete(key)
+      this.scheduleWrite()
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to remove storage item: ${key}`, 'delete')
+    }
   }
 
   async clearAll(): Promise<void> {

@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { StorageError } from '../../../src/services/storage/errors'
+import {
+  StorageError,
+  validateStorageKey,
+  validateStorageValue,
+  STORAGE_VALIDATION,
+} from '../../../src/services/storage/errors'
 
 /**
  * Database Architecture Improvements Test
@@ -36,27 +41,23 @@ describe('Database Architecture Improvements - Validation Logic', () => {
         }
       }
 
-      // Valid keys should pass
       expect(() => validateKey('valid-key')).not.toThrow()
       expect(() => validateKey('another.valid.key')).not.toThrow()
 
-      // Empty key should fail
       expect(() => validateKey('')).toThrow(StorageError)
       expect(() => validateKey('')).toThrow('Key must be a non-empty string')
 
-      // Too long key should fail
       const longKey = 'a'.repeat(MAX_KEY_LENGTH + 1)
       expect(() => validateKey(longKey)).toThrow(StorageError)
       expect(() => validateKey(longKey)).toThrow('Key length exceeds maximum')
 
-      // Reserved key should fail
       expect(() => validateKey(METADATA_KEY)).toThrow(StorageError)
       expect(() => validateKey(METADATA_KEY)).toThrow('Cannot use reserved metadata key')
     })
   })
 
   describe('Value Validation', () => {
-    const MAX_VALUE_SIZE = 50 * 1024 * 1024 // 50MB
+    const MAX_VALUE_SIZE = 50 * 1024 * 1024
 
     it('should validate value is string within size limits', () => {
       const validateValue = (value: string): void => {
@@ -71,14 +72,47 @@ describe('Database Architecture Improvements - Validation Logic', () => {
         }
       }
 
-      // Valid values should pass
       expect(() => validateValue('valid value')).not.toThrow()
-      expect(() => validateValue('a'.repeat(1024))).not.toThrow() // 1KB
+      expect(() => validateValue('a'.repeat(1024))).not.toThrow()
 
-      // Non-string values should fail (runtime check)
       expect(() => validateValue(null as any)).toThrow(StorageError)
       expect(() => validateValue(undefined as any)).toThrow(StorageError)
       expect(() => validateValue(123 as any)).toThrow(StorageError)
+    })
+  })
+
+  describe('Shared Validation Functions', () => {
+    it('should validate keys using shared function', () => {
+      expect(() => validateStorageKey('valid-key')).not.toThrow()
+      expect(() => validateStorageKey('another.valid.key')).not.toThrow()
+      expect(() => validateStorageKey('a'.repeat(STORAGE_VALIDATION.MAX_KEY_LENGTH))).not.toThrow()
+
+      expect(() => validateStorageKey('')).toThrow(StorageError)
+      expect(() => validateStorageKey(null as any)).toThrow(StorageError)
+      expect(() => validateStorageKey(undefined as any)).toThrow(StorageError)
+      expect(() => validateStorageKey('a'.repeat(STORAGE_VALIDATION.MAX_KEY_LENGTH + 1))).toThrow(
+        StorageError
+      )
+      expect(() => validateStorageKey(STORAGE_VALIDATION.RESERVED_KEYS[0])).toThrow(StorageError)
+    })
+
+    it('should validate values using shared function', () => {
+      expect(() => validateStorageValue('valid value')).not.toThrow()
+      expect(() => validateStorageValue('a'.repeat(1024))).not.toThrow()
+
+      expect(() => validateStorageValue(null as any)).toThrow(StorageError)
+      expect(() => validateStorageValue(undefined as any)).toThrow(StorageError)
+      expect(() => validateStorageValue(123 as any)).toThrow(StorageError)
+    })
+
+    it('should allow custom reserved keys', () => {
+      const customReserved = ['custom-reserved', '__custom_metadata__']
+
+      expect(() => validateStorageKey('valid-key', customReserved)).not.toThrow()
+      expect(() => validateStorageKey('custom-reserved', customReserved)).toThrow(StorageError)
+      expect(() => validateStorageKey('__custom_metadata__', customReserved)).toThrow(StorageError)
+
+      expect(() => validateStorageKey('__db_metadata__', customReserved)).not.toThrow()
     })
   })
 

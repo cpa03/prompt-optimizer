@@ -1,5 +1,5 @@
 import type { IStorageProvider } from './types'
-import { StorageError } from './errors'
+import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { isStructuredErrorLike } from '../../utils/error'
 
 /**
@@ -17,9 +17,13 @@ export class MemoryStorageProvider implements IStorageProvider {
    */
   async getItem(key: string): Promise<string | null> {
     try {
+      validateStorageKey(key)
       const value = this.storage.get(key)
       return value !== undefined ? value : null
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to get storage item: ${key}`, 'read')
     }
   }
@@ -31,8 +35,13 @@ export class MemoryStorageProvider implements IStorageProvider {
    */
   async setItem(key: string, value: string): Promise<void> {
     try {
+      validateStorageKey(key)
+      validateStorageValue(value)
       this.storage.set(key, value)
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to set storage item: ${key}`, 'write')
     }
   }
@@ -43,8 +52,12 @@ export class MemoryStorageProvider implements IStorageProvider {
    */
   async removeItem(key: string): Promise<void> {
     try {
+      validateStorageKey(key)
       this.storage.delete(key)
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to remove storage item: ${key}`, 'delete')
     }
   }

@@ -1,6 +1,11 @@
 import Dexie, { type Table } from 'dexie'
 import { IStorageProvider } from './types'
-import { StorageError } from './errors'
+import {
+  StorageError,
+  STORAGE_VALIDATION,
+  validateStorageKey,
+  validateStorageValue,
+} from './errors'
 import { STORAGE_CONFIG } from '../../config/core-config'
 
 /**
@@ -33,9 +38,9 @@ interface DatabaseMetadata {
  */
 const DB_CONFIG = {
   currentVersion: 2,
-  metadataKey: '__db_metadata__',
-  maxKeyLength: 1024,
-  maxValueSize: 50 * 1024 * 1024, // 50MB
+  metadataKey: STORAGE_VALIDATION.RESERVED_KEYS[0],
+  maxKeyLength: STORAGE_VALIDATION.MAX_KEY_LENGTH,
+  maxValueSize: STORAGE_VALIDATION.MAX_VALUE_SIZE,
 } as const
 
 /**
@@ -150,37 +155,12 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 验证键名
-   */
-  private validateKey(key: string): void {
-    if (!key || typeof key !== 'string') {
-      throw new StorageError('Key must be a non-empty string', 'validation')
-    }
-    if (key.length > DB_CONFIG.maxKeyLength) {
-      throw new StorageError(
-        `Key length exceeds maximum allowed size of ${DB_CONFIG.maxKeyLength}`,
-        'validation'
-      )
-    }
-    if (key === DB_CONFIG.metadataKey) {
-      throw new StorageError('Cannot use reserved metadata key', 'validation')
-    }
+  private validateKeyLocal(key: string): void {
+    validateStorageKey(key, [DB_CONFIG.metadataKey])
   }
 
-  /**
-   * 验证值
-   */
-  private validateValue(value: string): void {
-    if (typeof value !== 'string') {
-      throw new StorageError('Value must be a string', 'validation')
-    }
-    if (value.length > DB_CONFIG.maxValueSize) {
-      throw new StorageError(
-        `Value size ${value.length} exceeds maximum allowed size of ${DB_CONFIG.maxValueSize}`,
-        'validation'
-      )
-    }
+  private validateValueLocal(value: string): void {
+    validateStorageValue(value)
   }
 
   /**
@@ -226,7 +206,7 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
-      this.validateKey(key)
+      this.validateKeyLocal(key)
       const record = await this.db.storage.get(key)
       return record?.value ?? null
     } catch (error) {
@@ -260,8 +240,8 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
-      this.validateKey(key)
-      this.validateValue(value)
+      this.validateKeyLocal(key)
+      this.validateValueLocal(value)
 
       const checksum = this.calculateChecksum(value)
       const size = value.length
@@ -282,14 +262,11 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 删除存储项
-   */
   async removeItem(key: string): Promise<void> {
     await this.initialize()
 
     try {
-      this.validateKey(key)
+      this.validateKeyLocal(key)
       await this.db.storage.delete(key)
     } catch (error) {
       if (error instanceof StorageError) {
@@ -300,16 +277,14 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 验证数据完整性
-   */
   async verifyIntegrity(key: string): Promise<boolean> {
     await this.initialize()
 
     try {
+      this.validateKeyLocal(key)
       const record = await this.db.storage.get(key)
       if (!record || !record.checksum) {
-        return true // 没有checksum的旧数据视为有效
+        return true
       }
 
       const calculatedChecksum = this.calculateChecksum(record.value)
@@ -562,10 +537,6 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 批量更新操作
-   * 优化：添加详细的性能监控和更好的错误信息
-   */
   async batchUpdate(
     operations: Array<{
       key: string
@@ -575,9 +546,8 @@ export class DexieStorageProvider implements IStorageProvider {
   ): Promise<void> {
     await this.initialize()
 
-    // 预验证所有操作
     for (const { key, operation, value } of operations) {
-      this.validateKey(key)
+      this.validateKeyLocal(key)
       if (operation === 'set') {
         if (value === undefined) {
           throw new StorageError(
@@ -585,7 +555,7 @@ export class DexieStorageProvider implements IStorageProvider {
             'validation'
           )
         }
-        this.validateValue(value)
+        this.validateValueLocal(value)
       }
     }
 
@@ -609,12 +579,10 @@ export class DexieStorageProvider implements IStorageProvider {
           }
         }
 
-        // 批量写入
         if (updates.length > 0) {
           await this.db.storage.bulkPut(updates)
         }
 
-        // 批量删除
         if (deletions.length > 0) {
           await this.db.storage.bulkDelete(deletions)
         }
@@ -631,7 +599,6 @@ export class DexieStorageProvider implements IStorageProvider {
       const duration = Date.now() - startTime
       console.error(`批量更新失败 (${operations.length} operations, ${duration}ms):`, error)
 
-      // 提供更详细的错误上下文
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error during batch update'
       throw new StorageError(

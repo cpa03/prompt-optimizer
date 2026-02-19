@@ -1,5 +1,5 @@
 import { IStorageProvider } from './types'
-import { StorageError } from './errors'
+import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
 /**
@@ -60,9 +60,13 @@ export class LocalStorageProvider implements IStorageProvider {
   public async getItem(key: string): Promise<string | null> {
     const release = await this.lock.acquire(key)
     try {
+      validateStorageKey(key)
       const item = localStorage.getItem(key)
       return item
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to get storage item: ${key}`, 'read')
     } finally {
       release()
@@ -72,8 +76,13 @@ export class LocalStorageProvider implements IStorageProvider {
   public async setItem(key: string, value: string): Promise<void> {
     const release = await this.lock.acquire(key)
     try {
+      validateStorageKey(key)
+      validateStorageValue(value)
       localStorage.setItem(key, value)
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to set storage item: ${key}`, 'write')
     } finally {
       release()
@@ -83,8 +92,12 @@ export class LocalStorageProvider implements IStorageProvider {
   public async removeItem(key: string): Promise<void> {
     const release = await this.lock.acquire(key)
     try {
+      validateStorageKey(key)
       localStorage.removeItem(key)
     } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
       throw new StorageError(`Failed to remove storage item: ${key}`, 'delete')
     } finally {
       release()
