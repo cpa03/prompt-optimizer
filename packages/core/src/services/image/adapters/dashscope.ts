@@ -18,6 +18,8 @@ import {
   getDashScopeEditParameterDefinitions,
   getDashScopeDefaultParameterValues,
 } from '../../../config'
+import { withRetry, createTimeoutSignal } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 /**
  * 阿里百炼图像适配器
@@ -142,9 +144,6 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     request: ImageRequest,
     config: ImageModelConfig
   ): Promise<ImageResult> {
-    const baseUrl = config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL
-    const url = `${baseUrl}/api/v1/services/aigc/multimodal-generation/generation`
-
     const merged: Record<string, any> = {
       ...config.paramOverrides,
       ...request.paramOverrides,
@@ -173,29 +172,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
       },
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (!response.ok) {
-      let errorMessage = `DashScope API error: ${response.status} ${response.statusText}`
-      try {
-        const errorData = await response.json()
-        if (errorData.message) {
-          errorMessage = errorData.message
-        }
-      } catch {
-        // 忽略 JSON 解析错误
-      }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
-    }
-
-    const data = await response.json()
+    const data = await this.apiCall(config, payload)
 
     // 检查是否有错误
     if (data.code) {
@@ -242,9 +219,6 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     request: ImageRequest,
     config: ImageModelConfig
   ): Promise<ImageResult> {
-    const baseUrl = config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL
-    const url = `${baseUrl}/api/v1/services/aigc/multimodal-generation/generation`
-
     const merged: Record<string, any> = {
       ...config.paramOverrides,
       ...request.paramOverrides,
@@ -284,29 +258,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
       },
     }
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-
-    if (!response.ok) {
-      let errorMessage = `DashScope API error: ${response.status} ${response.statusText}`
-      try {
-        const errorData = await response.json()
-        if (errorData.message) {
-          errorMessage = errorData.message
-        }
-      } catch {
-        // 忽略 JSON 解析错误
-      }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
-    }
-
-    const data = await response.json()
+    const data = await this.apiCall(config, payload)
 
     // 检查是否有错误
     if (data.code) {
@@ -346,5 +298,54 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
     }
 
     throw new ImageError(IMAGE_ERROR_CODES.INVALID_RESPONSE_FORMAT)
+  }
+
+  private async apiCall(config: ImageModelConfig, payload: any) {
+    const baseUrl = config.connectionConfig?.baseURL || this.getProvider().defaultBaseURL
+    const url = `${baseUrl}/api/v1/services/aigc/multimodal-generation/generation`
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
+
+    return withRetry(
+      async (signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+            signal: timeoutSignal,
+          })
+
+          if (!response.ok) {
+            let errorMessage = `DashScope API error: ${response.status} ${response.statusText}`
+            try {
+              const errorData = await response.json()
+              if (errorData.message) {
+                errorMessage = errorData.message
+              }
+            } catch {
+              // 忽略 JSON 解析错误
+            }
+            const error = new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
+        }
+      },
+      {
+        maxAttempts: 3,
+        baseDelayMs: 1000,
+        maxDelayMs: 10000,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
+      }
+    )
   }
 }
