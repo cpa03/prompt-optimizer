@@ -2,11 +2,15 @@
 # https://developers.cloudflare.com/workers/wrangler/configuration/
 
 name = "prompt-optimizer"
-compatibility_date = "2025-02-18"
+compatibility_date = "2025-12-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Pages configuration
 pages_build_output_dir = "packages/web/dist"
+
+# Functions configuration
+# TypeScript files in functions/ are automatically compiled by Cloudflare
+# No explicit config needed - Pages auto-detects .ts files in functions/
 
 # Privacy: Disable usage analytics
 send_metrics = false
