@@ -77,7 +77,14 @@ export class VariableExtractionService implements IVariableExtractionService {
   ): VariableExtractionResponse {
     const normalize = (name: string) => name.trim().toLowerCase()
 
-    const existing = new Set((existingVariableNames ?? []).map(normalize).filter(Boolean))
+    const existing = new Set<string>()
+    const names = existingVariableNames ?? []
+    for (let i = 0; i < names.length; i++) {
+      const normalized = normalize(names[i])
+      if (normalized) {
+        existing.add(normalized)
+      }
+    }
 
     const seen = new Set<string>()
     const variables = response.variables.filter((v) => {

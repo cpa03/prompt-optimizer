@@ -329,9 +329,19 @@ export class DexieStorageProvider implements IStorageProvider {
       const records = await this.db.storage.toArray()
       const itemCount = records.length
       const totalSize = records.reduce((sum, r) => sum + (r.size || r.value?.length || 0), 0)
-      const timestamps = records.map((r) => r.timestamp).filter((t): t is number => t != null)
-      const oldestRecord = timestamps.length > 0 ? Math.min(...timestamps) : null
-      const newestRecord = timestamps.length > 0 ? Math.max(...timestamps) : null
+      let oldestRecord: number | null = null
+      let newestRecord: number | null = null
+      for (let i = 0; i < records.length; i++) {
+        const timestamp = records[i].timestamp
+        if (timestamp != null) {
+          if (oldestRecord === null || timestamp < oldestRecord) {
+            oldestRecord = timestamp
+          }
+          if (newestRecord === null || timestamp > newestRecord) {
+            newestRecord = timestamp
+          }
+        }
+      }
       const averageRecordSize = itemCount > 0 ? totalSize / itemCount : 0
 
       return {

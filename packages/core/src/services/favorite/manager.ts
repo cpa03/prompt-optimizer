@@ -610,11 +610,19 @@ export class FavoriteManager implements IFavoriteManager {
       .map(([tag, count]) => ({ tag, count }))
       .sort((a, b) => b.count - a.count)
 
+    let lastUsedAt = 0
+    for (let i = 0; i < favorites.length; i++) {
+      const updatedAt = favorites[i].updatedAt
+      if (updatedAt > lastUsedAt) {
+        lastUsedAt = updatedAt
+      }
+    }
+
     const stats: FavoriteStats = {
       totalFavorites: favorites.length,
       categoryStats,
       tagStats,
-      lastUsedAt: Math.max(...favorites.map((f) => f.updatedAt), 0),
+      lastUsedAt,
     }
 
     // 缓存统计数据
