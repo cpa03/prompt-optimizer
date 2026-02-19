@@ -84,7 +84,7 @@
 ### 专项文档
 
 - [LLM参数配置指南](./developer/llm-params-guide.md) - LLM参数配置详细说明
-- [AI开发流程规范](./developer/ai-development-workflow.md) - AI辅助开发的标准化流程
+- [桌面开发指南](./developer/desktop-developer-guide.md) - Electron桌面应用开发指南
 
 ## 📋 使用指南
 
