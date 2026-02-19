@@ -23,7 +23,7 @@ import {
   VariableValueGenerationExecutionError,
 } from './errors'
 import { jsonrepair } from 'jsonrepair'
-import { toErrorWithCode } from '../../utils/error'
+import { isStructuredErrorLike, toErrorWithCode } from '../../utils/error'
 import { TEMPLATE_IDS } from '../../constants/template-ids'
 
 /**
@@ -127,7 +127,7 @@ export class VariableValueGenerationService implements IVariableValueGenerationS
       if (error instanceof VariableValueGenerationError) {
         throw error
       }
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       throw new VariableValueGenerationExecutionError(

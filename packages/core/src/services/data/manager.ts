@@ -9,7 +9,7 @@ import {
   DataInvalidFormatError,
   DataInvalidJsonError,
 } from './errors'
-import { toErrorWithCode } from '../../utils/error'
+import { isStructuredErrorLike, toErrorWithCode } from '../../utils/error'
 import { safeJsonParse } from '../../utils/json'
 
 /**
@@ -73,7 +73,7 @@ export class DataManager implements IDataManager {
       data['contexts'] = await this.contextRepo.exportData()
     } catch (error) {
       console.error('导出数据失败:', error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       throw new DataExportFailedError(error instanceof Error ? error.message : String(error))

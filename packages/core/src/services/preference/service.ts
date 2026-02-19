@@ -4,7 +4,7 @@ import { ImportExportError } from '../../interfaces/import-export'
 import { IMPORT_EXPORT_ERROR_CODES } from '../../constants/error-codes'
 import { VALIDATION_CONSTRAINTS } from '../../constants/constraints'
 import { StorageError } from '../storage/errors'
-import { toErrorWithCode } from '../../utils/error'
+import { isStructuredErrorLike, toErrorWithCode } from '../../utils/error'
 import { PREFERENCE_CONFIG } from '../../config/core-config'
 
 // 需要导出的UI配置键 - 白名单验证
@@ -98,7 +98,7 @@ export class PreferenceService implements IPreferenceService {
       return JSON.parse(storedValue) as T
     } catch (error) {
       console.error(`[PreferenceService] Error getting preference for key "${key}":`, error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       const details = error instanceof Error ? error.message : String(error)
@@ -121,7 +121,7 @@ export class PreferenceService implements IPreferenceService {
       this.keyCache.add(key)
     } catch (error) {
       console.error(`[PreferenceService] Error setting preference for key "${key}":`, error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       const details = error instanceof Error ? error.message : String(error)
@@ -141,7 +141,7 @@ export class PreferenceService implements IPreferenceService {
       this.keyCache.delete(key)
     } catch (error) {
       console.error(`[PreferenceService] Error deleting preference for key "${key}":`, error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       const details = error instanceof Error ? error.message : String(error)
@@ -171,7 +171,7 @@ export class PreferenceService implements IPreferenceService {
       this.keyCache.clear()
     } catch (error) {
       console.error('[PreferenceService] Error clearing preferences:', error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       const details = error instanceof Error ? error.message : String(error)
@@ -203,7 +203,7 @@ export class PreferenceService implements IPreferenceService {
       return result
     } catch (error) {
       console.error('[PreferenceService] Error getting all preferences:', error)
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       const details = error instanceof Error ? error.message : String(error)
