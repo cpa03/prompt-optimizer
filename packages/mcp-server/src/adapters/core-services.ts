@@ -18,6 +18,8 @@ import {
   ILLMService,
   TemplateManager,
   HistoryManager,
+  SUFFIX_PATTERN,
+  MAX_SUFFIX_LENGTH,
 } from '@prompt-optimizer/core'
 
 import { MCPServerConfig } from '../config/environment.js'
@@ -152,8 +154,6 @@ export class CoreServicesManager {
 
       // 扫描动态自定义模型环境变量（使用统一的验证逻辑）
       const CUSTOM_API_KEY_PATTERN = /^VITE_CUSTOM_API_KEY_(.+)$/
-      const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/
-      const MAX_SUFFIX_LENGTH = 50
 
       const dynamicEnvVars = Object.keys(process.env).filter((key) => {
         const match = key.match(CUSTOM_API_KEY_PATTERN)
