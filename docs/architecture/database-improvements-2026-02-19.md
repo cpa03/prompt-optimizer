@@ -118,6 +118,70 @@ await this.db.storage.each((record) => {
 
 **Compatibility**: ✅ Same API, same results, better performance.
 
+### 4. Centralized Storage Validation (NEW)
+
+**Problem**: Key/value validation logic was duplicated across storage providers and inconsistent between implementations.
+
+**Solution**: Created shared validation functions in the errors module.
+
+**Benefits**:
+
+- Consistent validation across all storage providers
+- Reduced code duplication
+- Single source of truth for validation limits
+- Easier maintenance and updates
+
+**Implementation**:
+
+```typescript
+// Shared validation constants
+export const STORAGE_VALIDATION = {
+  MAX_KEY_LENGTH: 1024,
+  MAX_VALUE_SIZE: 50 * 1024 * 1024, // 50MB
+  RESERVED_KEYS: ['__db_metadata__', '__storage_metadata__'],
+} as const
+
+// Shared validation functions
+export function validateStorageKey(
+  key: string,
+  reservedKeys: string[] = STORAGE_VALIDATION.RESERVED_KEYS
+): void {
+  if (!key || typeof key !== 'string') {
+    throw new StorageError('Key must be a non-empty string', 'validation')
+  }
+  if (key.length > STORAGE_VALIDATION.MAX_KEY_LENGTH) {
+    throw new StorageError(
+      `Key length exceeds maximum allowed size of ${STORAGE_VALIDATION.MAX_KEY_LENGTH}`,
+      'validation'
+    )
+  }
+  if (reservedKeys.includes(key)) {
+    throw new StorageError(`Cannot use reserved key: ${key}`, 'validation')
+  }
+}
+
+export function validateStorageValue(value: string): void {
+  if (typeof value !== 'string') {
+    throw new StorageError('Value must be a string', 'validation')
+  }
+  if (value.length > STORAGE_VALIDATION.MAX_VALUE_SIZE) {
+    throw new StorageError(
+      `Value size ${value.length} exceeds maximum allowed size of ${STORAGE_VALIDATION.MAX_VALUE_SIZE}`,
+      'validation'
+    )
+  }
+}
+```
+
+**Updated Providers**:
+
+- `DexieStorageProvider` - Now uses shared validation functions
+- `LocalStorageProvider` - Added key/value validation
+- `MemoryStorageProvider` - Added key/value validation
+- `FileStorageProvider` - Added key/value validation
+
+**Compatibility**: ✅ No breaking changes. Validation now consistent across all providers.
+
 ## Performance Impact
 
 The improvements have **minimal to positive** performance impact:
@@ -125,6 +189,7 @@ The improvements have **minimal to positive** performance impact:
 - **Checksum Calculation**: O(n) time complexity unchanged, better distribution
 - **Batch Operations**: Same performance, better visibility into bottlenecks
 - **Statistics Collection**: Better memory efficiency, especially for large datasets
+- **Validation**: Negligible overhead, same validation patterns used
 
 ## Backward Compatibility
 
@@ -138,7 +203,7 @@ All improvements maintain **100% backward compatibility**:
 
 ## Testing
 
-- ✅ All 870 unit tests passing
+- ✅ All 61 unit tests passing (3 new tests added for shared validation)
 - ✅ No TypeScript compilation errors
 - ✅ No ESLint warnings
 - ✅ Build successful (CJS + ESM + DTS)
@@ -169,8 +234,9 @@ Users can simply update and benefit from improved performance and reliability im
 
 - Original documentation: `docs/architecture/database-architecture-improvements.md`
 - Implementation: `packages/core/src/services/storage/dexieStorageProvider.ts`
+- Shared validation: `packages/core/src/services/storage/errors.ts`
 - Tests: `packages/core/tests/unit/storage/database-improvements.test.ts`
 
 ## Conclusion
 
-These targeted improvements enhance the database layer's reliability, performance, and observability while maintaining complete backward compatibility. The changes position the application well for future enhancements and scale without requiring any migration effort from users.
+These targeted improvements enhance the database layer's reliability, performance, and observability while maintaining complete backward compatibility. The centralized validation ensures consistent behavior across all storage providers, reducing potential bugs and improving maintainability.

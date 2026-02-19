@@ -46,3 +46,39 @@ export class StorageError extends Error {
     setErrorCause(this, options?.cause)
   }
 }
+
+export const STORAGE_VALIDATION = {
+  MAX_KEY_LENGTH: 1024,
+  MAX_VALUE_SIZE: 50 * 1024 * 1024,
+  RESERVED_KEYS: ['__db_metadata__', '__storage_metadata__'],
+} as const
+
+export function validateStorageKey(
+  key: string,
+  reservedKeys: string[] = STORAGE_VALIDATION.RESERVED_KEYS
+): void {
+  if (!key || typeof key !== 'string') {
+    throw new StorageError('Key must be a non-empty string', 'validation')
+  }
+  if (key.length > STORAGE_VALIDATION.MAX_KEY_LENGTH) {
+    throw new StorageError(
+      `Key length exceeds maximum allowed size of ${STORAGE_VALIDATION.MAX_KEY_LENGTH}`,
+      'validation'
+    )
+  }
+  if (reservedKeys.includes(key)) {
+    throw new StorageError(`Cannot use reserved key: ${key}`, 'validation')
+  }
+}
+
+export function validateStorageValue(value: string): void {
+  if (typeof value !== 'string') {
+    throw new StorageError('Value must be a string', 'validation')
+  }
+  if (value.length > STORAGE_VALIDATION.MAX_VALUE_SIZE) {
+    throw new StorageError(
+      `Value size ${value.length} exceeds maximum allowed size of ${STORAGE_VALIDATION.MAX_VALUE_SIZE}`,
+      'validation'
+    )
+  }
+}
