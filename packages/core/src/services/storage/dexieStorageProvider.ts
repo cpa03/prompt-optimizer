@@ -184,17 +184,24 @@ export class DexieStorageProvider implements IStorageProvider {
   }
 
   /**
-   * 计算校验和
+   * 计算校验和 - 使用改进的 FNV-1a 算法
+   * FNV-1a 比 simple hash 有更好的分布性和更少的冲突
+   * 性能: O(n) 时间复杂度，适合大多数场景
    */
   private calculateChecksum(value: string): string {
-    let hash = 0
+    // FNV-1a hash parameters
+    const FNV_PRIME = 0x01000193 // 16777619
+    const FNV_OFFSET_BASIS = 0x811c9dc5 // 2166136261
+
+    let hash = FNV_OFFSET_BASIS
+
     for (let i = 0; i < value.length; i++) {
-      const char = value.charCodeAt(i)
-      hash = (hash << 5) - hash + char
-      hash = hash & hash // Convert to 32-bit integer
+      hash ^= value.charCodeAt(i)
+      hash = Math.imul(hash, FNV_PRIME) // 使用 imul 确保 32 位整数乘法
     }
-    // Ensure positive hex value
-    return Math.abs(hash).toString(16)
+
+    // 转换为无符号 32 位整数，然后转为 16 进制
+    return (hash >>> 0).toString(16).padStart(8, '0')
   }
 
   /**
@@ -315,6 +322,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 获取数据库统计信息
+   * 优化：使用流式处理减少内存占用，添加性能追踪
    */
   async getDatabaseStats(): Promise<{
     itemCount: number
@@ -325,24 +333,48 @@ export class DexieStorageProvider implements IStorageProvider {
   }> {
     await this.initialize()
 
+    const startTime = Date.now()
     try {
-      const records = await this.db.storage.toArray()
-      const itemCount = records.length
-      const totalSize = records.reduce((sum, r) => sum + (r.size || r.value?.length || 0), 0)
-      const timestamps = records.map((r) => r.timestamp).filter((t): t is number => t != null)
-      const oldestRecord = timestamps.length > 0 ? Math.min(...timestamps) : null
-      const newestRecord = timestamps.length > 0 ? Math.max(...timestamps) : null
+      // 优化：使用流式处理避免一次性加载所有数据到内存
+      const itemCount = await this.db.storage.count()
+
+      let totalSize = 0
+      let oldestTimestamp: number | null = null
+      let newestTimestamp: number | null = null
+
+      // 使用 each 方法流式处理，减少内存占用
+      await this.db.storage.each((record) => {
+        totalSize += record.size || record.value?.length || 0
+
+        if (record.timestamp) {
+          if (oldestTimestamp === null || record.timestamp < oldestTimestamp) {
+            oldestTimestamp = record.timestamp
+          }
+          if (newestTimestamp === null || record.timestamp > newestTimestamp) {
+            newestTimestamp = record.timestamp
+          }
+        }
+      })
+
       const averageRecordSize = itemCount > 0 ? totalSize / itemCount : 0
+
+      const duration = Date.now() - startTime
+      if (duration > 500) {
+        console.warn(`[Database] getDatabaseStats took ${duration}ms for ${itemCount} items`)
+      }
 
       return {
         itemCount,
         totalSize,
-        oldestRecord,
-        newestRecord,
+        oldestRecord: oldestTimestamp,
+        newestRecord: newestTimestamp,
         averageRecordSize,
       }
     } catch (error) {
-      console.error('获取数据库统计信息失败:', error)
+      const duration = Date.now() - startTime
+      console.error(`获取数据库统计信息失败 (${duration}ms):`, error)
+
+      // 返回默认值而不是抛出错误，允许系统继续运行
       return {
         itemCount: 0,
         totalSize: 0,
@@ -532,7 +564,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 批量更新操作
-   * 优化：添加验证和性能统计
+   * 优化：添加详细的性能监控和更好的错误信息
    */
   async batchUpdate(
     operations: Array<{
@@ -557,8 +589,8 @@ export class DexieStorageProvider implements IStorageProvider {
       }
     }
 
+    const startTime = Date.now()
     try {
-      const startTime = Date.now()
       await this.db.transaction('rw', this.db.storage, async () => {
         const updates: Array<StorageRecord> = []
         const deletions: string[] = []
@@ -590,13 +622,23 @@ export class DexieStorageProvider implements IStorageProvider {
 
       const duration = Date.now() - startTime
       if (duration > 1000) {
+        const opsPerSec = (operations.length / (duration / 1000)).toFixed(0)
         console.warn(
-          `[Database] Batch update took ${duration}ms for ${operations.length} operations`
+          `[Database] Batch update took ${duration}ms for ${operations.length} operations (${opsPerSec} ops/sec)`
         )
       }
     } catch (error) {
-      console.error('批量更新失败:', error)
-      throw new StorageError('Failed to perform batch update', 'write')
+      const duration = Date.now() - startTime
+      console.error(`批量更新失败 (${operations.length} operations, ${duration}ms):`, error)
+
+      // 提供更详细的错误上下文
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error during batch update'
+      throw new StorageError(
+        `Failed to perform batch update on ${operations.length} items: ${errorMessage}`,
+        'write',
+        { operationCount: operations.length, duration }
+      )
     }
   }
 
