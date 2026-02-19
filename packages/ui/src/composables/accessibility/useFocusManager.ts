@@ -1,5 +1,7 @@
 import { ref, nextTick, computed } from 'vue'
 
+import { BORDER_RADIUS, Z_INDEX, ANIMATION_CONSTANTS } from '../../config/constants'
+
 import { useAccessibility } from './useAccessibility'
 
 export interface FocusManagerOptions {
@@ -345,10 +347,10 @@ export function useFocusManager(options: FocusManagerOptions = {}) {
       indicator.style.cssText = `
         position: absolute;
         border: 2px solid #0066cc;
-        border-radius: 4px;
+        border-radius: ${BORDER_RADIUS.MD};
         pointer-events: none;
-        z-index: 10000;
-        transition: all 0.15s ease;
+        z-index: ${Z_INDEX.FOCUS_OVERLAY};
+        transition: all ${ANIMATION_CONSTANTS.TRANSITION_DURATION_MS}ms ease;
         box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8);
       `
       document.body.appendChild(indicator)

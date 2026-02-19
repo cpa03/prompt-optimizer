@@ -41,7 +41,7 @@ import { computed, ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NButton } from 'naive-ui'
-import { TIME_CONSTANTS } from '../config/constants'
+import { TIME_CONSTANTS, Z_INDEX, BORDER_RADIUS, SPACING } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -236,14 +236,19 @@ defineExpose({
 
 /* 🎨 Palette: Keyboard shortcut hint styles */
 .keyboard-shortcut-hint {
+  --z-index-overlay: v-bind('Z_INDEX.DROPDOWN');
+  --border-radius-md: v-bind('BORDER_RADIUS.LG');
+  --spacing-sm: v-bind('SPACING.SM + "px"');
+  --spacing-md: v-bind('SPACING.MD + "px"');
+
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + var(--spacing-sm));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
-  padding: 4px 10px;
+  z-index: var(--z-index-overlay);
+  padding: var(--spacing-sm) 10px;
   background: rgba(0, 0, 0, 0.85);
-  border-radius: 6px;
+  border-radius: var(--border-radius-md);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: none;
   white-space: nowrap;
