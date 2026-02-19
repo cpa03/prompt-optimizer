@@ -591,3 +591,12 @@ export const useProVariableSession = defineStore('proVariableSession', () => {
 })
 
 export type ProVariableSessionApi = ReturnType<typeof useProVariableSession>
+
+// Re-export test variant types for convenience
+export type {
+  TestPanelVersionValue,
+  TestVariantId,
+  TestColumnCount,
+  TestVariantConfig,
+  TestVariantLastRunFingerprint,
+} from './types/test-variant'

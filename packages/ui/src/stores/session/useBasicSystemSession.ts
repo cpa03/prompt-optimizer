@@ -631,3 +631,12 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
 })
 
 export type BasicSystemSessionApi = ReturnType<typeof useBasicSystemSession>
+
+// Re-export test variant types for convenience
+export type {
+  TestPanelVersionValue,
+  TestVariantId,
+  TestColumnCount,
+  TestVariantConfig,
+  TestVariantLastRunFingerprint,
+} from './types/test-variant'
