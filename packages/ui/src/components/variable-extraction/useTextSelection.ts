@@ -22,7 +22,27 @@ export interface TextSelection {
   invalidReason?: string
 }
 
-export function useTextSelection(inputRef: Ref<HTMLInputElement | HTMLTextAreaElement | null>) {
+export interface UseTextSelectionReturn {
+  /** 当前选择状态 */
+  selection: Ref<TextSelection>
+  /** 获取当前选中的文本 */
+  getSelection: () => TextSelection
+  /** 验证选中文本的合法性 */
+  validateSelection: (
+    fullText: string,
+    start: number,
+    end: number,
+    selectedText: string
+  ) => { isValid: boolean; reason?: string }
+  /** 计算选中文本在完整文本中的出现次数 */
+  countOccurrences: (fullText: string, searchText: string) => number
+  /** 替换文本中的所有匹配项 */
+  replaceAllOccurrences: (fullText: string, searchText: string, replaceWith: string) => string
+}
+
+export function useTextSelection(
+  inputRef: Ref<HTMLInputElement | HTMLTextAreaElement | null>
+): UseTextSelectionReturn {
   const selection = ref<TextSelection>({
     text: '',
     start: 0,
