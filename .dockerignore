@@ -47,3 +47,17 @@ tests
 **/__tests__
 **/*.test.*
 **/*.spec.*
+
+# CI/CD
+.github
+.gitattributes
+
+# BMAD
+.bmad-core
+
+# 其他开发工具
+.eslintrc*
+.prettierrc*
+tsconfig*.json
+vitest.config.*
+playwright.config.*
