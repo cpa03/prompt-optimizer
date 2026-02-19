@@ -518,12 +518,9 @@ async function main() {
       logger.info('MCP Server running on stdio')
     }
   } catch (error) {
-    // 确保错误信息始终显示，即使没有启用 DEBUG
-    console.error('❌ MCP Server startup failed:')
-    console.error('   ', (error as Error).message)
-
-    // 同时使用 debug 库记录详细信息
-    logger.error('Failed to start MCP Server', error as Error)
+    const err = error as Error
+    logger.error('❌ MCP Server startup failed:', err)
+    logger.error(`   ${err.message}`)
 
     process.exit(1)
   }
@@ -531,23 +528,22 @@ async function main() {
 
 // 处理未捕获的异常
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error)
+  logger.error('Uncaught Exception:', error)
   process.exit(1)
 })
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  logger.error(`Unhandled Rejection at: ${String(promise)} reason: ${String(reason)}`)
   process.exit(1)
 })
 
-// 优雅关闭
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully...')
+  logger.info('Received SIGINT, shutting down gracefully...')
   process.exit(0)
 })
 
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully...')
+  logger.info('Received SIGTERM, shutting down gracefully...')
   process.exit(0)
 })
 

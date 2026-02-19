@@ -6,6 +6,9 @@
  */
 
 import { main } from './index.js'
+import * as logger from './utils/logging.js'
 
-// 启动服务器
-main().catch(console.error)
+main().catch((error) => {
+  logger.error('Failed to start MCP Server:', error as Error)
+  process.exit(1)
+})
