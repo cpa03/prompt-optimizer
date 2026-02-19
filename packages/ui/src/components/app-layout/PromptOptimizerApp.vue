@@ -394,6 +394,7 @@ const { services, isInitializing } = useAppInitializer()
 // TODO（后续重构）：将 ensureInitialized 拆为纯 initModePreferences() 函数，完全移除这些 composable 的依赖
 // ⚠️ 注意：这些 composable 的调用会触发初始化副作用，但返回的 state 不得作为业务逻辑的状态来源
 // 🔧 修复：保存 composable 返回值，避免在 watch 回调中重复调用（导致 inject() 错误）
+// @ts-expect-error - Called for side effects only, not used elsewhere
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const functionModeApi = useFunctionMode(services)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -759,7 +760,8 @@ const handleOpenVariableManager = (variableName?: string) => {
   showVariableManager.value = true
 }
 
-// 🆕 AI 变量提取处理函数
+// 🆕 AI 变量提取处理函数（预留用于未来功能）
+// @ts-expect-error - Reserved for future AI-powered variable extraction feature
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const handleExtractVariables = async (promptContent: string, extractionModelKey: string) => {
   const existingVariableNames = Object.keys(variableManager.customVariables.value || {})
