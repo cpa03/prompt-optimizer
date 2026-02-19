@@ -8,6 +8,7 @@
  * consider using Redis or similar for shared rate limit state.
  */
 
+import type { Request } from 'express'
 import * as logger from './logging.js'
 
 interface RateLimitEntry {
@@ -132,7 +133,7 @@ export function getRateLimiter(config?: Partial<RateLimitConfig>): RateLimiter {
   return defaultLimiter
 }
 
-export function getClientIdentifier(req: express.Request): string {
+export function getClientIdentifier(req: Request): string {
   const forwarded = req.headers['x-forwarded-for']
   if (forwarded) {
     const ips = Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0]
