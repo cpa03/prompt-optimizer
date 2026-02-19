@@ -103,6 +103,7 @@ export default {
     import: '匯入',
     export: '匯出',
     next: '下一步',
+    scrollToTop: '回到頂部',
   },
   actions: {
     copy: '複製',
@@ -216,6 +217,9 @@ export default {
         copiedAll: '已複製內容',
         shareComingSoon: '分享功能即將上線',
         categoryManagementComingSoon: '分類管理功能將在後續版本提供',
+        favorite: '添加到收藏',
+        unfavorite: '取消收藏',
+        favorited: '已收藏',
       },
       preview: {
         title: '收藏詳情',
