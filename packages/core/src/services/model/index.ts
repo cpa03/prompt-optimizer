@@ -2,8 +2,8 @@
  * 模型管理服务模块导出
  */
 
-// 导出类型
-export * from './types'
+// 导出类型（排除与 llm 模块冲突的类型）
+export type { StoredTextModelConfig, ModelConfig, IModelManager } from './types'
 
 // 导出错误类
 export * from './errors'
@@ -19,8 +19,9 @@ export * from './parameter-schema'
 export * from './parameter-utils'
 export * from './advancedParameterDefinitions'
 
-// 导出验证
-export * from './validation'
+// 导出验证（排除与 llm 模块冲突的 ValidationError）
+export type { LLMValidationResult, ValidationWarning } from './validation'
+export { validateLLMParams, getSupportedParameters } from './validation'
 
 // 导出转换器
 export * from './converter'

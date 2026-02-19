@@ -102,7 +102,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
   ): Promise<ImageResult> {
     if (!config.connectionConfig?.apiKey) {
       throw new ImageError(
-        IMAGE_ERROR_CODES.CONNECTION_FAILED,
+        IMAGE_ERROR_CODES.API_KEY_REQUIRED,
         'API key is required. Please configure your OpenAI API key in settings.'
       )
     }
@@ -255,7 +255,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
     return withRetry(
-      async (signal) => {
+      async (_signal) => {
         const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
         try {

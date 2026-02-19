@@ -2,9 +2,6 @@ import { IImportExportable } from '../../interfaces/import-export'
 import type { UnifiedParameterDefinition } from './parameter-schema'
 import type { BaseProvider } from '../shared/types'
 
-// 重新导出共享类型，保持向后兼容
-export type { ConnectionSchema } from '../shared/types'
-
 // === 新架构核心类型 ===
 
 /**

@@ -8,8 +8,8 @@ export * from './types'
 // 导出常量
 export * from './constants'
 
-// 导出仓库
-export { ContextRepo, createContextRepo } from './repo'
+// 导出仓库实现和工厂函数
+export { ContextRepoImpl, createContextRepo } from './repo'
 
 // 导出Electron代理
 export { ElectronContextRepoProxy } from './electron-proxy'

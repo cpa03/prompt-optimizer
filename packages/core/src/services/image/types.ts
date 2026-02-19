@@ -56,6 +56,9 @@ export interface ImageModelConfig {
   // 参数覆盖（统一字段）
   paramOverrides?: Record<string, unknown> // 覆盖模型默认参数（包含内置和自定义参数）
 
+  // 超时配置（可选）
+  timeoutMs?: number // 请求超时时间（毫秒）
+
   /**
    * @deprecated 已废弃，将在 v3.0 移除
    * 旧版本的自定义参数字段，现已合并到 paramOverrides
