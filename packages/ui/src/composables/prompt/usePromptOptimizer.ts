@@ -42,7 +42,7 @@ export function usePromptOptimizer(
   services: Ref<AppServices | null>,
   optimizationMode: OptimizationModeSource, // 必需参数，接受 computed
   selectedOptimizeModel?: Ref<string>, // 优化模型选择
-  selectedTestModel?: Ref<string>, // 测试模型选择
+  _selectedTestModel?: Ref<string>, // 测试模型选择
   contextMode?: Ref<ContextMode>, // 上下文模式
   bindings?: {
     prompt?: Ref<string>
@@ -53,13 +53,10 @@ export function usePromptOptimizer(
   }
 ) {
   const optimizeModel = selectedOptimizeModel || ref('')
-  const testModel = selectedTestModel || ref('')
   const toast = useToast()
   const { t } = useI18n()
 
   // 服务引用
-  const modelManager = computed(() => services.value?.modelManager)
-  const templateManager = computed(() => services.value?.templateManager)
   const historyManager = computed(() => services.value?.historyManager)
   const promptService = computed(() => services.value?.promptService)
   const { functionMode } = useFunctionMode(services)
@@ -87,8 +84,8 @@ export function usePromptOptimizer(
 
     // 方法 (将在下面定义并绑定到 state)
     handleOptimizePrompt: async () => {},
-    handleOptimizePromptWithContext: async (_advancedContext: AdvancedContextPayload) => {},
-    handleIteratePrompt: async (payload: {
+    handleOptimizePromptWithContext: async (_advancedContextPayload: AdvancedContextPayload) => {},
+    handleIteratePrompt: async (_payload: {
       originalPrompt: string
       optimizedPrompt: string
       iterateInput: string
@@ -98,7 +95,7 @@ export function usePromptOptimizer(
       note?: string
       source?: 'patch' | 'manual'
     }) => {},
-    handleSwitchVersion: async (version: PromptChain['versions'][number]) => {},
+    handleSwitchVersion: async (_version: PromptChain['versions'][number]) => {},
     handleAnalyze: () => {},
   })
 

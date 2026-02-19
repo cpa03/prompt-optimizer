@@ -53,8 +53,7 @@ export function useDebounceThrottle() {
   const throttle = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
     delay: number = TIME_CONSTANTS.DEFAULT_THROTTLE_MS,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    key: string = 'default'
+    _key: string = 'default'
   ) => {
     let lastExecTime = 0
 
@@ -74,8 +73,7 @@ export function useDebounceThrottle() {
    */
   const rafThrottle = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    key: string = 'default'
+    _key: string = 'default'
   ) => {
     let rafId: number | null = null
 

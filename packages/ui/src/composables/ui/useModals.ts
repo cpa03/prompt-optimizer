@@ -1,7 +1,5 @@
-import { computed, reactive, type Ref } from 'vue'
+import { reactive, type Ref } from 'vue'
 
-import { useToast } from './useToast'
-import { useI18n } from 'vue-i18n'
 import type { AppServices } from '../../types/services'
 
 /**
@@ -18,18 +16,12 @@ interface ModelSelectRef {
 }
 
 export function useModals(
-  services: Ref<AppServices | null>,
+  _services: Ref<AppServices | null>,
   optimizeModelSelect: Ref<ModelSelectRef | null>,
   testModelSelect: Ref<ModelSelectRef | null>,
   loadModels: () => Promise<void>,
-  initTemplateSelection: () => Promise<void>
+  _initTemplateSelection: () => Promise<void>
 ) {
-  const toast = useToast()
-  const { t } = useI18n()
-
-  // 获取模板管理器引用
-  const templateManager = computed(() => services.value?.templateManager)
-
   // 创建一个 reactive 状态对象
   const state = reactive({
     // 弹窗状态
