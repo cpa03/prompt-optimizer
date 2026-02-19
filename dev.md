@@ -13,8 +13,8 @@
 
 ### 基础环境要求
 
-- Node.js >= 18
-- pnpm >= 8
+- Node.js >= 18 (18/20/22 supported)
+- pnpm >= 10.6.1 (package manager - required)
 - Git >= 2.0
 - VSCode (推荐)
 
