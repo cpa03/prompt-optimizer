@@ -29,7 +29,7 @@ export async function setupDefaultModel(
   if (preferredProvider) {
     selectedModel = availableModels.find(
       ([, config]) =>
-        config.provider === preferredProvider.toLowerCase() ||
+        config.providerMeta.id === preferredProvider.toLowerCase() ||
         config.name.toLowerCase().includes(preferredProvider.toLowerCase())
     )
   }
