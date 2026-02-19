@@ -265,6 +265,51 @@ Track quality assurance review results (populated after review):
 - Include testing as explicit subtasks
 - Order tasks by implementation sequence
 
+---
+
+## Estimation & Priority
+
+### Story Points Estimation
+
+| Complexity | Typical Duration | Story Points | Characteristics                             |
+| ---------- | ---------------- | ------------ | ------------------------------------------- |
+| Trivial    | < 2 hours        | 1            | Single file change, no dependencies         |
+| Simple     | 2-4 hours        | 2            | Few files, well-defined scope               |
+| Medium     | 4-8 hours        | 3-5          | Multiple files, some integration needed     |
+| Complex    | 1-2 days         | 8-13         | Architecture changes, multiple integrations |
+| Epic-level | 3+ days          | Split        | Consider splitting into multiple stories    |
+
+### Priority Matrix
+
+| Priority | Definition                                       | Examples                    |
+| -------- | ------------------------------------------------ | --------------------------- |
+| **P0**   | Critical - blocks release or major functionality | Auth failure, data loss     |
+| **P1**   | High - core feature, user-facing                 | New model support, UI fixes |
+| **P2**   | Medium - important but not blocking              | UX improvements, refactor   |
+| **P3**   | Low - nice to have, future consideration         | Minor optimizations         |
+
+### Risk Assessment Template
+
+For complex stories, include a risk assessment:
+
+| Risk ID  | Description        | Probability  | Impact | Mitigation            |
+| -------- | ------------------ | ------------ | ------ | --------------------- |
+| RISK-001 | [Risk description] | High/Med/Low | H/M/L  | [Mitigation strategy] |
+
+---
+
+## Story Quality Checklist
+
+Before submitting a story for approval, verify:
+
+- [ ] Story follows "As a... I want... so that..." format
+- [ ] Acceptance criteria are specific and testable
+- [ ] Tasks reference acceptance criteria numbers
+- [ ] Dev notes include source references
+- [ ] File paths follow project structure conventions
+- [ ] Testing approach is defined
+- [ ] No placeholder text remains (e.g., `[TBD]`)
+
 ## Related Templates
 
 - [Task Template](./task.md) - For tracking implementation tasks
@@ -273,6 +318,7 @@ Track quality assurance review results (populated after review):
 
 ## Related Documentation
 
+- [Stories Directory](../stories/README.md) - Story workflow and quick reference
 - [Technical Development Guide](../developer/technical-development-guide.md)
 - [Project Structure](../developer/project-structure.md)
 - [Architecture Documents](../architecture/)
