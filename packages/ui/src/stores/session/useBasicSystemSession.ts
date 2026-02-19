@@ -22,28 +22,20 @@ import {
   type PersistedEvaluationResults,
 } from '../../types/evaluation'
 import { LAYOUT_CONSTANTS } from '../../config/constants'
+import {
+  type TestPanelVersionValue,
+  type TestVariantId,
+  type TestColumnCount,
+  type TestVariantConfig,
+  type TestVariantLastRunFingerprint,
+} from './types/test-variant'
 
-/**
- * 测试结果结构
- */
 export interface TestResults {
   originalResult: string
   originalReasoning: string
   optimizedResult: string
   optimizedReasoning: string
 }
-
-/**
- * basic-system 测试面板的版本选择：
- * - 0: v0（原始提示词）
- * - >=1: v1..vn（历史链版本号）
- * - 'latest': 跟随最新 vn
- */
-export type TestPanelVersionValue = 0 | number | 'latest'
-
-export type TestVariantId = 'a' | 'b' | 'c' | 'd'
-
-export type TestColumnCount = 2 | 3 | 4
 
 export interface BasicSystemLayoutConfig {
   /** 主布局左侧宽度（百分比，25..50） */
@@ -52,20 +44,12 @@ export interface BasicSystemLayoutConfig {
   testColumnCount: TestColumnCount
 }
 
-export interface TestVariantConfig {
-  id: TestVariantId
-  version: TestPanelVersionValue
-  modelKey: string
-}
-
 export interface TestVariantResult {
   result: string
   reasoning: string
 }
 
 export type TestVariantResults = Record<TestVariantId, TestVariantResult>
-
-export type TestVariantLastRunFingerprint = Record<TestVariantId, string>
 
 /**
  * Basic-System 会话状态
