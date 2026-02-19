@@ -2,7 +2,9 @@
 # https://developers.cloudflare.com/workers/wrangler/configuration/
 
 name = "prompt-optimizer"
-compatibility_date = "2025-12-01"
+# Use the latest stable compatibility date
+# See: https://developers.cloudflare.com/workers/configuration/compatibility-dates/
+compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
 # Pages configuration
@@ -16,6 +18,7 @@ pages_build_output_dir = "packages/web/dist"
 send_metrics = false
 
 # Observability (Cloudflare best practice)
+# See: https://developers.cloudflare.com/workers/observability/
 [observability]
 enabled = true
 head_sampling_rate = 0.1

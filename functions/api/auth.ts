@@ -10,6 +10,7 @@
  * 1. Enable KV namespace in wrangler.toml (see commented section)
  * 2. Implement rate limiting using KV with TTL
  * 3. Alternatively, use Cloudflare's Rate Limiting product
+ *    See: https://developers.cloudflare.com/waf/rate-limiting-rules/
  *
  * @see https://developers.cloudflare.com/waf/rate-limiting-rules/
  */

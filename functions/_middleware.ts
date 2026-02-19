@@ -233,6 +233,7 @@ export async function onRequest(context: {
   const { request, env, next } = context
   const url = new URL(request.url)
   const pathname = url.pathname
+  const startTime = Date.now()
 
   if (shouldExcludePath(pathname)) {
     return next()
@@ -266,7 +267,7 @@ export async function onRequest(context: {
   const acceptLanguage = request.headers.get('accept-language') || ''
   const preferChinese = acceptLanguage.includes('zh')
 
-  return new Response(generateAuthPage(preferChinese), {
+  const response = new Response(generateAuthPage(preferChinese), {
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
@@ -275,4 +276,6 @@ export async function onRequest(context: {
       ...SECURITY_HEADERS,
     },
   })
+
+  return response
 }
