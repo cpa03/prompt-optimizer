@@ -151,12 +151,25 @@ export class PreferenceService implements IPreferenceService {
 
   /**
    * 获取所有偏好设置的键名
+   * 从存储中查询所有以prefix开头的键，并去除前缀后返回
    * @returns 键名列表
    */
   async keys(): Promise<string[]> {
-    // 由于IStorageProvider没有getAllKeys方法，我们只能返回已知的键
-    // 这是一个限制，但在大多数情况下应该足够了
-    return Array.from(this.keyCache)
+    try {
+      const allKeys = await this.storageProvider.keys()
+      const prefKeys = allKeys
+        .filter((key) => key.startsWith(this.PREFIX))
+        .map((key) => key.slice(this.PREFIX.length))
+
+      // 更新缓存以保持同步
+      this.keyCache = new Set(prefKeys)
+
+      return prefKeys
+    } catch (error) {
+      console.error('[PreferenceService] Error getting preference keys:', error)
+      // 如果存储查询失败，返回缓存作为降级
+      return Array.from(this.keyCache)
+    }
   }
 
   /**
@@ -164,7 +177,7 @@ export class PreferenceService implements IPreferenceService {
    */
   async clear(): Promise<void> {
     try {
-      const prefKeys = Array.from(this.keyCache)
+      const prefKeys = await this.keys()
       for (const key of prefKeys) {
         await this.delete(key)
       }
