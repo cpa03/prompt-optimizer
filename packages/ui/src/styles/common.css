@@ -17,6 +17,11 @@
   transition: outline-offset 0.15s ease;
 }
 
+/* Dark mode focus ring adjustments */
+.dark *:focus-visible {
+  outline-color: var(--n-primary-color, #63e2b7);
+}
+
 /* 按钮焦点状态 */
 button:focus-visible,
 .n-button:focus-visible {
@@ -25,10 +30,23 @@ button:focus-visible,
   box-shadow: 0 0 0 4px var(--focus-ring-color, rgba(24, 160, 88, 0.15));
 }
 
+/* Dark mode button focus */
+.dark button:focus-visible,
+.dark .n-button:focus-visible {
+  box-shadow: 0 0 0 4px rgba(99, 226, 183, 0.2);
+}
+
 /* 输入框焦点状态 */
 input:focus-visible,
 textarea:focus-visible,
 .n-input:focus-visible {
+  outline: 2px solid var(--n-primary-color, #18a058);
+  outline-offset: 1px;
+}
+
+/* Select dropdown focus state */
+select:focus-visible,
+.n-select:focus-visible {
   outline: 2px solid var(--n-primary-color, #18a058);
   outline-offset: 1px;
 }
@@ -40,12 +58,35 @@ a:focus-visible {
   border-radius: 2px;
 }
 
+/* Tab and keyboard-navigable elements */
+[tabindex]:focus-visible {
+  outline: 2px solid var(--n-primary-color, #18a058);
+  outline-offset: 2px;
+}
+
 /* Interactive element cursor */
 [role='button'],
 button:not(:disabled),
 .n-button:not(:disabled),
 a:not(:disabled) {
   cursor: pointer;
+}
+
+/* Skip link for keyboard navigation accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--n-primary-color, #18a058);
+  color: white;
+  padding: 8px 16px;
+  z-index: 10000;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 0;
 }
 
 /* Reduce animation for users who prefer it */
