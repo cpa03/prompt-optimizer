@@ -71,3 +71,14 @@ export type { StructuredErrorLike } from './error'
 // JSON utilities
 export { safeJsonParse, safeJsonParseNullish, isDangerousKey, sanitizeObject } from './json'
 export type { SafeJsonParseOptions } from './json'
+
+// Retry utilities
+export {
+  withRetry,
+  withTimeout,
+  sleep,
+  createTimeoutSignal,
+  TimeoutError,
+  RETRY_PRESETS,
+} from './retry'
+export type { RetryOptions } from './retry'
