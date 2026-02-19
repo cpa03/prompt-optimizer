@@ -246,7 +246,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-18  
+**Last Updated:** 2026-02-19  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 

@@ -186,6 +186,6 @@ pnpm test
 
 ## 📚 相关文档
 
-- [E2E 测试指南](./e2e-guide.md)
-- [VCR 使用说明](./e2e-vcr-guide.md)
+- [测试概览](./README.md)
+- [VCR 使用说明](./vcr-usage-guide.md)
 - [选择器策略](./e2e-selector-strategy.md)
