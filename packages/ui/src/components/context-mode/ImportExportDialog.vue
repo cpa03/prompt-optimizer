@@ -435,6 +435,21 @@ const handleFileUpload = async (event: Event) => {
   }
 }
 
+// Type guard for conversation format with messages
+interface ConversationJsonFormat {
+  messages: unknown[]
+  tools?: unknown[]
+}
+
+function isConversationJsonFormat(data: unknown): data is ConversationJsonFormat {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    'messages' in data &&
+    Array.isArray((data as ConversationJsonFormat).messages)
+  )
+}
+
 // 导入提交处理
 const handleImportSubmit = async () => {
   if (!importData.value.trim()) {
@@ -463,14 +478,16 @@ const handleImportSubmit = async () => {
         // 直接设置为对话格式
         if (Array.isArray(jsonData)) {
           emit('import-success', {
-            messages: jsonData.map((msg: Partial<ConversationMessage>) => normalizeMessage(msg)),
-          })
-        } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
-          emit('import-success', {
-            messages: jsonData.messages.map((msg: Partial<ConversationMessage>) =>
+            messages: (jsonData as Partial<ConversationMessage>[]).map((msg) =>
               normalizeMessage(msg)
             ),
-            tools: jsonData.tools || [],
+          })
+        } else if (isConversationJsonFormat(jsonData)) {
+          emit('import-success', {
+            messages: (jsonData.messages as Partial<ConversationMessage>[]).map((msg) =>
+              normalizeMessage(msg)
+            ),
+            tools: (jsonData.tools as ToolDefinition[]) || [],
           })
         } else {
           importError.value = t('contextEditor.invalidConversationFormat')
