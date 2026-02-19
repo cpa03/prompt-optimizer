@@ -9,7 +9,8 @@ export * from './types'
 export * from './constants'
 
 // 导出仓库
-export { ContextRepo, createContextRepo } from './repo'
+export { createContextRepo } from './repo'
+export { ContextRepoImpl } from './repo'
 
 // 导出Electron代理
 export { ElectronContextRepoProxy } from './electron-proxy'

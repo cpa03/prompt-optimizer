@@ -261,7 +261,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
     return withRetry(
-      async (signal) => {
+      async (_signal) => {
         const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
         try {

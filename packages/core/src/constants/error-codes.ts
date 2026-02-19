@@ -136,6 +136,7 @@ export const IMAGE_ERROR_CODES = {
   CONFIG_PROVIDER_MISMATCH: 'error.image.config_provider_mismatch',
   CONNECTION_CONFIG_MISSING_FIELD: 'error.image.connection_config_missing_field',
   CONNECTION_CONFIG_INVALID_FIELD_TYPE: 'error.image.connection_config_invalid_field_type',
+  CONNECTION_FAILED: 'error.image.connection_failed',
   PROVIDER_NOT_FOUND: 'error.image.provider_not_found',
   DYNAMIC_MODELS_NOT_SUPPORTED: 'error.image.dynamic_models_not_supported',
   UNSUPPORTED_TEST_TYPE: 'error.image.unsupported_test_type',
