@@ -1,0 +1,181 @@
+/**
+ * Rate Limiter Tests
+ *
+ * Tests for the in-memory rate limiting functionality used by MCP server
+ * to prevent abuse from AI agents.
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { createRateLimiter, getClientIdentifier, RateLimiter } from '../src/utils/rate-limiter.js'
+
+describe('RateLimiter', () => {
+  let limiter: RateLimiter
+
+  beforeEach(() => {
+    limiter = createRateLimiter({
+      windowMs: 1000,
+      maxRequests: 5,
+      cleanupIntervalMs: 10000,
+    })
+  })
+
+  afterEach(() => {
+    limiter.stop()
+  })
+
+  describe('basic rate limiting', () => {
+    it('should allow requests within the limit', () => {
+      const result = limiter.check('client-1')
+      expect(result.allowed).toBe(true)
+      expect(result.remaining).toBe(4)
+      expect(result.resetTime).toBeGreaterThan(Date.now())
+    })
+
+    it('should decrement remaining count on each request', () => {
+      for (let i = 5; i > 0; i--) {
+        const result = limiter.check('client-2')
+        expect(result.allowed).toBe(true)
+        expect(result.remaining).toBe(i - 1)
+      }
+    })
+
+    it('should block requests when limit is exceeded', () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('client-3')
+      }
+
+      const result = limiter.check('client-3')
+      expect(result.allowed).toBe(false)
+      expect(result.remaining).toBe(0)
+    })
+
+    it('should provide retryAfter when blocked', () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('client-4')
+      }
+
+      const result = limiter.check('client-4')
+      expect(result.allowed).toBe(false)
+      expect(result.retryAfter).toBeDefined()
+      expect(result.retryAfter).toBeGreaterThan(0)
+    })
+  })
+
+  describe('window reset', () => {
+    it('should reset count after window expires', async () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('client-5')
+      }
+
+      expect(limiter.check('client-5').allowed).toBe(false)
+
+      await new Promise((resolve) => setTimeout(resolve, 1100))
+
+      const result = limiter.check('client-5')
+      expect(result.allowed).toBe(true)
+      expect(result.remaining).toBe(4)
+    })
+  })
+
+  describe('multiple clients', () => {
+    it('should track different clients separately', () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('client-a')
+      }
+
+      expect(limiter.check('client-a').allowed).toBe(false)
+      expect(limiter.check('client-b').allowed).toBe(true)
+    })
+
+    it('should not affect other clients when one is blocked', () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('blocked-client')
+      }
+
+      expect(limiter.check('blocked-client').allowed).toBe(false)
+
+      for (let i = 0; i < 5; i++) {
+        expect(limiter.check('other-client').allowed).toBe(true)
+      }
+    })
+  })
+
+  describe('cleanup', () => {
+    it('should stop cleanup timer when stop is called', () => {
+      const shortLimiter = createRateLimiter({
+        windowMs: 100,
+        maxRequests: 5,
+        cleanupIntervalMs: 50,
+      })
+
+      shortLimiter.check('test')
+      shortLimiter.stop()
+
+      expect(() => shortLimiter.stop()).not.toThrow()
+    })
+  })
+})
+
+describe('getClientIdentifier', () => {
+  it('should use x-forwarded-for header when available', () => {
+    const req = {
+      headers: {
+        'x-forwarded-for': '192.168.1.1, 10.0.0.1',
+      },
+      socket: { remoteAddress: '127.0.0.1' },
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('192.168.1.1')
+  })
+
+  it('should handle x-forwarded-for as array', () => {
+    const req = {
+      headers: {
+        'x-forwarded-for': ['192.168.1.2', '10.0.0.2'],
+      },
+      socket: { remoteAddress: '127.0.0.1' },
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('192.168.1.2')
+  })
+
+  it('should use x-real-ip header when x-forwarded-for is not available', () => {
+    const req = {
+      headers: {
+        'x-real-ip': '192.168.1.3',
+      },
+      socket: { remoteAddress: '127.0.0.1' },
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('192.168.1.3')
+  })
+
+  it('should handle x-real-ip as array', () => {
+    const req = {
+      headers: {
+        'x-real-ip': ['192.168.1.4'],
+      },
+      socket: { remoteAddress: '127.0.0.1' },
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('192.168.1.4')
+  })
+
+  it('should fallback to socket remoteAddress', () => {
+    const req = {
+      headers: {},
+      socket: { remoteAddress: '127.0.0.1' },
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('127.0.0.1')
+  })
+
+  it('should return "unknown" when no IP is available', () => {
+    const req = {
+      headers: {},
+      socket: {},
+    } as any
+
+    expect(getClientIdentifier(req)).toBe('unknown')
+  })
+})
