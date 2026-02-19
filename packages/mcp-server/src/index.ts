@@ -398,12 +398,18 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
   logger.info('MCP 工具注册成功')
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+function validateSessionId(id: string | undefined): boolean {
+  if (!id) return false
+  return UUID_REGEX.test(id)
+}
+
 async function main() {
   const config = loadConfig()
   logger.setLogLevel(config.logLevel)
 
   try {
-    // 解析命令行参数
     const args = process.argv.slice(2)
     const transport = args.find((arg) => arg.startsWith('--transport='))?.split('=')[1] || 'stdio'
     const port = parseInt(
@@ -413,17 +419,24 @@ async function main() {
     logger.info('Starting MCP Server for Prompt Optimizer')
     logger.info(`Transport: ${transport}, Port: ${port}`)
 
-    // 初始化 Core 服务（一次性，用于验证配置）
     logger.info('Initializing Core services...')
     const coreServices = CoreServicesManager.getInstance()
     await coreServices.initialize(config)
     logger.info('Core services initialized successfully')
 
-    // 启动传输层
     if (transport === 'http') {
       logger.info('Starting HTTP server with session management...')
       const app = express()
       app.use(express.json())
+
+      app.use((_req, res, next) => {
+        res.setHeader('X-Content-Type-Options', 'nosniff')
+        res.setHeader('X-Frame-Options', 'DENY')
+        res.setHeader('X-XSS-Protection', '1; mode=block')
+        res.removeHeader('X-Powered-By')
+        next()
+      })
+
       logger.info('Express app configured')
 
       const rateLimiter = createRateLimiter({
@@ -516,18 +529,13 @@ async function main() {
           // 重用现有传输
           httpTransport = transports[sessionId]
         } else if (!sessionId && isInitializeRequest(req.body)) {
-          // 新的初始化请求 - 为每个会话创建独立的服务器实例
           httpTransport = new StreamableHTTPServerTransport({
             sessionIdGenerator: () => randomUUID(),
             onsessioninitialized: (sessionId) => {
-              // 存储传输实例
               transports[sessionId] = httpTransport
             },
-            // MCP 协议不需要复杂的 CORS 配置，允许所有来源
-            // 注意: 如果部署在公网环境，建议通过反向代理（如 nginx）限制 CORS
-            // 或修改 allowedOrigins 为具体的允许域名列表
-            allowedOrigins: ['*'],
-            enableDnsRebindingProtection: false,
+            allowedOrigins: config.allowedOrigins,
+            enableDnsRebindingProtection: config.enableDnsRebindingProtection,
           })
 
           // 清理传输实例
@@ -560,27 +568,25 @@ async function main() {
         await httpTransport.handleRequest(req, res, req.body)
       })
 
-      // 处理 GET 请求（服务器到客户端通知，通过 SSE）
       app.get('/mcp', async (req, res) => {
         const sessionId = req.headers['mcp-session-id'] as string | undefined
-        if (!sessionId || !transports[sessionId]) {
+        if (!validateSessionId(sessionId) || !transports[sessionId!]) {
           res.status(400).send('Invalid or missing session ID')
           return
         }
 
-        const httpTransport = transports[sessionId]
+        const httpTransport = transports[sessionId!]
         await httpTransport.handleRequest(req, res)
       })
 
-      // 处理 DELETE 请求（会话终止）
       app.delete('/mcp', async (req, res) => {
         const sessionId = req.headers['mcp-session-id'] as string | undefined
-        if (!sessionId || !transports[sessionId]) {
+        if (!validateSessionId(sessionId) || !transports[sessionId!]) {
           res.status(400).send('Invalid or missing session ID')
           return
         }
 
-        const httpTransport = transports[sessionId]
+        const httpTransport = transports[sessionId!]
         await httpTransport.handleRequest(req, res)
       })
 

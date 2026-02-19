@@ -274,6 +274,13 @@ These variables are used in the core package and don't require a prefix.
 | `API_MAX_REQUEST_DELAY_MS`      | 1000    | API max request delay      |
 | `API_DEFAULT_PAGE_SIZE`         | 100     | API default page size      |
 
+### MCP Server Configuration
+
+| Variable                       | Default | Description                                        |
+| ------------------------------ | ------- | -------------------------------------------------- |
+| `MCP_ALLOWED_ORIGINS`          | `*`     | Comma-separated list of allowed CORS origins       |
+| `MCP_DNS_REBINDING_PROTECTION` | `false` | Enable DNS rebinding protection for HTTP transport |
+
 ## Usage Examples
 
 ### Basic .env file

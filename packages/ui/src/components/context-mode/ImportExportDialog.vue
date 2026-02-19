@@ -182,7 +182,11 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton, NSpace, NInput, NText } from 'naive-ui'
 import { useContextEditor } from '../../composables/context/useContextEditor'
-import type { ConversationMessage, ToolDefinition } from '@prompt-optimizer/core'
+import {
+  safeJsonParse,
+  type ConversationMessage,
+  type ToolDefinition,
+} from '@prompt-optimizer/core'
 import type { StandardPromptData } from '../../types'
 import { UI_DIMENSIONS } from '../../config/constants'
 import {
@@ -441,7 +445,7 @@ const handleImportSubmit = async () => {
   try {
     loading.value = true
     importError.value = ''
-    const jsonData = JSON.parse(importData.value)
+    const jsonData = safeJsonParse(importData.value)
     let result
 
     // Flexy hates hardcoded! Using constants for switch cases

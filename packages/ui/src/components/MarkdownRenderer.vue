@@ -362,7 +362,11 @@ const renderMarkdown = () => {
   } catch (error) {
     handleError(error, 'rendering')
     if (markdownContainer.value) {
-      markdownContainer.value.innerHTML = `<p class="text-red-500">Error rendering markdown: ${renderError.value}</p>`
+      const errorEl = document.createElement('p')
+      errorEl.className = 'text-red-500'
+      errorEl.textContent = `Error rendering markdown: ${renderError.value}`
+      markdownContainer.value.innerHTML = ''
+      markdownContainer.value.appendChild(errorEl)
     }
   }
 }
