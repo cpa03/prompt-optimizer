@@ -104,6 +104,8 @@ const SECURITY_HEADERS = {
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
 }
 
 export default function handler(req, res) {
@@ -138,8 +140,12 @@ export default function handler(req, res) {
 
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
+    res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT.MAX_ATTEMPTS))
+    res.setHeader('X-RateLimit-Remaining', String(rateLimitResult.remaining))
+
     if (!rateLimitResult.allowed) {
       res.setHeader('Retry-After', String(rateLimitResult.retryAfter || 60))
+      res.setHeader('X-RateLimit-Reset', String(rateLimitResult.retryAfter || 60))
       return res.status(429).json({
         success: false,
         message: 'Too many attempts. Please try again later.',
