@@ -7,14 +7,10 @@
 
 import { config } from 'dotenv'
 import * as logger from '../utils/logging.js'
+import { SUFFIX_PATTERN, MAX_SUFFIX_LENGTH, CUSTOM_API_PATTERN } from '@prompt-optimizer/core'
 
 // 备用环境变量加载（preload-env.js 已经处理了主要加载）
 config()
-
-// 导入共享常量
-const CUSTOM_API_PATTERN = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/
-const SUFFIX_PATTERN = /^[a-zA-Z0-9_-]+$/
-const MAX_SUFFIX_LENGTH = 50
 
 /**
  * 扫描动态自定义模型环境变量
