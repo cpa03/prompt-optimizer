@@ -53,9 +53,12 @@ export class HistoryManager implements IHistoryManager {
     try {
       this.validateRecord(record)
 
+      // Create a shallow copy to avoid mutating the input object
+      const recordToAdd = { ...record }
+
       // If modelName is not provided but modelKey exists, try to get model name
-      if (!record.modelName && record.modelKey) {
-        record.modelName = await this.getModelNameByKey(record.modelKey)
+      if (!recordToAdd.modelName && recordToAdd.modelKey) {
+        recordToAdd.modelName = await this.getModelNameByKey(recordToAdd.modelKey)
       }
 
       // Use updateData to handle concurrent modifications
@@ -65,16 +68,16 @@ export class HistoryManager implements IHistoryManager {
           const records = existingRecords || []
 
           // Ensure record ID is unique
-          if (records.some((r: PromptRecord) => r.id === record.id)) {
+          if (records.some((r: PromptRecord) => r.id === recordToAdd.id)) {
             throw new HistoryError(
               HISTORY_ERROR_CODES.VALIDATION_ERROR,
-              { details: `Record with ID ${record.id} already exists` },
-              `Record with ID ${record.id} already exists`
+              { details: `Record with ID ${recordToAdd.id} already exists` },
+              `Record with ID ${recordToAdd.id} already exists`
             )
           }
 
           // Add record to existing records (at the beginning)
-          const updatedRecords = [record, ...records]
+          const updatedRecords = [recordToAdd, ...records]
 
           // Ensure we don't exceed maxRecords
           return updatedRecords.slice(0, this.maxRecords)
