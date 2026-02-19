@@ -84,14 +84,30 @@ export interface MCPServerConfig {
   logLevel: 'debug' | 'info' | 'warn' | 'error'
   defaultLanguage: string
   preferredModelProvider?: string
+  allowedOrigins: string[]
+  enableDnsRebindingProtection: boolean
 }
 
 export function loadConfig(): MCPServerConfig {
+  const allowedOriginsEnv = process.env.MCP_ALLOWED_ORIGINS
+
+  let allowedOrigins: string[]
+  if (allowedOriginsEnv) {
+    allowedOrigins = allowedOriginsEnv
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  } else {
+    allowedOrigins = ['*']
+  }
+
   return {
     httpPort: parseInt(process.env.MCP_HTTP_PORT || '3000'),
     logLevel: (process.env.MCP_LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'debug',
     defaultLanguage: process.env.MCP_DEFAULT_LANGUAGE || 'zh',
     preferredModelProvider: process.env.MCP_DEFAULT_MODEL_PROVIDER,
+    allowedOrigins,
+    enableDnsRebindingProtection: process.env.MCP_DNS_REBINDING_PROTECTION === 'true',
   }
 }
 
