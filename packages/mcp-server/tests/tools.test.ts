@@ -120,11 +120,19 @@ describe('MCP Server Tools', () => {
     })
 
     it('应该正确处理配置相关错误', () => {
+      const error = new Error('API key is invalid')
+      const mcpError = MCPErrorHandler.convertCoreError(error)
+
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.CONFIGURATION_ERROR)
+      expect(mcpError.message).toContain('配置错误')
+    })
+
+    it('应该正确处理AI模型不可用错误', () => {
       const error = new Error('Model not found')
       const mcpError = MCPErrorHandler.convertCoreError(error)
 
-      expect(mcpError.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
-      expect(mcpError.message).toContain('配置错误')
+      expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_MODEL_UNAVAILABLE)
+      expect(mcpError.message).toContain('AI 模型不可用')
     })
   })
 })
