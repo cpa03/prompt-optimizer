@@ -35,6 +35,13 @@ import {
   type TestVariantLastRunFingerprint,
 } from './types/test-variant'
 
+export {
+  type TestPanelVersionValue,
+  type TestVariantId,
+  type TestColumnCount,
+  type TestVariantConfig,
+} from './types/test-variant'
+
 type ImageResultItem = ImageResult['images'][number]
 
 export interface ImageWorkspaceLayoutConfig {

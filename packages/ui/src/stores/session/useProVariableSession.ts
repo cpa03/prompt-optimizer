@@ -24,6 +24,13 @@ import {
   type TestVariantLastRunFingerprint,
 } from './types/test-variant'
 
+export {
+  type TestPanelVersionValue,
+  type TestVariantId,
+  type TestColumnCount,
+  type TestVariantConfig,
+} from './types/test-variant'
+
 export interface TestResults {
   originalResult: string
   originalReasoning: string
