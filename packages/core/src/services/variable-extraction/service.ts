@@ -22,7 +22,7 @@ import {
   VariableExtractionError,
 } from './errors'
 import { jsonrepair } from 'jsonrepair'
-import { toErrorWithCode } from '../../utils/error'
+import { isStructuredErrorLike, toErrorWithCode } from '../../utils/error'
 import { TEMPLATE_IDS } from '../../constants/template-ids'
 
 /**
@@ -132,7 +132,7 @@ export class VariableExtractionService implements IVariableExtractionService {
         throw error
       }
       // Preserve structured template errors if possible (code/params).
-      if (typeof (error as any)?.code === 'string') {
+      if (isStructuredErrorLike(error)) {
         throw toErrorWithCode(error)
       }
       throw new VariableExtractionExecutionError(
