@@ -221,12 +221,15 @@ export class DexieStorageProvider implements IStorageProvider {
   /**
    * 获取所有存储键
    * 优化：使用 primaryKeys() 代替 toArray()，避免加载所有值到内存
+   * 注意：不返回内部元数据键
    */
   async keys(): Promise<string[]> {
     await this.initialize()
 
     try {
-      return await this.db.storage.toCollection().primaryKeys()
+      const allKeys = await this.db.storage.toCollection().primaryKeys()
+      // 过滤掉内部元数据键
+      return allKeys.filter((key) => !this.isMetadataKey(key))
     } catch (error) {
       console.error('获取所有键失败:', error)
       throw new StorageError('Failed to get all keys', 'read')
@@ -296,8 +299,16 @@ export class DexieStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 检查键是否为内部元数据键
+   */
+  private isMetadataKey(key: string): boolean {
+    return key === DB_CONFIG.metadataKey
+  }
+
+  /**
    * 获取数据库统计信息
    * 优化：使用流式处理减少内存占用，添加性能追踪
+   * 注意：统计信息不包含内部元数据键
    */
   async getDatabaseStats(): Promise<{
     itemCount: number
@@ -310,15 +321,20 @@ export class DexieStorageProvider implements IStorageProvider {
 
     const startTime = Date.now()
     try {
-      // 优化：使用流式处理避免一次性加载所有数据到内存
-      const itemCount = await this.db.storage.count()
-
+      // 使用流式处理避免一次性加载所有数据到内存
+      // 排除内部元数据键，只统计用户数据
+      let itemCount = 0
       let totalSize = 0
       let oldestTimestamp: number | null = null
       let newestTimestamp: number | null = null
 
-      // 使用 each 方法流式处理，减少内存占用
       await this.db.storage.each((record) => {
+        // 跳过内部元数据键
+        if (this.isMetadataKey(record.key)) {
+          return
+        }
+
+        itemCount++
         totalSize += record.size || record.value?.length || 0
 
         if (record.timestamp) {
@@ -697,6 +713,7 @@ export class DexieStorageProvider implements IStorageProvider {
   /**
    * 获取存储统计信息
    * 优化：避免加载所有记录到内存，使用流式处理计算大小
+   * 注意：统计信息不包含内部元数据键
    */
   async getStorageInfo(): Promise<{
     itemCount: number
@@ -706,20 +723,28 @@ export class DexieStorageProvider implements IStorageProvider {
     await this.initialize()
 
     try {
-      const itemCount = await this.db.storage.count()
-      const lastRecord = await this.db.storage.orderBy('timestamp').last()
-
+      let itemCount = 0
       let estimatedSize = 0
-      if (itemCount > 0) {
-        await this.db.storage.each((record) => {
-          estimatedSize += record.value.length
-        })
-      }
+      let lastUpdated: number | null = null
+
+      await this.db.storage.each((record) => {
+        // 跳过内部元数据键
+        if (this.isMetadataKey(record.key)) {
+          return
+        }
+
+        itemCount++
+        estimatedSize += record.value.length
+
+        if (record.timestamp && (lastUpdated === null || record.timestamp > lastUpdated)) {
+          lastUpdated = record.timestamp
+        }
+      })
 
       return {
         itemCount,
         estimatedSize,
-        lastUpdated: lastRecord?.timestamp ?? null,
+        lastUpdated,
       }
     } catch (error) {
       console.error('获取存储信息失败:', error)
@@ -733,6 +758,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 导出所有数据（用于备份）
+   * 注意：不导出内部元数据键，只导出用户数据
    */
   async exportAll(): Promise<Record<string, string>> {
     await this.initialize()
@@ -742,6 +768,10 @@ export class DexieStorageProvider implements IStorageProvider {
       const result: Record<string, string> = {}
 
       allRecords.forEach((record) => {
+        // 跳过内部元数据键
+        if (this.isMetadataKey(record.key)) {
+          return
+        }
         result[record.key] = record.value
       })
 
