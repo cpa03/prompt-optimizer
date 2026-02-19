@@ -54,8 +54,8 @@ const isFunctionMode = (value: unknown): value is FunctionMode =>
 const isBasicSubMode = (value: unknown): value is BasicSubMode =>
   value === 'system' || value === 'user'
 
-// @ts-expect-error Reserved for future ProSubMode validation
-const isProSubMode = (value: unknown): value is ProSubMode =>
+// @ts-expect-error Reserved for future use
+const _isProSubMode = (value: unknown): value is ProSubMode =>
   value === 'multi' || value === 'variable'
 
 const normalizeLegacyProSubMode = (value: unknown): ProSubMode | null => {
