@@ -65,7 +65,7 @@ export {
 export type { DebugLogger } from './debug'
 
 // Error handling utilities
-export { toErrorWithCode, isStructuredErrorLike } from './error'
+export { toErrorWithCode, isStructuredErrorLike, isRecord } from './error'
 export type { StructuredErrorLike } from './error'
 
 // JSON utilities

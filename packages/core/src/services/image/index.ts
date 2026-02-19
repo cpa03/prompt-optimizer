@@ -39,5 +39,8 @@ export { isImageRef, createImageRef } from './types'
 // 抽象基类
 export { AbstractImageProviderAdapter } from './adapters/abstract-adapter'
 
+// 图像适配器注册表
+export { ImageAdapterRegistry, createImageAdapterRegistry } from './adapters/registry'
+
 // 图像存储服务
 export { ImageStorageService, createImageStorageService } from './storage'
