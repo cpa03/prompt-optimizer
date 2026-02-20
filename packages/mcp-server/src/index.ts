@@ -52,6 +52,28 @@ import {
 } from './utils/rate-limiter.js'
 import { MCP_CONFIG } from '@prompt-optimizer/core'
 
+type ToolResponse = {
+  isError?: boolean
+  content: Array<{ type: string; text: string }>
+}
+
+function createErrorResponse(message: string): ToolResponse {
+  return {
+    isError: true,
+    content: [{ type: 'text', text: message }],
+  }
+}
+
+async function validateMcpModel(
+  modelManager: ReturnType<CoreServicesManager['getModelManager']>
+): Promise<ToolResponse | null> {
+  const mcpModel = await modelManager.getModel('mcp-default')
+  if (!mcpModel || !mcpModel.enabled) {
+    return createErrorResponse('错误：MCP 默认模型未配置或未启用，请检查环境变量配置')
+  }
+  return null
+}
+
 // 创建服务器实例的工厂函数
 async function createServerInstance(config: MCPServerConfig) {
   // 创建 MCP Server 实例 - 使用正确的 API
@@ -183,41 +205,20 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const { prompt, template } = args as { prompt?: string; template?: string }
 
           if (!prompt) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: "错误：缺少必需参数 'prompt'",
-                },
-              ],
-            }
+            return createErrorResponse("错误：缺少必需参数 'prompt'")
           }
 
-          // 参数验证
           ParameterValidator.validatePrompt(prompt)
           if (template) {
             ParameterValidator.validateTemplate(template)
           }
 
-          // 调用 Core 服务
           const promptService = coreServices.getPromptService()
           const modelManager = coreServices.getModelManager()
           const templateManager = coreServices.getTemplateManager()
 
-          // 检查 MCP 默认模型是否可用
-          const mcpModel = await modelManager.getModel('mcp-default')
-          if (!mcpModel || !mcpModel.enabled) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: '错误：MCP 默认模型未配置或未启用，请检查环境变量配置',
-                },
-              ],
-            }
-          }
+          const modelError = await validateMcpModel(modelManager)
+          if (modelError) return modelError
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'user'))
           const result = await promptService.optimizePrompt({
@@ -228,12 +229,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           })
 
           return {
-            content: [
-              {
-                type: 'text',
-                text: result,
-              },
-            ],
+            content: [{ type: 'text', text: result }],
           }
         }
 
@@ -241,41 +237,20 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const { prompt, template } = args as { prompt?: string; template?: string }
 
           if (!prompt) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: "错误：缺少必需参数 'prompt'",
-                },
-              ],
-            }
+            return createErrorResponse("错误：缺少必需参数 'prompt'")
           }
 
-          // 参数验证
           ParameterValidator.validatePrompt(prompt)
           if (template) {
             ParameterValidator.validateTemplate(template)
           }
 
-          // 调用 Core 服务
           const promptService = coreServices.getPromptService()
           const modelManager = coreServices.getModelManager()
           const templateManager = coreServices.getTemplateManager()
 
-          // 检查 MCP 默认模型是否可用
-          const mcpModel = await modelManager.getModel('mcp-default')
-          if (!mcpModel || !mcpModel.enabled) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: '错误：MCP 默认模型未配置或未启用，请检查环境变量配置',
-                },
-              ],
-            }
-          }
+          const modelError = await validateMcpModel(modelManager)
+          if (modelError) return modelError
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'system'))
           const result = await promptService.optimizePrompt({
@@ -286,12 +261,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           })
 
           return {
-            content: [
-              {
-                type: 'text',
-                text: result,
-              },
-            ],
+            content: [{ type: 'text', text: result }],
           }
         }
 
@@ -303,96 +273,46 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           }
 
           if (!prompt) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: "错误：缺少必需参数 'prompt'",
-                },
-              ],
-            }
+            return createErrorResponse("错误：缺少必需参数 'prompt'")
           }
 
           if (!requirements) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: "错误：缺少必需参数 'requirements'",
-                },
-              ],
-            }
+            return createErrorResponse("错误：缺少必需参数 'requirements'")
           }
 
-          // 参数验证
           ParameterValidator.validatePrompt(prompt)
           ParameterValidator.validateRequirements(requirements)
           if (template) {
             ParameterValidator.validateTemplate(template)
           }
 
-          // 调用 Core 服务
           const promptService = coreServices.getPromptService()
           const modelManager = coreServices.getModelManager()
           const templateManager = coreServices.getTemplateManager()
 
-          // 检查 MCP 默认模型是否可用
-          const mcpModel = await modelManager.getModel('mcp-default')
-          if (!mcpModel || !mcpModel.enabled) {
-            return {
-              isError: true,
-              content: [
-                {
-                  type: 'text',
-                  text: '错误：MCP 默认模型未配置或未启用，请检查环境变量配置',
-                },
-              ],
-            }
-          }
+          const modelError = await validateMcpModel(modelManager)
+          if (modelError) return modelError
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'iterate'))
           const result = await promptService.iteratePrompt(
             prompt,
-            prompt, // 使用原始提示词作为上次优化的提示词
+            prompt,
             requirements,
             'mcp-default',
             templateId
           )
 
           return {
-            content: [
-              {
-                type: 'text',
-                text: result,
-              },
-            ],
+            content: [{ type: 'text', text: result }],
           }
         }
 
         default:
-          return {
-            isError: true,
-            content: [
-              {
-                type: 'text',
-                text: `错误：未知工具 '${name}'`,
-              },
-            ],
-          }
+          return createErrorResponse(`错误：未知工具 '${name}'`)
       }
     } catch (error) {
       logger.error(`工具执行错误 ${name}:`, error as Error)
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text',
-            text: `工具执行错误: ${(error as Error).message}`,
-          },
-        ],
-      }
+      return createErrorResponse(`工具执行错误: ${(error as Error).message}`)
     }
   })
 
