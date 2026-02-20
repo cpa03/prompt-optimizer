@@ -35,6 +35,8 @@ const DEFAULT_CONFIG: RateLimitConfig = {
   cleanupIntervalMs: 5 * 60 * 1000,
 }
 
+export { DEFAULT_CONFIG }
+
 class RateLimiter {
   private entries: Map<string, RateLimitEntry> = new Map()
   private config: RateLimitConfig

@@ -49,7 +49,10 @@ import {
   createRateLimiter,
   getClientIdentifier,
   type RateLimitResult,
+  DEFAULT_CONFIG,
 } from './utils/rate-limiter.js'
+
+const SHUTDOWN_TIMEOUT_MS = 10000
 
 // 创建服务器实例的工厂函数
 async function createServerInstance(config: MCPServerConfig) {
@@ -440,8 +443,8 @@ async function main() {
       logger.info('Express app configured')
 
       const rateLimiter = createRateLimiter({
-        windowMs: 60 * 1000,
-        maxRequests: 100,
+        windowMs: DEFAULT_CONFIG.windowMs,
+        maxRequests: DEFAULT_CONFIG.maxRequests,
       })
 
       const rateLimitMiddleware = (
@@ -452,7 +455,7 @@ async function main() {
         const clientId = getClientIdentifier(req)
         const result: RateLimitResult = rateLimiter.check(clientId)
 
-        res.setHeader('X-RateLimit-Limit', '100')
+        res.setHeader('X-RateLimit-Limit', DEFAULT_CONFIG.maxRequests.toString())
         res.setHeader('X-RateLimit-Remaining', result.remaining.toString())
         res.setHeader('X-RateLimit-Reset', Math.ceil(result.resetTime / 1000).toString())
 
@@ -570,7 +573,7 @@ async function main() {
         const forceExitTimer = setTimeout(() => {
           console.warn('Forcing shutdown after timeout')
           process.exit(1)
-        }, 10000)
+        }, SHUTDOWN_TIMEOUT_MS)
         forceExitTimer.unref()
 
         // Close all active sessions
