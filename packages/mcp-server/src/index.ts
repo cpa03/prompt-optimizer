@@ -491,7 +491,7 @@ async function main() {
         const forceExitTimer = setTimeout(() => {
           console.warn('Forcing shutdown after timeout')
           process.exit(1)
-        }, 10000)
+        }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
         forceExitTimer.unref()
 
         // Close all active sessions
