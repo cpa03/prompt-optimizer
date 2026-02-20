@@ -151,7 +151,14 @@ pnpm build
 - **[Project Status](project/project-status.md)** - Current project status
 - **[Project README](project/README.md)** - Project overview
 - **[PRD](project/prd.md)** - Product Requirements Document
-- **[Version Sync](project/version-sync.md)** - Version management
+- **Version Sync** (project/version-sync.md) - Version management
+
+### User Story Management
+
+- **[User Story Engineering Guide](developer/user-story-engineering-guide.md)** - Story creation and implementation workflow
+- **[User Story Template](workspace-template/user-story-template.md)** - Story documentation format
+- **[Story Review Checklist](workspace-template/story-review-checklist.md)** - Pre/post implementation review
+- **[Stories Directory](stories/README.md)** - Active story tracking and progress
 
 ### Workspaces
 
