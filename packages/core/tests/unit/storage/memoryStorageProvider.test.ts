@@ -174,4 +174,38 @@ describe('MemoryStorageProvider', () => {
       expect(parsed.items).toEqual(['new-item'])
     })
   })
+
+  describe('健康检查', () => {
+    it('应该返回健康状态', async () => {
+      const health = await storage.healthCheck()
+
+      expect(health.healthy).toBe(true)
+      expect(health.canRead).toBe(true)
+      expect(health.canWrite).toBe(true)
+      expect(health.canDelete).toBe(true)
+      expect(health.latency).toBeGreaterThanOrEqual(0)
+      expect(health.errors).toEqual([])
+      expect(typeof health.timestamp).toBe('number')
+    })
+
+    it('应该正确测试读写删能力', async () => {
+      const health = await storage.healthCheck()
+
+      expect(health.canWrite).toBe(true)
+      expect(health.canRead).toBe(true)
+      expect(health.canDelete).toBe(true)
+
+      const testKey = '__health_check__'
+      const valueAfterHealthCheck = await storage.getItem(testKey)
+      expect(valueAfterHealthCheck).toBeNull()
+    })
+
+    it('应该返回正确的错误信息结构', async () => {
+      const health = await storage.healthCheck()
+
+      expect(Array.isArray(health.errors)).toBe(true)
+      expect(typeof health.latency).toBe('number')
+      expect(typeof health.timestamp).toBe('number')
+    })
+  })
 })

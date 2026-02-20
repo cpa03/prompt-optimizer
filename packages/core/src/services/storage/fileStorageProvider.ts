@@ -1,6 +1,7 @@
-import { IStorageProvider } from './types'
+import { IStorageProvider, type DatabaseHealthStatus } from './types'
 import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { STORAGE_CONFIG } from '../../config/core-config'
+import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
 // Dynamic imports for Node.js modules (only loaded in Electron environment)
 let fs: typeof import('fs/promises') | null = null
@@ -643,5 +644,96 @@ export class FileStorageProvider implements IStorageProvider {
       supportsBatch: true,
       maxStorageSize: undefined, // 文件存储无固定大小限制
     }
+  }
+
+  /**
+   * 存储健康检查
+   * 检查存储的读写删能力，返回详细的健康状态
+   */
+  async healthCheck(): Promise<DatabaseHealthStatus> {
+    const result: DatabaseHealthStatus = {
+      healthy: true,
+      canRead: false,
+      canWrite: false,
+      canDelete: false,
+      latency: 0,
+      errors: [],
+      timestamp: Date.now(),
+    }
+
+    const testKey = STORAGE_CONSTRAINTS.HEALTH_CHECK_TEST_KEY
+    const testValue = `health_check_${Date.now()}`
+    const startTime = Date.now()
+
+    try {
+      await this.ensureInitialized()
+
+      // 检查写入能力
+      try {
+        this.data.set(testKey, testValue)
+        await this.flush()
+        result.canWrite = true
+      } catch (writeError) {
+        result.healthy = false
+        result.errors.push(
+          `Write failed: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`
+        )
+      }
+
+      // 检查读取能力
+      if (result.canWrite) {
+        try {
+          const readValue = this.data.get(testKey)
+          if (readValue === testValue) {
+            result.canRead = true
+          } else {
+            result.healthy = false
+            result.errors.push('Read verification failed: value mismatch')
+          }
+        } catch (readError) {
+          result.healthy = false
+          result.errors.push(
+            `Read failed: ${readError instanceof Error ? readError.message : 'Unknown error'}`
+          )
+        }
+      }
+
+      // 检查删除能力
+      if (result.canWrite) {
+        try {
+          this.data.delete(testKey)
+          await this.flush()
+          const verifyDeleted = this.data.get(testKey)
+          if (verifyDeleted === undefined) {
+            result.canDelete = true
+          } else {
+            result.healthy = false
+            result.errors.push('Delete verification failed: key still exists')
+          }
+        } catch (deleteError) {
+          result.healthy = false
+          result.errors.push(
+            `Delete failed: ${deleteError instanceof Error ? deleteError.message : 'Unknown error'}`
+          )
+        }
+      }
+
+      result.latency = Date.now() - startTime
+
+      // 检查超时
+      if (result.latency > STORAGE_CONSTRAINTS.HEALTH_CHECK_TIMEOUT_MS) {
+        result.healthy = false
+        result.errors.push(
+          `Health check timeout: ${result.latency}ms > ${STORAGE_CONSTRAINTS.HEALTH_CHECK_TIMEOUT_MS}ms`
+        )
+      }
+    } catch (error) {
+      result.healthy = false
+      result.errors.push(
+        `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+
+    return result
   }
 }
