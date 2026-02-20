@@ -88,3 +88,18 @@ export {
   RETRY_PRESETS,
 } from './retry'
 export type { RetryOptions } from './retry'
+
+// Circuit Breaker utilities
+export {
+  CircuitBreaker,
+  CircuitBreakerRegistry,
+  CircuitBreakerError,
+  createCircuitBreaker,
+  DEFAULT_CIRCUIT_BREAKER_OPTIONS,
+} from './circuit-breaker'
+export type {
+  CircuitState,
+  CircuitBreakerOptions,
+  CircuitBreakerStats,
+  CircuitBreakerRegistryOptions,
+} from './circuit-breaker'
