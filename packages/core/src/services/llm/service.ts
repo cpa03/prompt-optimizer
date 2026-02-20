@@ -388,8 +388,7 @@ export function createLLMService(modelManager: ModelManager): ILLMService {
   return new LLMService(modelManager, registry)
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type LegacyLike = Partial<ModelConfig> & {}
+type LegacyLike = Partial<ModelConfig>
 
 /**
  * 辅助方法: 判断是否为TextModelConfig结构
