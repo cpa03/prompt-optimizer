@@ -115,7 +115,7 @@
             <NDivider style="margin: 16px 0" />
             <NSpace vertical :size="12">
               <NCollapse
-                v-for="record in chain.versions.slice().reverse()"
+                v-for="record in chain.reversedVersions"
                 :key="record.id"
                 :default-expanded-names="expandedVersions[record.id] ? [record.id] : []"
                 @update:expanded-names="
@@ -312,8 +312,14 @@ const close = () => {
 
 // 修改排序后的历史记录计算属性，使用props.history而不是直接调用historyManager.getAllChains()
 // 按照最后修改时间排序，与getAllChains()保持一致
+// 🎨 Performance: Pre-reverse versions to avoid slice().reverse() in template
 const sortedHistory = computed(() => {
-  return props.history.sort((a, b) => b.currentRecord.timestamp - a.currentRecord.timestamp)
+  return props.history
+    .map((chain) => ({
+      ...chain,
+      reversedVersions: [...chain.versions].reverse(),
+    }))
+    .sort((a, b) => b.currentRecord.timestamp - a.currentRecord.timestamp)
 })
 
 const filteredHistory = computed(() => {

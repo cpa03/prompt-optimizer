@@ -24,7 +24,7 @@
             <NSpace v-if="versions && versions.length > 0" :size="4" class="version-tags">
               <!-- V3, V2, V1... 按降序显示（最新版本在前） -->
               <NTag
-                v-for="version in versions.slice().reverse()"
+                v-for="version in reversedVersions"
                 :key="version.id"
                 :type="currentVersionId === version.id && !isV0Selected ? 'success' : 'default'"
                 size="small"
@@ -445,8 +445,14 @@ const isV0Selected = ref(false)
 const showV0Tag = computed(() => {
   if (!props.versions || props.versions.length === 0) return false
   if (!props.versions[0]?.originalPrompt) return false
-  // 如果链本身已经从 V0 开始（version===0），则无需额外的“V0 原始内容”标签，避免重复
+  // 如果链本身已经从 V0 开始（version===0），则无需额外的"V0 原始内容"标签，避免重复
   return !props.versions.some((v) => v.version === 0)
+})
+
+// 🎨 Performance: Pre-compute reversed versions to avoid slice().reverse() in template
+const reversedVersions = computed(() => {
+  if (!props.versions || props.versions.length === 0) return []
+  return [...props.versions].reverse()
 })
 
 const currentVersionOptimizedPrompt = computed(() => {
