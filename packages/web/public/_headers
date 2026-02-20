@@ -9,15 +9,23 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
   
+  # Cross-Origin Headers - Defense against Spectre and side-channel attacks
+  # CORP prevents resources from being loaded cross-origin without permission
+  Cross-Origin-Resource-Policy: same-origin
+  # COOP ensures top-level documents cannot be opened by cross-origin documents
+  Cross-Origin-Opener-Policy: same-origin
+  
   # Content Security Policy - Adjust based on your needs
   # object-src 'none' prevents plugins like Flash from loading
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https: wss:; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
   
-  # CORS - Restrict in production
-  Access-Control-Allow-Origin: *
+  # CORS - Same-origin policy for security
+  # Note: For API endpoints that need cross-origin access, configure separately
+  Access-Control-Allow-Origin: same-origin
   Access-Control-Allow-Methods: GET, POST, OPTIONS
   Access-Control-Allow-Headers: Content-Type, Authorization
   Access-Control-Max-Age: 86400
+  Vary: Origin
 
 # Cache static assets aggressively (1 year)
 /assets/*
