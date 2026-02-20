@@ -116,6 +116,19 @@ function generateRequestId() {
 }
 
 /**
+ * Structured logging for Vercel functions
+ * @param {object} params - Log parameters
+ * @param {string} params.requestId - Request ID
+ * @param {string} params.event - Event name
+ * @param {object} params.data - Additional data
+ */
+function log({ requestId, event, data = {} }) {
+  const timestamp = new Date().toISOString()
+  const logLevel = data.error ? 'ERROR' : 'INFO'
+  console.log(JSON.stringify({ timestamp, requestId, event, level: logLevel, ...data }))
+}
+
+/**
  * Timing-safe string comparison to prevent timing attacks
  * @param {string} a - First string
  * @param {string} b - Second string
@@ -158,12 +171,20 @@ const SECURITY_HEADERS = {
   'X-Permitted-Cross-Domain-Policies': 'none',
   'Cross-Origin-Resource-Policy': 'same-origin',
   'Cross-Origin-Opener-Policy': 'same-origin',
+  'Content-Security-Policy':
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
 }
 
 export default function handler(req, res) {
   const requestId = generateRequestId()
   const clientIP = getClientIP(req)
   const isProduction = process.env.NODE_ENV === 'production'
+
+  log({
+    requestId,
+    event: 'request_received',
+    data: { method: req.method, path: req.url, ip: clientIP },
+  })
 
   const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
 
@@ -197,6 +218,11 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
     if (!rateLimitResult.allowed) {
+      log({
+        requestId,
+        event: 'rate_limited',
+        data: { ip: clientIP, retryAfter: rateLimitResult.retryAfter },
+      })
       res.setHeader('Retry-After', String(rateLimitResult.retryAfter || 60))
       return res.status(429).json({
         success: false,
@@ -224,6 +250,7 @@ export default function handler(req, res) {
 
       if (timingSafeEqual(password, accessPassword)) {
         clearRateLimit(clientIP)
+        log({ requestId, event: 'auth_success', data: { ip: clientIP } })
         const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
         const secureFlag = isProduction ? '; Secure' : ''
         res.setHeader('Set-Cookie', [
@@ -237,7 +264,11 @@ export default function handler(req, res) {
       } else {
         recordFailedAttempt(clientIP)
         const remaining = checkRateLimit(clientIP).remaining || 0
-
+        log({
+          requestId,
+          event: 'auth_failed',
+          data: { ip: clientIP, attemptsRemaining: remaining },
+        })
         return res.status(401).json({
           success: false,
           message: 'Invalid password',
