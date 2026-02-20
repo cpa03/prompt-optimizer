@@ -22,6 +22,7 @@ const DEFAULT_TEMPLATES = {
   OPTIMIZE: 'general-optimize',
   ITERATE: 'iterate',
   TEST: 'test-prompt',
+  CONTEXT_MESSAGE_OPTIMIZE: 'context-message-optimize',
 } as const
 
 /**
@@ -194,7 +195,7 @@ export class PromptService implements IPromptService {
 
       // 获取模板（默认使用 context-message-optimize）
       const template = await this.templateManager.getTemplate(
-        request.templateId || 'context-message-optimize'
+        request.templateId || DEFAULT_TEMPLATES.CONTEXT_MESSAGE_OPTIMIZE
       )
 
       if (!template?.content) {
@@ -559,7 +560,7 @@ export class PromptService implements IPromptService {
 
       // 获取模板（默认使用 context-message-optimize）
       const template = await this.templateManager.getTemplate(
-        request.templateId || 'context-message-optimize'
+        request.templateId || DEFAULT_TEMPLATES.CONTEXT_MESSAGE_OPTIMIZE
       )
 
       if (!template?.content) {
