@@ -50,6 +50,7 @@ import {
   getClientIdentifier,
   type RateLimitResult,
 } from './utils/rate-limiter.js'
+import { MCP_CONFIG } from '@prompt-optimizer/core'
 
 // 创建服务器实例的工厂函数
 async function createServerInstance(config: MCPServerConfig) {
@@ -440,8 +441,8 @@ async function main() {
       logger.info('Express app configured')
 
       const rateLimiter = createRateLimiter({
-        windowMs: 60 * 1000,
-        maxRequests: 100,
+        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
+        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       const rateLimitMiddleware = (
@@ -452,7 +453,7 @@ async function main() {
         const clientId = getClientIdentifier(req)
         const result: RateLimitResult = rateLimiter.check(clientId)
 
-        res.setHeader('X-RateLimit-Limit', '100')
+        res.setHeader('X-RateLimit-Limit', String(MCP_CONFIG.rateLimit.defaultMaxRequests))
         res.setHeader('X-RateLimit-Remaining', result.remaining.toString())
         res.setHeader('X-RateLimit-Reset', Math.ceil(result.resetTime / 1000).toString())
 
