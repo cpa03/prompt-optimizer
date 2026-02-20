@@ -51,6 +51,13 @@
       "
       :mask-closable="false"
       :style="{ width: COMPONENT_CONSTANTS.CATEGORY_MANAGER.MODAL_WIDTH }"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="
+        editingCategory
+          ? t('favorites.categoryManager.editCategory')
+          : t('favorites.categoryManager.addCategory')
+      "
     >
       <n-form
         ref="formRef"

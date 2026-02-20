@@ -7,6 +7,9 @@
     size="large"
     :bordered="false"
     :segmented="true"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="t('history.title')"
     @update:show="(value: boolean) => !value && close()"
   >
     <template #header-extra>

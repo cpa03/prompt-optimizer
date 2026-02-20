@@ -5,6 +5,9 @@
     :title="dialogTitle"
     :style="{ width: 'min(90vw, 1200px)' }"
     :mask-closable="false"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="dialogTitle"
     @update:show="handleClose"
     content-style="padding: 0; display: flex; flex-direction: column; height: min(75vh, 800px); overflow: hidden;"
   >
