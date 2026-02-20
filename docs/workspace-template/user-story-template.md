@@ -298,6 +298,56 @@ For complex stories, include a risk assessment:
 
 ---
 
+## Story Split Guidelines
+
+### When to Split a Story
+
+Consider splitting a story when:
+
+1. **Duration exceeds 3 days** - Stories should be completable in 1-3 days
+2. **Multiple independent features** - Each feature should have its own story
+3. **High story points (8+)** - Indicates complexity that should be broken down
+4. **Multiple acceptance criteria groups** - Related but independent AC groups
+5. **Cross-cutting concerns** - Split technical and business concerns
+
+### How to Split Stories
+
+| Strategy         | When to Use                          | Example                           |
+| ---------------- | ------------------------------------ | --------------------------------- |
+| By Workflow Step | Process has distinct phases          | Create → Validate → Submit        |
+| By User Type     | Different users have different needs | Admin setup vs User configuration |
+| By Complexity    | Simple vs Complex variations         | Basic auth → SSO auth             |
+| By Data Type     | Different data handling              | Text input → File upload          |
+| By Interface     | Multiple UI/CLI/API interfaces       | Web UI story → API endpoint story |
+
+### Maintaining Dependencies
+
+When splitting stories, document dependencies:
+
+```markdown
+### Dependencies
+
+| Story ID | Type     | Description                        |
+| -------- | -------- | ---------------------------------- |
+| 1.1      | Parent   | Original story this was split from |
+| 1.2      | Sibling  | Split from same parent             |
+| 2.1      | Requires | Must complete before this story    |
+```
+
+### Example: Splitting a Large Story
+
+**Original Story 1.1**: "User can manage their profile"
+
+**Split into**:
+
+- Story 1.1a: "User can view their profile information"
+- Story 1.1b: "User can update their profile information"
+- Story 1.1c: "User can upload a profile picture"
+
+Each split story is independently valuable and testable.
+
+---
+
 ## Story Quality Checklist
 
 Before submitting a story for approval, verify:

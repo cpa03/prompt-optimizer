@@ -4,6 +4,18 @@ This checklist helps reviewers evaluate user stories before they move to impleme
 
 ## Pre-Implementation Review (Before Development)
 
+### Definition of Ready
+
+A story is ready for development when all criteria are met:
+
+- [ ] Story has clear business value defined
+- [ ] Acceptance criteria are complete and testable
+- [ ] Technical approach is understood by the team
+- [ ] Dependencies are identified and resolved
+- [ ] No blocking issues or questions
+- [ ] Estimated effort is within 1-3 days
+- [ ] Dev notes contain sufficient context with source references
+
 ### Story Structure
 
 - [ ] Story follows "As a... I want... so that..." format
