@@ -67,6 +67,7 @@
     "brocula:health": "node scripts/brocula-health-check.js"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260227.0",
     "@intlify/unplugin-vue-i18n": "^11.0.1",
     "@playwright/test": "^1.56.1",
     "chrome-launcher": "^1.2.1",
