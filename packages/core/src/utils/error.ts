@@ -7,6 +7,25 @@ import type { ErrorParams } from '../constants/error-codes'
 type RecordLike = Record<string, unknown>
 
 /**
+ * Error options for error chaining support
+ * Compatible with ES2022+ ErrorOptions for forward compatibility
+ */
+export interface ErrorOptionsWithCause {
+  cause?: unknown
+}
+
+/**
+ * Sets the cause property on an error for error chaining
+ * @param error - The error to set the cause on
+ * @param cause - The underlying cause of the error
+ */
+export function setErrorCause(error: Error, cause: unknown): void {
+  if (cause !== undefined) {
+    ;(error as any).cause = cause
+  }
+}
+
+/**
  * Interface for structured errors that include error codes and parameters.
  * Used for consistent error handling across the application.
  */
@@ -107,4 +126,36 @@ export function toErrorWithCode(
   }
 
   return new Error(String(value))
+}
+
+/**
+ * Base error class for all application errors.
+ * Provides structured error handling with error codes, parameters, and cause chaining.
+ *
+ * @example
+ * ```typescript
+ * class MyCustomError extends BaseError {
+ *   constructor(message: string, cause?: Error) {
+ *     super('ERROR_CODE', message, undefined, { cause })
+ *   }
+ * }
+ * ```
+ */
+export class BaseError extends Error {
+  public readonly code: string
+  public readonly params?: ErrorParams
+
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
+    super(message ? `[${code}] ${message}` : `[${code}]`)
+    this.name = this.constructor.name
+    this.code = code
+    this.params = params ?? (message ? { details: message } : undefined)
+    Object.setPrototypeOf(this, new.target.prototype)
+    setErrorCause(this, options?.cause)
+  }
 }

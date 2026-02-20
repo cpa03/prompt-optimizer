@@ -1,24 +1,27 @@
 /**
  * Evaluation service error classes
  * 评估服务错误类
+ *
+ * Note: Now extends BaseError from '../../utils/error' for consistent error handling
+ * with error chaining support. Constructor signature updated to match BaseError:
+ * (code, message?, params?, options?)
  */
 
 import { EVALUATION_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { BaseError, type ErrorOptionsWithCause } from '../../utils/error'
 
 /**
  * Base error class for evaluation service
  * 评估服务基础错误类
  */
-export class EvaluationError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
-  constructor(code: string, params?: ErrorParams, message?: string) {
-    // Fallback message includes code for debugging when not translated
-    super(message ? `[${code}] ${message}` : `[${code}]`)
-    this.name = 'EvaluationError'
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
+export class EvaluationError extends BaseError {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
+    super(code, message, params, options)
   }
 }
 
@@ -27,9 +30,8 @@ export class EvaluationError extends Error {
  * 评估请求验证错误
  */
 export class EvaluationValidationError extends EvaluationError {
-  constructor(message: string) {
-    super(EVALUATION_ERROR_CODES.VALIDATION_ERROR, undefined, message)
-    this.name = 'EvaluationValidationError'
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(EVALUATION_ERROR_CODES.VALIDATION_ERROR, message, undefined, options)
   }
 }
 
@@ -38,9 +40,8 @@ export class EvaluationValidationError extends EvaluationError {
  * 评估模型错误（模型不存在或配置错误）
  */
 export class EvaluationModelError extends EvaluationError {
-  constructor(modelKey: string) {
-    super(EVALUATION_ERROR_CODES.MODEL_NOT_FOUND, { context: modelKey })
-    this.name = 'EvaluationModelError'
+  constructor(modelKey: string, options?: ErrorOptionsWithCause) {
+    super(EVALUATION_ERROR_CODES.MODEL_NOT_FOUND, undefined, { context: modelKey }, options)
   }
 }
 
@@ -49,9 +50,8 @@ export class EvaluationModelError extends EvaluationError {
  * 评估模板错误（模板不存在）
  */
 export class EvaluationTemplateError extends EvaluationError {
-  constructor(templateId: string) {
-    super(EVALUATION_ERROR_CODES.TEMPLATE_NOT_FOUND, { context: templateId })
-    this.name = 'EvaluationTemplateError'
+  constructor(templateId: string, options?: ErrorOptionsWithCause) {
+    super(EVALUATION_ERROR_CODES.TEMPLATE_NOT_FOUND, undefined, { context: templateId }, options)
   }
 }
 
@@ -60,9 +60,8 @@ export class EvaluationTemplateError extends EvaluationError {
  * 评估解析错误（无法解析 LLM 返回的评估结果）
  */
 export class EvaluationParseError extends EvaluationError {
-  constructor(message: string) {
-    super(EVALUATION_ERROR_CODES.PARSE_ERROR, undefined, message)
-    this.name = 'EvaluationParseError'
+  constructor(message: string, options?: ErrorOptionsWithCause) {
+    super(EVALUATION_ERROR_CODES.PARSE_ERROR, message, undefined, options)
   }
 }
 
@@ -71,11 +70,10 @@ export class EvaluationParseError extends EvaluationError {
  * 评估执行错误（LLM 调用失败等）
  */
 export class EvaluationExecutionError extends EvaluationError {
-  constructor(
-    message: string,
-    public readonly cause?: Error
-  ) {
-    super(EVALUATION_ERROR_CODES.EXECUTION_ERROR, undefined, message)
-    this.name = 'EvaluationExecutionError'
+  constructor(message: string, cause?: Error, options?: ErrorOptionsWithCause) {
+    super(EVALUATION_ERROR_CODES.EXECUTION_ERROR, message, { cause: cause?.message }, options)
+    if (cause) {
+      ;(this as any).cause = cause
+    }
   }
 }

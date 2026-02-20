@@ -1,17 +1,20 @@
 /**
  * 模型基础错误
+ *
+ * Note: Now extends BaseError from '../../utils/error' for consistent error handling
+ * with error chaining support.
  */
 import { MODEL_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { BaseError, type ErrorOptionsWithCause } from '../../utils/error'
 
-export class ModelError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
-  constructor(code: string, message?: string, params?: ErrorParams) {
-    super(message ? `[${code}] ${message}` : `[${code}]`)
-    this.name = 'ModelError'
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
+export class ModelError extends BaseError {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
+    super(code, message, params, options)
   }
 }
 

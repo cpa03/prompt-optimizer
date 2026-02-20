@@ -1,17 +1,20 @@
 /**
  * 提示词错误基类
+ *
+ * Note: Now extends BaseError from '../../utils/error' for consistent error handling
+ * with error chaining support.
  */
 import { TEMPLATE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import { BaseError, type ErrorOptionsWithCause } from '../../utils/error'
 
-export class TemplateError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
-  constructor(code: string, message?: string, params?: ErrorParams) {
-    super(message ? `[${code}] ${message}` : `[${code}]`)
-    this.name = 'TemplateError'
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
+export class TemplateError extends BaseError {
+  constructor(
+    code: string,
+    message?: string,
+    params?: ErrorParams,
+    options?: ErrorOptionsWithCause
+  ) {
+    super(code, message, params, options)
   }
 }
 
