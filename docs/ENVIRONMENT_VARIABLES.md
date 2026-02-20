@@ -4,7 +4,7 @@ This document lists all the environment variables that can be used to customize 
 
 ## Overview
 
-**Flexy's Philosophy**: All hardcoded values have been eliminated in favor of environment-configurable options. This allows for easy customization, A/B testing, and deployment-specific configurations without code changes.
+**Configuration Philosophy**: All hardcoded values have been eliminated in favor of environment-configurable options. This allows for easy customization, A/B testing, and deployment-specific configurations without code changes.
 
 ## UI Configuration (VITE\_ prefixed)
 
