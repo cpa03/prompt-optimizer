@@ -1,0 +1,23 @@
+# Security Policy for Prompt Optimizer
+
+# Contact
+Contact: https://github.com/cpa03/prompt-optimizer/security/advisories/new
+Contact: mailto:security@example.com
+
+# Preferred Languages
+Preferred-Languages: en, zh
+
+# Acknowledgments
+Acknowledgments: https://github.com/cpa03/prompt-optimizer/blob/develop/README.md
+
+# Hiring
+Hiring: false
+
+# Policy
+Policy: https://github.com/cpa03/prompt-optimizer/security/policy
+
+# Expiration
+Expires: 2027-12-31T23:59:00.000Z
+
+# Canonical URI
+Canonical: https://prompt-optimizer.pages.dev/.well-known/security.txt
