@@ -87,6 +87,17 @@ pnpm build
 - [ ] Any dependent changes have been merged and published in downstream modules
 - [ ] I have checked my code and corrected any misspellings
 
+## Quality Assurance
+
+<!-- Quality checks for maintainability and reliability -->
+
+- [ ] No hardcoded secrets or sensitive data in code
+- [ ] Error handling is appropriate and informative
+- [ ] Code is DRY (Don't Repeat Yourself) - no unnecessary duplication
+- [ ] Functions/methods are appropriately sized and focused
+- [ ] Dependencies are necessary and properly declared
+- [ ] No breaking changes to public APIs (or documented if present)
+
 ## Additional Notes
 
 <!-- Add any additional notes or context about the PR here -->
