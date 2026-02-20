@@ -1,5 +1,32 @@
 import { COOKIE_CONFIG } from './scripts/config/constants.js'
 
+function timingSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    return false
+  }
+  const lenA = a.length
+  const lenB = b.length
+  const maxLen = Math.max(lenA, lenB)
+  let result = lenA ^ lenB
+  for (let i = 0; i < maxLen; i++) {
+    const charA = i < lenA ? a.charCodeAt(i) : 0
+    const charB = i < lenB ? b.charCodeAt(i) : 0
+    result |= charA ^ charB
+  }
+  return result === 0
+}
+
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Permissions-Policy':
+    'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+}
+
 export const config = {
   matcher: [
     /*
@@ -35,8 +62,8 @@ export default function middleware(request) {
     )
 
     if (accessTokenCookie) {
-      const accessToken = accessTokenCookie.split('=')[1]
-      authenticated = accessToken === accessPassword
+      const accessToken = accessTokenCookie.split('=')[1]?.trim() ?? ''
+      authenticated = timingSafeEqual(accessToken, accessPassword)
     }
   }
 
@@ -55,6 +82,7 @@ export default function middleware(request) {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': COOKIE_CONFIG.CACHE_CONTROL,
+      ...SECURITY_HEADERS,
     },
   })
 }
