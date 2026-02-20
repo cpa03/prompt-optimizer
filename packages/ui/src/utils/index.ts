@@ -42,3 +42,6 @@ export {
   type PromptExecutionContext,
   buildPromptExecutionContext,
 } from './prompt-variables'
+
+// Document utilities
+export { setupDocumentTitleSync } from './document'
