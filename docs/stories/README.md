@@ -68,7 +68,7 @@ When creating stories, ensure:
 | ----- | -------------------------------------- | ------ | -------- | ------ | ----------------------------------------------- |
 | 1.1   | Prompt Optimization Core Functionality | Draft  | P0       | 8      | [View](./1.1.prompt-optimization-core.md)       |
 | 1.2   | Model Management Configuration         | Draft  | P0       | 5      | [View](./1.2.model-management-configuration.md) |
-| 1.3   | History Record Management              | Draft  | P1       | 5      | [View](./1.3.history-record-management.md)      |
+| 1.3   | History Record Management              | Draft  | P1       | 8      | [View](./1.3.history-record-management.md)      |
 
 **Epic Index**: [Epic 1 - Core Features Index](./epic-1-index.md)
 
