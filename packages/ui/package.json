@@ -57,6 +57,7 @@
     "vdirs": "^0.1.8",
     "vooks": "^0.2.12",
     "vue": "^3.5.13",
+    "vue-i18n": "^10.0.0",
     "vue-router": "4"
   },
   "devDependencies": {
