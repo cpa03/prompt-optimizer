@@ -12,9 +12,13 @@
     stroke-linejoin="round"
     :class="[size, { 'animate-spin': spinning, bounce: isBouncing }]"
     :aria-label="ariaLabel || t('icon.refresh')"
-    role="img"
+    role="button"
+    tabindex="0"
+    focusable="true"
     @click="handleClick"
-    style="cursor: pointer"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
+    style="cursor: pointer; outline: none"
   >
     <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
     <path d="M21 3v5h-5" />
@@ -34,9 +38,13 @@
     stroke-linejoin="round"
     :class="[size, { bounce: isBouncing }]"
     :aria-label="ariaLabel || t('icon.check')"
-    role="img"
+    role="button"
+    tabindex="0"
+    focusable="true"
     @click="handleClick"
-    style="cursor: pointer"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
+    style="cursor: pointer; outline: none"
   >
     <path d="M20 6L9 17l-5-5" />
   </svg>
@@ -53,9 +61,13 @@
     stroke-linejoin="round"
     :class="[size, { bounce: isBouncing }]"
     :aria-label="ariaLabel || t('icon.copy')"
-    role="img"
+    role="button"
+    tabindex="0"
+    focusable="true"
     @click="handleClick"
-    style="cursor: pointer"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
+    style="cursor: pointer; outline: none"
   >
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
@@ -73,9 +85,13 @@
     stroke-linejoin="round"
     :class="[size, { bounce: isBouncing }]"
     :aria-label="ariaLabel || t('icon.edit')"
-    role="img"
+    role="button"
+    tabindex="0"
+    focusable="true"
     @click="handleClick"
-    style="cursor: pointer"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
+    style="cursor: pointer; outline: none"
   >
     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -93,9 +109,13 @@
     stroke-linejoin="round"
     :class="[size, { bounce: isBouncing }]"
     :aria-label="ariaLabel || t('icon.delete')"
-    role="img"
+    role="button"
+    tabindex="0"
+    focusable="true"
     @click="handleClick"
-    style="cursor: pointer"
+    @keydown.enter="handleClick"
+    @keydown.space.prevent="handleClick"
+    style="cursor: pointer; outline: none"
   >
     <polyline points="3 6 5 6 21 6" />
     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -214,6 +234,12 @@ svg:active {
   transform: scale(0.95);
 }
 
+/* Focus-visible ring for keyboard navigation accessibility */
+svg:focus-visible {
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+  border-radius: 4px;
+}
+
 /* Bounce animation for interactive feedback */
 .bounce {
   animation: icon-bounce 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -255,6 +281,10 @@ svg:active {
 
   svg:active {
     transform: scale(0.98);
+  }
+
+  svg:focus-visible {
+    box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.5);
   }
 }
 </style>
