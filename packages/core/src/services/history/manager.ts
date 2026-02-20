@@ -335,44 +335,80 @@ export class HistoryManager implements IHistoryManager {
 
   /**
    * Get all chains
+   * Performance optimized: Single pass grouping with metadata tracking
    * @returns Array of chains
    */
   async getAllChains(): Promise<PromptRecordChain[]> {
     const records = await this.getRecords()
 
-    // Group records by chainId
-    const chains = new Map<string, PromptRecord[]>()
+    if (records.length === 0) {
+      return []
+    }
 
-    records.forEach((record) => {
-      if (!chains.has(record.chainId)) {
-        chains.set(record.chainId, [])
+    // Single pass: group records and track root/current in one iteration
+    const chainData = new Map<
+      string,
+      {
+        records: PromptRecord[]
+        rootRecord: PromptRecord | null
+        currentRecord: PromptRecord | null
+        maxVersion: number
       }
-      chains.get(record.chainId)!.push(record)
-    })
+    >()
 
-    // Create PromptRecordChain objects for each chain
+    for (const record of records) {
+      let data = chainData.get(record.chainId)
+      if (!data) {
+        data = {
+          records: [],
+          rootRecord: null,
+          currentRecord: null,
+          maxVersion: -1,
+        }
+        chainData.set(record.chainId, data)
+      }
+
+      data.records.push(record)
+
+      // Track root record (version 1)
+      if (record.version === 1) {
+        data.rootRecord = record
+      }
+
+      // Track current record (highest version with latest timestamp)
+      if (record.version > data.maxVersion) {
+        data.maxVersion = record.version
+        data.currentRecord = record
+      } else if (
+        record.version === data.maxVersion &&
+        data.currentRecord &&
+        record.timestamp > data.currentRecord.timestamp
+      ) {
+        data.currentRecord = record
+      }
+    }
+
+    // Build results, filtering invalid chains
     const results: PromptRecordChain[] = []
 
-    for (const [chainId, chainRecords] of chains.entries()) {
-      // Sort by version (ascending)
-      const sortedRecords = chainRecords.sort((a, b) => a.version - b.version)
+    for (const [chainId, data] of chainData) {
+      // Skip chains without root record
+      if (!data.rootRecord || !data.currentRecord) {
+        continue
+      }
 
-      // Get root record (version 1)
-      const rootRecord = sortedRecords.find((r) => r.version === 1)
-      if (!rootRecord) continue // Skip chains without root record
-
-      // Get current record (highest version)
-      const currentRecord = sortedRecords[sortedRecords.length - 1]
+      // Sort versions once (smaller arrays are faster to sort)
+      const sortedRecords = data.records.sort((a, b) => a.version - b.version)
 
       results.push({
         chainId,
-        rootRecord,
-        currentRecord,
+        rootRecord: data.rootRecord,
+        currentRecord: data.currentRecord,
         versions: sortedRecords,
       })
     }
 
-    // 按照最新记录的时间戳排序，最新的在前
+    // Sort by timestamp (newest first)
     results.sort((a, b) => b.currentRecord.timestamp - a.currentRecord.timestamp)
 
     return results
