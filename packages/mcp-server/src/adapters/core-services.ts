@@ -241,6 +241,21 @@ export class CoreServicesManager {
     return this.initialized
   }
 
+  /**
+   * Reset all services and allow re-initialization.
+   * Useful for testing scenarios or when needing to reconfigure the server.
+   */
+  reset(): void {
+    this.promptService = null
+    this.modelManager = null
+    this.llmService = null
+    this.templateManager = null
+    this.languageService = null
+    this.historyManager = null
+    this.initialized = false
+    logger.debug('CoreServicesManager has been reset')
+  }
+
   async getHealthStatus(): Promise<{
     initialized: boolean
     services: Record<string, boolean>
