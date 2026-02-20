@@ -4,6 +4,7 @@
 
 import { TIMEOUTS } from '../config/timeouts'
 import { ENV_CONFIG } from '../config/core-config'
+import { VALIDATION_CONSTRAINTS } from '../constants/constraints'
 import { createDebugLogger } from './debug'
 
 const logger = createDebugLogger('environment')
@@ -84,7 +85,7 @@ export function validateCustomModelConfig(config: CustomModelEnvConfig): Validat
   if (!config.apiKey) {
     result.errors.push('API key is required')
     result.valid = false
-  } else if (config.apiKey.length < 8) {
+  } else if (config.apiKey.length < VALIDATION_CONSTRAINTS.API_KEY_MIN_LENGTH) {
     result.warnings.push('API key seems too short, please verify it is correct')
   }
 

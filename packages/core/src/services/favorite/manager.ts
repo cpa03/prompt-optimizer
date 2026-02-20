@@ -18,6 +18,7 @@ import {
 import { TypeMapper } from './type-mapper'
 import { TagTypeConverter } from './type-converter'
 import { FAVORITE_KEYS } from '../../constants/storage-keys'
+import { VALIDATION_CONSTRAINTS } from '../../constants/constraints'
 
 /**
  * 收藏管理器实现
@@ -215,7 +216,10 @@ export class FavoriteManager implements IFavoriteManager {
     const favoriteData = {
       title:
         favorite.title?.trim() ||
-        favorite.content.slice(0, 50) + (favorite.content.length > 50 ? '...' : ''),
+        favorite.content.slice(0, VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH) +
+          (favorite.content.length > VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH
+            ? '...'
+            : ''),
       content: favorite.content,
       description: favorite.description,
       category: favorite.category,
@@ -1182,7 +1186,9 @@ export class FavoriteManager implements IFavoriteManager {
               return title.trim()
             }
             const trimmed = content.trim()
-            return trimmed.length > 50 ? `${trimmed.slice(0, 50)}...` : trimmed
+            return trimmed.length > VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH
+              ? `${trimmed.slice(0, VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH)}...`
+              : trimmed
           }
 
           const normalizeMetadata = (metadata: unknown) => {
