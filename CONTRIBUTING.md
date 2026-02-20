@@ -314,6 +314,68 @@ pnpm format:check
 - [ ] Desktop app built and uploaded
 - [ ] Docker image built and pushed
 
+## 🛡️ Quality Assurance
+
+### QA Workflow
+
+Quality assurance improvements follow a structured workflow:
+
+```bash
+# 1. Create quality-assurance branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b quality-assurance
+
+# 2. Run quality checks
+pnpm lint
+pnpm test:fast
+pnpm build
+
+# 3. Make improvements
+# - Fix lint warnings
+# - Add missing tests
+# - Improve type safety
+# - Update documentation
+
+# 4. Verify no regressions
+pnpm test
+pnpm build
+
+# 5. Create PR with quality-assurance label
+gh pr create --label "quality-assurance" --title "qa: quality improvements"
+```
+
+### QA Focus Areas
+
+1. **Code Quality**
+   - Eliminate TypeScript `any` types where possible
+   - Remove unused code and dead exports
+   - Improve error handling patterns
+
+2. **Test Coverage**
+   - Add tests for edge cases
+   - Ensure all new code has test coverage
+   - Maintain test reliability (no flaky tests)
+
+3. **Documentation**
+   - Keep documentation up-to-date with code changes
+   - Fix broken links
+   - Add missing documentation for public APIs
+
+4. **Security**
+   - Run `pnpm audit` regularly
+   - Address security vulnerabilities promptly
+   - Follow secure coding practices
+
+### QA Checklist
+
+- [ ] Lint passes with no warnings (`pnpm lint`)
+- [ ] All tests pass (`pnpm test`)
+- [ ] Build succeeds (`pnpm build`)
+- [ ] No TypeScript errors
+- [ ] Documentation updated (if applicable)
+- [ ] No security vulnerabilities (`pnpm audit`)
+
 ## 🤝 Code of Conduct
 
 ### Our Standards
