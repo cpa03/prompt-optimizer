@@ -1,22 +1,24 @@
 # Changelog
 
-## [Unreleased] - 2026-02-17
+## [Unreleased]
 
-### 🔒 Security Hardening
+### 🔒 Security & Reliability
 
-#### CI/CD Security Audit (#140)
+#### MCP Server Error Handling (#352)
 
-- **Automated Security Scanning**: Added `pnpm audit` to CI workflow
-- **Vulnerability Detection**: Fails builds on moderate+ severity vulnerabilities
-- **Continuous Monitoring**: Security checks run on every push and PR
-- **Policy**: `--audit-level moderate` ensures known vulnerabilities are caught early
+- **AI Service Overload Handling**: Added graceful handling for AI service overload errors
+- **Content Filter Error Handling**: Proper error messages for content filtering scenarios
+- **Improved Error Messages**: Better error categorization and user-facing messages
 
-### 📊 Phase 2 Hardening Status
+### 📊 Open PRs Pending Review
 
-- **Security**: CI audit step implemented (pending workflow permissions)
-- **Test Coverage**: 291 tests passing across all packages
-- **Build**: All packages building successfully
-- **Lint**: No linting errors
+The following PRs are ready for review and merge:
+- #373: chore: add AGPL-3.0-only license to packages missing license field
+- #372: feat(storage): add getItems batch read operation for performance optimization
+- #371: feat(mcp-server): add reset method to CoreServicesManager
+- #370: qa: remove redundant ESLint disable and improve type safety
+- #369: perf(history): optimize getAllChains with single-pass grouping
+- #368: refactor(core): centralize hardcoded timeout and template values
 
 ## [2.5.3] - 2026-02-10
 
