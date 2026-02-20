@@ -50,6 +50,14 @@ export const STORAGE_CONSTRAINTS = {
   // Async lock constraints
   LOCK_MAX_ATTEMPTS: getEnvInt('STORAGE_LOCK_MAX_ATTEMPTS', 100),
   LOCK_RETRY_DELAY_MS: getEnvInt('STORAGE_LOCK_RETRY_DELAY_MS', 10),
+
+  // Batch operation constraints
+  BATCH_CHUNK_SIZE: getEnvInt('STORAGE_BATCH_CHUNK_SIZE', 100),
+  BATCH_DELAY_MS: getEnvInt('STORAGE_BATCH_DELAY_MS', 0),
+
+  // Database health check constraints
+  HEALTH_CHECK_TIMEOUT_MS: getEnvInt('STORAGE_HEALTH_CHECK_TIMEOUT_MS', 5000),
+  HEALTH_CHECK_TEST_KEY: '__health_check__',
 } as const
 
 // Prompt constraints - now environment-configurable
