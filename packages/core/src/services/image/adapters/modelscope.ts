@@ -14,7 +14,7 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 import { RETRY_CONFIG } from '../../../constants/templates'
-import { MIME_TYPES } from '../../../config'
+import { MIME_TYPES, HTTP_HEADERS } from '../../../config'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -169,8 +169,8 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
+        ...HTTP_HEADERS.json,
         'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode, // 异步模式
       },
       body: JSON.stringify(payload),

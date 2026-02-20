@@ -12,6 +12,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import {
   PROVIDER_URLS,
   MIME_TYPES,
+  HTTP_HEADERS,
   PROVIDER_API_KEY_URLS,
   getTestPrompt,
   getOpenAIParameterDefinitions,
@@ -140,8 +141,8 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
+        ...HTTP_HEADERS.json,
       },
       body: JSON.stringify(payload),
     })

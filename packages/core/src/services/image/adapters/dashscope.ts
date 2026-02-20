@@ -13,6 +13,7 @@ import {
   PROVIDER_URLS,
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
+  HTTP_HEADERS,
   getTestPrompt,
   getDashScopeParameterDefinitions,
   getDashScopeEditParameterDefinitions,
@@ -313,8 +314,8 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
           const response = await fetch(url, {
             method: 'POST',
             headers: {
-              Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-              'Content-Type': 'application/json',
+              ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
+              ...HTTP_HEADERS.json,
             },
             body: JSON.stringify(payload),
             signal: timeoutSignal,
