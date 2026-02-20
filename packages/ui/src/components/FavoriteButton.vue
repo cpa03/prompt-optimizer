@@ -23,55 +23,57 @@
   <n-modal v-model:show="showFavoriteModal">
     <n-card
       style="max-width: 500px"
-      title="添加到收藏"
+      :title="t('favorites.dialog.saveTitle')"
       :bordered="false"
       size="huge"
       role="dialog"
       aria-modal="true"
     >
       <n-form ref="formRef" :model="favoriteForm" :rules="formRules" label-placement="top">
-        <n-form-item label="标题" path="title">
+        <n-form-item :label="t('favorites.dialog.titleLabel')" path="title">
           <n-input
             v-model:value="favoriteForm.title"
-            placeholder="为这个提示词起个名字"
+            :placeholder="t('favorites.dialog.titlePlaceholder')"
             maxlength="100"
             show-count
           />
         </n-form-item>
 
-        <n-form-item label="描述" path="description">
+        <n-form-item :label="t('favorites.dialog.descriptionLabel')" path="description">
           <n-input
             v-model:value="favoriteForm.description"
             type="textarea"
-            placeholder="描述这个提示词的用途和特点"
+            :placeholder="t('favorites.dialog.descriptionPlaceholder')"
             :rows="3"
             maxlength="300"
             show-count
           />
         </n-form-item>
 
-        <n-form-item label="分类" path="category">
+        <n-form-item :label="t('favorites.dialog.categoryLabel')" path="category">
           <n-select
             v-model:value="favoriteForm.category"
             :options="categoryOptions"
-            placeholder="选择分类"
+            :placeholder="t('favorites.dialog.categoryPlaceholder')"
             clearable
           />
         </n-form-item>
 
-        <n-form-item label="标签" path="tags">
+        <n-form-item :label="t('favorites.dialog.tagsLabel')" path="tags">
           <n-dynamic-tags
             v-model:value="favoriteForm.tags"
             :max="10"
-            placeholder="输入标签后按回车添加"
+            :placeholder="t('favorites.dialog.tagsPlaceholder')"
           />
         </n-form-item>
       </n-form>
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <n-button @click="showFavoriteModal = false"> 取消 </n-button>
-          <n-button type="primary" :loading="loading" @click="handleSaveFavorite"> 保存 </n-button>
+          <n-button @click="showFavoriteModal = false"> {{ t('common.cancel') }} </n-button>
+          <n-button type="primary" :loading="loading" @click="handleSaveFavorite">
+            {{ t('common.save') }}
+          </n-button>
         </div>
       </template>
     </n-card>
@@ -162,14 +164,14 @@ const formRules: FormRules = {
   title: [
     {
       required: true,
-      message: '请输入标题',
+      message: t('favorites.dialog.validation.titleRequired'),
       trigger: ['input', 'blur'],
     },
   ],
   category: [
     {
       required: false,
-      message: '请选择分类',
+      message: t('favorites.dialog.categoryPlaceholder'),
       trigger: ['change', 'blur'],
     },
   ],
@@ -224,7 +226,7 @@ const loadCategories = async () => {
     categories.value = await servicesValue.favoriteManager.getCategories()
   } catch (error) {
     console.error('加载分类失败:', error)
-    message.error('加载分类失败')
+    message.error(t('favorites.manager.messages.loadCategoryFailed'))
   }
 }
 
@@ -269,7 +271,7 @@ const handleSaveFavorite = async () => {
   if (!servicesValue) return
   if (!servicesValue.favoriteManager) {
     console.warn('收藏管理器未初始化，无法执行收藏操作')
-    message.warning('收藏功能暂不可用，请稍后再试')
+    message.warning(t('favorites.manager.messages.unavailable'))
     return
   }
 
@@ -302,12 +304,12 @@ const handleSaveFavorite = async () => {
     favoriteId.value = id
     showFavoriteModal.value = false
 
-    message.success('添加到收藏成功')
+    message.success(t('favorites.dialog.messages.saveSuccess'))
     emit('favorited', id)
   } catch (error) {
     console.error('添加收藏失败:', error)
     const errorMessage = error instanceof Error ? error.message : '未知错误'
-    message.error(`添加收藏失败: ${errorMessage}`)
+    message.error(`${t('favorites.dialog.messages.saveFailed')}: ${errorMessage}`)
   } finally {
     loading.value = false
   }
@@ -338,12 +340,12 @@ const executeDeleteFavorite = async (id: string) => {
 
   try {
     await servicesValue.favoriteManager.deleteFavorite(id)
-    message.success('取消收藏成功')
+    message.success(t('favorites.manager.actions.deleteSuccess'))
     emit('unfavorited')
   } catch (error) {
     console.error('取消收藏失败:', error)
     const errorMessage = error instanceof Error ? error.message : '未知错误'
-    message.error(`取消收藏失败: ${errorMessage}`)
+    message.error(`${t('favorites.manager.actions.deleteFailed')}: ${errorMessage}`)
     // 恢复收藏状态
     isFavorited.value = true
     favoriteId.value = id
@@ -356,7 +358,7 @@ const handleRemoveFavorite = async () => {
   if (!servicesValue || !favoriteId.value) return
   if (!servicesValue.favoriteManager) {
     console.warn('收藏管理器未初始化，无法执行取消收藏操作')
-    message.warning('收藏功能暂不可用，请稍后再试')
+    message.warning(t('favorites.manager.messages.unavailable'))
     return
   }
 
@@ -372,7 +374,7 @@ const handleRemoveFavorite = async () => {
   favoriteId.value = null
 
   // 创建toast通知（使用简洁的消息提示，撤销功能通过重新收藏实现）
-  const toastInstance = message.info('已取消收藏', {
+  const toastInstance = message.info(t('favorites.actions.unfavorited'), {
     duration: TIME_CONSTANTS.TOAST_DURATION,
     closable: true,
     keepAliveOnHover: true,
