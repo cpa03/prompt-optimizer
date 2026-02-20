@@ -114,6 +114,49 @@ describe('RateLimiter', () => {
       expect(() => shortLimiter.stop()).not.toThrow()
     })
   })
+
+  describe('getStats', () => {
+    it('should return stats with zero clients initially', () => {
+      const stats = limiter.getStats()
+      expect(stats.totalClients).toBe(0)
+      expect(stats.config.windowMs).toBe(1000)
+      expect(stats.config.maxRequests).toBe(5)
+      expect(stats.config.cleanupIntervalMs).toBe(10000)
+    })
+
+    it('should track unique clients in stats', () => {
+      limiter.check('client-a')
+      limiter.check('client-b')
+      limiter.check('client-c')
+
+      const stats = limiter.getStats()
+      expect(stats.totalClients).toBe(3)
+    })
+
+    it('should not count duplicate requests as new clients', () => {
+      limiter.check('client-a')
+      limiter.check('client-a')
+      limiter.check('client-a')
+
+      const stats = limiter.getStats()
+      expect(stats.totalClients).toBe(1)
+    })
+
+    it('should reflect config values in stats', () => {
+      const customLimiter = createRateLimiter({
+        windowMs: 5000,
+        maxRequests: 100,
+        cleanupIntervalMs: 60000,
+      })
+
+      const stats = customLimiter.getStats()
+      expect(stats.config.windowMs).toBe(5000)
+      expect(stats.config.maxRequests).toBe(100)
+      expect(stats.config.cleanupIntervalMs).toBe(60000)
+
+      customLimiter.stop()
+    })
+  })
 })
 
 describe('getClientIdentifier', () => {
