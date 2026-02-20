@@ -183,3 +183,26 @@ export const IMAGE_ADAPTER_CONFIG = {
     sequentialGeneration: 'disabled',
   },
 } as const
+
+// ============================================================================
+// MCP Server Configuration
+// ============================================================================
+
+export const MCP_CONFIG = {
+  server: {
+    defaultHttpPort: 3000,
+    minPort: 1,
+    maxPort: 65535,
+  },
+  logging: {
+    defaultLevel: 'debug' as const,
+    validLevels: ['debug', 'info', 'warn', 'error'] as const,
+  },
+  defaults: {
+    language: 'zh',
+  },
+  rateLimit: {
+    defaultWindowMs: 60 * 1000,
+    defaultMaxRequests: 100,
+  },
+} as const
