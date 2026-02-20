@@ -193,6 +193,7 @@ export const MCP_CONFIG = {
     defaultHttpPort: 3000,
     minPort: 1,
     maxPort: 65535,
+    gracefulShutdownTimeoutMs: 10000,
   },
   logging: {
     defaultLevel: 'debug' as const,
@@ -204,5 +205,8 @@ export const MCP_CONFIG = {
   rateLimit: {
     defaultWindowMs: 60 * 1000,
     defaultMaxRequests: 100,
+    defaultCleanupIntervalMs: 5 * 60 * 1000,
+    maxEntries: 10000,
+    targetEntriesAfterCleanup: 5000,
   },
 } as const

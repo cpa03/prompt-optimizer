@@ -52,3 +52,10 @@
 
 /robots.txt
   Cache-Control: public, max-age=86400
+
+# API routes - no cache for dynamic responses
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization
