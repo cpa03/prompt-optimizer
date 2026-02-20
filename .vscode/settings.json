@@ -5,6 +5,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+  "editor.inlineSuggest.enabled": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
   "[vue]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -36,11 +39,18 @@
     "**/dist": true,
     "**/.vite": true
   },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/dist/**": true,
+    "**/.vite/**": true
+  },
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
     "**/.vite": true,
-    "**/coverage": true
+    "**/coverage": true,
+    "**/.git": true,
+    "**/pnpm-lock.yaml": true
   },
   "eslint.workingDirectories": [
     "./packages/core",
@@ -49,5 +59,7 @@
     "./packages/extension",
     "./packages/desktop",
     "./packages/mcp-server"
-  ]
+  ],
+  "git.autofetch": true,
+  "git.ignoreLegacyWarning": true
 }
