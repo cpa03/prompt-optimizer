@@ -5,6 +5,9 @@
     :title="t('favorites.manager.tagManager.title')"
     :style="{ width: 'min(90vw, 900px)', height: 'min(80vh, 700px)' }"
     :mask-closable="true"
+    role="dialog"
+    aria-modal="true"
+    :aria-label="t('favorites.manager.tagManager.title')"
     @update:show="$emit('update:show', $event)"
   >
     <n-space vertical :size="16" style="height: 100%">
@@ -49,6 +52,9 @@
       :title="t('favorites.manager.tagManager.addDialog.title')"
       :positive-text="t('favorites.manager.tagManager.addDialog.confirm')"
       :negative-text="t('favorites.manager.tagManager.addDialog.cancel')"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('favorites.manager.tagManager.addDialog.title')"
       @positive-click="handleAddConfirm"
     >
       <n-space vertical :size="12">
@@ -67,6 +73,9 @@
       :title="t('favorites.manager.tagManager.renameDialog.title')"
       :positive-text="t('favorites.manager.tagManager.renameDialog.confirm')"
       :negative-text="t('favorites.manager.tagManager.renameDialog.cancel')"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('favorites.manager.tagManager.renameDialog.title')"
       @positive-click="handleRenameConfirm"
     >
       <n-space vertical :size="12">
@@ -88,6 +97,9 @@
       :title="t('favorites.manager.tagManager.mergeDialog.title')"
       :positive-text="t('favorites.manager.tagManager.mergeDialog.confirm')"
       :negative-text="t('favorites.manager.tagManager.mergeDialog.cancel')"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('favorites.manager.tagManager.mergeDialog.title')"
       @positive-click="handleMergeConfirm"
     >
       <n-space vertical :size="12">
