@@ -22,6 +22,7 @@
  */
 
 import { createDebugLogger } from './debug'
+import { TIMEOUTS } from '../config/timeouts'
 
 const logger = createDebugLogger('circuit-breaker')
 
@@ -256,9 +257,13 @@ export class CircuitBreakerRegistry {
     if (!breaker) {
       breaker = new CircuitBreaker(name, {
         failureThreshold:
-          options?.failureThreshold ?? this.defaultOptions.defaultFailureThreshold ?? 5,
+          options?.failureThreshold ??
+          this.defaultOptions.defaultFailureThreshold ??
+          TIMEOUTS.circuitBreaker.failureThreshold,
         successThreshold:
-          options?.successThreshold ?? this.defaultOptions.defaultSuccessThreshold ?? 3,
+          options?.successThreshold ??
+          this.defaultOptions.defaultSuccessThreshold ??
+          TIMEOUTS.circuitBreaker.successThreshold,
         timeout: options?.timeout ?? this.defaultOptions.defaultTimeout ?? 30000,
         resetTimeout: options?.resetTimeout ?? this.defaultOptions.defaultResetTimeout ?? 60000,
         onStateChange: options?.onStateChange,
@@ -294,10 +299,10 @@ export class CircuitBreakerRegistry {
 }
 
 export const DEFAULT_CIRCUIT_BREAKER_OPTIONS: CircuitBreakerOptions = {
-  failureThreshold: 5,
-  successThreshold: 3,
-  timeout: 30000,
-  resetTimeout: 60000,
+  failureThreshold: TIMEOUTS.circuitBreaker.failureThreshold,
+  successThreshold: TIMEOUTS.circuitBreaker.successThreshold,
+  timeout: TIMEOUTS.network.default,
+  resetTimeout: TIMEOUTS.long,
 }
 
 export function createCircuitBreaker(

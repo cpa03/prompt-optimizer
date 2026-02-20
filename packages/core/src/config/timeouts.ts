@@ -37,6 +37,12 @@ export const TIMEOUTS = {
     defaultDelay: getEnvInt('VITE_RETRY_DELAY', 1000),
     maxDelay: getEnvInt('VITE_RETRY_MAX_DELAY', 10000),
   },
+
+  // Circuit breaker configuration
+  circuitBreaker: {
+    failureThreshold: getEnvInt('VITE_CIRCUIT_BREAKER_FAILURE_THRESHOLD', 5),
+    successThreshold: getEnvInt('VITE_CIRCUIT_BREAKER_SUCCESS_THRESHOLD', 3),
+  },
 } as const
 
 // Export commonly used timeout values for convenience

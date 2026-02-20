@@ -98,6 +98,10 @@ export const CONSTRAINTS = {
   text: {
     maxRetries: getEnvInt('VITE_MAX_RETRIES', 5),
   },
+  storage: {
+    maxKeyLength: getEnvInt('VITE_STORAGE_MAX_KEY_LENGTH', 1024),
+    maxValueSize: getEnvInt('VITE_STORAGE_MAX_VALUE_SIZE', 50 * 1024 * 1024), // 50MB default
+  },
 } as const
 
 // Model defaults

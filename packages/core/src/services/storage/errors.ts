@@ -5,6 +5,7 @@
  */
 import { STORAGE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
 import { type ErrorOptionsWithCause, setErrorCause } from '../../utils/error'
+import { CONSTRAINTS } from '../../config/defaults'
 
 type StorageOperation =
   | 'read'
@@ -50,8 +51,8 @@ export class StorageError extends Error {
 }
 
 export const STORAGE_VALIDATION = {
-  MAX_KEY_LENGTH: 1024,
-  MAX_VALUE_SIZE: 50 * 1024 * 1024,
+  MAX_KEY_LENGTH: CONSTRAINTS.storage.maxKeyLength,
+  MAX_VALUE_SIZE: CONSTRAINTS.storage.maxValueSize,
   RESERVED_KEYS: ['__db_metadata__', '__storage_metadata__'],
 } as const
 
