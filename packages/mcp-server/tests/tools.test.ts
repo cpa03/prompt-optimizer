@@ -177,6 +177,38 @@ describe('MCP Server Tools', () => {
         expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTEXT_LENGTH_EXCEEDED)
         expect(mcpError.message).toContain('AI 上下文长度超限')
       })
+
+      it('应该正确识别AI服务过载错误', () => {
+        const error = new Error('Service overloaded: 503')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED)
+        expect(mcpError.message).toContain('AI 服务过载')
+      })
+
+      it('应该正确识别AI内容过滤错误', () => {
+        const error = new Error('Content filtered due to safety policy')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTENT_FILTERED)
+        expect(mcpError.message).toContain('AI 内容过滤')
+      })
+
+      it('应该正确识别AI服务过载错误 - 500错误', () => {
+        const error = new Error('Internal server error: 500')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED)
+        expect(mcpError.message).toContain('AI 服务过载')
+      })
+
+      it('应该正确识别AI内容过滤错误 - blocked', () => {
+        const error = new Error('Request blocked by content policy')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTENT_FILTERED)
+        expect(mcpError.message).toContain('AI 内容过滤')
+      })
     })
 
     describe('isRetryableError', () => {
@@ -196,8 +228,30 @@ describe('MCP Server Tools', () => {
         expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
       })
 
+      it('应该正确识别可重试错误 - 服务过载', () => {
+        const mcpError = MCPErrorHandler.createServiceOverloadedError()
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别可重试错误 - 服务过载(从错误消息)', () => {
+        const error = new Error('Service overloaded: 503')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(true)
+      })
+
       it('应该正确识别不可重试错误 - 认证失败', () => {
         const error = new Error('unauthorized')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别不可重试错误 - 内容过滤', () => {
+        const mcpError = MCPErrorHandler.createContentFilteredError()
+        expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别不可重试错误 - 内容过滤(从错误消息)', () => {
+        const error = new Error('Content blocked by safety filter')
         const mcpError = MCPErrorHandler.convertCoreError(error)
         expect(MCPErrorHandler.isRetryableError(mcpError)).toBe(false)
       })
@@ -273,6 +327,34 @@ describe('MCP Server Tools', () => {
         const mcpError = MCPErrorHandler.createServiceUnavailableError('自定义服务不可用消息')
         expect(mcpError.code).toBe(MCP_ERROR_CODES.SERVICE_UNAVAILABLE)
         expect(mcpError.message).toContain('自定义服务不可用消息')
+      })
+    })
+
+    describe('createServiceOverloadedError', () => {
+      it('应该创建默认服务过载错误', () => {
+        const mcpError = MCPErrorHandler.createServiceOverloadedError()
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED)
+        expect(mcpError.message).toContain('AI 服务过载')
+      })
+
+      it('应该创建自定义消息的服务过载错误', () => {
+        const mcpError = MCPErrorHandler.createServiceOverloadedError('自定义服务过载消息')
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED)
+        expect(mcpError.message).toContain('自定义服务过载消息')
+      })
+    })
+
+    describe('createContentFilteredError', () => {
+      it('应该创建默认内容过滤错误', () => {
+        const mcpError = MCPErrorHandler.createContentFilteredError()
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTENT_FILTERED)
+        expect(mcpError.message).toContain('AI 内容被过滤')
+      })
+
+      it('应该创建自定义消息的内容过滤错误', () => {
+        const mcpError = MCPErrorHandler.createContentFilteredError('自定义内容过滤消息')
+        expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTENT_FILTERED)
+        expect(mcpError.message).toContain('自定义内容过滤消息')
       })
     })
   })

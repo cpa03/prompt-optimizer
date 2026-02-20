@@ -47,6 +47,8 @@ export const MCP_ERROR_CODES = {
   AI_MODEL_UNAVAILABLE: -32102,
   AI_RESPONSE_TIMEOUT: -32103,
   AI_AUTHENTICATION_FAILED: -32104,
+  AI_SERVICE_OVERLOADED: -32105,
+  AI_CONTENT_FILTERED: -32106,
 } as const
 
 /**
@@ -59,6 +61,10 @@ const AI_ERROR_PATTERNS = {
   timeout: /timeout|timed?\s*out|ETIMEDOUT/i,
   auth: /unauthorized|invalid.*api.*key|authentication|401|403/i,
   modelUnavailable: /model.*not\s*found|model.*unavailable|model.*does\s*not\s*exist/i,
+  serviceOverloaded:
+    /overloaded|overload|service\s*unavailable|service\s*temporarily\s*unavailable|503|capacity|server\s*error|internal\s*server\s*error|500/i,
+  contentFiltered:
+    /content\s*filter|content\s*policy|content\s*violation|safety|moderation|blocked|filtered|inappropriate|harmful|refused/i,
 } as const
 
 /**
@@ -187,6 +193,23 @@ export class MCPErrorHandler {
       })
     }
 
+    // Service overloaded
+    if (AI_ERROR_PATTERNS.serviceOverloaded.test(errorMessage)) {
+      return new McpError(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED, `AI 服务过载: ${errorMessage}`, {
+        originalError: errorName,
+        category: 'ai-overload',
+        retryable: true,
+      })
+    }
+
+    // Content filtered
+    if (AI_ERROR_PATTERNS.contentFiltered.test(errorMessage)) {
+      return new McpError(MCP_ERROR_CODES.AI_CONTENT_FILTERED, `AI 内容过滤: ${errorMessage}`, {
+        originalError: errorName,
+        category: 'ai-content-filter',
+      })
+    }
+
     return null
   }
 
@@ -248,6 +271,34 @@ export class MCPErrorHandler {
   }
 
   /**
+   * Creates an AI service overloaded error.
+   *
+   * @param message - Optional custom message
+   * @returns McpError with AI service overloaded code
+   */
+  static createServiceOverloadedError(message?: string): McpError {
+    return new McpError(
+      MCP_ERROR_CODES.AI_SERVICE_OVERLOADED,
+      message || 'AI 服务过载，请稍后重试',
+      { category: 'ai-overload', retryable: true }
+    )
+  }
+
+  /**
+   * Creates an AI content filtered error.
+   *
+   * @param message - Optional custom message
+   * @returns McpError with AI content filtered code
+   */
+  static createContentFilteredError(message?: string): McpError {
+    return new McpError(
+      MCP_ERROR_CODES.AI_CONTENT_FILTERED,
+      message || 'AI 内容被过滤，请修改提示词后重试',
+      { category: 'ai-content-filter' }
+    )
+  }
+
+  /**
    * Checks if an error is retryable based on its code.
    *
    * @param error - The McpError to check
@@ -257,6 +308,7 @@ export class MCPErrorHandler {
     const retryableCodes = [
       MCP_ERROR_CODES.AI_RATE_LIMITED,
       MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT,
+      MCP_ERROR_CODES.AI_SERVICE_OVERLOADED,
       MCP_ERROR_CODES.SERVICE_UNAVAILABLE,
     ]
     return retryableCodes.includes(error.code as (typeof retryableCodes)[number])
