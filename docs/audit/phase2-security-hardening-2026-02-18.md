@@ -23,7 +23,7 @@ ajv (Another JSON Schema Validator) through version 8.17.1 was vulnerable to Reg
 - Enables complete denial of service with a single HTTP request
 
 **Solution Applied:**
-Added pnpm override in `package.json` to force ajv to version 8.18.0 or later:
+Added pnpm override in `package.json` to force ajv 8.x to version 8.18.0 or later:
 
 ```json
 "pnpm": {
@@ -33,10 +33,16 @@ Added pnpm override in `package.json` to force ajv to version 8.18.0 or later:
     "@modelcontextprotocol/sdk": "^1.25.2",
     "tar": "^7.5.8",
     "qs": "^6.14.2",
-    "ajv": "^8.18.0"
+    "ajv@>=8.0.0": "^8.18.0"
   }
 }
 ```
+
+**Note:** The ajv@6.x vulnerability in ESLint dev dependencies is documented as acceptable risk:
+
+- Only affects development environment (not production builds)
+- ReDoS requires specific `$data` option usage (not used in this project)
+- ESLint 9.x migration required for full resolution (breaking change)
 
 **Files Changed:**
 
