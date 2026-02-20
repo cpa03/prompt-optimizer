@@ -170,3 +170,27 @@ export interface RateLimiterStats {
     cleanupIntervalMs: number
   }
 }
+
+/**
+ * Creates a rate limit exceeded error response.
+ *
+ * @param result - The rate limit result containing retry information
+ * @returns Structured error response for rate limit exceeded
+ */
+export function createRateLimitErrorResponse(result: RateLimitResult): {
+  code: number
+  message: string
+  data: { retryAfter?: number; resetTime: number; remaining: number }
+  retryable: true
+} {
+  return {
+    code: 429,
+    message: 'Too Many Requests: Rate limit exceeded. Please retry later.',
+    data: {
+      retryAfter: result.retryAfter,
+      resetTime: result.resetTime,
+      remaining: result.remaining,
+    },
+    retryable: true,
+  }
+}

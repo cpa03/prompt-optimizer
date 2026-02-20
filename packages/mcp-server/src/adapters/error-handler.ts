@@ -261,4 +261,65 @@ export class MCPErrorHandler {
     ]
     return retryableCodes.includes(error.code as (typeof retryableCodes)[number])
   }
+
+  /**
+   * Gets retry recommendation for an error.
+   *
+   * @param error - The McpError to get recommendations for
+   * @returns Retry recommendation with delay and reason, or null if not retryable
+   */
+  static getRetryRecommendation(
+    error: McpError
+  ): { delayMs: number; reason: string; maxRetries: number } | null {
+    if (!this.isRetryableError(error)) {
+      return null
+    }
+
+    switch (error.code) {
+      case MCP_ERROR_CODES.AI_RATE_LIMITED:
+        return {
+          delayMs: 60000,
+          reason: 'Rate limit exceeded - wait before retrying',
+          maxRetries: 3,
+        }
+      case MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT:
+        return {
+          delayMs: 5000,
+          reason: 'Request timed out - may succeed on retry',
+          maxRetries: 3,
+        }
+      case MCP_ERROR_CODES.SERVICE_UNAVAILABLE:
+        return {
+          delayMs: 10000,
+          reason: 'Service temporarily unavailable - retry after delay',
+          maxRetries: 3,
+        }
+      default:
+        return null
+    }
+  }
+
+  /**
+   * Creates a structured error response with retry guidance.
+   *
+   * @param error - The McpError to create response for
+   * @returns Structured error response object
+   */
+  static createErrorResponse(error: McpError): {
+    code: number
+    message: string
+    data: Record<string, unknown>
+    retryable: boolean
+    retry?: { delayMs: number; reason: string; maxRetries: number }
+  } {
+    const retryRecommendation = this.getRetryRecommendation(error)
+
+    return {
+      code: error.code,
+      message: error.message,
+      data: (error.data as Record<string, unknown>) || {},
+      retryable: this.isRetryableError(error),
+      retry: retryRecommendation || undefined,
+    }
+  }
 }
