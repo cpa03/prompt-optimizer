@@ -1,63 +1,125 @@
-# 依赖目录
+# ============================================
+# Docker Build Context Exclusions
+# Optimized for smaller context and faster builds
+# ============================================
+
+# Dependencies (will be installed in container)
 node_modules
 **/node_modules
+.pnpm-store
+.pnpm-debug.log
 
-# 构建输出
+# Build outputs (will be built in container)
 dist
 **/dist
 build
 **/build
+.output
+.nuxt
+.next
+.cache
 
-# 开发工具配置
+# Git
 .git
 .gitignore
+.gitattributes
+.github
+
+# IDE and Editor
 .idea
 .vscode
 *.sublime-*
 *.swp
 *.swo
+*~
 
-# 环境文件
+# Environment files (use runtime config instead)
 .env
 .env.*
 !.env.example
+.env.local
+.env.*.local
 
-# 日志文件
+# Logs and debugging
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
+logs/
 
-# 测试覆盖率
+# Test artifacts
 coverage
 **/coverage
+.nyc_output
+test-results
+playwright-report
+playwright/.cache
+**/__tests__
+**/*.test.*
+**/*.spec.*
+**/*.e2e.*
+tests/
 
-# 临时文件
+# Documentation
+*.md
+!README.md
+docs/
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+
+# BMAD methodology files
+.bmad-core
+
+# Development tools config
+.eslintrc*
+.eslintignore
+.prettierrc*
+.prettierignore
+tsconfig*.json
+vitest.config.*
+playwright.config.*
+jest.config.*
+babel.config.*
+.editorconfig
+
+# Temporary and cache files
 .DS_Store
 Thumbs.db
 *.tmp
 *.temp
+*.bak
+*.swp
+*.pid
+*.seed
+*.pid.lock
 
-# 文档和其他
-*.md
-LICENSE
-docs
-tests
-**/__tests__
-**/*.test.*
-**/*.spec.*
+# Build artifacts
+*.tsbuildinfo
+*.tgz
 
-# CI/CD
-.github
-.gitattributes
+# Electron
+packages/desktop/dist
+packages/desktop/release
 
-# BMAD
-.bmad-core
+# Extension build artifacts
+packages/extension/dist
 
-# 其他开发工具
-.eslintrc*
-.prettierrc*
-tsconfig*.json
-vitest.config.*
-playwright.config.*
+# Vercel
+.vercel
+api/
+
+# Docker (avoid recursive copy)
+Dockerfile*
+docker-compose*.yml
+.docker
+
+# Kubernetes
+k8s/
+
+# Scripts (not needed in image)
+scripts/
+
+# CI/CD workflows
+.github/workflows/
