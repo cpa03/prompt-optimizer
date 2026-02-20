@@ -114,6 +114,15 @@ class RateLimiter {
     }
   }
 
+  reset(identifier?: string): boolean {
+    if (identifier) {
+      return this.entries.delete(identifier)
+    }
+    const count = this.entries.size
+    this.entries.clear()
+    return count > 0
+  }
+
   getStats(): RateLimiterStats {
     return {
       totalClients: this.entries.size,

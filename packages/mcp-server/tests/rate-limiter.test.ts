@@ -157,6 +157,59 @@ describe('RateLimiter', () => {
       customLimiter.stop()
     })
   })
+
+  describe('reset', () => {
+    it('should reset a specific client', () => {
+      limiter.check('client-a')
+      limiter.check('client-b')
+
+      expect(limiter.getStats().totalClients).toBe(2)
+
+      const result = limiter.reset('client-a')
+      expect(result).toBe(true)
+      expect(limiter.getStats().totalClients).toBe(1)
+    })
+
+    it('should return false when resetting non-existent client', () => {
+      const result = limiter.reset('non-existent')
+      expect(result).toBe(false)
+    })
+
+    it('should allow requests after reset', () => {
+      for (let i = 0; i < 5; i++) {
+        limiter.check('client-to-reset')
+      }
+      expect(limiter.check('client-to-reset').allowed).toBe(false)
+
+      limiter.reset('client-to-reset')
+
+      const result = limiter.check('client-to-reset')
+      expect(result.allowed).toBe(true)
+      expect(result.remaining).toBe(4)
+    })
+
+    it('should reset all clients when no identifier provided', () => {
+      limiter.check('client-a')
+      limiter.check('client-b')
+      limiter.check('client-c')
+
+      expect(limiter.getStats().totalClients).toBe(3)
+
+      limiter.reset()
+      expect(limiter.getStats().totalClients).toBe(0)
+    })
+
+    it('should return true when any client was reset', () => {
+      limiter.check('client-a')
+      const result = limiter.reset()
+      expect(result).toBe(true)
+    })
+
+    it('should return false when no clients exist to reset', () => {
+      const result = limiter.reset()
+      expect(result).toBe(false)
+    })
+  })
 })
 
 describe('getClientIdentifier', () => {

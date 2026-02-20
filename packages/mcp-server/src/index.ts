@@ -469,6 +469,23 @@ async function main() {
       // 存储每个会话的传输实例
       const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {}
 
+      app.get('/stats', (_req, res) => {
+        const stats = rateLimiter.getStats()
+        const statsData = {
+          timestamp: new Date().toISOString(),
+          rateLimiter: {
+            totalClients: stats.totalClients,
+            config: stats.config,
+          },
+          server: {
+            activeRequests: requestContexts.size,
+            activeSessions: Object.keys(transports).length,
+            uptime: process.uptime(),
+          },
+        }
+        res.json(statsData)
+      })
+
       // 处理 POST 请求（客户端到服务器通信）
       app.post('/mcp', rateLimitMiddleware, async (req, res) => {
         // 检查现有会话ID
