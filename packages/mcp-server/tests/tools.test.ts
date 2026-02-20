@@ -198,6 +198,46 @@ describe('MCP Server Tools', () => {
       })
     })
 
+    describe('isClientError', () => {
+      it('应该正确识别客户端错误 - 参数验证错误', () => {
+        const mcpError = MCPErrorHandler.createValidationError('invalid input')
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别客户端错误 - 空提示词错误', () => {
+        const error = new Error('提示词必须是非空字符串')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别非客户端错误 - 内部错误', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别非客户端错误 - AI速率限制', () => {
+        const mcpError = MCPErrorHandler.createRateLimitError()
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别非客户端错误 - 服务不可用', () => {
+        const mcpError = MCPErrorHandler.createServiceUnavailableError()
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别非客户端错误 - AI认证失败', () => {
+        const error = new Error('Unauthorized: invalid API key')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别非客户端错误 - 配置错误', () => {
+        const error = new Error('API key is invalid')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isClientError(mcpError)).toBe(false)
+      })
+    })
+
     describe('createRateLimitError', () => {
       it('应该创建默认速率限制错误', () => {
         const mcpError = MCPErrorHandler.createRateLimitError()

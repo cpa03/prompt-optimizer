@@ -261,4 +261,22 @@ export class MCPErrorHandler {
     ]
     return retryableCodes.includes(error.code as (typeof retryableCodes)[number])
   }
+
+  /**
+   * Checks if an error is a client error (4xx equivalent).
+   * Client errors are caused by invalid input from the client
+   * and should be shown to the user with details.
+   *
+   * @param error - The McpError to check
+   * @returns true if the error is a client error
+   */
+  static isClientError(error: McpError): boolean {
+    const clientErrorCodes = [
+      MCP_ERROR_CODES.INVALID_PARAMS,
+      MCP_ERROR_CODES.INVALID_REQUEST,
+      MCP_ERROR_CODES.METHOD_NOT_FOUND,
+      MCP_ERROR_CODES.PARSE_ERROR,
+    ]
+    return clientErrorCodes.includes(error.code as (typeof clientErrorCodes)[number])
+  }
 }
