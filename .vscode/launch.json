@@ -60,6 +60,24 @@
       "runtimeArgs": ["test:e2e:debug", "--", "${file}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Type Check: All Packages",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["type-check"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Lint: Check All",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["lint"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

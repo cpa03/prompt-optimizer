@@ -91,6 +91,7 @@ test-results/
 !.vscode/extensions.json
 !.vscode/settings.json
 !.vscode/launch.json
+!.vscode/tasks.json
 .cursor/
 .cursorrules
 .idea
@@ -193,7 +194,6 @@ nul
 .trae
 .cursor/rules/bmad
 CLAUDE.md
-.vscode
 .mcp.json
 .kilocode
 .serena

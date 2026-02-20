@@ -58,6 +58,10 @@
     "lint:fix": "npm-run-all lint:fix:ui lint:fix:mcp",
     "lint:fix:ui": "pnpm -F @prompt-optimizer/ui lint:fix",
     "lint:fix:mcp": "pnpm -F @prompt-optimizer/mcp-server lint:fix",
+    "type-check": "npm-run-all --parallel type-check:core type-check:ui type-check:mcp",
+    "type-check:core": "tsc --noEmit -p packages/core/tsconfig.json",
+    "type-check:ui": "pnpm -F @prompt-optimizer/ui typecheck",
+    "type-check:mcp": "pnpm -F @prompt-optimizer/mcp-server type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "bmad:refresh": "bmad-method install -f -i codex",
@@ -69,65 +73,5 @@
     "brocula:console": "node scripts/brocula-console-monitor.js",
     "brocula:lighthouse": "node scripts/brocula-lighthouse.js",
     "brocula:health": "node scripts/brocula-health-check.js"
-  },
-  "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260227.0",
-    "@intlify/unplugin-vue-i18n": "^11.0.1",
-    "@playwright/test": "^1.56.1",
-    "chrome-launcher": "^1.2.1",
-    "concurrently": "^8.2.2",
-    "cross-env": "^7.0.3",
-    "electron": "^39.2.6",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.5",
-    "i18next": "^24.2.2",
-    "i18next-browser-languagedetector": "^8.0.4",
-    "lighthouse": "12.5.1",
-    "lodash-unified": "^1.0.3",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.8.1",
-    "rimraf": "^4.4.1",
-    "rollup-plugin-visualizer": "^6.0.5",
-    "terser": "^5.46.0",
-    "typescript": "^5.8.2"
-  },
-  "dependencies": {
-    "@element-plus/icons-vue": "^2.3.1",
-    "@floating-ui/core": "^1.6.9",
-    "@floating-ui/dom": "^1.6.13",
-    "@floating-ui/utils": "^0.2.9",
-    "@popperjs/core": "^2.11.8",
-    "@vue/reactivity": "^3.5.13",
-    "@vue/runtime-core": "^3.5.13",
-    "@vue/runtime-dom": "^3.5.13",
-    "@vue/shared": "^3.5.13",
-    "@vueuse/core": "^12.7.0",
-    "@vueuse/shared": "^12.7.0",
-    "async-validator": "^4.2.5",
-    "date-fns": "^3.6.0",
-    "date-fns-tz": "^3.1.3",
-    "dayjs": "^1.11.13",
-    "electron-to-chromium": "^1.5.177",
-    "lodash-es": "^4.17.21",
-    "memoize-one": "^6.0.0",
-    "normalize-wheel-es": "^1.2.0",
-    "vue-i18n": "^11.2.2"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "AGPL-3.0-only",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "electron"
-    ],
-    "overrides": {
-      "builder-util-runtime": "9.2.10",
-      "glob": "^10.4.6",
-      "@modelcontextprotocol/sdk": "^1.25.2",
-      "tar": "^7.5.8",
-      "qs": "^6.14.2",
-      "minimatch": "^10.2.1",
-      "ajv@>=8.0.0": "^8.18.0"
-    }
   }
 }
