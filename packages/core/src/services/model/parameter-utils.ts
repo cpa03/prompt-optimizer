@@ -6,6 +6,32 @@ import {
 } from './parameter-schema'
 
 /**
+ * Schema Map Cache
+ * Uses WeakMap to cache schema->Map conversions for performance optimization.
+ * WeakMap allows automatic garbage collection when schema is no longer referenced.
+ */
+const schemaMapCache = new WeakMap<
+  readonly UnifiedParameterDefinition[],
+  Map<string, UnifiedParameterDefinition>
+>()
+
+/**
+ * Get or create a cached Map from schema array
+ * This optimization reduces memory allocations and improves performance
+ * for repeated calls with the same schema.
+ */
+function getSchemaMap(
+  schema: readonly UnifiedParameterDefinition[]
+): Map<string, UnifiedParameterDefinition> {
+  let cachedMap = schemaMapCache.get(schema)
+  if (!cachedMap) {
+    cachedMap = new Map(schema.map((def) => [def.name, def]))
+    schemaMapCache.set(schema, cachedMap)
+  }
+  return cachedMap
+}
+
+/**
  * 智能解析自定义参数值，自动推断类型
  * - true/false -> boolean
  * - null -> null
@@ -68,7 +94,7 @@ export function splitOverridesBySchema(
     return { builtIn, custom }
   }
 
-  const schemaMap = new Map(schema.map((def) => [def.name, def]))
+  const schemaMap = getSchemaMap(schema)
 
   for (const [key, value] of Object.entries(overrides)) {
     if (schemaMap.has(key)) {
@@ -97,7 +123,7 @@ export function mergeOverrides({
   requestOverrides,
 }: MergeOverridesOptions): Record<string, unknown> {
   const result: Record<string, unknown> = {}
-  const schemaMap = new Map(schema.map((def) => [def.name, def]))
+  const schemaMap = getSchemaMap(schema)
 
   if (includeDefaults) {
     for (const def of schema) {
@@ -176,7 +202,7 @@ export function validateOverrides({
   const errors: ParameterValidationError[] = []
   const warnings: ParameterValidationWarning[] = []
 
-  const schemaMap = new Map(schema.map((def) => [def.name, def]))
+  const schemaMap = getSchemaMap(schema)
 
   if (overrides) {
     for (const [key, value] of Object.entries(overrides)) {
