@@ -46,15 +46,29 @@ export class DataManager implements IDataManager {
   }
 
   async exportAllData(): Promise<string> {
-    const data: Record<string, any> = {}
-
     try {
-      // 使用各服务的exportData接口，使用固定的键名保持兼容性
-      data['history'] = await this.historyManager.exportData()
-      data['models'] = await this.modelManager.exportData()
-      data['userTemplates'] = await this.templateManager.exportData()
-      data['userSettings'] = await this.preferenceService.exportData()
-      data['contexts'] = await this.contextRepo.exportData()
+      const [history, models, userTemplates, userSettings, contexts] = await Promise.all([
+        this.historyManager.exportData(),
+        this.modelManager.exportData(),
+        this.templateManager.exportData(),
+        this.preferenceService.exportData(),
+        this.contextRepo.exportData(),
+      ])
+
+      const data: Record<string, any> = {
+        history,
+        models,
+        userTemplates,
+        userSettings,
+        contexts,
+      }
+
+      const exportFormat = {
+        version: 1,
+        data,
+      }
+
+      return JSON.stringify(exportFormat, null, 2)
     } catch (error) {
       console.error('导出数据失败:', error)
       if (isStructuredErrorLike(error)) {
@@ -62,13 +76,6 @@ export class DataManager implements IDataManager {
       }
       throw new DataExportFailedError(error instanceof Error ? error.message : String(error))
     }
-
-    const exportFormat = {
-      version: 1,
-      data,
-    }
-
-    return JSON.stringify(exportFormat, null, 2) // 格式化输出，便于调试
   }
 
   async importAllData(dataString: string): Promise<void> {
@@ -113,7 +120,6 @@ export class DataManager implements IDataManager {
 
     const errors: string[] = []
 
-    // 使用各服务的importData接口
     const serviceMap = [
       { service: this.historyManager, dataKey: 'history' },
       { service: this.modelManager, dataKey: 'models' },
@@ -122,18 +128,23 @@ export class DataManager implements IDataManager {
       { service: this.contextRepo, dataKey: 'contexts' },
     ]
 
-    for (const { service, dataKey } of serviceMap) {
+    const importPromises = serviceMap.map(async ({ service, dataKey }) => {
       if (dataToImport[dataKey] !== undefined) {
         try {
           await service.importData(dataToImport[dataKey])
           console.log(`Successfully imported ${dataKey}`)
+          return null
         } catch (error) {
           const errorMessage = `Failed to import ${dataKey}: ${error instanceof Error ? error.message : String(error)}`
-          errors.push(errorMessage)
           console.error(errorMessage, error)
+          return errorMessage
         }
       }
-    }
+      return null
+    })
+
+    const results = await Promise.all(importPromises)
+    errors.push(...results.filter((e): e is string => e !== null))
 
     if (errors.length > 0) {
       throw new DataImportPartialFailedError(errors.length, errors.join('; '))
