@@ -75,7 +75,7 @@ When creating stories, ensure:
 ### Epic 2: Advanced Features
 
 **Status**: Planned  
-**Stories**: TBD
+**Stories**: To be defined (planned for future development)
 
 ## Related Documents
 

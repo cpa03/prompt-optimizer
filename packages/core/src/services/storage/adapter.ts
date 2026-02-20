@@ -79,14 +79,17 @@ export class StorageAdapter implements IStorageProvider {
       return (this.baseProvider as any).batchUpdate(operations)
     }
 
-    // 否则顺序执行操作（简化实现）
-    for (const op of operations) {
-      if (op.operation === 'set' && op.value !== undefined) {
-        await this.baseProvider.setItem(op.key, op.value)
-      } else if (op.operation === 'remove') {
-        await this.baseProvider.removeItem(op.key)
-      }
-    }
+    // 并行执行操作以提高性能
+    await Promise.all(
+      operations.map((op) => {
+        if (op.operation === 'set' && op.value !== undefined) {
+          return this.baseProvider.setItem(op.key, op.value)
+        } else if (op.operation === 'remove') {
+          return this.baseProvider.removeItem(op.key)
+        }
+        return Promise.resolve()
+      })
+    )
   }
 
   /**
