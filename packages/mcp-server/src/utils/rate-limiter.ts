@@ -10,6 +10,7 @@
 
 import type { Request } from 'express'
 import * as logger from './logging.js'
+import { RATE_LIMITER_CONSTANTS } from '../config/constants.js'
 
 interface RateLimitEntry {
   count: number
@@ -30,9 +31,9 @@ interface RateLimitResult {
 }
 
 const DEFAULT_CONFIG: RateLimitConfig = {
-  windowMs: 60 * 1000,
-  maxRequests: 100,
-  cleanupIntervalMs: 5 * 60 * 1000,
+  windowMs: RATE_LIMITER_CONSTANTS.DEFAULT_WINDOW_MS,
+  maxRequests: RATE_LIMITER_CONSTANTS.DEFAULT_MAX_REQUESTS,
+  cleanupIntervalMs: RATE_LIMITER_CONSTANTS.DEFAULT_CLEANUP_INTERVAL_MS,
 }
 
 class RateLimiter {
@@ -66,8 +67,9 @@ class RateLimiter {
       logger.debug(`[RateLimiter] Cleaned ${cleaned} expired entries`)
     }
 
-    if (this.entries.size > 10000) {
-      const entriesToDelete = this.entries.size - 5000
+    if (this.entries.size > RATE_LIMITER_CONSTANTS.MAX_ENTRIES_THRESHOLD) {
+      const entriesToDelete =
+        this.entries.size - RATE_LIMITER_CONSTANTS.TARGET_ENTRIES_AFTER_CLEANUP
       let deleted = 0
       for (const key of this.entries.keys()) {
         if (deleted >= entriesToDelete) break

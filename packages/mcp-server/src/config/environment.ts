@@ -8,6 +8,7 @@
 import { config } from 'dotenv'
 import * as logger from '../utils/logging.js'
 import { SUFFIX_PATTERN, MAX_SUFFIX_LENGTH, CUSTOM_API_PATTERN } from '@prompt-optimizer/core'
+import { SERVER_CONSTANTS, LOG_LEVELS, DEFAULT_CONFIG } from './constants.js'
 
 // 备用环境变量加载（preload-env.js 已经处理了主要加载）
 config()
@@ -94,13 +95,15 @@ export function loadConfig(): MCPServerConfig {
       .map((origin) => origin.trim())
       .filter(Boolean)
   } else {
-    allowedOrigins = ['*']
+    allowedOrigins = [DEFAULT_CONFIG.ALLOWED_ORIGINS_WILDCARD]
   }
 
   return {
-    httpPort: parseInt(process.env.MCP_HTTP_PORT || '3000'),
-    logLevel: (process.env.MCP_LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'debug',
-    defaultLanguage: process.env.MCP_DEFAULT_LANGUAGE || 'zh',
+    httpPort: parseInt(process.env.MCP_HTTP_PORT || String(SERVER_CONSTANTS.DEFAULT_HTTP_PORT)),
+    logLevel:
+      (process.env.MCP_LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') ||
+      DEFAULT_CONFIG.LOG_LEVEL,
+    defaultLanguage: process.env.MCP_DEFAULT_LANGUAGE || DEFAULT_CONFIG.DEFAULT_LANGUAGE,
     preferredModelProvider: process.env.MCP_DEFAULT_MODEL_PROVIDER,
     allowedOrigins,
     enableDnsRebindingProtection: process.env.MCP_DNS_REBINDING_PROTECTION === 'true',
@@ -108,12 +111,13 @@ export function loadConfig(): MCPServerConfig {
 }
 
 export function validateConfig(config: MCPServerConfig): void {
-  if (config.httpPort < 1 || config.httpPort > 65535) {
-    throw new Error('HTTP port must be between 1 and 65535')
+  if (config.httpPort < SERVER_CONSTANTS.MIN_PORT || config.httpPort > SERVER_CONSTANTS.MAX_PORT) {
+    throw new Error(
+      `HTTP port must be between ${SERVER_CONSTANTS.MIN_PORT} and ${SERVER_CONSTANTS.MAX_PORT}`
+    )
   }
 
-  const validLogLevels = ['debug', 'info', 'warn', 'error']
-  if (!validLogLevels.includes(config.logLevel)) {
-    throw new Error(`Log level must be one of: ${validLogLevels.join(', ')}`)
+  if (!LOG_LEVELS.includes(config.logLevel)) {
+    throw new Error(`Log level must be one of: ${LOG_LEVELS.join(', ')}`)
   }
 }
