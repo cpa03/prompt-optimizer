@@ -17,6 +17,19 @@
   ],
   "headers": [
     {
+      "source": "/api/health",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
       "source": "/assets/(.*)-[a-f0-9]{8,}\\.(js|css|woff2?|png|jpg|jpeg|gif|svg|ico|webp|avif)$",
       "headers": [
         {
@@ -82,9 +95,15 @@
     }
   ],
   "functions": {
-    "api/**/*.js": {
+    "api/health.js": {
       "runtime": "nodejs20.x",
-      "maxDuration": 10
+      "maxDuration": 5,
+      "memory": 128
+    },
+    "api/auth.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 10,
+      "memory": 1024
     }
   },
   "github": {
