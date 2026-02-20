@@ -34,4 +34,16 @@ export interface IStorageProvider {
     newestRecord: number | null
     averageRecordSize: number
   }>
+  healthCheck?(): Promise<DatabaseHealthStatus>
+  close?(): Promise<void>
+}
+
+export interface DatabaseHealthStatus {
+  healthy: boolean
+  canRead: boolean
+  canWrite: boolean
+  canDelete: boolean
+  latency: number
+  errors: string[]
+  timestamp: number
 }

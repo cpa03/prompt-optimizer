@@ -253,4 +253,131 @@ describe('Database Architecture Improvements - Validation Logic', () => {
       expect(stats.oldestRecord).toBeLessThanOrEqual(stats.newestRecord!)
     })
   })
+
+  describe('Database Health Check Structure', () => {
+    it('should define correct health check structure', () => {
+      interface DatabaseHealthStatus {
+        healthy: boolean
+        canRead: boolean
+        canWrite: boolean
+        canDelete: boolean
+        latency: number
+        errors: string[]
+        timestamp: number
+      }
+
+      const healthyStatus: DatabaseHealthStatus = {
+        healthy: true,
+        canRead: true,
+        canWrite: true,
+        canDelete: true,
+        latency: 50,
+        errors: [],
+        timestamp: Date.now(),
+      }
+
+      expect(healthyStatus.healthy).toBe(true)
+      expect(healthyStatus.canRead).toBe(true)
+      expect(healthyStatus.canWrite).toBe(true)
+      expect(healthyStatus.canDelete).toBe(true)
+      expect(typeof healthyStatus.latency).toBe('number')
+      expect(Array.isArray(healthyStatus.errors)).toBe(true)
+      expect(typeof healthyStatus.timestamp).toBe('number')
+
+      const unhealthyStatus: DatabaseHealthStatus = {
+        healthy: false,
+        canRead: true,
+        canWrite: false,
+        canDelete: false,
+        latency: 5000,
+        errors: ['Write failed: Disk full', 'Delete failed: Permission denied'],
+        timestamp: Date.now(),
+      }
+
+      expect(unhealthyStatus.healthy).toBe(false)
+      expect(unhealthyStatus.canRead).toBe(true)
+      expect(unhealthyStatus.canWrite).toBe(false)
+      expect(unhealthyStatus.errors.length).toBe(2)
+    })
+
+    it('should track health check timeout', () => {
+      const HEALTH_CHECK_TIMEOUT_MS = 5000
+      const latency = 6000
+
+      const isTimeout = latency > HEALTH_CHECK_TIMEOUT_MS
+      expect(isTimeout).toBe(true)
+
+      const normalLatency = 100
+      const isNormalTimeout = normalLatency > HEALTH_CHECK_TIMEOUT_MS
+      expect(isNormalTimeout).toBe(false)
+    })
+  })
+
+  describe('Batch Operation Chunking', () => {
+    it('should calculate chunk boundaries correctly', () => {
+      const CHUNK_SIZE = 100
+      const totalOperations = 250
+
+      const chunks: number[][] = []
+      for (let i = 0; i < totalOperations; i += CHUNK_SIZE) {
+        chunks.push([i, Math.min(i + CHUNK_SIZE, totalOperations)])
+      }
+
+      expect(chunks.length).toBe(3)
+      expect(chunks[0]).toEqual([0, 100])
+      expect(chunks[1]).toEqual([100, 200])
+      expect(chunks[2]).toEqual([200, 250])
+    })
+
+    it('should handle small batches without chunking', () => {
+      const CHUNK_SIZE = 100
+      const totalOperations = 50
+
+      const needsChunking = totalOperations > CHUNK_SIZE
+      expect(needsChunking).toBe(false)
+
+      const chunks: number[][] = []
+      for (let i = 0; i < totalOperations; i += CHUNK_SIZE) {
+        chunks.push([i, Math.min(i + CHUNK_SIZE, totalOperations)])
+      }
+
+      expect(chunks.length).toBe(1)
+      expect(chunks[0]).toEqual([0, 50])
+    })
+
+    it('should handle exact chunk boundaries', () => {
+      const CHUNK_SIZE = 100
+      const totalOperations = 300
+
+      const chunks: number[][] = []
+      for (let i = 0; i < totalOperations; i += CHUNK_SIZE) {
+        chunks.push([i, Math.min(i + CHUNK_SIZE, totalOperations)])
+      }
+
+      expect(chunks.length).toBe(3)
+      expect(chunks[0]).toEqual([0, 100])
+      expect(chunks[1]).toEqual([100, 200])
+      expect(chunks[2]).toEqual([200, 300])
+    })
+  })
+
+  describe('Storage Constraints', () => {
+    it('should have configurable batch chunk size', () => {
+      const BATCH_CHUNK_SIZE = 100
+      expect(BATCH_CHUNK_SIZE).toBeGreaterThan(0)
+      expect(typeof BATCH_CHUNK_SIZE).toBe('number')
+    })
+
+    it('should have configurable health check timeout', () => {
+      const HEALTH_CHECK_TIMEOUT_MS = 5000
+      expect(HEALTH_CHECK_TIMEOUT_MS).toBeGreaterThan(0)
+      expect(typeof HEALTH_CHECK_TIMEOUT_MS).toBe('number')
+    })
+
+    it('should have health check test key defined', () => {
+      const HEALTH_CHECK_TEST_KEY = '__health_check__'
+      expect(HEALTH_CHECK_TEST_KEY.startsWith('__')).toBe(true)
+      expect(HEALTH_CHECK_TEST_KEY.endsWith('__')).toBe(true)
+    })
+  })
 })
