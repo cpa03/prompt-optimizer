@@ -73,6 +73,41 @@ export class LocalStorageProvider implements IStorageProvider {
     }
   }
 
+  /**
+   * 批量获取存储项
+   * @param keys 要获取的键数组
+   * @returns 键值映射对象，不存在的键对应 null
+   */
+  public async getItems(keys: string[]): Promise<Record<string, string | null>> {
+    if (!Array.isArray(keys)) {
+      throw new StorageError('Keys must be an array', 'validation')
+    }
+
+    if (keys.length === 0) {
+      return {}
+    }
+
+    const releases = await Promise.all(keys.map((key) => this.lock.acquire(key)))
+
+    try {
+      keys.forEach((key) => validateStorageKey(key))
+
+      const result: Record<string, string | null> = {}
+      for (const key of keys) {
+        result[key] = localStorage.getItem(key)
+      }
+
+      return result
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError('Failed to get items batch', 'read')
+    } finally {
+      releases.forEach((release) => release())
+    }
+  }
+
   public async setItem(key: string, value: string): Promise<void> {
     const release = await this.lock.acquire(key)
     try {

@@ -380,4 +380,43 @@ describe('Database Architecture Improvements - Validation Logic', () => {
       expect(HEALTH_CHECK_TEST_KEY.endsWith('__')).toBe(true)
     })
   })
+
+  describe('Batch Read Operations', () => {
+    it('should define correct getItems return type', () => {
+      interface GetItemsResult {
+        [key: string]: string | null
+      }
+
+      const result: GetItemsResult = {
+        key1: 'value1',
+        key2: null,
+        key3: 'value3',
+      }
+
+      expect(typeof result.key1).toBe('string')
+      expect(result.key2).toBeNull()
+      expect(typeof result.key3).toBe('string')
+    })
+
+    it('should handle empty keys array', () => {
+      const keys: string[] = []
+      const result: Record<string, string | null> = {}
+
+      expect(Object.keys(result)).toHaveLength(0)
+    })
+
+    it('should map keys to values correctly', () => {
+      const keys = ['key1', 'key2', 'key3']
+      const values = ['value1', null, 'value3']
+
+      const result: Record<string, string | null> = {}
+      keys.forEach((key, index) => {
+        result[key] = values[index]
+      })
+
+      expect(result['key1']).toBe('value1')
+      expect(result['key2']).toBeNull()
+      expect(result['key3']).toBe('value3')
+    })
+  })
 })

@@ -220,6 +220,44 @@ export class DexieStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 批量获取存储项
+   * 性能优化：使用 Dexie 的 bulkGet 一次性获取多个键值，减少数据库访问次数
+   * @param keys 要获取的键数组
+   * @returns 键值映射对象，不存在的键对应 null
+   */
+  async getItems(keys: string[]): Promise<Record<string, string | null>> {
+    await this.initialize()
+
+    if (!Array.isArray(keys)) {
+      throw new StorageError('Keys must be an array', 'validation')
+    }
+
+    if (keys.length === 0) {
+      return {}
+    }
+
+    try {
+      keys.forEach((key) => this.validateKeyLocal(key))
+
+      const records = await this.db.storage.bulkGet(keys)
+
+      const result: Record<string, string | null> = {}
+      keys.forEach((key, index) => {
+        const record = records[index]
+        result[key] = record?.value ?? null
+      })
+
+      return result
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      console.error(`批量获取存储项失败:`, error)
+      throw new StorageError(`Failed to get items batch`, 'read')
+    }
+  }
+
+  /**
    * 获取所有存储键
    * 优化：使用 primaryKeys() 代替 toArray()，避免加载所有值到内存
    * 注意：不返回内部元数据键
