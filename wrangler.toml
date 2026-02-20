@@ -40,6 +40,11 @@ globs = ["functions/**/*.ts"]
 # Asset caching rules are configured via _headers file in packages/web/public/
 # This follows Cloudflare best practices for Pages projects
 
+# Browser Rendering (optional - for advanced use cases)
+# https://developers.cloudflare.com/browser-rendering/
+# [browser]
+# binding = "BROWSER"
+
 # Environment variables (set via Cloudflare dashboard or wrangler secret)
 # [vars]
 # ACCESS_PASSWORD = ""
@@ -65,3 +70,16 @@ globs = ["functions/**/*.ts"]
 # binding = "DB"
 # database_name = "prompt-optimizer-db"
 # database_id = "your-d1-database-id"
+
+# Analytics Engine for usage tracking (optional)
+# [[analytics_engine_datasets]]
+# binding = "ANALYTICS"
+
+# Durable Objects for stateful applications (optional)
+# [durable_objects]
+# bindings = [{ name = "COUNTER", class_name = "Counter" }]
+
+# Migrations for Durable Objects
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["Counter"]

@@ -211,6 +211,8 @@ const SECURITY_HEADERS = {
   'Permissions-Policy':
     'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin',
 }
 
 const EXCLUDED_PATHS = ['/api/', '/_next/static', '/_next/image', '/favicon.ico', '/assets/']

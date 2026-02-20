@@ -149,6 +149,8 @@ const securityHeaders = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'X-Permitted-Cross-Domain-Policies': 'none',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin',
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
