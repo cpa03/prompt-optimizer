@@ -1,0 +1,41 @@
+# CODEOWNERS - Define code ownership for PR reviews
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything
+* @linshenkx
+
+# Core package - LLM integrations and core logic
+/packages/core/ @linshenkx
+
+# UI package - Vue components and composables
+/packages/ui/ @linshenkx
+
+# Web application
+/packages/web/ @linshenkx
+
+# Browser extension
+/packages/extension/ @linshenkx
+
+# Desktop application (Electron)
+/packages/desktop/ @linshenkx
+
+# MCP server
+/packages/mcp-server/ @linshenkx
+
+# API functions (Vercel)
+/api/ @linshenkx
+
+# Documentation
+/docs/ @linshenkx
+/README*.md @linshenkx
+/CONTRIBUTING.md @linshenkx
+/AGENTS.md @linshenkx
+/dev.md @linshenkx
+
+# CI/CD configuration
+/.github/ @linshenkx
+/docker/ @linshenkx
+
+# Build and development scripts
+/scripts/ @linshenkx
+/package.json @linshenkx

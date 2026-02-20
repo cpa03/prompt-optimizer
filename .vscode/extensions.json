@@ -8,6 +8,13 @@
     "ms-playwright.playwright",
     "ms-vscode.vscode-typescript-next",
     "streetsidesoftware.code-spell-checker",
-    "yzhang.markdown-all-in-one"
+    "yzhang.markdown-all-in-one",
+    "eamodio.gitlens",
+    "GitHub.copilot",
+    "GitHub.vscode-pull-request-github",
+    "streetsidesoftware.code-spell-checker",
+    "oderwat.indent-rainbow",
+    "naumovs.color-highlight",
+    "antfu.iconify"
   ]
 }
