@@ -15,8 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createApp, watch } from 'vue'
-import { installI18nOnly, installPinia, i18n, router } from '@prompt-optimizer/ui'
+import { createApp } from 'vue'
+import {
+  installI18nOnly,
+  installPinia,
+  i18n,
+  router,
+  setupDocumentTitleSync,
+} from '@prompt-optimizer/ui'
 import '@prompt-optimizer/ui/dist/style.css'
 import App from './App.vue'
 
@@ -29,17 +35,7 @@ installPinia(app)
 app.use(router)
 
 // 同步文档标题和语言属性
-if (typeof document !== 'undefined') {
-  const syncDocumentTitle = () => {
-    document.title = i18n.global.t('common.appName')
-    const currentLocale = String(i18n.global.locale.value || '')
-    const htmlLang = currentLocale.startsWith('zh') ? 'zh' : 'en'
-    document.documentElement.setAttribute('lang', htmlLang)
-  }
-
-  syncDocumentTitle()
-  watch(i18n.global.locale, syncDocumentTitle)
-}
+setupDocumentTitleSync(i18n)
 
 // 等待 router 完成首航解析（Hash URL -> route），避免初始化逻辑在短暂的 "/" 状态下误重定向
 void router.isReady().then(() => {

@@ -261,3 +261,6 @@ export {
 // 导出数据转换工具和类型
 export { DataTransformer, OptionAccessors } from './utils/data-transformer'
 export type { SelectOption, ModelSelectOption, TemplateSelectOption } from './types/select-options'
+
+// 导出文档工具函数
+export { setupDocumentTitleSync } from './utils/document'
