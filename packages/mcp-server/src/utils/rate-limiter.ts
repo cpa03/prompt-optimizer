@@ -10,6 +10,7 @@
 
 import type { Request } from 'express'
 import * as logger from './logging.js'
+import { MCP_CONFIG } from '@prompt-optimizer/core'
 
 interface RateLimitEntry {
   count: number
@@ -30,9 +31,9 @@ interface RateLimitResult {
 }
 
 const DEFAULT_CONFIG: RateLimitConfig = {
-  windowMs: 60 * 1000,
-  maxRequests: 100,
-  cleanupIntervalMs: 5 * 60 * 1000,
+  windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
+  maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
+  cleanupIntervalMs: MCP_CONFIG.rateLimit.defaultCleanupIntervalMs,
 }
 
 class RateLimiter {
@@ -66,8 +67,8 @@ class RateLimiter {
       logger.debug(`[RateLimiter] Cleaned ${cleaned} expired entries`)
     }
 
-    if (this.entries.size > 10000) {
-      const entriesToDelete = this.entries.size - 5000
+    if (this.entries.size > MCP_CONFIG.rateLimit.maxEntries) {
+      const entriesToDelete = this.entries.size - MCP_CONFIG.rateLimit.targetEntriesAfterCleanup
       let deleted = 0
       for (const key of this.entries.keys()) {
         if (deleted >= entriesToDelete) break

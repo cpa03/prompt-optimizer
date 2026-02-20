@@ -52,6 +52,41 @@ import {
 } from './utils/rate-limiter.js'
 import { MCP_CONFIG } from '@prompt-optimizer/core'
 
+interface RequestContext {
+  requestId: string
+  startTime: number
+  toolName?: string
+}
+
+const requestContexts: Map<string, RequestContext> = new Map()
+
+function generateRequestId(): string {
+  return `req_${Date.now()}_${randomUUID().split('-')[0]}`
+}
+
+function createRequestContext(toolName?: string): string {
+  const requestId = generateRequestId()
+  requestContexts.set(requestId, {
+    requestId,
+    startTime: Date.now(),
+    toolName,
+  })
+  return requestId
+}
+
+function getRequestContext(requestId: string): RequestContext | undefined {
+  return requestContexts.get(requestId)
+}
+
+function cleanupRequestContext(requestId: string): void {
+  const context = requestContexts.get(requestId)
+  if (context) {
+    const duration = Date.now() - context.startTime
+    logger.debug(`[Request ${requestId}] Completed in ${duration}ms`)
+    requestContexts.delete(requestId)
+  }
+}
+
 type ToolResponse = {
   isError?: boolean
   content: Array<{ type: string; text: string }>
@@ -197,7 +232,8 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
   // 注册工具调用处理器
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params
-    logger.info(`处理工具调用请求: ${name}`)
+    const requestId = createRequestContext(name)
+    logger.info(`[${requestId}] Processing tool call: ${name}`)
 
     try {
       switch (name) {
@@ -205,7 +241,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const { prompt, template } = args as { prompt?: string; template?: string }
 
           if (!prompt) {
-            return createErrorResponse("错误：缺少必需参数 'prompt'")
+            return createErrorResponse(`[${requestId}] 错误：缺少必需参数 'prompt'`)
           }
 
           ParameterValidator.validatePrompt(prompt)
@@ -218,9 +254,14 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const templateManager = coreServices.getTemplateManager()
 
           const modelError = await validateMcpModel(modelManager)
-          if (modelError) return modelError
+          if (modelError) {
+            cleanupRequestContext(requestId)
+            return modelError
+          }
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'user'))
+          logger.debug(`[${requestId}] Optimizing user prompt with template: ${templateId}`)
+
           const result = await promptService.optimizePrompt({
             targetPrompt: prompt,
             modelKey: 'mcp-default',
@@ -228,6 +269,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
             templateId,
           })
 
+          cleanupRequestContext(requestId)
           return {
             content: [{ type: 'text', text: result }],
           }
@@ -237,7 +279,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const { prompt, template } = args as { prompt?: string; template?: string }
 
           if (!prompt) {
-            return createErrorResponse("错误：缺少必需参数 'prompt'")
+            return createErrorResponse(`[${requestId}] 错误：缺少必需参数 'prompt'`)
           }
 
           ParameterValidator.validatePrompt(prompt)
@@ -250,9 +292,14 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const templateManager = coreServices.getTemplateManager()
 
           const modelError = await validateMcpModel(modelManager)
-          if (modelError) return modelError
+          if (modelError) {
+            cleanupRequestContext(requestId)
+            return modelError
+          }
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'system'))
+          logger.debug(`[${requestId}] Optimizing system prompt with template: ${templateId}`)
+
           const result = await promptService.optimizePrompt({
             targetPrompt: prompt,
             modelKey: 'mcp-default',
@@ -260,6 +307,7 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
             templateId,
           })
 
+          cleanupRequestContext(requestId)
           return {
             content: [{ type: 'text', text: result }],
           }
@@ -273,11 +321,11 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           }
 
           if (!prompt) {
-            return createErrorResponse("错误：缺少必需参数 'prompt'")
+            return createErrorResponse(`[${requestId}] 错误：缺少必需参数 'prompt'`)
           }
 
           if (!requirements) {
-            return createErrorResponse("错误：缺少必需参数 'requirements'")
+            return createErrorResponse(`[${requestId}] 错误：缺少必需参数 'requirements'`)
           }
 
           ParameterValidator.validatePrompt(prompt)
@@ -291,9 +339,14 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
           const templateManager = coreServices.getTemplateManager()
 
           const modelError = await validateMcpModel(modelManager)
-          if (modelError) return modelError
+          if (modelError) {
+            cleanupRequestContext(requestId)
+            return modelError
+          }
 
           const templateId = template || (await getDefaultTemplateId(templateManager, 'iterate'))
+          logger.debug(`[${requestId}] Iterating prompt with template: ${templateId}`)
+
           const result = await promptService.iteratePrompt(
             prompt,
             prompt,
@@ -302,17 +355,25 @@ async function setupServerHandlers(server: Server, coreServices: CoreServicesMan
             templateId
           )
 
+          cleanupRequestContext(requestId)
           return {
             content: [{ type: 'text', text: result }],
           }
         }
 
         default:
-          return createErrorResponse(`错误：未知工具 '${name}'`)
+          cleanupRequestContext(requestId)
+          return createErrorResponse(`[${requestId}] 错误：未知工具 '${name}'`)
       }
     } catch (error) {
-      logger.error(`工具执行错误 ${name}:`, error as Error)
-      return createErrorResponse(`工具执行错误: ${(error as Error).message}`)
+      const context = getRequestContext(requestId)
+      const duration = context ? Date.now() - context.startTime : 0
+      logger.error(
+        `[${requestId}] Tool execution error ${name} (after ${duration}ms):`,
+        error as Error
+      )
+      cleanupRequestContext(requestId)
+      return createErrorResponse(`[${requestId}] 工具执行错误: ${(error as Error).message}`)
     }
   })
 
@@ -356,6 +417,17 @@ async function main() {
         res.setHeader('X-XSS-Protection', '1; mode=block')
         res.removeHeader('X-Powered-By')
         next()
+      })
+
+      app.get('/health', (_req, res) => {
+        const healthData = {
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          uptime: process.uptime(),
+          version: '0.1.0',
+          activeRequests: requestContexts.size,
+        }
+        res.json(healthData)
       })
 
       logger.info('Express app configured')
@@ -491,7 +563,7 @@ async function main() {
         const forceExitTimer = setTimeout(() => {
           console.warn('Forcing shutdown after timeout')
           process.exit(1)
-        }, 10000)
+        }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
         forceExitTimer.unref()
 
         // Close all active sessions
