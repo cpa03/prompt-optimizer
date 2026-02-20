@@ -256,7 +256,7 @@ export async function onRequest(context: {
     )
 
     if (accessTokenCookie) {
-      const accessToken = accessTokenCookie.split('=')[1]?.trim()
+      const accessToken = accessTokenCookie.split('=')[1]?.trim() ?? ''
       authenticated = timingSafeEqual(accessToken, 'authenticated')
     }
   }

@@ -1,11 +1,13 @@
 {
   "recommendations": [
-    "esbenp.prettier-vscode",
+    "Vue.volar",
     "dbaeumer.vscode-eslint",
-    "vue.volar",
-    "vue.vscode-typescript-vue-plugin",
+    "esbenp.prettier-vscode",
     "editorconfig.editorconfig",
+    "vitest.explorer",
     "ms-playwright.playwright",
-    "streetsidesoftware.code-spell-checker"
+    "ms-vscode.vscode-typescript-next",
+    "streetsidesoftware.code-spell-checker",
+    "yzhang.markdown-all-in-one"
   ]
 }

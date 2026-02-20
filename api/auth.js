@@ -1,6 +1,121 @@
 import { COOKIE_CONFIG } from '../scripts/config/constants.js'
 
 /**
+ * Vercel Serverless Authentication API
+ *
+ * Rate Limiting Implementation:
+ * Uses in-memory storage within the serverless function invocation.
+ * Note: Vercel serverless functions may have cold starts and limited
+ * memory persistence, so this provides basic protection against
+ * brute force attacks within a single warm instance.
+ *
+ * For production with distributed rate limiting:
+ * 1. Use Vercel KV (Redis) or similar distributed cache
+ * 2. Consider using a WAF with rate limiting features
+ *
+ * @see https://vercel.com/docs/storage/vercel-kv
+ */
+
+const RATE_LIMIT = {
+  MAX_ATTEMPTS: 5,
+  WINDOW_MS: 60000,
+  BLOCK_DURATION_MS: 300000,
+}
+
+const rateLimitStore = {
+  attempts: new Map(),
+}
+
+/**
+ * Get client IP address from request
+ * @param {object} req - Express-like request object
+ * @returns {string} - Client IP address
+ */
+function getClientIP(req) {
+  return (
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.headers['x-real-ip'] ||
+    req.connection?.remoteAddress ||
+    'unknown'
+  )
+}
+
+/**
+ * Check if IP is rate limited
+ * @param {string} ip - Client IP address
+ * @returns {{allowed: boolean, retryAfter?: number, remaining?: number}}
+ */
+function checkRateLimit(ip) {
+  const now = Date.now()
+  const entry = rateLimitStore.attempts.get(ip)
+
+  if (entry?.blockedUntil && now < entry.blockedUntil) {
+    return { allowed: false, retryAfter: Math.ceil((entry.blockedUntil - now) / 1000) }
+  }
+
+  if (entry?.blockedUntil && now >= entry.blockedUntil) {
+    rateLimitStore.attempts.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (!entry) {
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.attempts.delete(ip)
+    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+  }
+
+  return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS - entry.count }
+}
+
+/**
+ * Record a failed authentication attempt
+ * @param {string} ip - Client IP address
+ */
+function recordFailedAttempt(ip) {
+  const now = Date.now()
+  const entry = rateLimitStore.attempts.get(ip)
+
+  if (!entry) {
+    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
+  } else if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
+  } else {
+    entry.count++
+    if (entry.count >= RATE_LIMIT.MAX_ATTEMPTS) {
+      entry.blockedUntil = now + RATE_LIMIT.BLOCK_DURATION_MS
+    }
+  }
+
+  if (rateLimitStore.attempts.size > 10000) {
+    const cutoff = now - RATE_LIMIT.WINDOW_MS - RATE_LIMIT.BLOCK_DURATION_MS
+    for (const [key, val] of rateLimitStore.attempts) {
+      if (val.firstAttempt < cutoff) {
+        rateLimitStore.attempts.delete(key)
+      }
+    }
+  }
+}
+
+/**
+ * Clear rate limit for an IP (after successful auth)
+ * @param {string} ip - Client IP address
+ */
+function clearRateLimit(ip) {
+  rateLimitStore.attempts.delete(ip)
+}
+
+/**
+ * Generate a unique request ID for logging/tracing
+ * @returns {string} - Unique request ID
+ */
+function generateRequestId() {
+  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+}
+
+/**
  * Timing-safe string comparison to prevent timing attacks
  * @param {string} a - First string
  * @param {string} b - Second string
@@ -35,18 +150,35 @@ function validateBody(body, requiredFields) {
   )
 }
 
-export default function handler(req, res) {
-  // Set security headers
-  res.setHeader('X-Content-Type-Options', 'nosniff')
-  res.setHeader('X-Frame-Options', 'DENY')
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+}
 
-  // Set CORS headers - restrict to same origin in production
+export default function handler(req, res) {
+  const requestId = generateRequestId()
+  const clientIP = getClientIP(req)
   const isProduction = process.env.NODE_ENV === 'production'
+
   const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
-  res.setHeader('Access-Control-Allow-Origin', corsOrigin)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  res.setHeader('Vary', 'Origin')
+
+  const baseHeaders = {
+    ...SECURITY_HEADERS,
+    'Access-Control-Allow-Origin': corsOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    Vary: 'Origin',
+    'X-Request-ID': requestId,
+  }
+
+  Object.entries(baseHeaders).forEach(([key, value]) => {
+    res.setHeader(key, value)
+  })
 
   if (req.method === 'OPTIONS') {
     res.status(200).end()
@@ -55,7 +187,6 @@ export default function handler(req, res) {
 
   const accessPassword = process.env.ACCESS_PASSWORD
 
-  // If no password is configured, return success
   if (!accessPassword) {
     return res.status(200).json({
       success: true,
@@ -64,6 +195,16 @@ export default function handler(req, res) {
   }
 
   if (req.method === 'POST') {
+    const rateLimitResult = checkRateLimit(clientIP)
+    if (!rateLimitResult.allowed) {
+      res.setHeader('Retry-After', String(rateLimitResult.retryAfter || 60))
+      return res.status(429).json({
+        success: false,
+        message: 'Too many attempts. Please try again later.',
+        retryAfter: rateLimitResult.retryAfter,
+      })
+    }
+
     const { password, action } = req.body || {}
 
     if (!validateBody(req.body, ['action'])) {
@@ -81,9 +222,8 @@ export default function handler(req, res) {
         })
       }
 
-      // Use timing-safe comparison to prevent timing attacks
       if (timingSafeEqual(password, accessPassword)) {
-        // Set cookie to remember user authentication state
+        clearRateLimit(clientIP)
         const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
         const secureFlag = isProduction ? '; Secure' : ''
         res.setHeader('Set-Cookie', [
@@ -95,10 +235,13 @@ export default function handler(req, res) {
           message: 'Authentication successful',
         })
       } else {
-        // Use same response time for invalid password to prevent timing attacks
+        recordFailedAttempt(clientIP)
+        const remaining = checkRateLimit(clientIP).remaining || 0
+
         return res.status(401).json({
           success: false,
           message: 'Invalid password',
+          attemptsRemaining: remaining,
         })
       }
     }
@@ -113,7 +256,7 @@ export default function handler(req, res) {
     const { action } = req.query || {}
 
     if (action === 'logout') {
-      // Clear cookie
+      clearRateLimit(clientIP)
       res.setHeader('Set-Cookie', [
         `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`,
       ])
