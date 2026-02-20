@@ -80,6 +80,7 @@ When creating stories, ensure:
 ## Related Documents
 
 - [User Story Template](../workspace-template/user-story-template.md)
+- [Story Review Checklist](../workspace-template/story-review-checklist.md)
 - [Story Draft Checklist](../../.bmad-core/checklists/story-draft-checklist.md)
 - [Story DoD Checklist](../../.bmad-core/checklists/story-dod-checklist.md)
 - [Project PRD](../project/prd.md)
@@ -113,4 +114,4 @@ When creating stories, ensure:
 
 ---
 
-**Last Updated**: 2026-02-19
+**Last Updated**: 2026-02-20

@@ -316,6 +316,28 @@ Before submitting a story for approval, verify:
 - [Bug Template](./bug.md) - For tracking bugs found during development
 - [Experience Template](./experience-template.md) - For recording lessons learned
 
+---
+
+## Related Stories Section
+
+Track dependencies and related stories:
+
+### Dependencies
+
+| Story ID | Type    | Description                         | Status |
+| -------- | ------- | ----------------------------------- | ------ |
+| X.Y      | Blocks  | This story blocks the current story | Status |
+| A.B      | Blocked | This story is blocked by current    | Status |
+
+### Related Stories
+
+| Story ID | Relationship | Description                    |
+| -------- | ------------ | ------------------------------ |
+| X.Y      | Similar      | Similar implementation pattern |
+| A.B      | Extension    | Extends functionality          |
+
+---
+
 ## Related Documentation
 
 - [Stories Directory](../stories/README.md) - Story workflow and quick reference
@@ -325,4 +347,4 @@ Before submitting a story for approval, verify:
 
 ---
 
-**Last Updated**: 2026-02-19
+**Last Updated**: 2026-02-20
