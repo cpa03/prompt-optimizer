@@ -38,6 +38,10 @@ cpu_ms = 50000
 
 # Asset caching rules are configured via _headers file in packages/web/public/
 # This follows Cloudflare best practices for Pages projects
+# 
+# Routing optimization is configured via _routes.json in packages/web/public/
+# This file excludes static assets from function invocations, improving performance
+# See: https://developers.cloudflare.com/pages/functions/routing/#functions-invocation-routes
 
 # Browser Rendering (optional - for advanced use cases)
 # https://developers.cloudflare.com/browser-rendering/
