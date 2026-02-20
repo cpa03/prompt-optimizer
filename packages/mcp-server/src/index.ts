@@ -445,6 +445,21 @@ async function main() {
         maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
+      // Health check endpoint for monitoring and load balancers
+      app.get('/health', (_req, res) => {
+        const rateLimitStats = rateLimiter.getStats()
+        res.status(200).json({
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          uptime: process.uptime(),
+          version: '0.1.0',
+          rateLimiter: {
+            totalClients: rateLimitStats.totalClients,
+            maxRequests: rateLimitStats.config.maxRequests,
+          },
+        })
+      })
+
       const rateLimitMiddleware = (
         req: express.Request,
         res: express.Response,
