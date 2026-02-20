@@ -642,7 +642,33 @@ export class FileStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true,
       supportsBatch: true,
-      maxStorageSize: undefined, // 文件存储无固定大小限制
+      maxStorageSize: undefined,
+    }
+  }
+
+  /**
+   * 获取存储统计信息
+   * 返回存储项数量、总大小等统计信息
+   */
+  async getDatabaseStats(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }> {
+    await this.ensureInitialized()
+
+    const items = Array.from(this.data.entries())
+    const itemCount = items.length
+    const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
+
+    return {
+      itemCount,
+      totalSize,
+      oldestRecord: null,
+      newestRecord: null,
+      averageRecordSize: itemCount > 0 ? totalSize / itemCount : 0,
     }
   }
 

@@ -208,4 +208,38 @@ describe('MemoryStorageProvider', () => {
       expect(typeof health.timestamp).toBe('number')
     })
   })
+
+  describe('数据库统计', () => {
+    it('应该返回空的统计信息', async () => {
+      const stats = await storage.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(0)
+      expect(stats.totalSize).toBe(0)
+      expect(stats.averageRecordSize).toBe(0)
+      expect(stats.oldestRecord).toBeNull()
+      expect(stats.newestRecord).toBeNull()
+    })
+
+    it('应该返回正确的统计信息', async () => {
+      await storage.setItem('key1', 'value1')
+      await storage.setItem('key2', 'value22')
+      await storage.setItem('key3', 'value333')
+
+      const stats = await storage.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(3)
+      expect(stats.totalSize).toBe(21)
+      expect(stats.averageRecordSize).toBe(7)
+    })
+
+    it('应该在清空后返回空统计信息', async () => {
+      await storage.setItem('key1', 'value1')
+      await storage.clearAll()
+
+      const stats = await storage.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(0)
+      expect(stats.totalSize).toBe(0)
+    })
+  })
 })

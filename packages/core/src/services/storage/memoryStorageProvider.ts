@@ -197,6 +197,30 @@ export class MemoryStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取存储统计信息
+   * 返回存储项数量、总大小等统计信息
+   */
+  async getDatabaseStats(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }> {
+    const items = Array.from(this.storage.entries())
+    const itemCount = items.length
+    const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
+
+    return {
+      itemCount,
+      totalSize,
+      oldestRecord: null,
+      newestRecord: null,
+      averageRecordSize: itemCount > 0 ? totalSize / itemCount : 0,
+    }
+  }
+
+  /**
    * 存储健康检查
    * 检查存储的读写删能力，返回详细的健康状态
    */
