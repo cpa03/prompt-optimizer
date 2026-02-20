@@ -538,19 +538,25 @@ export class FavoriteManager implements IFavoriteManager {
     await this.ensureInitialized()
 
     try {
-      // ✅ 获取该分类下的所有收藏
       const allFavorites = await this.getFavorites()
       const favoritesInCategory = allFavorites.filter((f) => f.category === id)
+      const affectedCount = favoritesInCategory.length
 
-      // ✅ 清空这些收藏的分类字段(不依赖"未分类"是否存在)
-      for (const favorite of favoritesInCategory) {
-        await this.updateFavorite(favorite.id, {
-          ...favorite,
-          category: undefined, // 清空分类
-        })
+      if (affectedCount > 0) {
+        const now = Date.now()
+        const favoriteIdsToClear = new Set(favoritesInCategory.map((f) => f.id))
+
+        await this.storageProvider.updateData(
+          this.STORAGE_KEYS.FAVORITES,
+          (favorites: FavoritePrompt[] | null) => {
+            const favoritesList = favorites || []
+            return favoritesList.map((f) =>
+              favoriteIdsToClear.has(f.id) ? { ...f, category: undefined, updatedAt: now } : f
+            )
+          }
+        )
       }
 
-      // ✅ 删除分类
       await this.storageProvider.updateData(
         this.STORAGE_KEYS.CATEGORIES,
         (categories: FavoriteCategory[] | null) => {
@@ -564,7 +570,7 @@ export class FavoriteManager implements IFavoriteManager {
         }
       )
 
-      return favoritesInCategory.length
+      return affectedCount
     } catch (error) {
       if (error instanceof FavoriteError) {
         throw error

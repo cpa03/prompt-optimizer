@@ -62,15 +62,29 @@ export class DataManager implements IDataManager {
   }
 
   async exportAllData(): Promise<string> {
-    const data: Record<string, any> = {}
-
     try {
-      // 使用各服务的exportData接口，使用固定的键名保持兼容性
-      data['history'] = await this.historyManager.exportData()
-      data['models'] = await this.modelManager.exportData()
-      data['userTemplates'] = await this.templateManager.exportData()
-      data['userSettings'] = await this.preferenceService.exportData()
-      data['contexts'] = await this.contextRepo.exportData()
+      const [history, models, userTemplates, userSettings, contexts] = await Promise.all([
+        this.historyManager.exportData(),
+        this.modelManager.exportData(),
+        this.templateManager.exportData(),
+        this.preferenceService.exportData(),
+        this.contextRepo.exportData(),
+      ])
+
+      const data: Record<string, any> = {
+        history,
+        models,
+        userTemplates,
+        userSettings,
+        contexts,
+      }
+
+      const exportFormat = {
+        version: 1,
+        data,
+      }
+
+      return JSON.stringify(exportFormat, null, 2)
     } catch (error) {
       console.error('导出数据失败:', error)
       if (isStructuredErrorLike(error)) {
@@ -78,13 +92,6 @@ export class DataManager implements IDataManager {
       }
       throw new DataExportFailedError(error instanceof Error ? error.message : String(error))
     }
-
-    const exportFormat = {
-      version: 1,
-      data,
-    }
-
-    return JSON.stringify(exportFormat, null, 2) // 格式化输出，便于调试
   }
 
   async importAllData(dataString: string): Promise<void> {
