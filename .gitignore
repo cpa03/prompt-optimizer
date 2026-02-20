@@ -169,11 +169,46 @@ storybook-static
 # ==========================================
 # 安全和敏感信息
 # ==========================================
+# API Keys and Secrets
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# SSL/TLS Certificates
 *.pem
 *.key
 *.crt
 *.p12
 .certificates
+
+# SSH Keys
+*.pub
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# Secrets Management
+.secrets
+*.secret
+credentials.json
+service-account.json
+.secrets.*
+
+# Database Files (may contain sensitive data)
+*.db
+*.sqlite
+*.sqlite3
+*.sql.gz
+
+# Backup Files (may contain sensitive data)
+*.backup
+*.bak
+*.old
 
 # ==========================================
 # 其他工具生成的文件
