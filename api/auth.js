@@ -122,6 +122,7 @@ function generateRequestId() {
 
 /**
  * Timing-safe string comparison to prevent timing attacks
+ * Uses constant-time comparison by always iterating over the longer string length
  * @param {string} a - First string
  * @param {string} b - Second string
  * @returns {boolean} - Whether strings are equal
@@ -130,12 +131,14 @@ function timingSafeEqual(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string') {
     return false
   }
-  if (a.length !== b.length) {
-    return false
-  }
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  const lenA = a.length
+  const lenB = b.length
+  const maxLen = Math.max(lenA, lenB)
+  let result = lenA ^ lenB
+  for (let i = 0; i < maxLen; i++) {
+    const charA = i < lenA ? a.charCodeAt(i) : 0
+    const charB = i < lenB ? b.charCodeAt(i) : 0
+    result |= charA ^ charB
   }
   return result === 0
 }
