@@ -71,3 +71,6 @@ updates:
     labels:
       - 'docker'
       - 'dependencies'
+    ignore:
+      - dependency-name: 'nginx'
+        update-types: ['version-update:semver-major']
