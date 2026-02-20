@@ -3,6 +3,7 @@
  * 提供统一的错误处理和类型安全的错误信息提取
  */
 
+import { isRecord } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { i18n } from '../plugins/i18n'
 
@@ -66,10 +67,6 @@ export function getErrorMessage(error: unknown, fallback = 'Unknown error'): str
   } catch {
     return fallback
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
 }
 
 /**
