@@ -49,6 +49,20 @@ export const COOKIE_CONFIG = {
   CACHE_CONTROL: 'no-cache, no-store, must-revalidate',
 }
 
+// Rate limiting configuration
+export const RATE_LIMIT_CONFIG = {
+  // Maximum failed login attempts before blocking
+  MAX_ATTEMPTS: parseInt(process.env.RATE_LIMIT_MAX_ATTEMPTS, 10) || 5,
+  // Time window in milliseconds to count attempts
+  WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 60000, // 1 minute
+  // Duration to block after exceeding max attempts
+  BLOCK_DURATION_MS: parseInt(process.env.RATE_LIMIT_BLOCK_DURATION_MS, 10) || 300000, // 5 minutes
+  // Maximum entries in rate limit store before cleanup
+  MAX_STORE_SIZE: parseInt(process.env.RATE_LIMIT_MAX_STORE_SIZE, 10) || 10000,
+  // Default retry-after seconds for rate limited responses
+  DEFAULT_RETRY_AFTER_SECONDS: parseInt(process.env.RATE_LIMIT_RETRY_AFTER_SECONDS, 10) || 60,
+}
+
 // HTTP status codes
 export const HTTP_STATUS = {
   OK: 200,
@@ -72,6 +86,7 @@ export default {
   BROCULA_CONFIG,
   APP_ROUTES,
   COOKIE_CONFIG,
+  RATE_LIMIT_CONFIG,
   HTTP_STATUS,
   PLATFORM,
 }

@@ -1,4 +1,4 @@
-import { COOKIE_CONFIG } from '../scripts/config/constants.js'
+import { COOKIE_CONFIG, RATE_LIMIT_CONFIG } from '../scripts/config/constants.js'
 
 /**
  * Vercel Serverless Authentication API
@@ -15,12 +15,6 @@ import { COOKIE_CONFIG } from '../scripts/config/constants.js'
  *
  * @see https://vercel.com/docs/storage/vercel-kv
  */
-
-const RATE_LIMIT = {
-  MAX_ATTEMPTS: 5,
-  WINDOW_MS: 60000,
-  BLOCK_DURATION_MS: 300000,
-}
 
 const rateLimitStore = {
   attempts: new Map(),
@@ -55,19 +49,19 @@ function checkRateLimit(ip) {
 
   if (entry?.blockedUntil && now >= entry.blockedUntil) {
     rateLimitStore.attempts.delete(ip)
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+    return { allowed: true, remaining: RATE_LIMIT_CONFIG.MAX_ATTEMPTS }
   }
 
   if (!entry) {
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+    return { allowed: true, remaining: RATE_LIMIT_CONFIG.MAX_ATTEMPTS }
   }
 
-  if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+  if (now - entry.firstAttempt > RATE_LIMIT_CONFIG.WINDOW_MS) {
     rateLimitStore.attempts.delete(ip)
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
+    return { allowed: true, remaining: RATE_LIMIT_CONFIG.MAX_ATTEMPTS }
   }
 
-  return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS - entry.count }
+  return { allowed: true, remaining: RATE_LIMIT_CONFIG.MAX_ATTEMPTS - entry.count }
 }
 
 /**
@@ -80,13 +74,24 @@ function recordFailedAttempt(ip) {
 
   if (!entry) {
     rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
-  } else if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
+  } else if (now - entry.firstAttempt > RATE_LIMIT_CONFIG.WINDOW_MS) {
     rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
   } else {
     entry.count++
-    if (entry.count >= RATE_LIMIT.MAX_ATTEMPTS) {
-      entry.blockedUntil = now + RATE_LIMIT.BLOCK_DURATION_MS
+    if (entry.count >= RATE_LIMIT_CONFIG.MAX_ATTEMPTS) {
+      entry.blockedUntil = now + RATE_LIMIT_CONFIG.BLOCK_DURATION_MS
     }
+  }
+
+  if (rateLimitStore.attempts.size > RATE_LIMIT_CONFIG.MAX_STORE_SIZE) {
+    const cutoff = now - RATE_LIMIT_CONFIG.WINDOW_MS - RATE_LIMIT_CONFIG.BLOCK_DURATION_MS
+    for (const [key, val] of rateLimitStore.attempts) {
+      if (val.firstAttempt < cutoff) {
+        rateLimitStore.attempts.delete(key)
+      }
+    }
+  }
+}
   }
 
   if (rateLimitStore.attempts.size > 10000) {
@@ -197,7 +202,10 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
     if (!rateLimitResult.allowed) {
-      res.setHeader('Retry-After', String(rateLimitResult.retryAfter || 60))
+      res.setHeader(
+        'Retry-After',
+        String(rateLimitResult.retryAfter || RATE_LIMIT_CONFIG.DEFAULT_RETRY_AFTER_SECONDS)
+      )
       return res.status(429).json({
         success: false,
         message: 'Too many attempts. Please try again later.',
