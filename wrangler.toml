@@ -27,11 +27,10 @@ port = 8788
 local_protocol = "http"
 ip = "localhost"
 
-# TypeScript rules for functions directory
-# Allows wrangler to properly handle .ts files in functions/
-[[rules]]
-type = "ESModule"
-globs = ["functions/**/*.ts"]
+# Limits configuration (Cloudflare best practice)
+# https://developers.cloudflare.com/workers/platform/limits/
+[limits]
+cpu_ms = 50000
 
 # Performance optimization: Enable HTTP/3
 # https://developers.cloudflare.com/network/http3/
