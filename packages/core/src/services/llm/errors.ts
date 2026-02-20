@@ -1,51 +1,27 @@
 /**
  * Base error class
  * 基础错误类
+ *
+ * Note: BaseError, ErrorOptionsWithCause, and setErrorCause are now imported from
+ * '../../utils/error' for centralized error handling utilities.
  */
 
 import { LLM_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
+import {
+  BaseError as BaseErrorClass,
+  type ErrorOptionsWithCause,
+  setErrorCause,
+} from '../../utils/error'
 
-/**
- * Error options for error chaining support
- * Compatible with ES2022+ ErrorOptions for forward compatibility
- */
-export interface ErrorOptionsWithCause {
-  cause?: unknown
-}
-
-/**
- * Sets the cause property on an error for error chaining
- */
-export function setErrorCause(error: Error, cause: unknown): void {
-  if (cause !== undefined) {
-    ;(error as any).cause = cause
-  }
-}
-
-export class BaseError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
-  constructor(
-    code: string,
-    message?: string,
-    params?: ErrorParams,
-    options?: ErrorOptionsWithCause
-  ) {
-    super(message ? `[${code}] ${message}` : `[${code}]`)
-    this.name = this.constructor.name
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
-    Object.setPrototypeOf(this, new.target.prototype)
-    setErrorCause(this, options?.cause)
-  }
-}
+// Re-export for backward compatibility
+export { type ErrorOptionsWithCause, setErrorCause }
+export { BaseErrorClass as BaseError }
 
 /**
  * API error - Used for errors during API calls
  * API错误 - 用于表示API调用过程中的错误
  */
-export class APIError extends BaseError {
+export class APIError extends BaseErrorClass {
   constructor(message: string, options?: ErrorOptionsWithCause) {
     super(LLM_ERROR_CODES.API_ERROR, message, undefined, options)
   }
@@ -55,7 +31,7 @@ export class APIError extends BaseError {
  * Request configuration error - Used for request configuration validation failures
  * 请求配置错误 - 用于表示请求配置验证失败的错误
  */
-export class RequestConfigError extends BaseError {
+export class RequestConfigError extends BaseErrorClass {
   constructor(message: string, options?: ErrorOptionsWithCause) {
     super(LLM_ERROR_CODES.CONFIG_ERROR, message, undefined, options)
   }
@@ -65,7 +41,7 @@ export class RequestConfigError extends BaseError {
  * Validation error - Used for parameter validation failures
  * 验证错误 - 用于表示参数验证失败的错误
  */
-export class ValidationError extends BaseError {
+export class ValidationError extends BaseErrorClass {
   constructor(message: string, options?: ErrorOptionsWithCause) {
     super(LLM_ERROR_CODES.VALIDATION_ERROR, message, undefined, options)
   }
@@ -75,7 +51,7 @@ export class ValidationError extends BaseError {
  * Initialization error - Used for service initialization failures
  * 初始化错误 - 用于表示服务初始化失败的错误
  */
-export class InitializationError extends BaseError {
+export class InitializationError extends BaseErrorClass {
   constructor(message: string, options?: ErrorOptionsWithCause) {
     super(LLM_ERROR_CODES.INITIALIZATION_ERROR, message, undefined, options)
   }
@@ -85,21 +61,15 @@ export class InitializationError extends BaseError {
  * LLM service base error
  * LLM服务基础错误
  */
-export class LLMError extends Error {
-  public readonly code: string
-  public readonly params?: ErrorParams
-
+export class LLMError extends BaseErrorClass {
   constructor(
     code: string,
     message?: string,
     params?: ErrorParams,
     options?: ErrorOptionsWithCause
   ) {
-    super(message ? `[${code}] ${message}` : `[${code}]`)
+    super(code, message, params, options)
     this.name = 'LLMError'
-    this.code = code
-    this.params = params ?? (message ? { details: message } : undefined)
-    setErrorCause(this, options?.cause)
   }
 }
 

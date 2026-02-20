@@ -1,8 +1,10 @@
 /**
  * 存储错误类
+ *
+ * Note: Imports setErrorCause from '../../utils/error' for centralized error handling.
  */
 import { STORAGE_ERROR_CODES, type ErrorParams } from '../../constants/error-codes'
-import { type ErrorOptionsWithCause, setErrorCause } from '../llm/errors'
+import { type ErrorOptionsWithCause, setErrorCause } from '../../utils/error'
 
 type StorageOperation =
   | 'read'
