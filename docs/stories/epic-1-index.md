@@ -15,7 +15,7 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 | -------- | -------------------------------------- | ------ | -------- | ----------- | -------- | ------------ |
 | 1.1      | Prompt Optimization Core Functionality | Draft  | P0       | 8           | -        | 2026-02-19   |
 | 1.2      | Model Management Configuration         | Draft  | P0       | 5           | -        | 2026-02-19   |
-| 1.3      | History Record Management              | Draft  | P1       | 5           | -        | 2026-02-19   |
+| 1.3      | History Record Management              | Draft  | P1       | 8           | -        | 2026-02-20   |
 
 ## Story Details
 
@@ -73,11 +73,11 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 
 **Status**: Draft  
 **Priority**: P1 (High)  
-**Est. Points**: 5
+**Est. Points**: 8
 
-**Summary**: Implement comprehensive history tracking with search, filter, reuse, and export capabilities.
+**Summary**: Implement comprehensive history tracking with search, filter, reuse, import, and export capabilities.
 
-**Acceptance Criteria**: 7 criteria covering storage, display, search, actions, and export
+**Acceptance Criteria**: 8 criteria covering storage, display, search, actions, import, and export
 
 **Dependencies**:
 
@@ -100,13 +100,15 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 | ------ | --------- | --------- | -------- |
 | -      | -         | -         | -        |
 
+> **Note**: Velocity tracking begins after the first sprint. Use story points from completed stories to calculate velocity.
+
 ### Completion Metrics
 
 - **Total Stories**: 3
-- **Total Points**: 18
+- **Total Points**: 21
 - **Completed**: 0
 - **In Progress**: 0
-- **Remaining**: 18 points
+- **Remaining**: 21 points
 
 ### Status Distribution
 
@@ -157,6 +159,6 @@ Each story is considered "Done" when:
 
 ---
 
-**Last Updated**: 2026-02-19  
+**Last Updated**: 2026-02-20  
 **Epic Owner**: Product Owner  
 **Updated By**: user-story-engineer
