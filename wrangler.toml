@@ -6,7 +6,16 @@ compatibility_date = "2025-02-18"
 compatibility_flags = ["nodejs_compat"]
 
 # Pages configuration
+# Functions are automatically served from /functions directory
+# See: https://developers.cloudflare.com/pages/functions/
 pages_build_output_dir = "packages/web/dist"
+
+# TypeScript configuration for functions
+# Ensures proper compilation of .ts files in /functions
+[[rules]]
+type = "ESModule"
+globs = ["**/*.ts"]
+fallthrough = true
 
 # Enable enhanced Cloudflare features
 [placement]

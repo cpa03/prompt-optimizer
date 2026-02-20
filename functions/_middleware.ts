@@ -270,12 +270,15 @@ export async function onRequest(context: {
   const acceptLanguage = request.headers.get('accept-language') || ''
   const preferChinese = acceptLanguage.includes('zh')
 
+  const cfRay = request.headers.get('cf-ray') || ''
+
   return new Response(generateAuthPage(preferChinese), {
     status: 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': COOKIE_CONFIG.CACHE_CONTROL,
       'Content-Security-Policy': CONTENT_SECURITY_POLICY,
+      'X-CF-Ray': cfRay,
       ...SECURITY_HEADERS,
     },
   })

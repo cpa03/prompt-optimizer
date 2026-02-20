@@ -129,6 +129,53 @@ Cloudflare will automatically configure SSL certificates.
 - Request body size limit: 100MB
 - Response body size limit: 25MB
 
+## Performance Best Practices
+
+### Cloudflare Rate Limiting (Recommended for Production)
+
+The built-in authentication rate limiting uses in-memory storage, which is per-isolate. For production deployments, consider:
+
+1. **Cloudflare WAF Rate Limiting Rules** (Recommended)
+   - Configure in Cloudflare Dashboard > Security > WAF > Rate Limiting Rules
+   - More reliable than application-level rate limiting
+   - Works across all edge locations
+   - See: https://developers.cloudflare.com/waf/rate-limiting-rules/
+
+2. **KV-based Rate Limiting**
+   - Enable KV namespace in wrangler.toml
+   - Implement distributed rate limiting using KV with TTL
+
+### Early Hints (Automatic)
+
+Cloudflare automatically generates 103 Early Hints responses for critical resources:
+- Preloads CSS and JavaScript files referenced in HTML
+- Improves page load performance by ~20%
+- No configuration required
+
+### HTTP/3 and QUIC
+
+HTTP/3 and QUIC are automatically enabled for Cloudflare Pages:
+- Faster connection establishment
+- Better performance on unreliable networks
+- No configuration required
+
+## Monitoring and Analytics
+
+### Cloudflare Analytics
+
+Access detailed analytics in Cloudflare Dashboard:
+- Request volume and error rates
+- Performance metrics (TTFB, total request time)
+- Geographic distribution of requests
+- Security events and threats blocked
+
+### Web Analytics
+
+For client-side analytics, consider [Cloudflare Web Analytics](https://developers.cloudflare.com/analytics/):
+- Privacy-focused analytics
+- No cookie banner required in many jurisdictions
+- Easy integration with your site
+
 ## Troubleshooting
 
 ### Build Failure

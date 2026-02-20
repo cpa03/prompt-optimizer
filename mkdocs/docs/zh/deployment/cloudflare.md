@@ -121,6 +121,53 @@ Cloudflare 会自动配置 SSL 证书。
 - 请求体大小限制 100MB
 - 响应体大小限制 25MB
 
+## 性能最佳实践
+
+### Cloudflare Rate Limiting（生产环境推荐）
+
+内置的身份验证速率限制使用内存存储，每个 isolate 独立。对于生产环境部署，建议：
+
+1. **Cloudflare WAF Rate Limiting Rules**（推荐）
+   - 在 Cloudflare Dashboard > Security > WAF > Rate Limiting Rules 中配置
+   - 比应用层速率限制更可靠
+   - 在所有边缘位置生效
+   - 参考：https://developers.cloudflare.com/waf/rate-limiting-rules/
+
+2. **基于 KV 的速率限制**
+   - 在 wrangler.toml 中启用 KV namespace
+   - 使用 KV with TTL 实现分布式速率限制
+
+### Early Hints（自动）
+
+Cloudflare 自动为关键资源生成 103 Early Hints 响应：
+- 预加载 HTML 中引用的 CSS 和 JavaScript 文件
+- 页面加载性能提升约 20%
+- 无需配置
+
+### HTTP/3 和 QUIC
+
+Cloudflare Pages 自动启用 HTTP/3 和 QUIC：
+- 更快的连接建立
+- 在不可靠网络上性能更好
+- 无需配置
+
+## 监控和分析
+
+### Cloudflare Analytics
+
+在 Cloudflare Dashboard 中访问详细分析：
+- 请求量和错误率
+- 性能指标（TTFB、总请求时间）
+- 请求的地理分布
+- 安全事件和阻止的威胁
+
+### Web Analytics
+
+对于客户端分析，考虑使用 [Cloudflare Web Analytics](https://developers.cloudflare.com/analytics/)：
+- 注重隐私的分析
+- 在许多司法管辖区无需 Cookie 横幅
+- 易于与网站集成
+
 ## 故障排除
 
 ### 构建失败
