@@ -26,12 +26,15 @@
 
 ## 📚 API文档
 
-- [核心API文档](./api/core-api.md)（待创建） - @prompt-optimizer/core包API参考
+- 核心API文档 - 请参考 [项目结构](./project-structure.md) 了解各模块职责
 
 ## 🏗️ 架构文档
 
-- [架构概览](./architecture/overview.md)（待创建） - 系统整体架构
-- [设计模式](./architecture/design-patterns.md)（待创建） - 项目中使用的设计模式
+架构相关文档位于 [docs/architecture/](../architecture/) 目录：
+- [Storage Key Architecture](../architecture/storage-key-architecture.md) - 存储系统设计
+- [Image Model Management](../architecture/image-model-management-architecture.md) - 图像生成架构
+- [Function Mode](../architecture/function-mode.md) - Function Calling实现
+- [LLM Refactor](../architecture/llm-refactor.md) - LLM服务架构
 
 ## 🔧 故障排查
 
