@@ -29,6 +29,9 @@ FROM nginx:stable-alpine
 LABEL org.opencontainers.image.source="https://github.com/linshenkx/prompt-optimizer"
 LABEL org.opencontainers.image.description="Prompt Optimizer - AI prompt optimization tool"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
+LABEL org.opencontainers.image.title="Prompt Optimizer"
+LABEL org.opencontainers.image.vendor="Prompt Optimizer Team"
+LABEL org.opencontainers.image.documentation="https://github.com/linshenkx/prompt-optimizer#readme"
 
 RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs npm gettext curl && \
     npm install -g pnpm
