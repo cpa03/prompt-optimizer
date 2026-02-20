@@ -113,6 +113,17 @@ class RateLimiter {
     }
   }
 
+  getStats(): RateLimiterStats {
+    return {
+      totalClients: this.entries.size,
+      config: {
+        windowMs: this.config.windowMs,
+        maxRequests: this.config.maxRequests,
+        cleanupIntervalMs: this.config.cleanupIntervalMs,
+      },
+    }
+  }
+
   stop(): void {
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer)
@@ -150,3 +161,12 @@ export function getClientIdentifier(req: Request): string {
 }
 
 export type { RateLimiter, RateLimitConfig, RateLimitResult }
+
+export interface RateLimiterStats {
+  totalClients: number
+  config: {
+    windowMs: number
+    maxRequests: number
+    cleanupIntervalMs: number
+  }
+}
