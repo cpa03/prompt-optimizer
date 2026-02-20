@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
 import { API_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
@@ -97,7 +98,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.gemini,
       supportsDynamicModels: true, // 新版 SDK 支持动态模型获取
-      apiKeyUrl: 'https://aistudio.google.com/apikey',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.gemini,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

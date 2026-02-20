@@ -11,7 +11,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
-import { MIME_TYPES } from '../../../config'
+import { MIME_TYPES, HTTP_HEADERS } from '../../../config'
 
 export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -201,8 +201,8 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
     const response = await this.apiCall(config, '/images/generations', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-        'Content-Type': 'application/json',
+        ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
+        ...HTTP_HEADERS.json,
       },
       body: JSON.stringify(payload),
     })

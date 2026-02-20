@@ -1,6 +1,7 @@
 import type { TextModel, TextProvider } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { PROVIDER_DEEPSEEK } from '../../../constants'
 
 interface ModelOverride {
@@ -42,7 +43,7 @@ export class DeepseekAdapter extends OpenAIAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.deepseek,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://platform.deepseek.com/api_keys',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.deepseek,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { AbstractTextProviderAdapter } from './abstract-adapter'
 import { APIError } from '../errors'
 import { PROVIDER_URLS } from '../../../config/providers'
+import { PROVIDER_API_KEY_URLS } from '../../../config/provider-urls'
 import { LLM_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
 import { PROVIDER_ANTHROPIC } from '../../../constants'
@@ -45,7 +46,7 @@ export class AnthropicAdapter extends AbstractTextProviderAdapter {
       requiresApiKey: true,
       defaultBaseURL: PROVIDER_URLS.anthropic,
       supportsDynamicModels: true,
-      apiKeyUrl: 'https://console.anthropic.com/settings/keys',
+      apiKeyUrl: PROVIDER_API_KEY_URLS.anthropic,
       connectionSchema: {
         required: ['apiKey'],
         optional: ['baseURL'],

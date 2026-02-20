@@ -202,7 +202,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'Zhipu AI',
       description: 'Zhipu GLM OpenAI-compatible models',
       requiresApiKey: true,
-      defaultBaseURL: legacy.baseURL || 'https://open.bigmodel.cn/api/paas/v4',
+      defaultBaseURL: legacy.baseURL || PROVIDER_URLS.zhipu,
       supportsDynamicModels: false,
       connectionSchema: {
         required: ['apiKey'],
@@ -220,7 +220,7 @@ function createProviderMeta(providerId: string, legacy: ModelConfig): TextProvid
       name: 'Anthropic',
       description: 'Anthropic Claude models',
       requiresApiKey: true,
-      defaultBaseURL: 'https://api.anthropic.com/v1',
+      defaultBaseURL: PROVIDER_URLS.anthropic,
       supportsDynamicModels: false,
       connectionSchema: {
         required: ['apiKey'],
