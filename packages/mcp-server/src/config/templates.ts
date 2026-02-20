@@ -3,7 +3,7 @@
  * 完全复用 core 包的内置模板系统
  */
 
-import { TemplateManager } from '@prompt-optimizer/core'
+import { TemplateManager, type Template } from '@prompt-optimizer/core'
 import * as logger from '../utils/logging.js'
 
 /**
@@ -50,7 +50,7 @@ export async function getTemplateOptions(
     const templates = await templateManager.listTemplatesByType(templateType)
 
     // 将模板转换为选项格式
-    const options = templates.map((template) => ({
+    const options = templates.map((template: Template) => ({
       value: template.id,
       label: template.name,
       description: template.metadata.description || (template.isBuiltin ? '内置模板' : '用户模板'),

@@ -3,7 +3,7 @@
  * 完全复用 core 包的模型管理功能
  */
 
-import { ModelManager } from '@prompt-optimizer/core'
+import { ModelManager, type TextModelConfig } from '@prompt-optimizer/core'
 
 /**
  * 为 MCP 服务器设置默认模型
@@ -17,19 +17,22 @@ export async function setupDefaultModel(
   const { defaultModels } = await import('@prompt-optimizer/core')
 
   // 获取所有可用的默认模型（已启用的）
-  const availableModels = Object.entries(defaultModels).filter(([, config]) => config.enabled)
+  const availableModels = Object.entries(defaultModels).filter(([, config]) => config.enabled) as [
+    string,
+    TextModelConfig,
+  ][]
 
   if (availableModels.length === 0) {
     throw new Error('No enabled models found in core defaultModels')
   }
 
-  let selectedModel: [string, (typeof defaultModels)[keyof typeof defaultModels]] | undefined
+  let selectedModel: [string, TextModelConfig] | undefined
 
   // 1. 如果指定了 preferredProvider，尝试匹配
   if (preferredProvider) {
     selectedModel = availableModels.find(
       ([, config]) =>
-        config.provider === preferredProvider.toLowerCase() ||
+        config.providerMeta.id === preferredProvider.toLowerCase() ||
         config.name.toLowerCase().includes(preferredProvider.toLowerCase())
     )
   }
@@ -42,7 +45,7 @@ export async function setupDefaultModel(
   const [, modelConfig] = selectedModel
 
   // 3. 使用 core 的模型配置，确保模型启用
-  const finalConfig = {
+  const finalConfig: TextModelConfig = {
     ...modelConfig,
     // 确保模型启用
     enabled: true,
