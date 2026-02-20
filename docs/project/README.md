@@ -46,7 +46,7 @@
 
 ## 📝 需求管理
 
-- [功能需求](./requirements/feature-requirements.md)（待创建） - 详细功能需求列表
+- [产品需求文档](./prd.md) - 详细功能需求列表和规格说明
 
 ## 🔄 版本管理
 

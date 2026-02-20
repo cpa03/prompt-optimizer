@@ -33,7 +33,8 @@
 
 ## ❓ 常见问题
 
-- 常见问题解答（待创建） - 用户常遇到的问题和解决方案
+- [常见问题解答](../../README.md#常见问题) - 用户常遇到的问题和解决方案
+- [FAQ (English)](../../README_EN.md#faq) - Frequently asked questions
 
 ## 📞 获取帮助
 
