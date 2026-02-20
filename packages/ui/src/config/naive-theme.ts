@@ -854,11 +854,7 @@ export const switchTheme = (themeId: string): boolean => {
   const settings = useGlobalSettings(pinia)
   settings.updateThemeId(themeId)
 
-  const ok = applyThemeId(themeId)
-  if (ok) {
-    console.log(`Pure Naive UI theme switched to: ${themeId}`)
-  }
-  return ok
+  return applyThemeId(themeId)
 }
 
 // 获取当前主题ID

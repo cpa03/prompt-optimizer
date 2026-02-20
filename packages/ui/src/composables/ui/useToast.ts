@@ -20,7 +20,6 @@ let globalMessageApi: MessageApi | null = null
 // 设置全局消息API（在Toast组件中调用）
 export function setGlobalMessageApi(api: MessageApi) {
   globalMessageApi = api
-  console.log('[useToast] Global message API set successfully')
 }
 
 type ToastOptions = number | MessageOptions
