@@ -57,14 +57,10 @@ export function useSessionRestoreCoordinator(restoreFn: () => Promise<void> | vo
       // 🔧 Codex 建议：使用 queueMicrotask 异步排队，避免递归压力（而非 await 递归）
       if (pendingRestore.value) {
         pendingRestore.value = false
-        console.log('[SessionRestoreCoordinator] 检测到 pendingRestore，异步排队补跑恢复')
         queueMicrotask(() => {
-          // 🔧 Codex 修复：组件卸载后跳过恢复，避免无意义工作/日志噪声
           if (isUnmounted.value) {
-            console.log('[SessionRestoreCoordinator] 组件已卸载，跳过 pending restore')
             return
           }
-          // 🔧 Codex 修复：添加错误处理，避免未处理的 Promise rejection
           void executeRestore().catch((err) => {
             console.error('[SessionRestoreCoordinator] pending restore failed', err)
           })
