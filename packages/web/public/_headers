@@ -1,5 +1,8 @@
 # Cloudflare Pages Headers Configuration
 # https://developers.cloudflare.com/pages/platform/headers/
+#
+# Routing optimization: See _routes.json for static asset exclusions from Functions
+# This improves performance by avoiding unnecessary function invocations
 
 /*
   # Security Headers
