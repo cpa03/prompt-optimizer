@@ -12,6 +12,7 @@
           size="small"
           @click="openFullscreen"
           :title="t('common.expand')"
+          :aria-label="t('common.expand')"
           ghost
           round
         >
@@ -47,6 +48,7 @@
         show-count
         :size="size"
         :data-testid="props.testId"
+        :aria-label="label"
       />
 
       <!-- 帮助文本 -->
@@ -64,6 +66,7 @@
         :autosize="{ minRows: 20 }"
         clearable
         show-count
+        :aria-label="label"
       />
     </FullscreenDialog>
   </div>
