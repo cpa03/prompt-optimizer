@@ -36,6 +36,8 @@ export interface IStorageProvider {
   }>
   healthCheck?(): Promise<DatabaseHealthStatus>
   close?(): Promise<void>
+
+  getItems?(keys: string[]): Promise<Record<string, string | null>>
 }
 
 export interface DatabaseHealthStatus {

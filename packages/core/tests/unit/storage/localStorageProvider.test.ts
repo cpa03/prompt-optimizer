@@ -142,4 +142,44 @@ describe('LocalStorageProvider', () => {
       await expect(provider.clearAll()).rejects.toThrow(StorageError)
     })
   })
+
+  describe('getItems', () => {
+    it('should get multiple items at once', async () => {
+      await provider.setItem('key1', 'value1')
+      await provider.setItem('key2', 'value2')
+      await provider.setItem('key3', 'value3')
+
+      const result = await provider.getItems(['key1', 'key2', 'key3'])
+
+      expect(result).toEqual({
+        key1: 'value1',
+        key2: 'value2',
+        key3: 'value3',
+      })
+    })
+
+    it('should return null for non-existent keys', async () => {
+      await provider.setItem('existing', 'value')
+
+      const result = await provider.getItems(['existing', 'nonexistent'])
+
+      expect(result).toEqual({
+        existing: 'value',
+        nonexistent: null,
+      })
+    })
+
+    it('should return empty object for empty array', async () => {
+      const result = await provider.getItems([])
+      expect(result).toEqual({})
+    })
+
+    it('should validate input is an array', async () => {
+      await expect(provider.getItems(null as any)).rejects.toThrow('Keys must be an array')
+    })
+
+    it('should validate keys are valid', async () => {
+      await expect(provider.getItems([''])).rejects.toThrow('Key must be a non-empty string')
+    })
+  })
 })

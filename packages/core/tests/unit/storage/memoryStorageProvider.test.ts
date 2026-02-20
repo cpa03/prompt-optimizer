@@ -39,6 +39,48 @@ describe('MemoryStorageProvider', () => {
     })
   })
 
+  describe('批量读取操作', () => {
+    it('应该能批量获取多个键', async () => {
+      await storage.setItem('key1', 'value1')
+      await storage.setItem('key2', 'value2')
+      await storage.setItem('key3', 'value3')
+
+      const result = await storage.getItems(['key1', 'key2', 'key3'])
+
+      expect(result).toEqual({
+        key1: 'value1',
+        key2: 'value2',
+        key3: 'value3',
+      })
+    })
+
+    it('应该对不存在的键返回 null', async () => {
+      await storage.setItem('existing-key', 'value')
+
+      const result = await storage.getItems(['existing-key', 'non-existent-key'])
+
+      expect(result).toEqual({
+        'existing-key': 'value',
+        'non-existent-key': null,
+      })
+    })
+
+    it('应该对空数组返回空对象', async () => {
+      const result = await storage.getItems([])
+      expect(result).toEqual({})
+    })
+
+    it('应该验证输入参数类型', async () => {
+      await expect(storage.getItems(null as any)).rejects.toThrow('Keys must be an array')
+      await expect(storage.getItems(undefined as any)).rejects.toThrow('Keys must be an array')
+    })
+
+    it('应该验证键的有效性', async () => {
+      await expect(storage.getItems([''])).rejects.toThrow('Key must be a non-empty string')
+      await expect(storage.getItems([null as any])).rejects.toThrow()
+    })
+  })
+
   describe('高级操作', () => {
     it('应该能更新数据', async () => {
       await storage.setItem('counter', '5')

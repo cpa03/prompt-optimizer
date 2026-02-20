@@ -30,6 +30,38 @@ export class MemoryStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 批量获取存储项
+   * @param keys 要获取的键数组
+   * @returns 键值映射对象，不存在的键对应 null
+   */
+  async getItems(keys: string[]): Promise<Record<string, string | null>> {
+    if (!Array.isArray(keys)) {
+      throw new StorageError('Keys must be an array', 'validation')
+    }
+
+    if (keys.length === 0) {
+      return {}
+    }
+
+    try {
+      keys.forEach((key) => validateStorageKey(key))
+
+      const result: Record<string, string | null> = {}
+      for (const key of keys) {
+        const value = this.storage.get(key)
+        result[key] = value !== undefined ? value : null
+      }
+
+      return result
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError('Failed to get items batch', 'read')
+    }
+  }
+
+  /**
    * 设置存储项
    * @param key 存储键
    * @param value 存储值

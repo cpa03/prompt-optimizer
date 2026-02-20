@@ -39,6 +39,23 @@ export class StorageAdapter implements IStorageProvider {
   }
 
   /**
+   * 批量获取存储项
+   */
+  async getItems(keys: string[]): Promise<Record<string, string | null>> {
+    if ('getItems' in this.baseProvider && typeof this.baseProvider.getItems === 'function') {
+      return (this.baseProvider as any).getItems(keys)
+    }
+
+    const result: Record<string, string | null> = {}
+    await Promise.all(
+      keys.map(async (key) => {
+        result[key] = await this.baseProvider.getItem(key)
+      })
+    )
+    return result
+  }
+
+  /**
    * 隐藏式数据更新 - 内部实现原子性
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
