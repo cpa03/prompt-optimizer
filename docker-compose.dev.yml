@@ -25,6 +25,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - 'org.opencontainers.image.title=Prompt Optimizer (Dev)'
+      - 'org.opencontainers.image.description=AI prompt optimization tool - Development'
+      - 'org.opencontainers.image.source=https://github.com/linshenkx/prompt-optimizer'
+      - 'org.opencontainers.image.vendor=Prompt Optimizer Team'
     environment:
       # nginx内部端口配置
       - NGINX_PORT=${NGINX_PORT:-80}
