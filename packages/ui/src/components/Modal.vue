@@ -9,9 +9,11 @@
     :style="modalStyle"
     :class="modalClass"
     @after-leave="handleAfterLeave"
+    @keydown="handleKeyDown"
     role="dialog"
     aria-modal="true"
     :aria-label="title || t('common.title')"
+    :aria-describedby="description ? 'modal-description' : undefined"
   >
     <template #header>
       <slot name="title">{{ title || t('common.title') }}</slot>
@@ -19,6 +21,9 @@
 
     <template #default>
       <div class="modal-content">
+        <p v-if="description" id="modal-description" class="sr-only">
+          {{ description }}
+        </p>
         <slot></slot>
       </div>
     </template>
@@ -27,10 +32,20 @@
       <div class="modal-footer">
         <slot name="footer">
           <div class="flex justify-end gap-3">
-            <NButton type="tertiary" @click="handleCancel">
+            <NButton
+              type="tertiary"
+              @click="handleCancel"
+              @keydown.enter.stop="handleCancel"
+              @keydown.space.stop="handleCancel"
+            >
               {{ t('common.cancel') }}
             </NButton>
-            <NButton type="primary" @click="handleConfirm">
+            <NButton
+              type="primary"
+              @click="handleConfirm"
+              @keydown.enter.stop="handleConfirm"
+              @keydown.space.stop="handleConfirm"
+            >
               {{ t('common.confirm') }}
             </NButton>
           </div>
@@ -41,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton } from 'naive-ui'
@@ -52,12 +67,14 @@ const { t } = useI18n()
 interface Props {
   modelValue: boolean
   title?: string
+  description?: string
   maskClosable?: boolean
   closable?: boolean
   autoFocus?: boolean
   trapFocus?: boolean
   width?: number | string
   maxWidth?: number | string
+  closeOnEscape?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -67,6 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
   trapFocus: true,
   width: UI_DIMENSIONS.MODAL_WIDTH_VW,
   maxWidth: UI_DIMENSIONS.MODAL_WIDTH_SMALL,
+  closeOnEscape: true,
 })
 
 const emit = defineEmits<{
@@ -99,6 +117,29 @@ const modalStyle = computed(() => ({
 }))
 
 const modalClass = computed(() => ['modern-modal', { 'modal-closing': isClosing.value }])
+
+// 键盘事件处理
+const handleKeyDown = (event: KeyboardEvent) => {
+  // ESC键关闭模态框
+  if (event.key === 'Escape' && props.closeOnEscape && isVisible.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    handleCancel()
+  }
+}
+
+// 添加全局键盘监听
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeyDown)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeyDown)
+  }
+})
 
 // 事件处理
 const handleConfirm = () => {
@@ -144,6 +185,19 @@ const handleAfterLeave = () => {
 .modal-footer {
   padding-top: 16px;
   border-top: 1px solid var(--n-divider-color);
+}
+
+/* Screen reader only - visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* 关闭动画效果 */
