@@ -448,6 +448,9 @@ async function main() {
       // Health check endpoint for monitoring and load balancers
       app.get('/health', (_req, res) => {
         const rateLimitStats = rateLimiter.getStats()
+        const memUsage = process.memoryUsage()
+        const activeSessions = Object.keys(transports).length
+
         res.status(200).json({
           status: 'healthy',
           timestamp: new Date().toISOString(),
@@ -456,6 +459,15 @@ async function main() {
           rateLimiter: {
             totalClients: rateLimitStats.totalClients,
             maxRequests: rateLimitStats.config.maxRequests,
+          },
+          sessions: {
+            active: activeSessions,
+          },
+          memory: {
+            heapUsedMB: Math.round(memUsage.heapUsed / 1024 / 1024),
+            heapTotalMB: Math.round(memUsage.heapTotal / 1024 / 1024),
+            rssMB: Math.round(memUsage.rss / 1024 / 1024),
+            externalMB: Math.round(memUsage.external / 1024 / 1024),
           },
         })
       })

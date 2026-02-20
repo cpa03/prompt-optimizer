@@ -263,6 +263,19 @@ export class MCPErrorHandler {
   }
 
   /**
+   * Adds jitter to a delay value to prevent thundering herd.
+   * Uses full jitter strategy: random value between 0 and delayMs.
+   *
+   * @param delayMs - Base delay in milliseconds
+   * @returns Delay with jitter applied (between 50% and 100% of base delay)
+   * @private
+   */
+  private static addJitter(delayMs: number): number {
+    const jitterFactor = 0.5 + Math.random() * 0.5
+    return Math.floor(delayMs * jitterFactor)
+  }
+
+  /**
    * Gets retry recommendation for an error.
    *
    * @param error - The McpError to get recommendations for
@@ -278,19 +291,19 @@ export class MCPErrorHandler {
     switch (error.code) {
       case MCP_ERROR_CODES.AI_RATE_LIMITED:
         return {
-          delayMs: 60000,
+          delayMs: this.addJitter(60000),
           reason: 'Rate limit exceeded - wait before retrying',
           maxRetries: 3,
         }
       case MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT:
         return {
-          delayMs: 5000,
+          delayMs: this.addJitter(5000),
           reason: 'Request timed out - may succeed on retry',
           maxRetries: 3,
         }
       case MCP_ERROR_CODES.SERVICE_UNAVAILABLE:
         return {
-          delayMs: 10000,
+          delayMs: this.addJitter(10000),
           reason: 'Service temporarily unavailable - retry after delay',
           maxRetries: 3,
         }
