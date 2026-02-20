@@ -178,9 +178,7 @@ export class PreferenceService implements IPreferenceService {
   async clear(): Promise<void> {
     try {
       const prefKeys = await this.keys()
-      for (const key of prefKeys) {
-        await this.delete(key)
-      }
+      await Promise.all(prefKeys.map((key) => this.delete(key)))
       this.keyCache.clear()
     } catch (error) {
       console.error('[PreferenceService] Error clearing preferences:', error)
@@ -199,17 +197,23 @@ export class PreferenceService implements IPreferenceService {
   async getAll(): Promise<Record<string, string>> {
     try {
       const allKeys = await this.keys()
-      const result: Record<string, string> = {}
 
-      for (const key of allKeys) {
-        try {
-          const value = await this.get(key, null)
-          if (value !== null) {
-            result[key] = String(value)
+      const entries = await Promise.all(
+        allKeys.map(async (key) => {
+          try {
+            const value = await this.get<string | null>(key, null)
+            return value !== null ? ([key, String(value)] as const) : null
+          } catch (error) {
+            console.warn(`[PreferenceService] Failed to get preference for key "${key}":`, error)
+            return null
           }
-        } catch (error) {
-          console.warn(`[PreferenceService] Failed to get preference for key "${key}":`, error)
-          // 继续处理其他键，不因单个键失败而中断
+        })
+      )
+
+      const result: Record<string, string> = {}
+      for (const entry of entries) {
+        if (entry !== null) {
+          result[entry[0]] = entry[1]
         }
       }
 
