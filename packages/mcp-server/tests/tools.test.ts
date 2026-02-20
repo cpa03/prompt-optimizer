@@ -25,16 +25,22 @@ describe('MCP Server Tools', () => {
   describe('ParameterValidator', () => {
     it('应该正确验证提示词输入', () => {
       expect(() => ParameterValidator.validatePrompt('有效的提示词')).not.toThrow()
-      expect(() => ParameterValidator.validatePrompt('')).toThrow('提示词必须是非空字符串')
-      expect(() => ParameterValidator.validatePrompt('   ')).toThrow('提示词必须是非空字符串')
+      expect(() => ParameterValidator.validatePrompt('')).toThrow(
+        '提示词不能为空字符串或纯空白字符'
+      )
+      expect(() => ParameterValidator.validatePrompt('   ')).toThrow(
+        '提示词不能为空字符串或纯空白字符'
+      )
       expect(() => ParameterValidator.validatePrompt('a'.repeat(60000))).toThrow('提示词过长')
     })
 
     it('应该正确验证需求输入', () => {
       expect(() => ParameterValidator.validateRequirements('有效的需求描述')).not.toThrow()
-      expect(() => ParameterValidator.validateRequirements('')).toThrow('需求描述必须是非空字符串')
+      expect(() => ParameterValidator.validateRequirements('')).toThrow(
+        '需求描述不能为空字符串或纯空白字符'
+      )
       expect(() => ParameterValidator.validateRequirements('   ')).toThrow(
-        '需求描述必须是非空字符串'
+        '需求描述不能为空字符串或纯空白字符'
       )
       expect(() => ParameterValidator.validateRequirements('a'.repeat(15000))).toThrow(
         '需求描述过长'
@@ -44,8 +50,12 @@ describe('MCP Server Tools', () => {
     it('应该正确验证模板输入', () => {
       expect(() => ParameterValidator.validateTemplate('valid-template')).not.toThrow()
       expect(() => ParameterValidator.validateTemplate(undefined)).not.toThrow()
-      expect(() => ParameterValidator.validateTemplate('')).toThrow('模板必须是非空字符串')
-      expect(() => ParameterValidator.validateTemplate('   ')).toThrow('模板必须是非空字符串')
+      expect(() => ParameterValidator.validateTemplate('')).toThrow(
+        '模板不能为空字符串或纯空白字符'
+      )
+      expect(() => ParameterValidator.validateTemplate('   ')).toThrow(
+        '模板不能为空字符串或纯空白字符'
+      )
     })
   })
 
