@@ -233,6 +233,36 @@ export class LocalStorageProvider implements IStorageProvider {
   }
 
   /**
+   * 获取存储统计信息
+   * 返回存储项数量、总大小等统计信息
+   */
+  public async getDatabaseStats(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }> {
+    const keys = await this.keys()
+    let totalSize = 0
+
+    for (const key of keys) {
+      const value = localStorage.getItem(key)
+      if (value !== null) {
+        totalSize += value.length
+      }
+    }
+
+    return {
+      itemCount: keys.length,
+      totalSize,
+      oldestRecord: null,
+      newestRecord: null,
+      averageRecordSize: keys.length > 0 ? totalSize / keys.length : 0,
+    }
+  }
+
+  /**
    * 存储健康检查
    * 检查存储的读写删能力，返回详细的健康状态
    */

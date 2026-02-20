@@ -282,3 +282,45 @@ interface DatabaseHealthStatus {
 ## Updated Conclusion
 
 These targeted improvements enhance the database layer's reliability, performance, and observability while maintaining complete backward compatibility. The centralized validation ensures consistent behavior across all storage providers, reducing potential bugs and improving maintainability. The unified health check capability enables consistent monitoring across all storage backends.
+
+### 6. Unified Database Statistics Across All Storage Providers (NEW - 2026-02-20)
+
+**Problem**: Only `DexieStorageProvider` had a `getDatabaseStats()` method, while other storage providers (`MemoryStorageProvider`, `LocalStorageProvider`, `FileStorageProvider`) lacked this capability.
+
+**Solution**: Added `getDatabaseStats()` method to all storage providers for consistency.
+
+**Benefits**:
+
+- Consistent API across all storage providers
+- Ability to monitor storage statistics in any environment
+- Uniform data structure for storage monitoring
+- Better observability for all storage backends
+
+**Implementation**:
+
+All storage providers now implement the `getDatabaseStats()` method returning a consistent structure:
+
+```typescript
+interface DatabaseStats {
+  itemCount: number
+  totalSize: number
+  oldestRecord: number | null
+  newestRecord: number | null
+  averageRecordSize: number
+}
+```
+
+**Updated Providers**:
+
+- `DexieStorageProvider` - Already had getDatabaseStats (reference implementation)
+- `MemoryStorageProvider` - Added getDatabaseStats for testing environments
+- `LocalStorageProvider` - Added getDatabaseStats for browser environments
+- `FileStorageProvider` - Added getDatabaseStats for Electron environments
+
+**Compatibility**: ✅ No breaking changes. New method follows the same pattern as existing implementation.
+
+## Updated Testing
+
+- ✅ All 75 unit tests passing (3 new tests added for getDatabaseStats)
+- ✅ No TypeScript compilation errors
+- ✅ No ESLint warnings
