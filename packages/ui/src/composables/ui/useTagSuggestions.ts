@@ -49,9 +49,7 @@ export function useTagSuggestions() {
     const excludeSet = new Set(excludeTags.map((t) => t.toLowerCase()))
 
     if (!query) {
-      return allTags.value
-        .filter((tag) => !excludeSet.has(tag.value.toLowerCase()))
-        .sort((a, b) => b.count - a.count)
+      return sortedByCount.value.filter((tag) => !excludeSet.has(tag.value.toLowerCase()))
     }
 
     const lowerQuery = query.toLowerCase()
@@ -88,11 +86,9 @@ export function useTagSuggestions() {
     }
   })
 
-  const getRecentTags = computed(() => {
-    return (limit = 10, excludeTags: string[] = []): TagSuggestion[] => {
-      return getPopularTags.value(limit, excludeTags)
-    }
-  })
+  const getRecentTags = (limit = 10, excludeTags: string[] = []): TagSuggestion[] => {
+    return getPopularTags.value(limit, excludeTags)
+  }
 
   return {
     allTags,
