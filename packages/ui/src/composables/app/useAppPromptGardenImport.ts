@@ -12,7 +12,11 @@
 
 import { watch, nextTick, type Ref } from 'vue'
 import type { LocationQuery, Router } from 'vue-router'
-import type { ConversationMessage, PromptRecordChain } from '@prompt-optimizer/core'
+import {
+  type ConversationMessage,
+  type PromptRecordChain,
+  HTTP_METHODS,
+} from '@prompt-optimizer/core'
 
 import { useToast } from '../ui/useToast'
 import { createDefaultEvaluationResults } from '../../types/evaluation'
@@ -253,7 +257,7 @@ const fetchPromptFromGarden = async (opts: {
   }
 
   const resp = await fetch(url, {
-    method: 'GET',
+    method: HTTP_METHODS.GET,
     headers: {
       Accept: 'application/json',
     },
@@ -417,7 +421,7 @@ const resolveGardenUrl = (opts: { gardenBaseUrl: string | null; url: string }): 
 const fetchImageAsBase64 = async (
   absoluteUrl: string
 ): Promise<{ b64: string; mimeType: string } | null> => {
-  const resp = await fetch(absoluteUrl, { method: 'GET' })
+  const resp = await fetch(absoluteUrl, { method: HTTP_METHODS.GET })
   if (!resp.ok) {
     throw new Error(`Example image request failed: ${resp.status}`)
   }

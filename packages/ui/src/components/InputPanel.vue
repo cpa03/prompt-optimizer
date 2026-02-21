@@ -4,9 +4,11 @@
     <!-- 标题区域 -->
     <NFlex justify="space-between" align="center" :wrap="false">
       <NFlex align="center" :size="SPACING.SM">
-        <NText :depth="1" :style="{ fontSize: FONT_SIZES.XXXL + 'px', fontWeight: 500 }">{{
-          label
-        }}</NText>
+        <NText
+          :depth="1"
+          :style="{ fontSize: FONT_SIZES.XXXL + 'px', fontWeight: FONT_WEIGHTS.MEDIUM }"
+          >{{ label }}</NText
+        >
         <!-- 🆕 帮助提示图标 -->
         <NPopover v-if="helpText" trigger="hover" placement="right" :show-arrow="true">
           <template #trigger>
@@ -36,7 +38,9 @@
               </template>
             </NButton>
           </template>
-          <div :style="{ maxWidth: '320px', lineHeight: 1.6 }">
+          <div
+            :style="{ maxWidth: TYPOGRAPHY.MAX_WIDTH_TOOLTIP, lineHeight: LINE_HEIGHTS.RELAXED }"
+          >
             {{ helpText }}
           </div>
         </NPopover>
@@ -183,9 +187,11 @@
       <!-- 模型选择 -->
       <NGridItem :span="6" :xs="24" :sm="6">
         <NSpace vertical :size="SPACING.SM">
-          <NText :depth="2" :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: 500 }">{{
-            modelLabel
-          }}</NText>
+          <NText
+            :depth="2"
+            :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: FONT_WEIGHTS.MEDIUM }"
+            >{{ modelLabel }}</NText
+          >
           <slot name="model-select"></slot>
         </NSpace>
       </NGridItem>
@@ -193,9 +199,11 @@
       <!-- 提示词模板选择 -->
       <NGridItem v-if="templateLabel" :span="11" :xs="24" :sm="11">
         <NSpace vertical :size="SPACING.SM">
-          <NText :depth="2" :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: 500 }">{{
-            templateLabel
-          }}</NText>
+          <NText
+            :depth="2"
+            :style="{ fontSize: FONT_SIZES.BASE + 'px', fontWeight: FONT_WEIGHTS.MEDIUM }"
+            >{{ templateLabel }}</NText
+          >
           <slot name="template-select"></slot>
         </NSpace>
       </NGridItem>
@@ -258,7 +266,7 @@ import { NInput, NButton, NText, NSpace, NFlex, NGrid, NGridItem, NIcon, NPopove
 import { useFullscreen } from '../composables/ui/useFullscreen'
 import FullscreenDialog from './FullscreenDialog.vue'
 import { VariableAwareInput } from './variable-extraction'
-import { SPACING, FONT_SIZES } from '../config/constants'
+import { SPACING, FONT_SIZES, FONT_WEIGHTS, LINE_HEIGHTS, TYPOGRAPHY } from '../config/constants'
 
 /**
  * 输入面板组件

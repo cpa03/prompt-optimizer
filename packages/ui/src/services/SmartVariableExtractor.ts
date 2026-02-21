@@ -3,6 +3,9 @@
  */
 
 import type { VariableExtractor } from '../types'
+import { COMPONENT_CONSTANTS, VARIABLE_CONSTRAINTS } from '../config/constants'
+
+const EXTRACTOR_CONSTANTS = COMPONENT_CONSTANTS.SMART_VARIABLE_EXTRACTOR
 
 // 内置常见变量名库
 const COMMON_VARIABLES = {
@@ -154,31 +157,36 @@ export class SmartVariableExtractor implements VariableExtractor {
         const confidence = this.calculatePatternConfidence(selectedText, pattern)
 
         // 添加该类别的变量建议
-        categoryVariables.slice(0, 3).forEach((name, index) => {
-          suggestions.push({
-            name,
-            confidence: confidence - index * 0.1, // 按优先级递减
-            category,
-            reason: `Detected ${category}-related content`,
+        categoryVariables
+          .slice(0, EXTRACTOR_CONSTANTS.MAX_SUGGESTIONS_PER_CATEGORY)
+          .forEach((name, index) => {
+            suggestions.push({
+              name,
+              confidence: confidence - index * EXTRACTOR_CONSTANTS.CONFIDENCE_DECREMENT, // 按优先级递减
+              category,
+              reason: `Detected ${category}-related content`,
+            })
           })
-        })
       }
     }
 
     // 基于长度和内容特征的通用建议
-    if (selectedText.length > 200) {
+    if (selectedText.length > EXTRACTOR_CONSTANTS.LONG_TEXT_THRESHOLD) {
       suggestions.push({
         name: 'long_context',
-        confidence: 0.6,
+        confidence: EXTRACTOR_CONSTANTS.LONG_TEXT_CONFIDENCE,
         category: 'context',
         reason: 'Long text content detected',
       })
     }
 
-    if (selectedText.includes('\n') && selectedText.split('\n').length > 3) {
+    if (
+      selectedText.includes('\n') &&
+      selectedText.split('\n').length > EXTRACTOR_CONSTANTS.MULTILINE_THRESHOLD
+    ) {
       suggestions.push({
         name: 'multiline_content',
-        confidence: 0.7,
+        confidence: EXTRACTOR_CONSTANTS.MULTILINE_CONFIDENCE,
         category: 'context',
         reason: 'Multi-line structured content',
       })
@@ -188,7 +196,7 @@ export class SmartVariableExtractor implements VariableExtractor {
     if (this.looksLikeJSON(selectedText)) {
       suggestions.push({
         name: 'json_data',
-        confidence: 0.8,
+        confidence: EXTRACTOR_CONSTANTS.JSON_CONFIDENCE,
         category: 'input',
         reason: 'JSON format detected',
       })
@@ -196,7 +204,9 @@ export class SmartVariableExtractor implements VariableExtractor {
 
     // 去重并按置信度排序
     const uniqueSuggestions = this.deduplicateSuggestions(suggestions)
-    return uniqueSuggestions.sort((a, b) => b.confidence - a.confidence).slice(0, 8)
+    return uniqueSuggestions
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, EXTRACTOR_CONSTANTS.MAX_TOTAL_SUGGESTIONS)
   }
 
   /**
@@ -260,7 +270,9 @@ export class SmartVariableExtractor implements VariableExtractor {
 
   // 私有方法：验证变量名是否有效
   private isValidVariableName(name: string): boolean {
-    return /^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) && name.length <= 50
+    return (
+      /^[a-zA-Z][a-zA-Z0-9_]*$/.test(name) && name.length <= VARIABLE_CONSTRAINTS.MAX_NAME_LENGTH
+    )
   }
 
   // 私有方法：计算模式匹配置信度

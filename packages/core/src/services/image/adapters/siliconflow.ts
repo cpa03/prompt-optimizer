@@ -14,6 +14,7 @@ import {
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
   HTTP_HEADERS,
+  HTTP_METHODS,
   getTestPrompt,
   getSiliconFlowKolorsParameterDefinitions,
   getSiliconFlowQwenParameterDefinitions,
@@ -104,11 +105,11 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
       // 分别获取不同能力的模型
       const [text2imageResponse, image2imageResponse] = await Promise.all([
         this.apiCall(tmpConfig, '/models?type=image&sub_type=text-to-image', {
-          method: 'GET',
+          method: HTTP_METHODS.GET,
           headers,
         }),
         this.apiCall(tmpConfig, '/models?type=image&sub_type=image-to-image', {
-          method: 'GET',
+          method: HTTP_METHODS.GET,
           headers,
         }),
       ])
@@ -220,7 +221,7 @@ export class SiliconFlowImageAdapter extends AbstractImageProviderAdapter {
     delete mergedParams.batch_size
 
     const response = await this.apiCall(config, '/images/generations', {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers: {
         ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
         ...HTTP_HEADERS.json,

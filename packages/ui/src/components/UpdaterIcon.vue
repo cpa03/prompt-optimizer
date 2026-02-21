@@ -1,7 +1,7 @@
 <template>
   <!-- 🎨 Palette: Enhanced UpdaterIcon with improved accessibility and micro-interactions -->
   <div v-if="isElectronEnvironment" class="relative">
-    <NTooltip :placement="tooltipPlacement" :delay="300" :disabled="showModal">
+    <NTooltip :placement="tooltipPlacement" :delay="tooltipDelay" :disabled="showModal">
       <template #trigger>
         <NBadge :show="state.hasUpdate" dot processing>
           <NButton
@@ -110,6 +110,7 @@ import { NButton, NBadge, NTooltip } from 'naive-ui'
 import { isRunningInElectron } from '@prompt-optimizer/core'
 import { useUpdater } from '../composables/system/useUpdater'
 import UpdaterModal from './UpdaterModal.vue'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -122,8 +123,9 @@ const { state } = useUpdater()
 // 模态框显示状态
 const showModal = ref(false)
 
-// 🎨 Palette: Tooltip placement
+// 🎨 Palette: Tooltip placement and delay (using centralized constants)
 const tooltipPlacement = 'bottom' as const
+const tooltipDelay = TIME_CONSTANTS.TOOLTIP_DELAY_MEDIUM
 
 // 🎨 Palette: Dynamic ARIA labels for accessibility
 const buttonAriaLabel = computed(() => {

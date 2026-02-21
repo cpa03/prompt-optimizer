@@ -9,7 +9,7 @@ import type {
   ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, MIME_TYPES } from '../../../config'
+import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, HTTP_METHODS, MIME_TYPES } from '../../../config'
 
 export class OllamaImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -82,7 +82,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     }
 
     try {
-      const response = await fetch(url, { method: 'GET', headers })
+      const response = await fetch(url, { method: HTTP_METHODS.GET, headers })
       if (!response.ok) {
         return []
       }
@@ -172,7 +172,7 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     }
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers,
       body: JSON.stringify(payload),
     })

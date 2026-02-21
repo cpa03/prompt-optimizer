@@ -15,7 +15,16 @@ import {
   type CompletionResult,
 } from '@codemirror/autocomplete'
 import type { DetectedVariable } from './useVariableDetection'
-import { COMPONENT_CONSTANTS } from '../../config/constants'
+import {
+  COMPONENT_CONSTANTS,
+  FONT_WEIGHTS,
+  LINE_HEIGHTS,
+  FONT_SIZES,
+  SPACING,
+  BORDER_RADIUS,
+} from '../../config/constants'
+
+const CODEMIRROR_CONSTANTS = COMPONENT_CONSTANTS.CODEMIRROR
 
 export interface VariableDetectionLabels {
   sourceGlobal: string
@@ -233,7 +242,7 @@ export function variableAutocompletion(
         // 添加临时变量 (优先级最高)
         for (const [name, value] of Object.entries(temporaryVariables)) {
           const preview = value
-            ? `${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`
+            ? `${value.substring(0, CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH)}${value.length > CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH ? '...' : ''}`
             : labels.emptyValue
 
           options.push(
@@ -249,7 +258,7 @@ export function variableAutocompletion(
         // 添加全局变量
         for (const [name, value] of Object.entries(globalVariables)) {
           const preview = value
-            ? `${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`
+            ? `${value.substring(0, CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH)}${value.length > CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH ? '...' : ''}`
             : labels.emptyValue
 
           options.push(
@@ -271,7 +280,7 @@ export function variableAutocompletion(
     ],
     // 自动完成配置
     activateOnTyping: true,
-    maxRenderedOptions: 20,
+    maxRenderedOptions: CODEMIRROR_CONSTANTS.AUTOCOMPLETE_MAX_OPTIONS,
     defaultKeymap: true,
     optionClass: (completion) => {
       const source = (completion as VariableCompletionMeta).sourceType
@@ -427,7 +436,7 @@ export function existingVariableTooltip(
         dom.style.fontSize = '13px'
         dom.style.color = textColor
         dom.style.maxWidth = `${COMPONENT_CONSTANTS.CODEMIRROR.TOOLTIP_MAX_WIDTH}px`
-        dom.style.lineHeight = '1.6'
+        dom.style.lineHeight = String(LINE_HEIGHTS.RELAXED)
         const sourceLabelText =
           varSource === 'global'
             ? labels.sourceGlobal
@@ -464,10 +473,10 @@ export function existingVariableTooltip(
         const valueElement = document.createElement('div')
         valueElement.style.fontSize = '13px'
         valueElement.style.color = textColor
-        valueElement.style.fontWeight = '500'
+        valueElement.style.fontWeight = String(FONT_WEIGHTS.MEDIUM)
         valueElement.style.whiteSpace = 'pre-wrap'
         valueElement.style.wordBreak = 'break-word'
-        valueElement.style.maxHeight = '180px'
+        valueElement.style.maxHeight = `${CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_HEIGHT_PX}px`
         valueElement.style.overflowY = 'auto'
         valueElement.style.fontFamily =
           'var(--n-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)'
@@ -477,7 +486,7 @@ export function existingVariableTooltip(
           valueElement.style.opacity = '1'
           valueElement.textContent = varValue
         } else {
-          valueElement.style.fontWeight = '400'
+          valueElement.style.fontWeight = String(FONT_WEIGHTS.NORMAL)
           valueElement.style.fontStyle = 'italic'
           valueElement.style.opacity = '0.7'
           valueElement.textContent = labels.emptyValue
@@ -689,12 +698,12 @@ export function createThemeExtension(
     '&': {
       backgroundColor: resolvedBackgroundColor,
       color: themeVars.textColor1,
-      fontSize: '14px',
+      fontSize: `${FONT_SIZES.BASE}px`,
       fontFamily: 'inherit',
       height: '100%',
     },
     '.cm-content': {
-      padding: '8px',
+      padding: `${SPACING.SM}px`,
       caretColor: themeVars.primaryColor,
       fontFamily: 'inherit',
     },
@@ -723,30 +732,30 @@ export function createThemeExtension(
     '.cm-variable-global': {
       backgroundColor: highlightColors.global.backgroundColor,
       color: highlightColors.global.color,
-      borderRadius: '2px',
-      padding: '0 2px',
-      fontWeight: '500',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-temporary': {
       backgroundColor: highlightColors.temporary.backgroundColor,
       color: highlightColors.temporary.color,
-      borderRadius: '2px',
-      padding: '0 2px',
-      fontWeight: '500',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-predefined': {
       backgroundColor: highlightColors.predefined.backgroundColor,
       color: highlightColors.predefined.color,
-      borderRadius: '2px',
-      padding: '0 2px',
-      fontWeight: '500',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-missing': {
       backgroundColor: highlightColors.missing.backgroundColor,
       color: highlightColors.missing.color,
-      borderRadius: '2px',
-      padding: '0 2px',
-      fontWeight: '500',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
       textDecoration: 'underline wavy red',
       textDecorationThickness: '2px',
       textUnderlineOffset: '2px',
