@@ -99,7 +99,7 @@ import {
 } from 'naive-ui'
 import { useToast } from '../composables/ui/useToast'
 import { Star, Stars } from '@vicons/tabler'
-import type { FavoriteCategory } from '@prompt-optimizer/core'
+import type { FavoriteCategory, FavoritePrompt } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
 import { TIME_CONSTANTS } from '../config/constants'
 
@@ -179,7 +179,7 @@ const formRules: FormRules = {
 
 // 分类选项
 const categoryOptions = computed(() => {
-  return categories.value.map((cat) => ({
+  return categories.value.map((cat: FavoriteCategory) => ({
     label: cat.name,
     value: cat.id,
     color: cat.color,
@@ -198,7 +198,7 @@ const checkFavoriteStatus = async () => {
 
   try {
     const favorites = await servicesValue.favoriteManager.getFavorites()
-    const existing = favorites.find((f) => f.content === props.content)
+    const existing = favorites.find((f: FavoritePrompt) => f.content === props.content)
 
     if (existing) {
       isFavorited.value = true
@@ -253,7 +253,8 @@ const initFavoriteForm = () => {
   let defaultCategory = ''
   if (props.originalContent) {
     // 如果有原始内容，说明是优化后的提示词
-    defaultCategory = categories.value.find((c) => c.name === '系统提示词')?.id || ''
+    defaultCategory =
+      categories.value.find((c: FavoriteCategory) => c.name === '系统提示词')?.id || ''
   }
 
   favoriteForm.value = {

@@ -272,14 +272,19 @@ const parentCategoryOptions = computed(() => {
 // 计算删除分类的子分类数量
 const deletingCategoryHasChildren = computed(() => {
   if (!deletingCategory.value) return false
-  return categories.value.some((cat) => cat.parentId === deletingCategory.value!.id)
+  return categories.value.some(
+    (cat: FavoriteCategory) => cat.parentId === deletingCategory.value!.id
+  )
 })
 
 const deletingCategoryChildCount = computed(() => {
   if (!deletingCategory.value) return 0
   const countChildren = (parentId: string): number => {
-    const children = categories.value.filter((cat) => cat.parentId === parentId)
-    return children.length + children.reduce((sum, child) => sum + countChildren(child.id), 0)
+    const children = categories.value.filter((cat: FavoriteCategory) => cat.parentId === parentId)
+    return (
+      children.length +
+      children.reduce((sum: number, child: FavoriteCategory) => sum + countChildren(child.id), 0)
+    )
   }
   return countChildren(deletingCategory.value.id)
 })
@@ -448,7 +453,9 @@ const handleConfirmDelete = async () => {
 
     // 递归删除所有子分类
     const deleteWithChildren = async (categoryId: string) => {
-      const children = categories.value.filter((cat) => cat.parentId === categoryId)
+      const children = categories.value.filter(
+        (cat: FavoriteCategory) => cat.parentId === categoryId
+      )
       for (const child of children) {
         await deleteWithChildren(child.id)
       }
