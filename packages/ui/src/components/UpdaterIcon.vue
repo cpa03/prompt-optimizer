@@ -16,6 +16,7 @@
               'has-update': state.hasUpdate,
               'is-checking': state.isCheckingUpdate,
               'is-downloading': state.isDownloading,
+              'is-downloaded': state.isDownloaded,
             }"
           >
             <template #icon>
