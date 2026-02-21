@@ -41,8 +41,13 @@ const rateLimitStore: AuthRateLimitStore = {
   attempts: new Map(),
 }
 
+/**
+ * Generate a unique request ID for logging/tracing
+ * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers
+ * @returns {string} - Unique request ID
+ */
 function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  return `req_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
 function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number; remaining?: number } {

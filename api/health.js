@@ -1,5 +1,10 @@
+/**
+ * Generate a unique request ID for logging/tracing
+ * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers
+ * @returns {string} - Unique request ID
+ */
 function generateRequestId() {
-  return `health_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  return `health_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
 export default function handler(req, res) {
