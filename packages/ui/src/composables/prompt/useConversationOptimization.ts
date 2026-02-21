@@ -107,10 +107,7 @@ export function useConversationOptimization(
   // 改为在每次 set/delete 后显式同步
   const syncMessageChainMapToSession = () => {
     if (optimizationMode.value === 'system') {
-      const record: Record<string, string> = {}
-      for (const [key, value] of messageChainMap.value.entries()) {
-        record[key] = value
-      }
+      const record = Object.fromEntries(messageChainMap.value.entries())
       isSyncingMapToSession.value = true
       proMultiMessageSession.setMessageChainMap(record)
       isSyncingMapToSession.value = false

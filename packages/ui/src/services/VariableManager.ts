@@ -69,12 +69,9 @@ export class VariableManager implements IVariableManager {
   private _onDataLoaded?: () => void
 
   // 变量扫描缓存
-  // @ts-expect-error Reserved for future cache optimization
   private scanCache: Map<string, ScanCacheEntry> = new Map()
-  // @ts-expect-error Reserved for future cache optimization
-  private readonly CACHE_EXPIRY_MS = TIME_CONSTANTS.CACHE_EXPIRY_MS // 5分钟缓存
-  // @ts-expect-error Reserved for future cache optimization
-  private readonly MAX_CACHE_SIZE = VALIDATION_CONSTRAINTS.MAX_CACHE_SIZE // 最大缓存条目数
+  private readonly CACHE_EXPIRY_MS = TIME_CONSTANTS.CACHE_EXPIRY_MS
+  private readonly MAX_CACHE_SIZE = VALIDATION_CONSTRAINTS.MAX_CACHE_SIZE
 
   constructor(private preferenceService: IPreferenceService) {
     // 保存 Promise，让外部可以等待初始化完成
@@ -197,6 +194,12 @@ export class VariableManager implements IVariableManager {
   }
 
   scanVariablesInContent(content: string): string[] {
+    // Check cache first
+    const cached = this.scanCache.get(content)
+    if (cached && Date.now() - cached.timestamp < this.CACHE_EXPIRY_MS) {
+      return [...cached.variables]
+    }
+
     const variables: string[] = []
 
     // 防御性编程：确保content是字符串类型
@@ -226,6 +229,19 @@ export class VariableManager implements IVariableManager {
         }
       }
     }
+
+    // Update cache with LRU eviction
+    if (this.scanCache.size >= this.MAX_CACHE_SIZE) {
+      const oldestKey = this.scanCache.keys().next().value
+      if (oldestKey) {
+        this.scanCache.delete(oldestKey)
+      }
+    }
+    this.scanCache.set(content, {
+      content,
+      variables: [...variables],
+      timestamp: Date.now(),
+    })
 
     return variables
   }

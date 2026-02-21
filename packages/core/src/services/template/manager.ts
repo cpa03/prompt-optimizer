@@ -360,14 +360,14 @@ export class TemplateManager implements ITemplateManager {
       .filter((template) => !template.isBuiltin)
       .map((template) => template.id)
 
-    // Delete all existing user templates
-    for (const id of userTemplateIds) {
-      try {
-        await this.deleteTemplate(id)
-      } catch (error) {
-        console.warn(`Failed to delete template ${id}:`, error)
-      }
-    }
+    // Delete all existing user templates in parallel with error handling
+    await Promise.allSettled(
+      userTemplateIds.map((id) =>
+        this.deleteTemplate(id).catch((error) => {
+          console.warn(`Failed to delete template ${id}:`, error)
+        })
+      )
+    )
 
     const failedTemplates: { template: Template; error: Error }[] = []
 
