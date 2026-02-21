@@ -105,3 +105,6 @@ export type {
   CircuitBreakerStats,
   CircuitBreakerRegistryOptions,
 } from './circuit-breaker'
+
+// Secure ID generation utilities
+export { generateSecureUUID, generatePrefixedId, generateTimestampId } from './id'

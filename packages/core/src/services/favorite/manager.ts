@@ -19,6 +19,7 @@ import { TypeMapper } from './type-mapper'
 import { TagTypeConverter } from './type-converter'
 import { FAVORITE_KEYS } from '../../constants/storage-keys'
 import { VALIDATION_CONSTRAINTS } from '../../constants/constraints'
+import { generateSecureUUID } from '../../utils/id'
 
 /**
  * 收藏管理器实现
@@ -231,7 +232,9 @@ export class FavoriteManager implements IFavoriteManager {
     }
 
     const now = Date.now()
-    const id = `fav_${now}_${Math.random().toString(36).substr(2, 9)}`
+    const uuid = generateSecureUUID()
+    const shortUuid = uuid.replace(/-/g, '').slice(0, 9)
+    const id = `fav_${now}_${shortUuid}`
 
     const newFavorite: FavoritePrompt = {
       ...favoriteData,
@@ -470,7 +473,9 @@ export class FavoriteManager implements IFavoriteManager {
     }
 
     const now = Date.now()
-    const id = `cat_${now}_${Math.random().toString(36).substr(2, 9)}`
+    const uuid = generateSecureUUID()
+    const shortUuid = uuid.replace(/-/g, '').slice(0, 9)
+    const id = `cat_${now}_${shortUuid}`
 
     const newCategory: FavoriteCategory = {
       ...category,
@@ -1175,7 +1180,9 @@ export class FavoriteManager implements IFavoriteManager {
             }
             let newId = ''
             do {
-              newId = `fav_${baseTimestamp + timestampOffset}_${Math.random().toString(36).slice(2, 11)}`
+              const uuid = generateSecureUUID()
+              const shortUuid = uuid.replace(/-/g, '').slice(0, 9)
+              newId = `fav_${baseTimestamp + timestampOffset}_${shortUuid}`
             } while (existingIds.has(newId))
             existingIds.add(newId)
             return newId

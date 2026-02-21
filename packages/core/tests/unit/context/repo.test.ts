@@ -144,7 +144,7 @@ describe('ContextRepo', () => {
     it('create() 应该创建新的上下文', async () => {
       const newId = await repo.create({ title: '新上下文' })
 
-      expect(newId).toMatch(/^ctx-\d+-[a-z0-9]+$/)
+      expect(newId).toMatch(/^ctx-[a-f0-9-]{36}$/)
 
       const newContext = await repo.get(newId)
       expect(newContext.title).toBe('新上下文')
@@ -575,7 +575,7 @@ describe('ContextRepo', () => {
 
         expect(result.imported).toBe(1)
         expect(result.idMapping).toBeDefined()
-        expect(result.idMapping![DEFAULT_CONTEXT_CONFIG.id]).toMatch(/^ctx-\d+-[a-z0-9]+$/)
+        expect(result.idMapping![DEFAULT_CONTEXT_CONFIG.id]).toMatch(/^ctx-[a-f0-9-]{36}$/)
 
         const contexts = await repo.list()
         expect(contexts).toHaveLength(2)

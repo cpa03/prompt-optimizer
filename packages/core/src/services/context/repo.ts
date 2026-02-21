@@ -27,12 +27,13 @@ import {
   CONTEXT_UI_LABELS,
   DEFAULT_CONTEXT_MODE,
 } from './constants'
+import { generateSecureUUID } from '../../utils/id'
 
 /**
- * 生成唯一ID
+ * 生成唯一ID (uses cryptographically secure random)
  */
 function generateId(): string {
-  return `ctx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return `ctx-${generateSecureUUID()}`
 }
 
 /**
