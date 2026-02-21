@@ -256,6 +256,17 @@ export function classifyError(error: unknown): ErrorClassification {
     }
   }
 
+  const timeoutPatterns = ['timeout', 'timed out', 'etimedout']
+
+  for (const pattern of timeoutPatterns) {
+    if (message.includes(pattern)) {
+      result.isTimeout = true
+      result.isRetryable = true
+      result.category = 'timeout'
+      return result
+    }
+  }
+
   const networkPatterns = [
     'network',
     'econnreset',
@@ -267,14 +278,9 @@ export function classifyError(error: unknown): ErrorClassification {
     'socket error',
     'connection reset',
     'connection refused',
-    'connection timed out',
     'getaddrinfo',
     'dns',
   ]
-
-  const timeoutPatterns = ['timeout', 'timed out', 'etimedout']
-
-  const rateLimitPatterns = ['rate limit', 'too many requests', '429', 'throttl']
 
   for (const pattern of networkPatterns) {
     if (message.includes(pattern)) {
@@ -285,14 +291,7 @@ export function classifyError(error: unknown): ErrorClassification {
     }
   }
 
-  for (const pattern of timeoutPatterns) {
-    if (message.includes(pattern)) {
-      result.isTimeout = true
-      result.isRetryable = true
-      result.category = 'timeout'
-      return result
-    }
-  }
+  const rateLimitPatterns = ['rate limit', 'too many requests', '429', 'throttl']
 
   for (const pattern of rateLimitPatterns) {
     if (message.includes(pattern)) {
