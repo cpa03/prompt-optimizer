@@ -42,6 +42,8 @@ export const TIMEOUTS = {
   circuitBreaker: {
     failureThreshold: getEnvInt('VITE_CIRCUIT_BREAKER_FAILURE_THRESHOLD', 5),
     successThreshold: getEnvInt('VITE_CIRCUIT_BREAKER_SUCCESS_THRESHOLD', 3),
+    timeout: getEnvInt('VITE_CIRCUIT_BREAKER_TIMEOUT', 30000),
+    resetTimeout: getEnvInt('VITE_CIRCUIT_BREAKER_RESET_TIMEOUT', 60000),
   },
 } as const
 
