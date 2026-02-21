@@ -34,14 +34,24 @@
 
 ### 📦 [开发过程归档](./archives/)
 
-按功能点归档的开发记录，用于跟踪和排错
+按功能点归档的开发记录，用于跟踪和排错。完整的归档索引请查看 [归档文档综合索引](./archives/INDEX.md)。
 
+**核心架构演进：**
 - 101-singleton-refactor - 单例模式重构 ✅
 - 102-web-architecture-refactor - Web架构重构 ✅
-- 103-desktop-architecture - 桌面端架构 🔄
-- 104-test-panel-refactor - 测试面板重构 📋
-- 105-output-display-v2 - 输出显示v2 📋
-- 106-template-management - 模板管理功能 🔄
+- 103-desktop-architecture - 桌面端架构 ✅
+- 121-context-editor-refactor - 上下文编辑器重构 ✅
+
+**系统优化系列：**
+- 122-naive-ui-migration - Naive UI 迁移项目 ✅
+- 126-submode-persistence - 子模式持久化功能 ✅
+- 129-session-store-single-source-refactor - Session Store 单一真源架构重构 ✅
+
+**最新归档：**
+- 127-multi-turn-dialogue-mode-optimization - 多轮对话模式优化 ✅
+- 128-context-ui-and-variable-system-refactor - 上下文 UI 改造与变量系统重构 ✅
+
+> 💡 提示：归档编号从 101 开始，目前已归档至 129。完整列表和分类索引请查看 [归档文档综合索引](./archives/INDEX.md)。
 
 ### 🛠️ [开发工作区](./workspace/)
 
@@ -124,12 +134,13 @@
 
 ### 归档流程
 
-- **新功能开发**：在archives/中创建新的功能点目录（从107开始编号）
+- **新功能开发**：在archives/中创建新的功能点目录（继续使用下一个可用编号）
 - **重要经验**：及时从workspace/转移到archives/对应功能点
 - **通用指南**：从临时记录整理为正式的developer/文档
+- **索引维护**：更新 archives/INDEX.md 以反映新增的归档文档
 
 ---
 
 **文档重构完成时间**：2025-01-01
-**最后一次更新**：2026-02-19
+**最后一次更新**：2026-02-21
 **下一次整理计划**：根据开发进度定期更新
