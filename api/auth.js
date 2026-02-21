@@ -91,7 +91,6 @@ function recordFailedAttempt(ip) {
       }
     }
   }
-  }
 }
 
 /**
