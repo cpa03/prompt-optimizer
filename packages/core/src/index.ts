@@ -295,3 +295,7 @@ export {
   VariableValueGenerationService,
   createVariableValueGenerationService,
 } from './services/variable-value-generation/service'
+
+// 🆕 导出通用接口 - 提升模块化程度
+export type { IImportExportable } from './interfaces/import-export'
+export { ImportExportError } from './interfaces/import-export'
