@@ -19,15 +19,13 @@ import {
  * 提供统一的主题管理接口
  */
 export function useNaiveTheme() {
-  // 当前主题相关的响应式数据
-  const themeId = computed(() => currentThemeId.value)
-  const themeConfig = computed(() => currentThemeConfig.value)
-  const naiveTheme = computed(() => currentNaiveTheme.value)
-  const themeOverrides = computed(() => currentThemeOverrides.value)
-  const isCurrentThemeDark = computed(() => isDarkTheme.value)
+  const isLightTheme = computed(() => currentThemeId.value === 'light')
+  const isDarkThemeActive = computed(() => currentThemeId.value === 'dark')
+  const isBlueTheme = computed(() => currentThemeId.value === 'blue')
+  const isGreenTheme = computed(() => currentThemeId.value === 'green')
+  const isPurpleTheme = computed(() => currentThemeId.value === 'purple')
 
-  // 当前主题名称
-  const currentThemeName = computed(() => themeConfig.value.name)
+  const currentThemeName = computed(() => currentThemeConfig.value.name)
 
   // 主题切换函数
   const changeTheme = (newThemeId: string): boolean => {
@@ -37,7 +35,7 @@ export function useNaiveTheme() {
   // 获取下一个主题（用于循环切换）
   const getNextThemeId = (): string => {
     const themeIds = availableThemes.map((t) => t.id)
-    const currentIndex = themeIds.indexOf(themeId.value)
+    const currentIndex = themeIds.indexOf(currentThemeId.value)
     const nextIndex = (currentIndex + 1) % themeIds.length
     return themeIds[nextIndex]
   }
@@ -55,27 +53,20 @@ export function useNaiveTheme() {
   const switchToGreenTheme = () => changeTheme('green')
   const switchToPurpleTheme = () => changeTheme('purple')
 
-  // 检查当前是否为特定主题
-  const isLightTheme = computed(() => themeId.value === 'light')
-  const isDarkThemeActive = computed(() => themeId.value === 'dark')
-  const isBlueTheme = computed(() => themeId.value === 'blue')
-  const isGreenTheme = computed(() => themeId.value === 'green')
-  const isPurpleTheme = computed(() => themeId.value === 'purple')
-
   // 初始化主题
   const initTheme = () => {
     initializeNaiveTheme()
   }
 
   return {
-    // 响应式状态
-    themeId,
-    themeConfig,
-    naiveTheme,
-    themeOverrides,
+    // 响应式状态 - return original refs directly to avoid unnecessary computed wrappers
+    themeId: currentThemeId,
+    themeConfig: currentThemeConfig,
+    naiveTheme: currentNaiveTheme,
+    themeOverrides: currentThemeOverrides,
     currentThemeName,
     availableThemes,
-    isCurrentThemeDark,
+    isCurrentThemeDark: isDarkTheme,
 
     // 主题检查
     isLightTheme,
