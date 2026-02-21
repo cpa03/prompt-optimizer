@@ -6,6 +6,20 @@
   "framework": "vite",
   "cleanUrls": true,
   "trailingSlash": false,
+  "skewProtection": true,
+  "support": {
+    "source": "https://github.com/cpa03/prompt-optimizer/issues"
+  },
+  "regions": ["iad1", "sfo1", "fra1"],
+  "images": {
+    "remotePatterns": [
+      {
+        "protocol": "https",
+        "hostname": "**"
+      }
+    ],
+    "unoptimized": true
+  },
   "rewrites": [
     {
       "source": "/api/:path*",
@@ -128,12 +142,14 @@
     "api/health.js": {
       "runtime": "nodejs20.x",
       "maxDuration": 5,
-      "memory": 128
+      "memory": 128,
+      "includeFiles": "scripts/config/constants.js"
     },
     "api/auth.js": {
       "runtime": "nodejs20.x",
       "maxDuration": 10,
-      "memory": 512
+      "memory": 512,
+      "includeFiles": "scripts/config/constants.js"
     }
   },
   "github": {
