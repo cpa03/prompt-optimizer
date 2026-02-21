@@ -264,8 +264,8 @@ export class CircuitBreakerRegistry {
           options?.successThreshold ??
           this.defaultOptions.defaultSuccessThreshold ??
           TIMEOUTS.circuitBreaker.successThreshold,
-        timeout: options?.timeout ?? this.defaultOptions.defaultTimeout ?? 30000,
-        resetTimeout: options?.resetTimeout ?? this.defaultOptions.defaultResetTimeout ?? 60000,
+        timeout: options?.timeout ?? this.defaultOptions.defaultTimeout ?? TIMEOUTS.network.default,
+        resetTimeout: options?.resetTimeout ?? this.defaultOptions.defaultResetTimeout ?? TIMEOUTS.long,
         onStateChange: options?.onStateChange,
         onFailure: options?.onFailure,
         onSuccess: options?.onSuccess,
