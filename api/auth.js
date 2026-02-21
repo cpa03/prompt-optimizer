@@ -106,7 +106,7 @@ function clearRateLimit(ip) {
  * @returns {string} - Unique request ID
  */
 function generateRequestId() {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  return crypto.randomUUID()
 }
 
 /**
@@ -157,10 +157,40 @@ const SECURITY_HEADERS = {
   'Cross-Origin-Opener-Policy': 'same-origin',
 }
 
+/**
+ * Structured logging for Vercel functions
+ * Outputs JSON format for better observability in Vercel logs
+ * @param {object} params - Log parameters
+ * @param {string} params.requestId - Request ID
+ * @param {string} params.event - Event name
+ * @param {string} [params.level] - Log level (info, warn, error)
+ * @param {object} [params.data] - Additional data
+ */
+function log({ requestId, event, level = 'info', data = {} }) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    requestId,
+    event,
+    level,
+    ...data,
+  }
+  if (level === 'error') {
+    console.error(JSON.stringify(logEntry))
+  } else {
+    console.log(JSON.stringify(logEntry))
+  }
+}
+
 export default function handler(req, res) {
   const requestId = generateRequestId()
   const clientIP = getClientIP(req)
   const isProduction = process.env.NODE_ENV === 'production'
+
+  log({
+    requestId,
+    event: 'request_start',
+    data: { method: req.method, path: req.url, ip: clientIP },
+  })
 
   const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
 
@@ -194,6 +224,12 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
     if (!rateLimitResult.allowed) {
+      log({
+        requestId,
+        event: 'rate_limited',
+        level: 'warn',
+        data: { ip: clientIP, retryAfter: rateLimitResult.retryAfter },
+      })
       res.setHeader(
         'Retry-After',
         String(rateLimitResult.retryAfter || RATE_LIMIT_CONFIG.DEFAULT_RETRY_AFTER_SECONDS)
@@ -224,6 +260,11 @@ export default function handler(req, res) {
 
       if (timingSafeEqual(password, accessPassword)) {
         clearRateLimit(clientIP)
+        log({
+          requestId,
+          event: 'auth_success',
+          data: { ip: clientIP },
+        })
         const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
         const secureFlag = isProduction ? '; Secure' : ''
         res.setHeader('Set-Cookie', [
@@ -237,6 +278,12 @@ export default function handler(req, res) {
       } else {
         recordFailedAttempt(clientIP)
         const remaining = checkRateLimit(clientIP).remaining || 0
+        log({
+          requestId,
+          event: 'auth_failed',
+          level: 'warn',
+          data: { ip: clientIP, attemptsRemaining: remaining },
+        })
 
         return res.status(401).json({
           success: false,
@@ -257,6 +304,11 @@ export default function handler(req, res) {
 
     if (action === 'logout') {
       clearRateLimit(clientIP)
+      log({
+        requestId,
+        event: 'logout',
+        data: { ip: clientIP },
+      })
       res.setHeader('Set-Cookie', [
         `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`,
       ])
