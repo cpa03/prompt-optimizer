@@ -57,6 +57,12 @@ describe('MCP Server Tools', () => {
         '模板不能为空字符串或纯空白字符'
       )
     })
+
+    it('应该正确验证模板长度限制', () => {
+      expect(() => ParameterValidator.validateTemplate('a'.repeat(100))).not.toThrow()
+      expect(() => ParameterValidator.validateTemplate('a'.repeat(101))).toThrow('模板标识过长')
+      expect(() => ParameterValidator.validateTemplate('a'.repeat(200))).toThrow('模板标识过长')
+    })
   })
 
   describe('MCPErrorHandler', () => {
