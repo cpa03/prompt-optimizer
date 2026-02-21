@@ -97,7 +97,7 @@ function parseStoryFile(filePath) {
     text: m[2].trim(),
   }))
 
-  const taskMatches = content.matchAll(/^-\s*\[([ x])\]\s*Task\s*(\d+)(?:\s*\(AC:\s*([\d,\s]+)\))?/gm)
+  const taskMatches = content.matchAll(/^-\s*\[([ x])\]\s*Task\s*(\d+):.*?(?:\(AC:\s*([\d,\s]+)\))?\s*$/gm)
   result.tasks = Array.from(taskMatches).map((m) => ({
     number: parseInt(m[2]),
     completed: m[1] === 'x',
@@ -221,7 +221,7 @@ function validateStory(parsed) {
     }
   }
 
-  const devNotesMatch = content.match(/##\s*Dev\s*Notes([\s\S]*?)(?=##|$)/i)
+  const devNotesMatch = content.match(/##\s*Dev\s*Notes\n([\s\S]+?)(?=\n## \w)/)
   if (devNotesMatch) {
     const devNotes = devNotesMatch[1]
     if (devNotes.includes('Source Tree') || devNotes.includes('```')) {
@@ -246,7 +246,7 @@ function validateStory(parsed) {
     }
   }
 
-  const testMatch = content.match(/##\s*Testing([\s\S]*?)(?=##|$)/i)
+  const testMatch = content.match(/##\s*Testing\n([\s\S]+?)(?=\n## \w)/)
   if (testMatch) {
     const testSection = testMatch[1]
     if (testSection.includes('Test') || testSection.includes('test')) {
