@@ -34,18 +34,21 @@ export function safeSerializeForIPC<T>(obj: T): T {
     return obj
   }
 
-  // 对于基本类型，直接返回
   if (typeof obj !== 'object') {
     return obj
   }
 
-  // 使用JSON序列化确保100%的IPC兼容性
   try {
-    return JSON.parse(JSON.stringify(obj))
-  } catch (error) {
-    logger.error('Failed to serialize object:', error)
-    const details = error instanceof Error ? error.message : String(error)
-    throw new IpcSerializationError(`Failed to serialize object for IPC: ${details}`)
+    return structuredClone(obj)
+  } catch {
+    // Fallback for non-cloneable objects (functions, symbols, DOM nodes, etc.)
+    try {
+      return JSON.parse(JSON.stringify(obj))
+    } catch (error) {
+      logger.error('Failed to serialize object:', error)
+      const details = error instanceof Error ? error.message : String(error)
+      throw new IpcSerializationError(`Failed to serialize object for IPC: ${details}`)
+    }
   }
 }
 

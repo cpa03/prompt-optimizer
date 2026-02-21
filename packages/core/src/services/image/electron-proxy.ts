@@ -10,6 +10,7 @@ import type {
 } from './types'
 import { BaseError } from '../llm/errors'
 import { IMAGE_ERROR_CODES } from '../../constants/error-codes'
+import { safeSerializeForIPC } from '../../utils/ipc-serialization'
 
 type ElectronAPI = {
   image: {
@@ -55,43 +56,38 @@ export class ElectronImageServiceProxy implements IImageService {
   }
 
   async generate(request: ImageRequest): Promise<ImageResult> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    return await this.electronAPI.image.generate(safeReq)
+    return await this.electronAPI.image.generate(safeSerializeForIPC(request))
   }
 
   async generateText2Image(request: Text2ImageRequest): Promise<ImageResult> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    return await this.electronAPI.image.generateText2Image(safeReq)
+    return await this.electronAPI.image.generateText2Image(safeSerializeForIPC(request))
   }
 
   async generateImage2Image(request: Image2ImageRequest): Promise<ImageResult> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    return await this.electronAPI.image.generateImage2Image(safeReq)
+    return await this.electronAPI.image.generateImage2Image(safeSerializeForIPC(request))
   }
 
   async validateRequest(request: ImageRequest): Promise<void> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    await this.electronAPI.image.validateRequest(safeReq)
+    await this.electronAPI.image.validateRequest(safeSerializeForIPC(request))
   }
 
   async validateText2ImageRequest(request: Text2ImageRequest): Promise<void> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    await this.electronAPI.image.validateText2ImageRequest(safeReq)
+    await this.electronAPI.image.validateText2ImageRequest(safeSerializeForIPC(request))
   }
 
   async validateImage2ImageRequest(request: Image2ImageRequest): Promise<void> {
-    const safeReq = JSON.parse(JSON.stringify(request))
-    await this.electronAPI.image.validateImage2ImageRequest(safeReq)
+    await this.electronAPI.image.validateImage2ImageRequest(safeSerializeForIPC(request))
   }
 
   async testConnection(config: ImageModelConfig): Promise<ImageResult> {
-    const safeCfg = JSON.parse(JSON.stringify(config))
-    return await this.electronAPI.image.testConnection(safeCfg)
+    return await this.electronAPI.image.testConnection(safeSerializeForIPC(config))
   }
 
-  async getDynamicModels(providerId: string, connectionConfig: Record<string, any>) {
-    const safeConn = JSON.parse(JSON.stringify(connectionConfig || {}))
-    return await this.electronAPI.image.getDynamicModels(providerId, safeConn)
+  async getDynamicModels(providerId: string, connectionConfig: Record<string, unknown>) {
+    return await this.electronAPI.image.getDynamicModels(
+      providerId,
+      safeSerializeForIPC(connectionConfig || {})
+    )
   }
 }
 
@@ -118,13 +114,11 @@ export class ElectronImageModelManagerProxy implements IImageModelManager {
 
   // 新的配置 CRUD 操作
   async addConfig(config: ImageModelConfig): Promise<void> {
-    const safeCfg = JSON.parse(JSON.stringify(config))
-    await this.electronAPI.imageModel.addConfig(safeCfg)
+    await this.electronAPI.imageModel.addConfig(safeSerializeForIPC(config))
   }
 
   async updateConfig(id: string, updates: Partial<ImageModelConfig>): Promise<void> {
-    const safeUpdates = JSON.parse(JSON.stringify(updates))
-    await this.electronAPI.imageModel.updateConfig(id, safeUpdates)
+    await this.electronAPI.imageModel.updateConfig(id, safeSerializeForIPC(updates))
   }
 
   async deleteConfig(id: string): Promise<void> {
@@ -149,8 +143,7 @@ export class ElectronImageModelManagerProxy implements IImageModelManager {
   }
 
   async importData(data: any): Promise<void> {
-    const safe = JSON.parse(JSON.stringify(data))
-    await this.electronAPI.imageModel.importData(safe)
+    await this.electronAPI.imageModel.importData(safeSerializeForIPC(data))
   }
 
   async getDataType(): Promise<string> {
@@ -158,7 +151,6 @@ export class ElectronImageModelManagerProxy implements IImageModelManager {
   }
 
   async validateData(data: any): Promise<boolean> {
-    const safe = JSON.parse(JSON.stringify(data))
-    return await this.electronAPI.imageModel.validateData(safe)
+    return await this.electronAPI.imageModel.validateData(safeSerializeForIPC(data))
   }
 }
