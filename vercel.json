@@ -6,7 +6,6 @@
   "framework": "vite",
   "cleanUrls": true,
   "trailingSlash": false,
-  "regions": ["iad1", "sfo1", "fra1"],
   "rewrites": [
     {
       "source": "/api/:path*",
