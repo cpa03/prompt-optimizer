@@ -2,8 +2,14 @@ export interface Env {
   ACCESS_PASSWORD?: string
 }
 
+/**
+ * Generate a unique request ID for logging/tracing.
+ * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers.
+ * This is safer than Math.random() which is predictable and not meant for security.
+ * @returns A unique request ID string
+ */
 function generateRequestId(): string {
-  return `cf_health_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  return `cf_health_${Date.now()}_${crypto.randomUUID()}`
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
