@@ -155,7 +155,7 @@ kubectl get events -n prompt-optimizer --sort-by='.lastTimestamp'
 2. **Use proper TLS**: Configure cert-manager for automatic certificate management
 3. **Review network policies**: Adjust NetworkPolicy to match your infrastructure
 4. **Configure resource quotas**: The namespace has ResourceQuota set; adjust limits as needed
-5. **Enable monitoring**: Add Prometheus annotations for metrics collection
+5. **Enable monitoring**: Prometheus annotations and ServiceMonitor are included for metrics collection
 6. **Review Pod Security**: The namespace enforces `restricted` Pod Security Standards
 7. **Audit ServiceAccount**: Review and minimize permissions if custom RBAC is needed
 
@@ -207,3 +207,39 @@ To modify for your environment, edit the NetworkPolicy:
 ```bash
 kubectl edit networkpolicy prompt-optimizer-netpol -n prompt-optimizer
 ```
+
+## Monitoring (Prometheus)
+
+The deployment includes built-in monitoring support for Prometheus:
+
+### Pod Annotations
+
+Pod annotations for Prometheus auto-discovery:
+
+```yaml
+prometheus.io/scrape: "true"
+prometheus.io/port: "80"
+prometheus.io/path: "/metrics"
+```
+
+### ServiceMonitor (Prometheus Operator)
+
+A ServiceMonitor is included for clusters using Prometheus Operator:
+
+```bash
+kubectl apply -f k8s/deployment.yaml
+```
+
+The ServiceMonitor is configured with:
+- **Scrape interval**: 30s
+- **Scrape timeout**: 10s
+- **Metrics path**: /metrics
+
+To verify ServiceMonitor is working:
+
+```bash
+kubectl get servicemonitor -n prompt-optimizer
+kubectl describe servicemonitor prompt-optimizer -n prompt-optimizer
+```
+
+**Note**: The `release: prometheus` label on the ServiceMonitor should match your Prometheus Operator's serviceMonitorSelector. Adjust if needed.
