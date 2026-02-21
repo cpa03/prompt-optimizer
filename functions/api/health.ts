@@ -1,33 +1,17 @@
 import type { IncomingRequestCfProperties } from '@cloudflare/workers-types'
+import { type Env, SECURITY_HEADERS, generateRequestId } from '../_utils'
 
-export interface Env {
-  ACCESS_PASSWORD?: string
-}
-
-const PERMISSIONS_POLICY =
-  'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
-
-function generateRequestId(): string {
-  return `cf_health_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-}
+export type { Env }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request } = context
-  const requestId = generateRequestId()
+  const requestId = generateRequestId('cf_health')
   const timestamp = new Date().toISOString()
 
   const headers: Record<string, string> = {
     'X-Request-ID': requestId,
     'Cache-Control': 'no-store, no-cache, must-revalidate',
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'X-XSS-Protection': '1; mode=block',
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'X-Permitted-Cross-Domain-Policies': 'none',
-    'Permissions-Policy': PERMISSIONS_POLICY,
-    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-    'Cross-Origin-Resource-Policy': 'same-origin',
-    'Cross-Origin-Opener-Policy': 'same-origin',
+    ...SECURITY_HEADERS,
     'Content-Type': 'application/json',
   }
 
@@ -51,6 +35,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         const visitor = JSON.parse(cfVisitor)
         scheme = visitor.scheme || scheme
       } catch {
+        // Invalid JSON, keep default
       }
     }
 

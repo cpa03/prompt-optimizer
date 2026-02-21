@@ -14,159 +14,37 @@
  * @see https://developers.cloudflare.com/waf/rate-limiting-rules/
  */
 
-export interface Env {
-  ACCESS_PASSWORD?: string
-  SESSIONS?: KVNamespace
-}
+import {
+  type Env,
+  type AuthRateLimitStore,
+  COOKIE_CONFIG,
+  SECURITY_HEADERS,
+  timingSafeEqual,
+  generateRequestId,
+  getClientIP,
+  validateBody,
+  getCorsHeaders,
+  checkRateLimit,
+  recordFailedAttempt,
+  clearRateLimit,
+} from '../_utils'
 
-const COOKIE_CONFIG = {
-  ACCESS_TOKEN_NAME: 'cf_access_token',
-  DEFAULT_MAX_AGE: 86400,
-  SAME_SITE_POLICY: 'Strict',
-}
-
-const RATE_LIMIT = {
-  MAX_ATTEMPTS: 5,
-  WINDOW_MS: 60000,
-  BLOCK_DURATION_MS: 300000,
-}
-
-declare global {
-  interface AuthRateLimitStore {
-    attempts: Map<string, { count: number; firstAttempt: number; blockedUntil?: number }>
-  }
-}
+export type { Env }
 
 const rateLimitStore: AuthRateLimitStore = {
   attempts: new Map(),
 }
 
-function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
-}
-
-function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number; remaining?: number } {
-  const now = Date.now()
-  const entry = rateLimitStore.attempts.get(ip)
-
-  if (entry?.blockedUntil && now < entry.blockedUntil) {
-    return { allowed: false, retryAfter: Math.ceil((entry.blockedUntil - now) / 1000) }
-  }
-
-  if (entry?.blockedUntil && now >= entry.blockedUntil) {
-    rateLimitStore.attempts.delete(ip)
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
-  }
-
-  if (!entry) {
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
-  }
-
-  if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
-    rateLimitStore.attempts.delete(ip)
-    return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS }
-  }
-
-  return { allowed: true, remaining: RATE_LIMIT.MAX_ATTEMPTS - entry.count }
-}
-
-function recordFailedAttempt(ip: string): void {
-  const now = Date.now()
-  const entry = rateLimitStore.attempts.get(ip)
-
-  if (!entry) {
-    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
-  } else if (now - entry.firstAttempt > RATE_LIMIT.WINDOW_MS) {
-    rateLimitStore.attempts.set(ip, { count: 1, firstAttempt: now })
-  } else {
-    entry.count++
-    if (entry.count >= RATE_LIMIT.MAX_ATTEMPTS) {
-      entry.blockedUntil = now + RATE_LIMIT.BLOCK_DURATION_MS
-    }
-  }
-
-  if (rateLimitStore.attempts.size > 10000) {
-    const cutoff = now - RATE_LIMIT.WINDOW_MS - RATE_LIMIT.BLOCK_DURATION_MS
-    for (const [key, val] of rateLimitStore.attempts) {
-      if (val.firstAttempt < cutoff) {
-        rateLimitStore.attempts.delete(key)
-      }
-    }
-  }
-}
-
-function clearRateLimit(ip: string): void {
-  rateLimitStore.attempts.delete(ip)
-}
-
-function getClientIP(request: Request): string {
-  return (
-    request.headers.get('CF-Connecting-IP') ||
-    request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
-    request.headers.get('X-Real-IP') ||
-    'unknown'
-  )
-}
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (typeof a !== 'string' || typeof b !== 'string') {
-    return false
-  }
-  const lenA = a.length
-  const lenB = b.length
-  const maxLen = Math.max(lenA, lenB)
-  let result = lenA ^ lenB
-  for (let i = 0; i < maxLen; i++) {
-    const charA = i < lenA ? a.charCodeAt(i) : 0
-    const charB = i < lenB ? b.charCodeAt(i) : 0
-    result |= charA ^ charB
-  }
-  return result === 0
-}
-
-function validateBody(body: unknown, requiredFields: string[]): boolean {
-  if (!body || typeof body !== 'object') {
-    return false
-  }
-  const obj = body as Record<string, unknown>
-  return requiredFields.every(
-    (field) => field in obj && typeof obj[field] === 'string' && (obj[field] as string).length > 0
-  )
-}
-
-function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigins = origin || '*'
-  return {
-    'Access-Control-Allow-Origin': allowedOrigins,
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    Vary: 'Origin',
-  }
-}
-
-const securityHeaders = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'X-Permitted-Cross-Domain-Policies': 'none',
-  'Permissions-Policy':
-    'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  'Cross-Origin-Resource-Policy': 'same-origin',
-  'Cross-Origin-Opener-Policy': 'same-origin',
-}
-
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
   const { request, env } = context
-  const requestId = generateRequestId()
+  const requestId = generateRequestId('auth')
   const origin = request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(origin)
   const clientIP = getClientIP(request)
 
   const baseHeaders = {
     ...corsHeaders,
-    ...securityHeaders,
+    ...SECURITY_HEADERS,
     'X-Request-ID': requestId,
   }
 
@@ -196,7 +74,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
   }
 
   if (request.method === 'POST') {
-    const rateLimitResult = checkRateLimit(clientIP)
+    const rateLimitResult = checkRateLimit(clientIP, rateLimitStore)
     if (!rateLimitResult.allowed) {
       return new Response(
         JSON.stringify({
@@ -254,7 +132,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         }
 
         if (timingSafeEqual(password!, accessPassword)) {
-          clearRateLimit(clientIP)
+          clearRateLimit(clientIP, rateLimitStore)
           const maxAge = COOKIE_CONFIG.DEFAULT_MAX_AGE
           const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=authenticated; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
 
@@ -273,8 +151,8 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             }
           )
         } else {
-          recordFailedAttempt(clientIP)
-          const remaining = checkRateLimit(clientIP).remaining || 0
+          recordFailedAttempt(clientIP, rateLimitStore)
+          const remaining = checkRateLimit(clientIP, rateLimitStore).remaining || 0
 
           return new Response(
             JSON.stringify({
@@ -322,7 +200,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     const action = url.searchParams.get('action')
 
     if (action === 'logout') {
-      clearRateLimit(clientIP)
+      clearRateLimit(clientIP, rateLimitStore)
       const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
 
       return new Response(

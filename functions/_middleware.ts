@@ -1,27 +1,13 @@
-export interface Env {
-  ACCESS_PASSWORD?: string
-}
+import {
+  type Env,
+  COOKIE_CONFIG,
+  SECURITY_HEADERS,
+  CONTENT_SECURITY_POLICY,
+  timingSafeEqual,
+  shouldExcludePath,
+} from './_utils'
 
-const COOKIE_CONFIG = {
-  ACCESS_TOKEN_NAME: 'cf_access_token',
-  CACHE_CONTROL: 'no-cache, no-store, must-revalidate',
-}
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (typeof a !== 'string' || typeof b !== 'string') {
-    return false
-  }
-  const lenA = a.length
-  const lenB = b.length
-  const maxLen = Math.max(lenA, lenB)
-  let result = lenA ^ lenB
-  for (let i = 0; i < maxLen; i++) {
-    const charA = i < lenA ? a.charCodeAt(i) : 0
-    const charB = i < lenB ? b.charCodeAt(i) : 0
-    result |= charA ^ charB
-  }
-  return result === 0
-}
+export type { Env }
 
 function generateAuthPage(isChinese: boolean): string {
   const text = {
@@ -199,34 +185,6 @@ function generateAuthPage(isChinese: boolean): string {
     </script>
 </body>
 </html>`
-}
-
-const CONTENT_SECURITY_POLICY =
-  "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss:; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests"
-
-const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'X-Permitted-Cross-Domain-Policies': 'none',
-  'Permissions-Policy':
-    'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  'Cross-Origin-Resource-Policy': 'same-origin',
-  'Cross-Origin-Opener-Policy': 'same-origin',
-}
-
-const EXCLUDED_PATHS = ['/api/', '/_next/static', '/_next/image', '/favicon.ico', '/assets/']
-
-function shouldExcludePath(pathname: string): boolean {
-  if (EXCLUDED_PATHS.some((p) => pathname.startsWith(p))) {
-    return true
-  }
-  if (pathname.match(/\.[a-zA-Z0-9]+$/)) {
-    return true
-  }
-  return false
 }
 
 export async function onRequest(context: {
