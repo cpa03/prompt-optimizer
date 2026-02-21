@@ -111,6 +111,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: prompt-optimizer
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
     spec:
       serviceAccountName: prompt-optimizer
       automountServiceAccountToken: false
@@ -358,3 +362,22 @@ spec:
               - 10.0.0.0/8
               - 172.16.0.0/12
               - 192.168.0.0/16
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prompt-optimizer
+  namespace: prompt-optimizer
+  labels:
+    app.kubernetes.io/name: prompt-optimizer
+    app.kubernetes.io/component: service-monitor
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prompt-optimizer
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
