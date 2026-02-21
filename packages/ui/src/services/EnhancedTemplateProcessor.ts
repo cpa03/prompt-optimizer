@@ -445,32 +445,30 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
     return (longer.length - distance) / longer.length
   }
 
-  // 私有方法：计算编辑距离
   private levenshteinDistance(str1: string, str2: string): number {
-    const matrix = Array(str2.length + 1)
-      .fill(null)
-      .map(() => Array(str1.length + 1).fill(null))
+    const m = str1.length
+    const n = str2.length
 
-    for (let i = 0; i <= str1.length; i += 1) {
-      matrix[0][i] = i
+    if (m === 0) return n
+    if (n === 0) return m
+
+    if (m > n) {
+      return this.levenshteinDistance(str2, str1)
     }
 
-    for (let j = 0; j <= str2.length; j += 1) {
-      matrix[j][0] = j
-    }
+    let prev = Array.from({ length: m + 1 }, (_, i) => i)
+    let curr = new Array(m + 1).fill(0)
 
-    for (let j = 1; j <= str2.length; j += 1) {
-      for (let i = 1; i <= str1.length; i += 1) {
-        const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1
-        matrix[j][i] = Math.min(
-          matrix[j][i - 1] + 1, // deletion
-          matrix[j - 1][i] + 1, // insertion
-          matrix[j - 1][i - 1] + indicator // substitution
-        )
+    for (let j = 1; j <= n; j++) {
+      curr[0] = j
+      for (let i = 1; i <= m; i++) {
+        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1
+        curr[i] = Math.min(prev[i] + 1, curr[i - 1] + 1, prev[i - 1] + cost)
       }
+      ;[prev, curr] = [curr, prev]
     }
 
-    return matrix[str2.length][str1.length]
+    return prev[m]
   }
 
   // 私有方法：转义正则表达式特殊字符
