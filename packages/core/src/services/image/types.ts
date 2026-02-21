@@ -33,6 +33,7 @@ export interface ImageModel {
     text2image: boolean // 支持文本生图
     image2image: boolean // 支持图生图
     multiImage?: boolean // 支持多图输入（可选）
+    highResolution?: boolean // 支持高分辨率（可选）
   }
   readonly parameterDefinitions: readonly ImageParameterDefinition[] // 模型特定参数定义
   readonly defaultParameterValues?: Record<string, unknown> // 默认参数值
