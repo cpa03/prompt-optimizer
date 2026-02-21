@@ -11,6 +11,8 @@ import { describe, it, expect } from 'vitest'
 import {
   isStructuredErrorLike,
   toErrorWithCode,
+  classifyError,
+  isRetryableError,
   type StructuredErrorLike,
 } from '../../../src/utils/error'
 
@@ -240,6 +242,222 @@ describe('error utilities', () => {
         const result = toErrorWithCode(fn)
         expect(result.message).toContain('()')
       })
+    })
+  })
+
+  describe('classifyError', () => {
+    describe('with null/undefined', () => {
+      it('should return unknown for null', () => {
+        const result = classifyError(null)
+        expect(result.category).toBe('unknown')
+        expect(result.isRetryable).toBe(false)
+      })
+
+      it('should return unknown for undefined', () => {
+        const result = classifyError(undefined)
+        expect(result.category).toBe('unknown')
+        expect(result.isRetryable).toBe(false)
+      })
+    })
+
+    describe('with retryable error codes', () => {
+      it('should classify ECONNRESET as network error', () => {
+        const err = new Error('Connection reset')
+        ;(err as any).code = 'ECONNRESET'
+        const result = classifyError(err)
+        expect(result.category).toBe('network')
+        expect(result.isNetworkError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify ETIMEDOUT as timeout error', () => {
+        const err = new Error('Timed out')
+        ;(err as any).code = 'ETIMEDOUT'
+        const result = classifyError(err)
+        expect(result.category).toBe('timeout')
+        expect(result.isTimeout).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify ECONNREFUSED as network error', () => {
+        const err = new Error('Connection refused')
+        ;(err as any).code = 'ECONNREFUSED'
+        const result = classifyError(err)
+        expect(result.category).toBe('network')
+        expect(result.isNetworkError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+    })
+
+    describe('with HTTP status codes', () => {
+      it('should classify 429 as rate_limit', () => {
+        const err = new Error('Too many requests')
+        ;(err as any).status = 429
+        const result = classifyError(err)
+        expect(result.category).toBe('rate_limit')
+        expect(result.isRateLimited).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify 408 as timeout', () => {
+        const err = new Error('Request timeout')
+        ;(err as any).status = 408
+        const result = classifyError(err)
+        expect(result.category).toBe('timeout')
+        expect(result.isTimeout).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify 500 as server error', () => {
+        const err = new Error('Internal server error')
+        ;(err as any).status = 500
+        const result = classifyError(err)
+        expect(result.category).toBe('server')
+        expect(result.isServerError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify 502 as server error', () => {
+        const err = new Error('Bad gateway')
+        ;(err as any).status = 502
+        const result = classifyError(err)
+        expect(result.category).toBe('server')
+        expect(result.isServerError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify 503 as server error', () => {
+        const err = new Error('Service unavailable')
+        ;(err as any).status = 503
+        const result = classifyError(err)
+        expect(result.category).toBe('server')
+        expect(result.isServerError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify 400 as client error', () => {
+        const err = new Error('Bad request')
+        ;(err as any).status = 400
+        const result = classifyError(err)
+        expect(result.category).toBe('client')
+        expect(result.isRetryable).toBe(false)
+      })
+
+      it('should classify 401 as client error', () => {
+        const err = new Error('Unauthorized')
+        ;(err as any).status = 401
+        const result = classifyError(err)
+        expect(result.category).toBe('client')
+        expect(result.isRetryable).toBe(false)
+      })
+
+      it('should classify 404 as client error', () => {
+        const err = new Error('Not found')
+        ;(err as any).status = 404
+        const result = classifyError(err)
+        expect(result.category).toBe('client')
+        expect(result.isRetryable).toBe(false)
+      })
+
+      it('should use statusCode property as fallback', () => {
+        const err = new Error('Server error')
+        ;(err as any).statusCode = 500
+        const result = classifyError(err)
+        expect(result.category).toBe('server')
+        expect(result.isServerError).toBe(true)
+      })
+    })
+
+    describe('with message patterns', () => {
+      it('should classify network error from message', () => {
+        const err = new Error('network error occurred')
+        const result = classifyError(err)
+        expect(result.category).toBe('network')
+        expect(result.isNetworkError).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify timeout from message', () => {
+        const err = new Error('connection timed out')
+        const result = classifyError(err)
+        expect(result.category).toBe('timeout')
+        expect(result.isTimeout).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should classify rate limit from message', () => {
+        const err = new Error('rate limit exceeded')
+        const result = classifyError(err)
+        expect(result.category).toBe('rate_limit')
+        expect(result.isRateLimited).toBe(true)
+        expect(result.isRetryable).toBe(true)
+      })
+
+      it('should be case insensitive', () => {
+        const err = new Error('NETWORK ERROR')
+        const result = classifyError(err)
+        expect(result.category).toBe('network')
+        expect(result.isNetworkError).toBe(true)
+      })
+    })
+
+    describe('with non-Error values', () => {
+      it('should handle string errors', () => {
+        const result = classifyError('network error')
+        expect(result.category).toBe('network')
+        expect(result.isNetworkError).toBe(true)
+      })
+
+      it('should handle unknown string errors', () => {
+        const result = classifyError('something went wrong')
+        expect(result.category).toBe('unknown')
+        expect(result.isRetryable).toBe(false)
+      })
+    })
+  })
+
+  describe('isRetryableError', () => {
+    it('should return true for network errors', () => {
+      const err = new Error('Connection reset')
+      ;(err as any).code = 'ECONNRESET'
+      expect(isRetryableError(err)).toBe(true)
+    })
+
+    it('should return true for timeout errors', () => {
+      const err = new Error('Timed out')
+      ;(err as any).code = 'ETIMEDOUT'
+      expect(isRetryableError(err)).toBe(true)
+    })
+
+    it('should return true for rate limit errors', () => {
+      const err = new Error('Too many requests')
+      ;(err as any).status = 429
+      expect(isRetryableError(err)).toBe(true)
+    })
+
+    it('should return true for server errors', () => {
+      const err = new Error('Internal server error')
+      ;(err as any).status = 500
+      expect(isRetryableError(err)).toBe(true)
+    })
+
+    it('should return false for client errors', () => {
+      const err = new Error('Bad request')
+      ;(err as any).status = 400
+      expect(isRetryableError(err)).toBe(false)
+    })
+
+    it('should return false for unknown errors', () => {
+      const err = new Error('Unknown error')
+      expect(isRetryableError(err)).toBe(false)
+    })
+
+    it('should return false for null', () => {
+      expect(isRetryableError(null)).toBe(false)
+    })
+
+    it('should return false for undefined', () => {
+      expect(isRetryableError(undefined)).toBe(false)
     })
   })
 })

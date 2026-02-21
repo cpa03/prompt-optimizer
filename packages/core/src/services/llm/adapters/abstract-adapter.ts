@@ -11,6 +11,26 @@ import type {
 } from '../types'
 import { RequestConfigError } from '../errors'
 import { MODEL_CONTEXT_LIMITS } from '../../../constants/templates'
+import { withRetry, RETRY_PRESETS } from '../../../utils/retry'
+import { createDebugLogger } from '../../../utils/debug'
+
+const logger = createDebugLogger('llm-adapter')
+
+const LLM_RETRYABLE_ERRORS = [
+  'rate_limit',
+  'rate limit',
+  'overloaded',
+  'overload',
+  'timeout',
+  'timed out',
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'fetch failed',
+  'network error',
+]
 
 /**
  * 抽象文本模型Provider适配器基类
@@ -77,14 +97,25 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
 
   /**
    * 发送消息（模板方法）
-   * 统一验证后调用doSendMessage
+   * 统一验证后调用doSendMessage，带自动重试
    */
   public async sendMessage(messages: Message[], config: TextModelConfig): Promise<LLMResponse> {
     // 1. 验证消息数组
     this.validateMessages(messages)
 
-    // 2. 调用具体实现
-    return await this.doSendMessage(messages, config)
+    // 2. 调用具体实现，带重试逻辑
+    return withRetry(
+      async () => this.doSendMessage(messages, config),
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: LLM_RETRYABLE_ERRORS,
+        onRetry: (attempt, error, delayMs) => {
+          logger.warn(
+            `[${this.getProvider().id}] Retry attempt ${attempt} after ${delayMs}ms: ${error.message}`
+          )
+        },
+      }
+    )
   }
 
   /**

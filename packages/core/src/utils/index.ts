@@ -65,8 +65,18 @@ export {
 export type { DebugLogger } from './debug'
 
 // Error handling utilities
-export { toErrorWithCode, isStructuredErrorLike, isRecord, setErrorCause, BaseError } from './error'
-export type { StructuredErrorLike, ErrorOptionsWithCause } from './error'
+export {
+  toErrorWithCode,
+  isStructuredErrorLike,
+  isRecord,
+  setErrorCause,
+  BaseError,
+  classifyError,
+  isRetryableError,
+  RETRYABLE_ERROR_CODES,
+  RETRYABLE_STATUS_RANGES,
+} from './error'
+export type { StructuredErrorLike, ErrorOptionsWithCause, ErrorClassification } from './error'
 
 // JSON utilities
 export {
