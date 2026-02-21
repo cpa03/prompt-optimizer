@@ -13,6 +13,7 @@ import {
   PROVIDER_URLS,
   MIME_TYPES,
   HTTP_HEADERS,
+  HTTP_METHODS,
   PROVIDER_API_KEY_URLS,
   getTestPrompt,
   getOpenAIParameterDefinitions,
@@ -139,7 +140,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     const payload = { ...merged, n: 1 }
 
     const response = await this.apiCall(config, '/images/generations', {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers: {
         ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
         ...HTTP_HEADERS.json,
@@ -186,7 +187,7 @@ export class OpenAIImageAdapter extends AbstractImageProviderAdapter {
     formData.append('image', imageBlob, 'input.png')
 
     const response = await this.apiCall(config, '/images/edits', {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers: {
         Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
         // 不设置Content-Type，让浏览器自动设置multipart/form-data边界

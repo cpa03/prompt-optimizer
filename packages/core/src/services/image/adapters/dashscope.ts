@@ -14,6 +14,7 @@ import {
   PROVIDER_API_KEY_URLS,
   MIME_TYPES,
   HTTP_HEADERS,
+  HTTP_METHODS,
   getTestPrompt,
   getDashScopeParameterDefinitions,
   getDashScopeEditParameterDefinitions,
@@ -312,7 +313,7 @@ export class DashScopeImageAdapter extends AbstractImageProviderAdapter {
 
         try {
           const response = await fetch(url, {
-            method: 'POST',
+            method: HTTP_METHODS.POST,
             headers: {
               ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
               ...HTTP_HEADERS.json,

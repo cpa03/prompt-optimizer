@@ -12,7 +12,7 @@ import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { OPENROUTER_MODELS, getModelDisplayName } from '../../../constants/models'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { URL_PATTERNS, OPENROUTER } from '../../../constants/api-endpoints'
-import { CONTENT_TYPES, HTTP_HEADERS } from '../../../constants/http-codes'
+import { CONTENT_TYPES, HTTP_HEADERS, HTTP_METHODS } from '../../../constants/http-codes'
 import { MIME_TYPES } from '../../../config'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
@@ -83,7 +83,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
 
     try {
       const response = await fetch(`${PROVIDER_URLS.openrouter}/models`, {
-        method: 'GET',
+        method: HTTP_METHODS.GET,
         headers: {
           [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
           ...(apiKey ? { [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${apiKey}` } : {}),
@@ -195,7 +195,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     }
 
     const response = await this.apiCall(config, OPENROUTER.ENDPOINTS.CHAT_COMPLETIONS, {
-      method: 'POST',
+      method: HTTP_METHODS.POST,
       headers: {
         [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${config.connectionConfig?.apiKey}`,
         [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
