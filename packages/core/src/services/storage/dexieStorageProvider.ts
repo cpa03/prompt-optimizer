@@ -696,6 +696,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 修复损坏的数据
+   * 优化：使用流式处理避免一次性加载所有数据到内存
    */
   async repairCorruptedData(): Promise<{
     repaired: number
@@ -710,21 +711,18 @@ export class DexieStorageProvider implements IStorageProvider {
       details: [] as Array<{ key: string; action: string; error?: string }>,
     }
 
-    try {
-      const allRecords = await this.db.storage.toArray()
+    const startTime = Date.now()
 
-      for (const record of allRecords) {
-        // 跳过元数据记录
-        if (record.key === DB_CONFIG.metadataKey) {
-          continue
+    try {
+      await this.db.storage.each(async (record) => {
+        if (this.isMetadataKey(record.key)) {
+          return
         }
 
-        // 检查数据完整性
         if (record.checksum) {
-          const isValid = await this.verifyIntegrity(record.key)
-          if (!isValid) {
+          const calculatedChecksum = this.calculateChecksum(record.value)
+          if (calculatedChecksum !== record.checksum) {
             try {
-              // 尝试重新计算checksum
               const newChecksum = this.calculateChecksum(record.value)
               await this.db.storage.update(record.key, {
                 checksum: newChecksum,
@@ -745,7 +743,6 @@ export class DexieStorageProvider implements IStorageProvider {
             }
           }
         } else {
-          // 旧数据没有checksum，添加checksum
           try {
             const checksum = this.calculateChecksum(record.value)
             await this.db.storage.update(record.key, {
@@ -766,13 +763,21 @@ export class DexieStorageProvider implements IStorageProvider {
             })
           }
         }
+      })
+
+      const duration = Date.now() - startTime
+      if (duration > 1000) {
+        console.warn(
+          `[Database] Repair took ${duration}ms for ${result.repaired + result.failed} items`
+        )
       }
 
       console.log(
         `[Database] Repair completed: ${result.repaired} repaired, ${result.failed} failed`
       )
     } catch (error) {
-      console.error('数据修复失败:', error)
+      const duration = Date.now() - startTime
+      console.error(`数据修复失败 (${duration}ms):`, error)
       throw new StorageError('Failed to repair corrupted data', 'repair')
     }
 

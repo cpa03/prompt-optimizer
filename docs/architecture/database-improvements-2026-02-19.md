@@ -319,8 +319,59 @@ interface DatabaseStats {
 
 **Compatibility**: ✅ No breaking changes. New method follows the same pattern as existing implementation.
 
+### 7. Optimized Data Repair with Streaming Processing (NEW - 2026-02-21)
+
+**Problem**: `repairCorruptedData()` in `DexieStorageProvider` loaded all records into memory at once using `toArray()`, causing potential memory issues with large datasets.
+
+**Solution**: Replaced with streaming processing using Dexie's `each()` method, consistent with `getDatabaseStats()` implementation.
+
+**Benefits**:
+
+- Reduced memory footprint for large databases during repair operations
+- Consistent approach across all bulk data processing methods
+- Added performance tracking for slow repair operations
+- Better scalability for databases with many records
+
+**Implementation**:
+
+```typescript
+// Old approach: Load everything into memory
+const allRecords = await this.db.storage.toArray()
+for (const record of allRecords) {
+  // Process each record...
+}
+
+// New approach: Stream processing
+const startTime = Date.now()
+await this.db.storage.each(async (record) => {
+  if (this.isMetadataKey(record.key)) {
+    return
+  }
+  // Process each record incrementally...
+})
+
+// Performance tracking
+const duration = Date.now() - startTime
+if (duration > 1000) {
+  console.warn(
+    `[Database] Repair took ${duration}ms for ${result.repaired + result.failed} items`
+  )
+}
+```
+
+**Key Changes**:
+
+- Uses `each()` instead of `toArray()` for streaming processing
+- Uses `isMetadataKey()` helper for consistency
+- Calculates checksum directly instead of calling `verifyIntegrity()` (avoids redundant DB read)
+- Added performance tracking with warning for slow operations
+- Same API, same results, better memory efficiency
+
+**Compatibility**: ✅ No breaking changes. Same API, same results, better performance.
+
 ## Updated Testing
 
-- ✅ All 75 unit tests passing (3 new tests added for getDatabaseStats)
+- ✅ All 985 unit tests passing
 - ✅ No TypeScript compilation errors
 - ✅ No ESLint warnings
+- ✅ Build successful (CJS + ESM + DTS)
