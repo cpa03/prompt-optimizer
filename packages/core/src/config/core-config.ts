@@ -209,4 +209,8 @@ export const MCP_CONFIG = {
     maxEntries: 10000,
     targetEntriesAfterCleanup: 5000,
   },
+  requestContext: {
+    maxAgeMs: 5 * 60 * 1000,
+    cleanupIntervalMs: 60 * 1000,
+  },
 } as const
