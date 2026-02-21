@@ -23,6 +23,33 @@
 import { McpError } from '@modelcontextprotocol/sdk/types.js'
 
 /**
+ * Error category types for better type safety
+ */
+export type ErrorCategory =
+  | 'internal'
+  | 'ai-rate-limit'
+  | 'ai-context-length'
+  | 'ai-timeout'
+  | 'ai-auth'
+  | 'ai-model'
+  | 'ai-overload'
+  | 'ai-content-filter'
+  | 'validation'
+  | 'configuration'
+  | 'optimization'
+  | 'service-unavailable'
+
+/**
+ * Error data structure with typed category
+ */
+export interface MCPErrorData {
+  originalError?: string
+  category: ErrorCategory
+  retryable?: boolean
+  timestamp?: string
+}
+
+/**
  * MCP 错误代码定义
  *
  * Standardized error codes for MCP protocol communication.
@@ -232,14 +259,18 @@ export class MCPErrorHandler {
    * 创建参数验证错误
    */
   static createValidationError(message: string): McpError {
-    return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, `参数验证失败: ${message}`)
+    return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, `参数验证失败: ${message}`, {
+      category: 'validation',
+    })
   }
 
   /**
    * 创建内部错误
    */
   static createInternalError(message: string): McpError {
-    return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, message)
+    return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, message, {
+      category: 'internal',
+    })
   }
 
   /**
@@ -330,5 +361,65 @@ export class MCPErrorHandler {
       MCP_ERROR_CODES.PARSE_ERROR,
     ]
     return clientErrorCodes.includes(error.code as (typeof clientErrorCodes)[number])
+  }
+
+  /**
+   * Extracts the error category from an McpError's data.
+   * Useful for AI agents to classify errors for handling logic.
+   *
+   * @param error - The McpError to extract category from
+   * @returns The error category or 'internal' as fallback
+   */
+  static getErrorCategory(error: McpError): ErrorCategory {
+    const data = error.data as MCPErrorData | undefined
+    return data?.category || 'internal'
+  }
+
+  /**
+   * Formats an McpError for logging/debugging purposes.
+   * Provides a structured output suitable for AI agent error reporting.
+   *
+   * @param error - The McpError to format
+   * @returns A formatted string with error details
+   */
+  static formatErrorForLogging(error: McpError): string {
+    const data = error.data as MCPErrorData | undefined
+    const lines = [
+      `[MCP Error] Code: ${error.code}`,
+      `Message: ${error.message}`,
+      `Category: ${data?.category || 'unknown'}`,
+    ]
+
+    if (data?.originalError) {
+      lines.push(`Original Error: ${data.originalError}`)
+    }
+
+    if (data?.retryable !== undefined) {
+      lines.push(`Retryable: ${data.retryable}`)
+    }
+
+    return lines.join('\n')
+  }
+
+  /**
+   * Creates a structured error summary for AI agent responses.
+   * This helps AI agents understand the error context without exposing sensitive details.
+   *
+   * @param error - The McpError to summarize
+   * @returns A structured error summary object
+   */
+  static createErrorSummary(error: McpError): {
+    code: number
+    category: ErrorCategory
+    message: string
+    retryable: boolean
+  } {
+    const data = error.data as MCPErrorData | undefined
+    return {
+      code: error.code,
+      category: data?.category || 'internal',
+      message: error.message,
+      retryable: data?.retryable || false,
+    }
   }
 }

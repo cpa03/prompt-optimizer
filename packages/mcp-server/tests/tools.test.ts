@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { CoreServicesManager } from '../src/adapters/core-services.js'
 import { ParameterValidator } from '../src/adapters/parameter-adapter.js'
-import { MCPErrorHandler, MCP_ERROR_CODES } from '../src/adapters/error-handler.js'
+import { MCPErrorHandler, MCP_ERROR_CODES, ErrorCategory, MCPErrorData } from '../src/adapters/error-handler.js'
 
 describe('MCP Server Tools', () => {
   let coreServices: CoreServicesManager
@@ -355,6 +355,92 @@ describe('MCP Server Tools', () => {
         const mcpError = MCPErrorHandler.createContentFilteredError('自定义内容过滤消息')
         expect(mcpError.code).toBe(MCP_ERROR_CODES.AI_CONTENT_FILTERED)
         expect(mcpError.message).toContain('自定义内容过滤消息')
+      })
+    })
+
+    describe('getErrorCategory', () => {
+      it('应该正确提取错误类别 - 速率限制', () => {
+        const error = new Error('Rate limit exceeded')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.getErrorCategory(mcpError)).toBe('ai-rate-limit')
+      })
+
+      it('应该正确提取错误类别 - 认证失败', () => {
+        const error = new Error('Unauthorized: invalid API key')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.getErrorCategory(mcpError)).toBe('ai-auth')
+      })
+
+      it('应该正确提取错误类别 - 内部错误', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        expect(MCPErrorHandler.getErrorCategory(mcpError)).toBe('internal')
+      })
+
+      it('应该返回 internal 作为默认类别', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test')
+        expect(MCPErrorHandler.getErrorCategory(mcpError)).toBe('internal')
+      })
+
+      it('应该正确返回 validation 类别', () => {
+        const mcpError = MCPErrorHandler.createValidationError('test')
+        expect(MCPErrorHandler.getErrorCategory(mcpError)).toBe('validation')
+      })
+    })
+
+    describe('formatErrorForLogging', () => {
+      it('应该正确格式化错误日志', () => {
+        const error = new Error('Rate limit exceeded')
+        error.name = 'APIError'
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        const formatted = MCPErrorHandler.formatErrorForLogging(mcpError)
+
+        expect(formatted).toContain('[MCP Error]')
+        expect(formatted).toContain('Code: -32100')
+        expect(formatted).toContain('Rate limit exceeded')
+        expect(formatted).toContain('Category: ai-rate-limit')
+        expect(formatted).toContain('Original Error: APIError')
+        expect(formatted).toContain('Retryable: true')
+      })
+
+      it('应该处理没有原始错误的情况', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        const formatted = MCPErrorHandler.formatErrorForLogging(mcpError)
+
+        expect(formatted).toContain('Code: -32000')
+        expect(formatted).toContain('test error')
+        expect(formatted).toContain('Category: internal')
+      })
+    })
+
+    describe('createErrorSummary', () => {
+      it('应该创建正确的错误摘要 - 可重试错误', () => {
+        const error = new Error('Rate limit exceeded')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        const summary = MCPErrorHandler.createErrorSummary(mcpError)
+
+        expect(summary.code).toBe(MCP_ERROR_CODES.AI_RATE_LIMITED)
+        expect(summary.category).toBe('ai-rate-limit')
+        expect(summary.message).toContain('Rate limit exceeded')
+        expect(summary.retryable).toBe(true)
+      })
+
+      it('应该创建正确的错误摘要 - 不可重试错误', () => {
+        const error = new Error('Unauthorized: invalid API key')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        const summary = MCPErrorHandler.createErrorSummary(mcpError)
+
+        expect(summary.code).toBe(MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED)
+        expect(summary.category).toBe('ai-auth')
+        expect(summary.retryable).toBe(false)
+      })
+
+      it('应该创建正确的错误摘要 - 内部错误', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        const summary = MCPErrorHandler.createErrorSummary(mcpError)
+
+        expect(summary.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
+        expect(summary.category).toBe('internal')
+        expect(summary.retryable).toBe(false)
       })
     })
   })
