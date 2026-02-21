@@ -60,6 +60,8 @@ interface RequestContext {
 
 const requestContexts: Map<string, RequestContext> = new Map()
 
+let staleContextCleanupTimer: ReturnType<typeof setInterval> | null = null
+
 function generateRequestId(): string {
   return `req_${Date.now()}_${randomUUID().split('-')[0]}`
 }
@@ -84,6 +86,41 @@ function cleanupRequestContext(requestId: string): void {
     const duration = Date.now() - context.startTime
     logger.debug(`[Request ${requestId}] Completed in ${duration}ms`)
     requestContexts.delete(requestId)
+  }
+}
+
+function startStaleContextCleanup(): void {
+  if (staleContextCleanupTimer) return
+
+  const maxAgeMs = MCP_CONFIG.requestContext.maxAgeMs
+  const cleanupIntervalMs = MCP_CONFIG.requestContext.cleanupIntervalMs
+
+  staleContextCleanupTimer = setInterval(() => {
+    const now = Date.now()
+    let cleanedCount = 0
+
+    for (const [requestId, context] of requestContexts) {
+      if (now - context.startTime > maxAgeMs) {
+        requestContexts.delete(requestId)
+        cleanedCount++
+        logger.warn(
+          `[RequestContext] Cleaned stale request ${requestId} (age: ${Math.round((now - context.startTime) / 1000)}s, tool: ${context.toolName || 'unknown'})`
+        )
+      }
+    }
+
+    if (cleanedCount > 0) {
+      logger.info(`[RequestContext] Cleaned ${cleanedCount} stale request contexts`)
+    }
+  }, cleanupIntervalMs)
+
+  staleContextCleanupTimer.unref()
+}
+
+function stopStaleContextCleanup(): void {
+  if (staleContextCleanupTimer) {
+    clearInterval(staleContextCleanupTimer)
+    staleContextCleanupTimer = null
   }
 }
 
@@ -406,6 +443,9 @@ async function main() {
     await coreServices.initialize(config)
     logger.info('Core services initialized successfully')
 
+    startStaleContextCleanup()
+    logger.info('Started stale request context cleanup timer')
+
     if (transport === 'http') {
       logger.info('Starting HTTP server with session management...')
       const app = express()
@@ -573,6 +613,8 @@ async function main() {
       const gracefulShutdown = (signal: string) => {
         console.log(`Received ${signal}, shutting down gracefully...`)
 
+        stopStaleContextCleanup()
+
         // Stop the rate limiter cleanup timer
         rateLimiter.stop()
 
@@ -633,11 +675,13 @@ process.on('unhandledRejection', (reason, promise) => {
 // 优雅关闭 (stdio mode fallback - HTTP mode registers its own handlers)
 process.on('SIGINT', () => {
   console.log('Received SIGINT, shutting down gracefully...')
+  stopStaleContextCleanup()
   process.exit(0)
 })
 
 process.on('SIGTERM', () => {
   console.log('Received SIGTERM, shutting down gracefully...')
+  stopStaleContextCleanup()
   process.exit(0)
 })
 
