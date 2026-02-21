@@ -217,9 +217,7 @@ export class FavoriteManager implements IFavoriteManager {
       title:
         favorite.title?.trim() ||
         favorite.content.slice(0, VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH) +
-          (favorite.content.length > VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH
-            ? '...'
-            : ''),
+          (favorite.content.length > VALIDATION_CONSTRAINTS.TITLE_MAX_DISPLAY_LENGTH ? '...' : ''),
       content: favorite.content,
       description: favorite.description,
       category: favorite.category,

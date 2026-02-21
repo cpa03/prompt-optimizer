@@ -5,8 +5,8 @@
 failure-threshold: warning
 
 ignored:
-  - DL3008  # Pin versions in apt get install (not critical for build stage)
-  - DL3015  # Avoid additional packages (acceptable for build stage)
+  - DL3008 # Pin versions in apt get install (not critical for build stage)
+  - DL3015 # Avoid additional packages (acceptable for build stage)
 
 trustedRegistries:
   - docker.io
@@ -14,17 +14,17 @@ trustedRegistries:
 
 override:
   error:
-    - DL3006  # Always tag version of image explicitly
-    - DL3009  # Delete the apt-get lists after installing
-    - DL3016  # Pin versions in npm
-    - DL3028  # Pin versions in pip
-    - DL3059  # Multiple consecutive RUN instructions
+    - DL3006 # Always tag version of image explicitly
+    - DL3009 # Delete the apt-get lists after installing
+    - DL3016 # Pin versions in npm
+    - DL3028 # Pin versions in pip
+    - DL3059 # Multiple consecutive RUN instructions
 
   warning:
-    - DL3007  # Using latest is prone to errors (allowed for base images)
-    - DL4001  # Either use Wget or Curl, but not both
-    - SC2086  # Double quote to prevent globbing
+    - DL3007 # Using latest is prone to errors (allowed for base images)
+    - DL4001 # Either use Wget or Curl, but not both
+    - SC2086 # Double quote to prevent globbing
 
   info:
-    - DL3005  # Do not use apt-get dist-upgrade
-    - DL3013  # Pin versions in pip
+    - DL3005 # Do not use apt-get dist-upgrade
+    - DL3013 # Pin versions in pip

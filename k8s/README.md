@@ -217,9 +217,9 @@ The deployment includes built-in monitoring support for Prometheus:
 Pod annotations for Prometheus auto-discovery:
 
 ```yaml
-prometheus.io/scrape: "true"
-prometheus.io/port: "80"
-prometheus.io/path: "/metrics"
+prometheus.io/scrape: 'true'
+prometheus.io/port: '80'
+prometheus.io/path: '/metrics'
 ```
 
 ### ServiceMonitor (Prometheus Operator)
@@ -231,6 +231,7 @@ kubectl apply -f k8s/deployment.yaml
 ```
 
 The ServiceMonitor is configured with:
+
 - **Scrape interval**: 30s
 - **Scrape timeout**: 10s
 - **Metrics path**: /metrics

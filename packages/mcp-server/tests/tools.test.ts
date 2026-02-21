@@ -5,7 +5,12 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import { CoreServicesManager } from '../src/adapters/core-services.js'
 import { ParameterValidator } from '../src/adapters/parameter-adapter.js'
-import { MCPErrorHandler, MCP_ERROR_CODES, ErrorCategory, MCPErrorData } from '../src/adapters/error-handler.js'
+import {
+  MCPErrorHandler,
+  MCP_ERROR_CODES,
+  ErrorCategory,
+  MCPErrorData,
+} from '../src/adapters/error-handler.js'
 
 describe('MCP Server Tools', () => {
   let coreServices: CoreServicesManager

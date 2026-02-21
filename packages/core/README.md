@@ -44,11 +44,7 @@ const llmService = createLLMService(modelManager)
 const templateManager = createTemplateManager(storage)
 
 // Create prompt service
-const promptService = createPromptService(
-  modelManager,
-  llmService,
-  templateManager
-)
+const promptService = createPromptService(modelManager, llmService, templateManager)
 ```
 
 ## Storage Providers
