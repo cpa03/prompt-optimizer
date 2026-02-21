@@ -1,5 +1,12 @@
 # Cloudflare Workers/Pages Configuration
 # https://developers.cloudflare.com/workers/wrangler/configuration/
+#
+# This configuration supports deployment to Cloudflare Pages with:
+# - Edge authentication middleware
+# - Rate-limited auth API endpoint
+# - Health endpoint with Cloudflare-specific metadata
+# - Smart placement for optimal latency
+# - Built-in observability
 
 name = "prompt-optimizer"
 compatibility_date = "2025-02-18"
@@ -17,7 +24,8 @@ type = "ESModule"
 globs = ["**/*.ts"]
 fallthrough = true
 
-# Enable enhanced Cloudflare features
+# Smart Placement - Routes requests to the nearest available location
+# https://developers.cloudflare.com/workers/configuration/smart-placement/
 [placement]
 mode = "smart"
 
