@@ -432,9 +432,7 @@ export function useTextModelManager() {
         providerId: model.providerMeta?.id ?? 'custom',
         modelId: model.modelMeta?.id ?? '',
         connectionConfig,
-        paramOverrides: model.paramOverrides
-          ? JSON.parse(JSON.stringify(model.paramOverrides))
-          : {},
+        paramOverrides: model.paramOverrides ? structuredClone(model.paramOverrides) : {},
         displayMaskedKey: !!rawApiKey,
         originalApiKey: String(rawApiKey) || undefined,
         defaultModel: String(model.modelMeta?.id ?? ''),
