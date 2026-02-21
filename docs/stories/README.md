@@ -57,6 +57,34 @@ When creating stories, ensure:
 - ✅ Story is small enough to complete in 1-3 days
 - ✅ Dependencies are identified and documented
 
+## CLI Tools
+
+The project provides CLI tools for story management:
+
+### Create a New Story
+
+```bash
+pnpm run story:create <epic>.<story> "<title>"
+# Example: pnpm run story:create 1.4 "User Authentication"
+```
+
+### Validate Stories
+
+```bash
+# Validate a single story
+pnpm run story:validate docs/stories/1.1.prompt-optimization-core.md
+
+# Validate all stories
+pnpm run story:validate:all
+```
+
+The validation script checks for:
+- Required sections (Status, Story, AC, Tasks, Dev Notes, Testing, Change Log)
+- Valid story format ("As a... I want... so that...")
+- Placeholder text detection
+- Source references in Dev Notes
+- Task-to-AC references
+
 ## Active Stories
 
 ### Epic 1: Core Features
@@ -114,4 +142,4 @@ When creating stories, ensure:
 
 ---
 
-**Last Updated**: 2026-02-20
+**Last Updated**: 2026-02-21
