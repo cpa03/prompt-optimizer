@@ -242,6 +242,15 @@ export type {
   VariableExtractionRequest,
   VariableExtractionResponse,
   ExtractedVariable,
+  // 🆕 模式类型（用于工作区模式管理）
+  FunctionMode,
+  BasicSubMode,
+  ProSubMode,
+  ImageSubMode,
+  // 🆕 工具定义类型（用于 Function Calling）
+  ToolDefinition,
+  ToolCall,
+  FunctionDefinition,
 } from '@prompt-optimizer/core'
 
 // 导出新增的类型和服务
