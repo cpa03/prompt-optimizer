@@ -31,6 +31,13 @@ Examples:
 
 1. **Identify Story** - Scrum Master identifies next story from epic
 2. **Draft Story** - Create story file using template
+   ```bash
+   # Create a new story (auto-assign story number)
+   pnpm story:create 1 "User Authentication"
+   
+   # Create a story with specific number
+   pnpm story:create 1.4 "User Authentication"
+   ```
 3. **Populate Context** - Add technical details from architecture docs
    - Extract data models from architecture documents
    - Reference API contracts and endpoints
@@ -88,6 +95,33 @@ When creating stories, ensure:
 - [Epic 1 Index](./epic-1-index.md)
 
 ## Quick Reference
+
+### Validation Commands
+
+Validate stories before implementation:
+
+```bash
+# Validate all stories
+pnpm story:validate:all
+
+# Validate a specific story
+pnpm story:validate docs/stories/1.1.prompt-optimization-core.md
+
+# JSON output for CI integration
+node scripts/validate-story.js --all --json
+```
+
+### Story Creation Commands
+
+Create new stories quickly:
+
+```bash
+# Create a story with auto-assigned number
+pnpm story:create 1 "Feature Name"
+
+# Create a story with specific number
+pnpm story:create 2.1 "Feature Name"
+```
 
 ### Story Sections
 
