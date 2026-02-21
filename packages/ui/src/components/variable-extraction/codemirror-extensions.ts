@@ -15,7 +15,7 @@ import {
   type CompletionResult,
 } from '@codemirror/autocomplete'
 import type { DetectedVariable } from './useVariableDetection'
-import { COMPONENT_CONSTANTS } from '../../config/constants'
+import { COMPONENT_CONSTANTS, FONT_WEIGHTS, LINE_HEIGHTS } from '../../config/constants'
 
 const CODEMIRROR_CONSTANTS = COMPONENT_CONSTANTS.CODEMIRROR
 
@@ -429,7 +429,7 @@ export function existingVariableTooltip(
         dom.style.fontSize = '13px'
         dom.style.color = textColor
         dom.style.maxWidth = `${COMPONENT_CONSTANTS.CODEMIRROR.TOOLTIP_MAX_WIDTH}px`
-        dom.style.lineHeight = '1.6'
+        dom.style.lineHeight = String(LINE_HEIGHTS.RELAXED)
         const sourceLabelText =
           varSource === 'global'
             ? labels.sourceGlobal
@@ -466,7 +466,7 @@ export function existingVariableTooltip(
         const valueElement = document.createElement('div')
         valueElement.style.fontSize = '13px'
         valueElement.style.color = textColor
-        valueElement.style.fontWeight = '500'
+        valueElement.style.fontWeight = String(FONT_WEIGHTS.MEDIUM)
         valueElement.style.whiteSpace = 'pre-wrap'
         valueElement.style.wordBreak = 'break-word'
         valueElement.style.maxHeight = `${CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_HEIGHT_PX}px`
@@ -479,7 +479,7 @@ export function existingVariableTooltip(
           valueElement.style.opacity = '1'
           valueElement.textContent = varValue
         } else {
-          valueElement.style.fontWeight = '400'
+          valueElement.style.fontWeight = String(FONT_WEIGHTS.NORMAL)
           valueElement.style.fontStyle = 'italic'
           valueElement.style.opacity = '0.7'
           valueElement.textContent = labels.emptyValue
@@ -727,28 +727,28 @@ export function createThemeExtension(
       color: highlightColors.global.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500',
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-temporary': {
       backgroundColor: highlightColors.temporary.backgroundColor,
       color: highlightColors.temporary.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500',
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-predefined': {
       backgroundColor: highlightColors.predefined.backgroundColor,
       color: highlightColors.predefined.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500',
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-missing': {
       backgroundColor: highlightColors.missing.backgroundColor,
       color: highlightColors.missing.color,
       borderRadius: '2px',
       padding: '0 2px',
-      fontWeight: '500',
+      fontWeight: String(FONT_WEIGHTS.MEDIUM),
       textDecoration: 'underline wavy red',
       textDecorationThickness: '2px',
       textUnderlineOffset: '2px',

@@ -229,6 +229,28 @@ export const FONT_SIZES = {
   XXXXL: 32,
 } as const
 
+// Font weights - for consistent typography
+export const FONT_WEIGHTS = {
+  NORMAL: 400,
+  MEDIUM: 500,
+  SEMIBOLD: 600,
+  BOLD: 700,
+} as const
+
+// Line heights - for consistent text layout
+export const LINE_HEIGHTS = {
+  TIGHT: 1.25,
+  NORMAL: 1.5,
+  RELAXED: 1.6,
+  LOOSE: 1.75,
+} as const
+
+// Typography utility values - for consistent text styling
+export const TYPOGRAPHY = {
+  MAX_WIDTH_TOOLTIP: '320px',
+  MAX_WIDTH_POPOVER: '400px',
+} as const
+
 // Border radius values (in pixels or CSS values)
 export const BORDER_RADIUS = {
   NONE: '0',
