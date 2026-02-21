@@ -91,16 +91,6 @@ function recordFailedAttempt(ip) {
       }
     }
   }
-}
-  }
-
-  if (rateLimitStore.attempts.size > 10000) {
-    const cutoff = now - RATE_LIMIT.WINDOW_MS - RATE_LIMIT.BLOCK_DURATION_MS
-    for (const [key, val] of rateLimitStore.attempts) {
-      if (val.firstAttempt < cutoff) {
-        rateLimitStore.attempts.delete(key)
-      }
-    }
   }
 }
 
