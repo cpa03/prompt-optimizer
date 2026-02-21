@@ -108,6 +108,12 @@ watch(
 // 监听内部变化，同步到外部
 watch(isVisible, (newVal) => {
   emit('update:modelValue', newVal)
+  if (newVal) {
+    isOpening.value = true
+    setTimeout(() => {
+      isOpening.value = false
+    }, TIME_CONSTANTS.ANIMATION_SHORT_DELAY)
+  }
 })
 
 // 模态框样式
@@ -116,7 +122,10 @@ const modalStyle = computed(() => ({
   maxWidth: props.maxWidth,
 }))
 
-const modalClass = computed(() => ['modern-modal', { 'modal-closing': isClosing.value }])
+const modalClass = computed(() => [
+  'modern-modal',
+  { 'modal-closing': isClosing.value, 'modal-opening': isOpening.value },
+])
 
 // 键盘事件处理
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -155,6 +164,7 @@ const handleConfirm = () => {
 
 // 添加关闭动画状态
 const isClosing = ref(false)
+const isOpening = ref(false)
 
 const handleCancel = () => {
   // 触发关闭动画
@@ -205,6 +215,22 @@ const handleAfterLeave = () => {
   animation: modal-close-scale 0.15s ease-out forwards;
 }
 
+/* 入场动画效果 */
+.modal-opening :deep(.n-card) {
+  animation: modal-open-scale 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes modal-open-scale {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @keyframes modal-close-scale {
   from {
     transform: scale(1);
@@ -226,6 +252,11 @@ const handleAfterLeave = () => {
 @media (prefers-reduced-motion: reduce) {
   /* 禁用关闭动画 */
   .modal-closing :deep(.n-card) {
+    animation: none;
+  }
+
+  /* 禁用开场动画 */
+  .modal-opening :deep(.n-card) {
     animation: none;
   }
 
