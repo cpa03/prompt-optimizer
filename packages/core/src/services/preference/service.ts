@@ -192,11 +192,38 @@ export class PreferenceService implements IPreferenceService {
 
   /**
    * 获取所有偏好设置
+   * 使用批量读取优化性能（单次存储调用替代N次单独调用）
    * @returns 包含所有偏好设置的键值对对象（使用原始键名，不带前缀）
    */
   async getAll(): Promise<Record<string, string>> {
     try {
       const allKeys = await this.keys()
+
+      if (allKeys.length === 0) {
+        return {}
+      }
+
+      const prefKeys = allKeys.map((key) => this.getPrefKey(key))
+
+      if ('getItems' in this.storageProvider && typeof this.storageProvider.getItems === 'function') {
+        const batchResult = await this.storageProvider.getItems(prefKeys)
+
+        const result: Record<string, string> = {}
+        for (const key of allKeys) {
+          const prefKey = this.getPrefKey(key)
+          const storedValue = batchResult[prefKey]
+          if (storedValue !== null && storedValue !== undefined) {
+            try {
+              const parsed = JSON.parse(storedValue)
+              result[key] = String(parsed)
+            } catch {
+              console.warn(`[PreferenceService] Failed to parse preference for key "${key}": invalid JSON`)
+            }
+          }
+        }
+
+        return result
+      }
 
       const entries = await Promise.all(
         allKeys.map(async (key) => {
