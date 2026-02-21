@@ -194,6 +194,11 @@ export const MCP_CONFIG = {
     minPort: 1,
     maxPort: 65535,
     gracefulShutdownTimeoutMs: 10000,
+    timeouts: {
+      headers: 15000,
+      request: 30000,
+      keepAlive: 5000,
+    },
   },
   logging: {
     defaultLevel: 'debug' as const,

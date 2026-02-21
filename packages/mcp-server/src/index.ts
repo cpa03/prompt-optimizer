@@ -611,6 +611,14 @@ async function main() {
       const httpServer = app.listen(port, () => {
         logger.info(`MCP Server running on HTTP port ${port} with session management`)
       })
+
+      httpServer.timeout = MCP_CONFIG.server.timeouts.request
+      httpServer.headersTimeout = MCP_CONFIG.server.timeouts.headers
+      httpServer.keepAliveTimeout = MCP_CONFIG.server.timeouts.keepAlive
+
+      logger.info(
+        `HTTP server timeouts configured: request=${httpServer.timeout}ms, headers=${httpServer.headersTimeout}ms, keepAlive=${httpServer.keepAliveTimeout}ms`
+      )
       logger.info('HTTP server setup completed')
 
       // Improved graceful shutdown for HTTP mode
