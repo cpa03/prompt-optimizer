@@ -261,6 +261,79 @@ describe('FileStorageProvider', () => {
     })
   })
 
+  describe('getDatabaseStats', () => {
+    beforeEach(async () => {
+      mockFs.access.mockResolvedValue(undefined)
+      mockFs.mkdir.mockResolvedValue(undefined)
+      mockFs.writeFile.mockResolvedValue(undefined)
+      mockFs.rename.mockResolvedValue(undefined)
+      mockFs.copyFile.mockResolvedValue(undefined)
+    })
+
+    it('should return empty stats for empty storage', async () => {
+      mockFs.readFile.mockResolvedValue('{}')
+
+      const stats = await provider.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(0)
+      expect(stats.totalSize).toBe(0)
+      expect(stats.averageRecordSize).toBe(0)
+      expect(stats.oldestRecord).toBeNull()
+      expect(stats.newestRecord).toBeNull()
+    })
+
+    it('should return correct stats for storage with items', async () => {
+      mockFs.readFile.mockResolvedValue('{"key1":"value1","key2":"value22","key3":"value333"}')
+
+      const stats = await provider.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(3)
+      expect(stats.totalSize).toBe(21)
+      expect(stats.averageRecordSize).toBe(7)
+    })
+
+    it('should return zero stats after clearAll', async () => {
+      mockFs.readFile.mockResolvedValue('{"key1":"value1","key2":"value2"}')
+
+      await provider.clearAll()
+
+      const stats = await provider.getDatabaseStats()
+
+      expect(stats.itemCount).toBe(0)
+      expect(stats.totalSize).toBe(0)
+    })
+  })
+
+  describe('healthCheck', () => {
+    beforeEach(async () => {
+      mockFs.access.mockRejectedValue(new Error('File not found'))
+      mockFs.mkdir.mockResolvedValue(undefined)
+      mockFs.writeFile.mockResolvedValue(undefined)
+      mockFs.rename.mockResolvedValue(undefined)
+      mockFs.copyFile.mockResolvedValue(undefined)
+    })
+
+    it('should return healthy status when storage works correctly', async () => {
+      const health = await provider.healthCheck()
+
+      expect(health.healthy).toBe(true)
+      expect(health.canRead).toBe(true)
+      expect(health.canWrite).toBe(true)
+      expect(health.canDelete).toBe(true)
+      expect(health.latency).toBeGreaterThanOrEqual(0)
+      expect(health.errors).toEqual([])
+      expect(typeof health.timestamp).toBe('number')
+    })
+
+    it('should clean up test key after health check', async () => {
+      await provider.healthCheck()
+
+      const testKey = '__health_check__'
+      const valueAfterHealthCheck = await provider.getItem(testKey)
+      expect(valueAfterHealthCheck).toBeNull()
+    })
+  })
+
   describe('getCapabilities', () => {
     it('should return correct capabilities', () => {
       const capabilities = provider.getCapabilities()
