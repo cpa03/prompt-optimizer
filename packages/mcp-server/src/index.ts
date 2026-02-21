@@ -460,6 +460,10 @@ async function main() {
           'Permissions-Policy',
           'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
         )
+        res.setHeader(
+          'Content-Security-Policy',
+          "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+        )
         res.setHeader('Cache-Control', 'no-store')
         res.removeHeader('X-Powered-By')
         next()
