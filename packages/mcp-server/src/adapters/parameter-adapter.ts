@@ -39,6 +39,11 @@ export class ParameterValidator {
     if (template.trim().length === 0) {
       throw new Error('模板不能为空字符串或纯空白字符')
     }
+    if (template.length > CONSTRAINTS.mcp.maxTemplateLength) {
+      throw new Error(
+        `模板标识过长: ${template.length} 字符 (最大 ${CONSTRAINTS.mcp.maxTemplateLength} 字符)`
+      )
+    }
   }
 
   /**

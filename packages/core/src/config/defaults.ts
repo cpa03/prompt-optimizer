@@ -94,6 +94,7 @@ export const CONSTRAINTS = {
   mcp: {
     maxPromptLength: getEnvInt('VITE_MCP_MAX_PROMPT_LENGTH', 50000),
     maxRequirementsLength: getEnvInt('VITE_MCP_MAX_REQUIREMENTS_LENGTH', 10000),
+    maxTemplateLength: getEnvInt('VITE_MCP_MAX_TEMPLATE_LENGTH', 100),
   },
   text: {
     maxRetries: getEnvInt('VITE_MAX_RETRIES', 5),
