@@ -172,34 +172,13 @@ export function sanitizeObject<T>(obj: T): T {
  * Pattern for sensitive field names that should be redacted.
  * Matches common naming conventions for sensitive data fields.
  */
-const SENSITIVE_FIELD_PATTERNS = [
-  /^api[-_]?key$/i,
-  /^apikey$/i,
-  /^secret[-_]?key$/i,
-  /^secret$/i,
-  /^password$/i,
-  /^passwd$/i,
-  /^token$/i,
-  /^access[-_]?token$/i,
-  /^refresh[-_]?token$/i,
-  /^auth[-_]?token$/i,
-  /^bearer$/i,
-  /^authorization$/i,
-  /^credential$/i,
-  /^private[-_]?key$/i,
-  /^api[-_]?secret$/i,
-  /^client[-_]?secret$/i,
-]
+const SENSITIVE_FIELD_PATTERN =
+  /^(?:api[-_]?key|apikey|secret[-_]?key|secret|password|passwd|token|access[-_]?token|refresh[-_]?token|auth[-_]?token|bearer|authorization|credential|private[-_]?key|api[-_]?secret|client[-_]?secret)$/i
 
 const REDACTED_PLACEHOLDER = '[REDACTED]'
 
-/**
- * Checks if a field name matches a sensitive pattern.
- * @param key - The field name to check
- * @returns true if the field name is sensitive
- */
 function isSensitiveField(key: string): boolean {
-  return SENSITIVE_FIELD_PATTERNS.some((pattern) => pattern.test(key))
+  return SENSITIVE_FIELD_PATTERN.test(key)
 }
 
 /**
