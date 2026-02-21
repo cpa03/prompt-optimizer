@@ -10,8 +10,14 @@ import { createDebugLogger } from './debug'
 const logger = createDebugLogger('environment')
 
 // 常量定义
+/**
+ * Pattern for matching custom API environment variable names.
+ * Matches VITE_CUSTOM_API_KEY_*, VITE_CUSTOM_API_BASE_URL_*, VITE_CUSTOM_API_MODEL_*
+ */
 export const CUSTOM_API_PATTERN = /^VITE_CUSTOM_API_(KEY|BASE_URL|MODEL)_(.+)$/
+/** Pattern for validating suffix names (alphanumeric, underscores, hyphens) */
 export const SUFFIX_PATTERN = ENV_CONFIG.patterns.suffix
+/** Maximum allowed length for custom model suffix names */
 export const MAX_SUFFIX_LENGTH = ENV_CONFIG.limits.maxSuffixLength
 
 // 简单的缓存机制

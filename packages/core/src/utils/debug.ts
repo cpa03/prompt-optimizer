@@ -19,6 +19,10 @@ export interface DebugLogger {
 const enabledNamespaces = new Set<string>()
 let globalDebugEnabled = false
 
+/**
+ * Check if debug logging is currently enabled
+ * @returns true if debug logging is enabled globally, in development, or via environment variable
+ */
 export function isDebugLoggingEnabled(): boolean {
   if (globalDebugEnabled) return true
   if (isDevelopment()) return true
@@ -85,6 +89,14 @@ function createLogFunction(level: LogLevel, namespace: string): (...args: unknow
   }
 }
 
+/**
+ * Create a debug logger for a specific namespace
+ * @param namespace - The namespace identifier for log messages (e.g., 'ModelManager', 'Storage')
+ * @returns A DebugLogger instance with namespaced log methods
+ * @example
+ * const logger = createDebugLogger('MyService');
+ * logger.log('Operation completed'); // Outputs: [MyService] Operation completed
+ */
 export function createDebugLogger(namespace: string): DebugLogger {
   return {
     debug: createLogFunction('debug', namespace),
@@ -97,18 +109,32 @@ export function createDebugLogger(namespace: string): DebugLogger {
   }
 }
 
+/**
+ * Enable debug logging for a specific namespace
+ * @param namespace - The namespace to enable (use '*' for all namespaces)
+ */
 export function enableDebugNamespace(namespace: string): void {
   enabledNamespaces.add(namespace)
 }
 
+/**
+ * Disable debug logging for a specific namespace
+ * @param namespace - The namespace to disable
+ */
 export function disableDebugNamespace(namespace: string): void {
   enabledNamespaces.delete(namespace)
 }
 
+/**
+ * Enable debug logging globally for all namespaces
+ */
 export function enableGlobalDebug(): void {
   globalDebugEnabled = true
 }
 
+/**
+ * Disable debug logging globally
+ */
 export function disableGlobalDebug(): void {
   globalDebugEnabled = false
 }
