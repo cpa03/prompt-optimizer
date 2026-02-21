@@ -17,6 +17,8 @@ import {
 import type { DetectedVariable } from './useVariableDetection'
 import { COMPONENT_CONSTANTS } from '../../config/constants'
 
+const CODEMIRROR_CONSTANTS = COMPONENT_CONSTANTS.CODEMIRROR
+
 export interface VariableDetectionLabels {
   sourceGlobal: string
   sourceTemporary: string
@@ -233,7 +235,7 @@ export function variableAutocompletion(
         // 添加临时变量 (优先级最高)
         for (const [name, value] of Object.entries(temporaryVariables)) {
           const preview = value
-            ? `${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`
+            ? `${value.substring(0, CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH)}${value.length > CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH ? '...' : ''}`
             : labels.emptyValue
 
           options.push(
@@ -249,7 +251,7 @@ export function variableAutocompletion(
         // 添加全局变量
         for (const [name, value] of Object.entries(globalVariables)) {
           const preview = value
-            ? `${value.substring(0, 50)}${value.length > 50 ? '...' : ''}`
+            ? `${value.substring(0, CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH)}${value.length > CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_LENGTH ? '...' : ''}`
             : labels.emptyValue
 
           options.push(
@@ -271,7 +273,7 @@ export function variableAutocompletion(
     ],
     // 自动完成配置
     activateOnTyping: true,
-    maxRenderedOptions: 20,
+    maxRenderedOptions: CODEMIRROR_CONSTANTS.AUTOCOMPLETE_MAX_OPTIONS,
     defaultKeymap: true,
     optionClass: (completion) => {
       const source = (completion as VariableCompletionMeta).sourceType
@@ -467,7 +469,7 @@ export function existingVariableTooltip(
         valueElement.style.fontWeight = '500'
         valueElement.style.whiteSpace = 'pre-wrap'
         valueElement.style.wordBreak = 'break-word'
-        valueElement.style.maxHeight = '180px'
+        valueElement.style.maxHeight = `${CODEMIRROR_CONSTANTS.VALUE_PREVIEW_MAX_HEIGHT_PX}px`
         valueElement.style.overflowY = 'auto'
         valueElement.style.fontFamily =
           'var(--n-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace)'
