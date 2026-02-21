@@ -103,10 +103,11 @@ function clearRateLimit(ip) {
 
 /**
  * Generate a unique request ID for logging/tracing
+ * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers
  * @returns {string} - Unique request ID
  */
 function generateRequestId() {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  return `req_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
 /**
