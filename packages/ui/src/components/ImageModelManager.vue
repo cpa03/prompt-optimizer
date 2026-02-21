@@ -101,7 +101,7 @@
               width="24"
               height="24"
               object-fit="cover"
-              :style="{ borderRadius: '4px', border: '1px solid #d9d9d9' }"
+              :style="imagePreviewStyle"
               :preview-disabled="false"
               :alt="t('image.connection.testImagePreview')"
             />
@@ -204,6 +204,12 @@ import { useImageModelManager } from '../composables/model/useImageModelManager'
 import { useToast } from '../composables/ui/useToast'
 import { getI18nErrorMessage } from '../utils/error'
 import { isRunningInElectron, type IImageService, type ImageModel } from '@prompt-optimizer/core'
+import { BORDER_RADIUS, SEMANTIC_COLORS } from '../config/constants'
+
+const imagePreviewStyle = {
+  borderRadius: BORDER_RADIUS.MD,
+  border: `1px solid ${SEMANTIC_COLORS.BORDER_NEUTRAL}`,
+}
 
 const { t } = useI18n()
 const toast = useToast()

@@ -335,6 +335,19 @@ export const SEMANTIC_COLORS = {
   THEME_GREEN: '#16a34a',
   THEME_PURPLE: '#9333ea',
   THEME_CLASSIC: '#b08968',
+
+  // Border colors
+  BORDER_NEUTRAL: '#d9d9d9',
+} as const
+
+// Default category colors - for favorite category initialization
+export const DEFAULT_CATEGORY_COLORS = {
+  UNCATEGORIZED: '#6B7280', // gray-500
+  CREATIVE_WRITING: '#8B5CF6', // violet-500
+  PROGRAMMING: '#F59E0B', // amber-500
+  BUSINESS_ANALYSIS: '#EF4444', // red-500
+  LEARNING: '#10B981', // emerald-500
+  DAILY_ASSISTANT: '#3B82F6', // blue-500
 } as const
 
 // Theme icon colors - used in ThemeToggleUI component

@@ -262,7 +262,7 @@
             width="32"
             height="32"
             object-fit="cover"
-            :style="{ borderRadius: '4px', border: '1px solid #d9d9d9' }"
+            :style="imagePreviewStyle"
             :preview-disabled="false"
             :alt="t('image.connection.testImagePreview')"
           />
@@ -316,6 +316,12 @@ import { useToast } from '../composables/ui/useToast'
 import { isRunningInElectron, type ImageModelConfig } from '@prompt-optimizer/core'
 import ModelAdvancedSection from './ModelAdvancedSection.vue'
 import ExternalLinkIcon from './icons/ExternalLinkIcon.vue'
+import { BORDER_RADIUS, SEMANTIC_COLORS } from '../config/constants'
+
+const imagePreviewStyle = {
+  borderRadius: BORDER_RADIUS.MD,
+  border: `1px solid ${SEMANTIC_COLORS.BORDER_NEUTRAL}`,
+}
 
 const { t } = useI18n()
 const toast = useToast()

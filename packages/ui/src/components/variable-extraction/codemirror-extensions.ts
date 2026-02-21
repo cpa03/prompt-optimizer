@@ -15,7 +15,14 @@ import {
   type CompletionResult,
 } from '@codemirror/autocomplete'
 import type { DetectedVariable } from './useVariableDetection'
-import { COMPONENT_CONSTANTS, FONT_WEIGHTS, LINE_HEIGHTS } from '../../config/constants'
+import {
+  COMPONENT_CONSTANTS,
+  FONT_WEIGHTS,
+  LINE_HEIGHTS,
+  FONT_SIZES,
+  SPACING,
+  BORDER_RADIUS,
+} from '../../config/constants'
 
 const CODEMIRROR_CONSTANTS = COMPONENT_CONSTANTS.CODEMIRROR
 
@@ -691,12 +698,12 @@ export function createThemeExtension(
     '&': {
       backgroundColor: resolvedBackgroundColor,
       color: themeVars.textColor1,
-      fontSize: '14px',
+      fontSize: `${FONT_SIZES.BASE}px`,
       fontFamily: 'inherit',
       height: '100%',
     },
     '.cm-content': {
-      padding: '8px',
+      padding: `${SPACING.SM}px`,
       caretColor: themeVars.primaryColor,
       fontFamily: 'inherit',
     },
@@ -725,29 +732,29 @@ export function createThemeExtension(
     '.cm-variable-global': {
       backgroundColor: highlightColors.global.backgroundColor,
       color: highlightColors.global.color,
-      borderRadius: '2px',
-      padding: '0 2px',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
       fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-temporary': {
       backgroundColor: highlightColors.temporary.backgroundColor,
       color: highlightColors.temporary.color,
-      borderRadius: '2px',
-      padding: '0 2px',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
       fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-predefined': {
       backgroundColor: highlightColors.predefined.backgroundColor,
       color: highlightColors.predefined.color,
-      borderRadius: '2px',
-      padding: '0 2px',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
       fontWeight: String(FONT_WEIGHTS.MEDIUM),
     },
     '.cm-variable-missing': {
       backgroundColor: highlightColors.missing.backgroundColor,
       color: highlightColors.missing.color,
-      borderRadius: '2px',
-      padding: '0 2px',
+      borderRadius: BORDER_RADIUS.SM,
+      padding: `0 ${SPACING.XS}px`,
       fontWeight: String(FONT_WEIGHTS.MEDIUM),
       textDecoration: 'underline wavy red',
       textDecorationThickness: '2px',

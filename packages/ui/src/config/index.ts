@@ -23,6 +23,7 @@ export {
   COMPONENT_CONSTANTS,
   CALCULATION_CONSTANTS,
   THEME_ICON_COLORS,
+  DEFAULT_CATEGORY_COLORS,
 } from './constants'
 
 // Re-export for convenience
@@ -45,3 +46,4 @@ export { ICON_SIZES as IconSizes } from './constants'
 export { COMPONENT_CONSTANTS as ComponentConstants } from './constants'
 export { CALCULATION_CONSTANTS as Calculation } from './constants'
 export { THEME_ICON_COLORS as ThemeIconColors } from './constants'
+export { DEFAULT_CATEGORY_COLORS as DefaultCategoryColors } from './constants'
