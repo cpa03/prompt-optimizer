@@ -5,6 +5,8 @@ import {
   isDangerousKey,
   sanitizeObject,
   redactSensitiveFields,
+  safeStringify,
+  safeStringifyOrFallback,
 } from '../../../src/utils/json'
 
 describe('safeJsonParse', () => {
@@ -397,5 +399,185 @@ describe('redactSensitiveFields', () => {
       expect(result.credential).toBe('[REDACTED]')
       expect(result.otherData).toBe('public')
     })
+  })
+})
+
+describe('safeStringify', () => {
+  describe('basic stringification', () => {
+    it('should stringify simple objects', () => {
+      const input = { name: 'test', value: 123 }
+      const result = safeStringify(input)
+
+      expect(result).toBe('{"name":"test","value":123}')
+    })
+
+    it('should stringify arrays', () => {
+      const input = [1, 2, 3]
+      const result = safeStringify(input)
+
+      expect(result).toBe('[1,2,3]')
+    })
+
+    it('should stringify nested objects', () => {
+      const input = { outer: { inner: { deep: 'value' } } }
+      const result = safeStringify(input)
+
+      expect(result).toBe('{"outer":{"inner":{"deep":"value"}}}')
+    })
+
+    it('should stringify primitives', () => {
+      expect(safeStringify(null)).toBe('null')
+      expect(safeStringify('string')).toBe('"string"')
+      expect(safeStringify(42)).toBe('42')
+      expect(safeStringify(true)).toBe('true')
+    })
+  })
+
+  describe('circular reference handling', () => {
+    it('should handle circular references', () => {
+      const obj: any = { name: 'test' }
+      obj.self = obj
+
+      const result = safeStringify(obj)
+
+      expect(result).toContain('"name":"test"')
+      expect(result).toContain('"self":"[Circular]"')
+    })
+
+    it('should handle deeply nested circular references', () => {
+      const obj: any = { level1: { level2: {} } }
+      obj.level1.level2.back = obj
+
+      const result = safeStringify(obj)
+
+      expect(result).toContain('"back":"[Circular]"')
+    })
+
+    it('should handle multiple circular references', () => {
+      const obj: any = { a: {}, b: {} }
+      obj.a.ref = obj.b
+      obj.b.ref = obj.a
+
+      const result = safeStringify(obj)
+
+      expect(result).not.toBeNull()
+    })
+
+    it('should use custom circular placeholder', () => {
+      const obj: any = { name: 'test' }
+      obj.self = obj
+
+      const result = safeStringify(obj, { circularPlaceholder: '<CIRCULAR>' })
+
+      expect(result).toContain('<CIRCULAR>')
+    })
+  })
+
+  describe('size limits', () => {
+    it('should return null when size limit exceeded', () => {
+      const largeObj = { data: 'x'.repeat(1000) }
+      const result = safeStringify(largeObj, { maxSize: 100 })
+
+      expect(result).toBeNull()
+    })
+
+    it('should stringify when within size limit', () => {
+      const obj = { data: 'small' }
+      const result = safeStringify(obj, { maxSize: 1000 })
+
+      expect(result).toBe('{"data":"small"}')
+    })
+
+    it('should use default max size of 50MB', () => {
+      const obj = { data: 'test' }
+      const result = safeStringify(obj)
+
+      expect(result).toBe('{"data":"test"}')
+    })
+  })
+
+  describe('sensitive field redaction', () => {
+    it('should redact sensitive fields when option enabled', () => {
+      const input = { apiKey: 'secret-key', model: 'gpt-4' }
+      const result = safeStringify(input, { redactSensitive: true })
+
+      expect(result).toContain('[REDACTED]')
+      expect(result).not.toContain('secret-key')
+    })
+
+    it('should not redact by default', () => {
+      const input = { apiKey: 'secret-key', model: 'gpt-4' }
+      const result = safeStringify(input)
+
+      expect(result).toContain('secret-key')
+    })
+
+    it('should redact nested sensitive fields', () => {
+      const input = {
+        config: {
+          apiKey: 'nested-secret',
+          password: 'my-password',
+        },
+        name: 'test',
+      }
+      const result = safeStringify(input, { redactSensitive: true })
+
+      expect(result).toContain('[REDACTED]')
+      expect(result).not.toContain('nested-secret')
+      expect(result).not.toContain('my-password')
+    })
+  })
+
+  describe('edge cases', () => {
+    it('should handle empty objects', () => {
+      expect(safeStringify({})).toBe('{}')
+    })
+
+    it('should handle empty arrays', () => {
+      expect(safeStringify([])).toBe('[]')
+    })
+
+    it('should handle objects with undefined values', () => {
+      const result = safeStringify({ a: undefined, b: 1 })
+
+      expect(result).toBe('{"b":1}')
+    })
+
+    it('should handle objects with function values', () => {
+      const result = safeStringify({ fn: () => {}, name: 'test' })
+
+      expect(result).toBe('{"name":"test"}')
+    })
+  })
+})
+
+describe('safeStringifyOrFallback', () => {
+  it('should return stringified value on success', () => {
+    const input = { name: 'test' }
+    const result = safeStringifyOrFallback(input)
+
+    expect(result).toBe('{"name":"test"}')
+  })
+
+  it('should return fallback on failure', () => {
+    const obj: any = { name: 'test' }
+    obj.self = obj
+    const result = safeStringifyOrFallback(obj, '{"error":"failed"}', { maxSize: 10 })
+
+    expect(result).toBe('{"error":"failed"}')
+  })
+
+  it('should use default fallback of {}', () => {
+    const largeObj = { data: 'x'.repeat(1000) }
+    const result = safeStringifyOrFallback(largeObj, undefined, { maxSize: 10 })
+
+    expect(result).toBe('{}')
+  })
+
+  it('should pass options to safeStringify', () => {
+    const input = { apiKey: 'secret' }
+    const result = safeStringifyOrFallback(input, '{}', { redactSensitive: true })
+
+    expect(result).toContain('[REDACTED]')
   })
 })

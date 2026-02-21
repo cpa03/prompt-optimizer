@@ -75,8 +75,10 @@ export {
   isDangerousKey,
   sanitizeObject,
   redactSensitiveFields,
+  safeStringify,
+  safeStringifyOrFallback,
 } from './json'
-export type { SafeJsonParseOptions } from './json'
+export type { SafeJsonParseOptions, SafeStringifyOptions } from './json'
 
 // Retry utilities
 export {
