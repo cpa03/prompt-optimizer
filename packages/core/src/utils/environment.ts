@@ -4,7 +4,7 @@
 
 import { TIMEOUTS } from '../config/timeouts'
 import { ENV_CONFIG } from '../config/core-config'
-import { VALIDATION_CONSTRAINTS } from '../constants/constraints'
+import { VALIDATION_CONSTRAINTS, SESSION_CONSTRAINTS } from '../constants/constraints'
 import { createDebugLogger } from './debug'
 
 const logger = createDebugLogger('environment')
@@ -226,7 +226,7 @@ export function waitForElectronApi(
         logger.warn('Timeout waiting for Electron API after', timeout, 'ms')
         resolve(false)
       }
-    }, 50) // 每50ms检查一次
+    }, SESSION_CONSTRAINTS.RETRY_DELAY_MS)
   })
 }
 
