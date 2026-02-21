@@ -1209,6 +1209,10 @@ export default {
       exit: '退出对比',
       enable: '启用文本对比',
       disable: '关闭文本对比',
+      summary: '文本对比：{additions} 处添加，{deletions} 处删除',
+      comparisonLabel: '文本对比视图',
+      added: '新增文本',
+      removed: '删除文本',
     },
     error: {
       noTemplate: '请先选择迭代提示词',

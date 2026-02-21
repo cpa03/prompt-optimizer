@@ -1201,6 +1201,10 @@ export default {
       exit: '退出對比',
       enable: '啟用文字對比',
       disable: '關閉文字對比',
+      summary: '文字對比：{additions} 處新增，{deletions} 處刪除',
+      comparisonLabel: '文字對比視圖',
+      added: '新增文字',
+      removed: '刪除文字',
     },
     error: {
       noTemplate: '請先選擇迭代提示詞',
