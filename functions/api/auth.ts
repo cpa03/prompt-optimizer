@@ -42,7 +42,7 @@ const rateLimitStore: AuthRateLimitStore = {
 }
 
 function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  return `req_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
 function checkRateLimit(ip: string): { allowed: boolean; retryAfter?: number; remaining?: number } {

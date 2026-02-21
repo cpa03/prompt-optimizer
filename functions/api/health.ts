@@ -3,7 +3,7 @@ export interface Env {
 }
 
 function generateRequestId(): string {
-  return `cf_health_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+  return `cf_health_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
 export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
