@@ -131,8 +131,8 @@ const isLoading = ref(false)
 const treeOptions = computed<TreeSelectOption[]>(() => {
   const buildTree = (parentId?: string): TreeSelectOption[] => {
     return categories.value
-      .filter((cat) => cat.parentId === parentId)
-      .map((cat) => ({
+      .filter((cat: FavoriteCategory) => cat.parentId === parentId)
+      .map((cat: FavoriteCategory) => ({
         label: cat.name,
         key: cat.id,
         children: buildTree(cat.id),
