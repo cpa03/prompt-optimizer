@@ -121,6 +121,31 @@ If this story builds on previous work, include relevant notes:
 
 ---
 
+## Dependencies Template
+
+Track story dependencies and relationships:
+
+### Prerequisites
+
+| Story ID | Type      | Description                    | Status |
+| -------- | --------- | ------------------------------ | ------ |
+| X.Y      | Required  | Must complete before this      | Status |
+| A.B      | Optional  | Nice to have but not blocking  | Status |
+
+### Blocked By
+
+| Story ID | Description                    |
+| -------- | ------------------------------ |
+| X.Y      | Reason for blocking            |
+
+### Blocks
+
+| Story ID | Description                    |
+| -------- | ------------------------------ |
+| A.B      | What is blocked by this story  |
+
+---
+
 ## File List Template
 
 Track files modified during implementation:
