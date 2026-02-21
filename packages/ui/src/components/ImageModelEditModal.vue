@@ -180,7 +180,7 @@
               {{ t('image.capability.image2image') }}
             </NTag>
             <NTag
-              v-if="(selectedModel.capabilities as any)?.highResolution"
+              v-if="selectedModel.capabilities?.highResolution"
               type="primary"
               size="small"
               :bordered="false"
