@@ -102,7 +102,7 @@ export function loadConfig(): MCPServerConfig {
     allowedOrigins = ['*']
   }
 
-  return {
+  const config: MCPServerConfig = {
     httpPort: parseInt(process.env.MCP_HTTP_PORT || String(MCP_CONFIG.server.defaultHttpPort)),
     logLevel:
       (process.env.MCP_LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') ||
@@ -112,6 +112,10 @@ export function loadConfig(): MCPServerConfig {
     allowedOrigins,
     enableDnsRebindingProtection: process.env.MCP_DNS_REBINDING_PROTECTION === 'true',
   }
+
+  validateConfig(config)
+
+  return config
 }
 
 export function validateConfig(config: MCPServerConfig): void {
