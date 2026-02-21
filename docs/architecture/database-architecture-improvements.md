@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the comprehensive improvements made to the database architecture in the Prompt Optimizer application. These enhancements focus on data integrity, performance optimization, and maintainability.
+This document describes the comprehensive improvements made to the database architecture in the Prompt Optimizer application. These enhancements focus on data integrity, performance optimization, maintainability, and data lifecycle management.
 
 ## Key Improvements
 
@@ -25,22 +25,21 @@ This document describes the comprehensive improvements made to the database arch
 ```typescript
 // Database now tracks version and migration history
 const DB_CONFIG = {
-  currentVersion: 2,
+  currentVersion: 3,
   metadataKey: '__db_metadata__',
 }
 
-// Automatic migration from version 1 to version 2
-this.version(2)
+// Automatic migration from version 2 to version 3 (TTL support)
+this.version(3)
   .stores({
-    storage: 'key, value, timestamp, size, checksum',
+    storage: 'key, value, timestamp, size, checksum, expiresAt',
   })
   .upgrade((tx) => {
-    // Migrate existing data
     tx.table('storage')
       .toCollection()
       .modify((record) => {
-        if (!record.size) {
-          record.size = record.value ? record.value.length : 0
+        if (record.expiresAt === undefined) {
+          record.expiresAt = null
         }
       })
   })
@@ -231,16 +230,78 @@ console.log(`Total size: ${stats.totalSize} bytes`)
 console.log(`Average record size: ${stats.averageRecordSize} bytes`)
 ```
 
+### 7. TTL (Time-to-Live) Support
+
+**Problem**: No automatic data lifecycle management - old data accumulates indefinitely.
+
+**Solution**:
+
+- Added TTL (Time-to-Live) support for automatic data expiration
+- Implemented `expiresAt` field in storage records
+- Added cleanup methods for expired data
+- Automatic expiration check on read operations
+
+**Benefits**:
+
+- Automatic cleanup of stale data
+- Better storage space management
+- Configurable data retention policies
+- No manual intervention required
+
+```typescript
+// Set item with TTL (expires in 1 hour)
+await storage.setItem('session-key', 'session-data', { ttl: 3600000 })
+
+// Get expired keys
+const expiredKeys = await storage.getExpiredKeys()
+
+// Cleanup expired items
+const result = await storage.cleanupExpired()
+console.log(`Cleaned ${result.cleaned} expired items`)
+
+// Check capabilities
+const capabilities = storage.getCapabilities()
+console.log(`TTL supported: ${capabilities.supportsTTL}`)
+```
+
+**TTL Usage Examples**:
+
+```typescript
+// Session data with 30-minute TTL
+await storage.setItem('user-session', JSON.stringify(session), { ttl: 30 * 60 * 1000 })
+
+// Cache with 5-minute TTL
+await storage.setItem('api-cache', response, { ttl: 5 * 60 * 1000 })
+
+// Temporary data with 24-hour TTL
+await storage.setItem('temp-upload', uploadData, { ttl: 24 * 60 * 60 * 1000 })
+
+// Batch operations with TTL
+await storage.batchUpdate([
+  { key: 'cache1', operation: 'set', value: 'data1', options: { ttl: 60000 } },
+  { key: 'cache2', operation: 'set', value: 'data2', options: { ttl: 120000 } },
+])
+
+// Periodic cleanup (recommended for production)
+setInterval(async () => {
+  const result = await storage.cleanupExpired()
+  if (result.cleaned > 0) {
+    console.log(`Cleanup: removed ${result.cleaned} expired items`)
+  }
+}, 60 * 60 * 1000) // Run every hour
+```
+
 ## Configuration Constants
 
 Added centralized configuration for database limits:
 
 ```typescript
 const DB_CONFIG = {
-  currentVersion: 2, // Current database schema version
+  currentVersion: 3, // Current database schema version
   metadataKey: '__db_metadata__', // Reserved key for database metadata
   maxKeyLength: 1024, // Maximum key length in characters
   maxValueSize: 50 * 1024 * 1024, // Maximum value size (50MB)
+  maxTTL: 365 * 24 * 60 * 60 * 1000, // Maximum TTL (1 year)
 } as const
 ```
 
@@ -252,22 +313,26 @@ Extended the `IStorageProvider` interface with new capabilities:
 export interface IStorageProvider {
   // ... existing methods ...
 
-  // Data integrity
-  verifyIntegrity?(key: string): Promise<boolean>
-  repairCorruptedData?(): Promise<{
-    repaired: number
+  // TTL support
+  setItem(key: string, value: string, options?: SetItemOptions): Promise<void>
+  getExpiredKeys?(): Promise<string[]>
+  cleanupExpired?(): Promise<{
+    cleaned: number
     failed: number
-    details: Array<{ key: string; action: string; error?: string }>
+    details: Array<{ key: string; reason: string }>
   }>
 
-  // Database monitoring
-  getDatabaseStats?(): Promise<{
-    itemCount: number
-    totalSize: number
-    oldestRecord: number | null
-    newestRecord: number | null
-    averageRecordSize: number
-  }>
+  // Capabilities
+  getCapabilities?(): {
+    supportsAtomic: boolean
+    supportsBatch: boolean
+    supportsTTL: boolean
+    maxStorageSize?: number
+  }
+}
+
+export interface SetItemOptions {
+  ttl?: number // Time-to-live in milliseconds
 }
 ```
 
@@ -306,7 +371,7 @@ if (stats.totalSize > 100 * 1024 * 1024) {
 ```typescript
 const operations = [
   { key: 'setting1', operation: 'set', value: 'value1' },
-  { key: 'setting2', operation: 'set', value: 'value2' },
+  { key: 'setting2', operation: 'set', value: 'value2', options: { ttl: 3600000 } },
   { key: 'old-setting', operation: 'remove' },
 ]
 
@@ -320,24 +385,59 @@ try {
 }
 ```
 
+### Using TTL for Cache Management
+
+```typescript
+// Store API response with 5-minute cache
+async function fetchWithCache(url: string) {
+  const cacheKey = `cache:${url}`
+
+  // Try to get from cache first
+  const cached = await storage.getItem(cacheKey)
+  if (cached) {
+    return JSON.parse(cached)
+  }
+
+  // Fetch fresh data
+  const response = await fetch(url)
+  const data = await response.json()
+
+  // Cache for 5 minutes
+  await storage.setItem(cacheKey, JSON.stringify(data), { ttl: 5 * 60 * 1000 })
+
+  return data
+}
+
+// Periodic cleanup
+async function performMaintenance() {
+  const expired = await storage.getExpiredKeys()
+  console.log(`Found ${expired.length} expired items`)
+
+  const result = await storage.cleanupExpired()
+  console.log(`Cleaned ${result.cleaned} items, ${result.failed} failures`)
+}
+```
+
 ## Testing Recommendations
 
 When testing the improved database architecture:
 
-1. **Migration Testing**: Test upgrading from version 1 to version 2
+1. **Migration Testing**: Test upgrading from version 1 to version 2 to version 3
 2. **Validation Testing**: Test key and value validation edge cases
 3. **Integrity Testing**: Test checksum verification and repair
 4. **Performance Testing**: Monitor batch operation performance
 5. **Error Recovery**: Test error handling and recovery scenarios
+6. **TTL Testing**: Test expiration, cleanup, and automatic removal
 
 ## Backward Compatibility
 
 All improvements maintain backward compatibility:
 
 - Old data without checksums continues to work
-- Migration from version 1 happens automatically
+- Migration from version 1 and 2 happens automatically
 - Existing code using the storage API continues to function
 - New features are optional (can be adopted incrementally)
+- TTL is optional - existing code works without specifying TTL
 
 ## Future Enhancements
 
@@ -347,8 +447,8 @@ Potential future improvements:
 2. **Encryption**: Add optional encryption for sensitive data
 3. **Backup/Restore**: Implement automated backup functionality
 4. **Query Optimization**: Add indexes for common query patterns
-5. **Data Lifecycle**: Implement automatic cleanup of old data
-6. **Multi-tenancy**: Support for isolated database instances
+5. **Multi-tenancy**: Support for isolated database instances
+6. **Event System**: Add events for data changes, expirations, etc.
 
 ## Migration Guide
 
@@ -357,6 +457,7 @@ For developers using the storage API:
 1. **No code changes required** - existing code continues to work
 2. **Optional adoption** - new features can be used incrementally
 3. **Benefits immediate** - data integrity improvements apply automatically
+4. **TTL optional** - add TTL only where needed for data lifecycle management
 
 ## Performance Impact
 
@@ -366,6 +467,7 @@ The improvements have minimal performance impact:
 - Validation: O(1) constant time operations
 - Migration: One-time cost on first run
 - Statistics: Cached and updated incrementally
+- TTL check: O(1) on read operations
 
 ## Security Considerations
 
@@ -373,7 +475,8 @@ The improvements have minimal performance impact:
 - Size limits prevent resource exhaustion
 - Checksums detect accidental corruption
 - Validation prevents injection attacks
+- TTL helps prevent stale data vulnerabilities
 
 ## Conclusion
 
-These database architecture improvements significantly enhance the reliability, maintainability, and observability of the storage layer while maintaining backward compatibility and minimal performance overhead. The changes position the application well for future enhancements and scale.
+These database architecture improvements significantly enhance the reliability, maintainability, and observability of the storage layer while maintaining backward compatibility and minimal performance overhead. The TTL support adds essential data lifecycle management capabilities for production use.

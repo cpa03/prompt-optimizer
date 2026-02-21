@@ -7,7 +7,6 @@ describe('LocalStorageProvider', () => {
   let mockStorage: Record<string, string>
 
   beforeEach(() => {
-    // Simple in-memory mock for localStorage
     mockStorage = {}
     global.localStorage = {
       getItem: vi.fn((key: string): string | null => mockStorage[key] || null),
@@ -24,20 +23,22 @@ describe('LocalStorageProvider', () => {
       get length(): number {
         return Object.keys(mockStorage).length
       },
-    } as any // Use 'as any' to satisfy TypeScript if the mock is partial
+    } as any
 
     provider = new LocalStorageProvider()
   })
 
   afterEach(() => {
-    // Clear any mocks
     vi.clearAllMocks()
   })
 
   describe('setItem and getItem', () => {
     it('should set and get an item', async () => {
       await provider.setItem('testKey', 'testValue')
-      expect(global.localStorage.setItem).toHaveBeenCalledWith('testKey', 'testValue')
+      expect(global.localStorage.setItem).toHaveBeenCalledWith(
+        'testKey',
+        expect.stringContaining('"value":"testValue"')
+      )
 
       const value = await provider.getItem('testKey')
       expect(global.localStorage.getItem).toHaveBeenCalledWith('testKey')
@@ -53,7 +54,10 @@ describe('LocalStorageProvider', () => {
     it('should overwrite an existing value', async () => {
       await provider.setItem('testKey', 'initialValue')
       await provider.setItem('testKey', 'newValue')
-      expect(global.localStorage.setItem).toHaveBeenCalledWith('testKey', 'newValue')
+      expect(global.localStorage.setItem).toHaveBeenCalledWith(
+        'testKey',
+        expect.stringContaining('"value":"newValue"')
+      )
 
       const value = await provider.getItem('testKey')
       expect(value).toBe('newValue')
@@ -63,7 +67,6 @@ describe('LocalStorageProvider', () => {
   describe('removeItem', () => {
     it('should remove an item', async () => {
       await provider.setItem('keyToRemove', 'value')
-      // Verify it's there before removing
       expect(await provider.getItem('keyToRemove')).toBe('value')
 
       await provider.removeItem('keyToRemove')
@@ -74,7 +77,6 @@ describe('LocalStorageProvider', () => {
     })
 
     it('should not throw when removing a non-existent key', async () => {
-      // Expecting the promise to resolve without error
       await expect(provider.removeItem('nonExistentKeyForRemove')).resolves.not.toThrow()
       expect(global.localStorage.removeItem).toHaveBeenCalledWith('nonExistentKeyForRemove')
     })
@@ -83,7 +85,6 @@ describe('LocalStorageProvider', () => {
       await provider.setItem('existingKey', 'existingValue')
       await provider.removeItem('anotherNonExistentKey')
       expect(global.localStorage.removeItem).toHaveBeenCalledWith('anotherNonExistentKey')
-      // Ensure other keys are not affected
       const value = await provider.getItem('existingKey')
       expect(value).toBe('existingValue')
     })
@@ -106,13 +107,11 @@ describe('LocalStorageProvider', () => {
     it('should do nothing if clearAll is called when storage is already empty', async () => {
       await expect(provider.clearAll()).resolves.not.toThrow()
       expect(global.localStorage.clear).toHaveBeenCalled()
-      // Double check by trying to get a non-existent key
       const value = await provider.getItem('anyKey')
       expect(value).toBeNull()
     })
   })
 
-  // Test error handling for localStorage methods
   describe('Error Handling', () => {
     it('should reject with StorageError if localStorage.getItem throws', async () => {
       ;(global.localStorage.getItem as any).mockImplementationOnce(() => {
@@ -180,6 +179,40 @@ describe('LocalStorageProvider', () => {
 
     it('should validate keys are valid', async () => {
       await expect(provider.getItems([''])).rejects.toThrow('Key must be a non-empty string')
+    })
+  })
+
+  describe('TTL support', () => {
+    it('should support TTL option', async () => {
+      await provider.setItem('ttlKey', 'ttlValue', { ttl: 3600000 })
+      const value = await provider.getItem('ttlKey')
+      expect(value).toBe('ttlValue')
+    })
+
+    it('should return capabilities with TTL support', () => {
+      const capabilities = provider.getCapabilities()
+      expect(capabilities.supportsTTL).toBe(true)
+    })
+
+    it('should return expired keys', async () => {
+      const shortTTL = 1
+      await provider.setItem('expiringKey', 'value', { ttl: shortTTL })
+      
+      await new Promise(resolve => setTimeout(resolve, 10))
+      
+      const expiredKeys = await provider.getExpiredKeys()
+      expect(expiredKeys).toContain('expiringKey')
+    })
+
+    it('should cleanup expired items', async () => {
+      const shortTTL = 1
+      await provider.setItem('expiringKey', 'value', { ttl: shortTTL })
+      
+      await new Promise(resolve => setTimeout(resolve, 10))
+      
+      const result = await provider.cleanupExpired()
+      expect(result.cleaned).toBe(1)
+      expect(result.details).toContainEqual({ key: 'expiringKey', reason: 'expired' })
     })
   })
 })

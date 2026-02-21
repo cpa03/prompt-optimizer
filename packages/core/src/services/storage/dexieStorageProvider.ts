@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import { IStorageProvider, type DatabaseHealthStatus } from './types'
+import { IStorageProvider, type DatabaseHealthStatus, type SetItemOptions } from './types'
 import {
   StorageError,
   STORAGE_VALIDATION,
@@ -9,15 +9,13 @@ import {
 import { STORAGE_CONFIG } from '../../config/core-config'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
-/**
- * 数据表接口定义
- */
 interface StorageRecord {
   key: string
   value: string
   timestamp?: number
   size?: number
   checksum?: string
+  expiresAt?: number
 }
 
 /**
@@ -38,10 +36,12 @@ interface DatabaseMetadata {
  * 数据库配置常量
  */
 const DB_CONFIG = {
-  currentVersion: 2,
+  currentVersion: 3,
   metadataKey: STORAGE_VALIDATION.RESERVED_KEYS[0],
   maxKeyLength: STORAGE_VALIDATION.MAX_KEY_LENGTH,
   maxValueSize: STORAGE_VALIDATION.MAX_VALUE_SIZE,
+  defaultTTL: undefined,
+  maxTTL: 365 * 24 * 60 * 60 * 1000,
 } as const
 
 /**
@@ -73,15 +73,27 @@ class PromptOptimizerDB extends Dexie {
   constructor() {
     super(getDatabaseName())
 
-    // 定义数据库结构 - 版本2新增字段
+    this.version(3)
+      .stores({
+        storage: 'key, value, timestamp, size, checksum, expiresAt',
+      })
+      .upgrade((tx) => {
+        console.log('[Database] Upgrading from version 2 to version 3')
+        tx.table('storage')
+          .toCollection()
+          .modify((record) => {
+            if (record.expiresAt === undefined) {
+              record.expiresAt = null
+            }
+          })
+      })
+
     this.version(2)
       .stores({
         storage: 'key, value, timestamp, size, checksum',
       })
       .upgrade((tx) => {
-        // 数据库迁移：从版本1升级到版本2
         console.log('[Database] Upgrading from version 1 to version 2')
-        // 添加新字段的默认值
         tx.table('storage')
           .toCollection()
           .modify((record) => {
@@ -93,15 +105,6 @@ class PromptOptimizerDB extends Dexie {
   }
 }
 
-/**
- * 基于 Dexie 的存储提供器实现
- *
- * 相比 LocalStorageProvider 的优势：
- * - 更大的存储容量（几GB vs 5MB）
- * - 原生事务支持，更好的并发安全
- * - 异步操作，不阻塞UI
- * - 更好的查询性能
- */
 export class DexieStorageProvider implements IStorageProvider {
   private db: PromptOptimizerDB
   private dbOpened: Promise<void>
@@ -142,7 +145,7 @@ export class DexieStorageProvider implements IStorageProvider {
               {
                 version: DB_CONFIG.currentVersion,
                 timestamp: now,
-                description: 'Database initialized with version 2 schema',
+                description: 'Database initialized with version 3 schema (TTL support)',
               },
             ],
           } as DatabaseMetadata),
@@ -152,7 +155,6 @@ export class DexieStorageProvider implements IStorageProvider {
       }
     } catch (error) {
       console.warn('[Database] Failed to initialize metadata:', error)
-      // 不抛出错误，允许数据库继续工作
     }
   }
 
@@ -200,16 +202,24 @@ export class DexieStorageProvider implements IStorageProvider {
     // 保留为空函数以避免破坏测试的API
   }
 
-  /**
-   * 获取存储项
-   */
   async getItem(key: string): Promise<string | null> {
     await this.initialize()
 
     try {
       this.validateKeyLocal(key)
       const record = await this.db.storage.get(key)
-      return record?.value ?? null
+      
+      if (!record?.value) {
+        return null
+      }
+
+      if (record.expiresAt && record.expiresAt < Date.now()) {
+        await this.db.storage.delete(key)
+        console.log(`[Database] Item expired and removed: ${key}`)
+        return null
+      }
+
+      return record.value
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -275,10 +285,7 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 设置存储项
-   */
-  async setItem(key: string, value: string): Promise<void> {
+  async setItem(key: string, value: string, options?: SetItemOptions): Promise<void> {
     await this.initialize()
 
     try {
@@ -287,13 +294,26 @@ export class DexieStorageProvider implements IStorageProvider {
 
       const checksum = this.calculateChecksum(value)
       const size = value.length
+      const now = Date.now()
+
+      let expiresAt: number | undefined
+      if (options?.ttl !== undefined && options.ttl > 0) {
+        if (options.ttl > DB_CONFIG.maxTTL) {
+          throw new StorageError(
+            `TTL ${options.ttl}ms exceeds maximum allowed TTL of ${DB_CONFIG.maxTTL}ms`,
+            'validation'
+          )
+        }
+        expiresAt = now + options.ttl
+      }
 
       await this.db.storage.put({
         key,
         value,
-        timestamp: Date.now(),
+        timestamp: now,
         size,
         checksum,
+        expiresAt,
       })
     } catch (error) {
       if (error instanceof StorageError) {
@@ -597,11 +617,12 @@ export class DexieStorageProvider implements IStorageProvider {
       key: string
       operation: 'set' | 'remove'
       value?: string
+      options?: SetItemOptions
     }>
   ): Promise<void> {
     await this.initialize()
 
-    for (const { key, operation, value } of operations) {
+    for (const { key, operation, value, options } of operations) {
       this.validateKeyLocal(key)
       if (operation === 'set') {
         if (value === undefined) {
@@ -611,6 +632,12 @@ export class DexieStorageProvider implements IStorageProvider {
           )
         }
         this.validateValueLocal(value)
+        if (options?.ttl !== undefined && options.ttl > DB_CONFIG.maxTTL) {
+          throw new StorageError(
+            `TTL ${options.ttl}ms exceeds maximum allowed TTL of ${DB_CONFIG.maxTTL}ms`,
+            'validation'
+          )
+        }
       }
     }
 
@@ -619,16 +646,13 @@ export class DexieStorageProvider implements IStorageProvider {
     const batchDelay = STORAGE_CONSTRAINTS.BATCH_DELAY_MS
 
     try {
-      // 如果操作数量小于等于分块大小，直接执行
       if (operations.length <= chunkSize) {
         await this._executeBatchChunk(operations)
       } else {
-        // 分块执行大规模批量操作
         for (let i = 0; i < operations.length; i += chunkSize) {
           const chunk = operations.slice(i, i + chunkSize)
           await this._executeBatchChunk(chunk)
 
-          // 在块之间添加延迟，防止阻塞主线程
           if (batchDelay > 0 && i + chunkSize < operations.length) {
             await new Promise((resolve) => setTimeout(resolve, batchDelay))
           }
@@ -656,28 +680,33 @@ export class DexieStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 执行单个批处理块
-   */
   private async _executeBatchChunk(
     operations: Array<{
       key: string
       operation: 'set' | 'remove'
       value?: string
+      options?: SetItemOptions
     }>
   ): Promise<void> {
     await this.db.transaction('rw', this.db.storage, async () => {
       const updates: Array<StorageRecord> = []
       const deletions: string[] = []
+      const now = Date.now()
 
-      for (const { key, operation, value } of operations) {
+      for (const { key, operation, value, options } of operations) {
         if (operation === 'set' && value !== undefined) {
+          let expiresAt: number | undefined
+          if (options?.ttl !== undefined && options.ttl > 0) {
+            expiresAt = now + options.ttl
+          }
+
           updates.push({
             key,
             value,
-            timestamp: Date.now(),
+            timestamp: now,
             size: value.length,
             checksum: this.calculateChecksum(value),
+            expiresAt,
           })
         } else if (operation === 'remove') {
           deletions.push(key)
@@ -779,6 +808,82 @@ export class DexieStorageProvider implements IStorageProvider {
       const duration = Date.now() - startTime
       console.error(`数据修复失败 (${duration}ms):`, error)
       throw new StorageError('Failed to repair corrupted data', 'repair')
+    }
+
+    return result
+  }
+
+  async getExpiredKeys(): Promise<string[]> {
+    await this.initialize()
+
+    try {
+      const now = Date.now()
+      const expiredKeys: string[] = []
+
+      await this.db.storage.each((record) => {
+        if (this.isMetadataKey(record.key)) {
+          return
+        }
+        if (record.expiresAt && record.expiresAt < now) {
+          expiredKeys.push(record.key)
+        }
+      })
+
+      return expiredKeys
+    } catch (error) {
+      console.error('获取过期键失败:', error)
+      throw new StorageError('Failed to get expired keys', 'read')
+    }
+  }
+
+  async cleanupExpired(): Promise<{
+    cleaned: number
+    failed: number
+    details: Array<{ key: string; reason: string }>
+  }> {
+    await this.initialize()
+
+    const result = {
+      cleaned: 0,
+      failed: 0,
+      details: [] as Array<{ key: string; reason: string }>,
+    }
+
+    const startTime = Date.now()
+
+    try {
+      const now = Date.now()
+      const keysToDelete: string[] = []
+
+      await this.db.storage.each((record) => {
+        if (this.isMetadataKey(record.key)) {
+          return
+        }
+        if (record.expiresAt && record.expiresAt < now) {
+          keysToDelete.push(record.key)
+        }
+      })
+
+      if (keysToDelete.length > 0) {
+        await this.db.storage.bulkDelete(keysToDelete)
+        result.cleaned = keysToDelete.length
+        keysToDelete.forEach((key) => {
+          result.details.push({
+            key,
+            reason: 'expired',
+          })
+        })
+      }
+
+      const duration = Date.now() - startTime
+      if (duration > 500 || result.cleaned > 0) {
+        console.log(
+          `[Database] TTL cleanup: ${result.cleaned} expired items removed in ${duration}ms`
+        )
+      }
+    } catch (error) {
+      result.failed++
+      console.error('清理过期数据失败:', error)
     }
 
     return result
@@ -980,5 +1085,19 @@ export class DexieStorageProvider implements IStorageProvider {
     }
 
     return result
+  }
+
+  getCapabilities(): {
+    supportsAtomic: boolean
+    supportsBatch: boolean
+    supportsTTL: boolean
+    maxStorageSize?: number
+  } {
+    return {
+      supportsAtomic: true,
+      supportsBatch: true,
+      supportsTTL: true,
+      maxStorageSize: undefined,
+    }
   }
 }

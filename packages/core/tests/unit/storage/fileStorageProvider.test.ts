@@ -341,6 +341,7 @@ describe('FileStorageProvider', () => {
       expect(capabilities).toEqual({
         supportsAtomic: true,
         supportsBatch: true,
+        supportsTTL: false,
         maxStorageSize: undefined,
       })
     })

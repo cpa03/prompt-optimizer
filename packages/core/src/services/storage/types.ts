@@ -1,6 +1,6 @@
 export interface IStorageProvider {
   getItem(key: string): Promise<string | null>
-  setItem(key: string, value: string): Promise<void>
+  setItem(key: string, value: string, options?: SetItemOptions): Promise<void>
   removeItem(key: string): Promise<void>
   clearAll(): Promise<void>
 
@@ -12,12 +12,14 @@ export interface IStorageProvider {
       key: string
       operation: 'set' | 'remove'
       value?: string
+      options?: SetItemOptions
     }>
   ): Promise<void>
 
   getCapabilities?(): {
     supportsAtomic: boolean
     supportsBatch: boolean
+    supportsTTL: boolean
     maxStorageSize?: number
   }
 
@@ -38,6 +40,27 @@ export interface IStorageProvider {
   close?(): Promise<void>
 
   getItems?(keys: string[]): Promise<Record<string, string | null>>
+
+  cleanupExpired?(): Promise<{
+    cleaned: number
+    failed: number
+    details: Array<{ key: string; reason: string }>
+  }>
+
+  getExpiredKeys?(): Promise<string[]>
+}
+
+export interface SetItemOptions {
+  ttl?: number
+}
+
+export interface StorageRecordMetadata {
+  key: string
+  value: string
+  timestamp?: number
+  size?: number
+  checksum?: string
+  expiresAt?: number
 }
 
 export interface DatabaseHealthStatus {

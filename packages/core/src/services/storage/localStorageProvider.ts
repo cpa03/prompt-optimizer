@@ -1,15 +1,11 @@
-import { IStorageProvider, type DatabaseHealthStatus } from './types'
+import { IStorageProvider, type DatabaseHealthStatus, type SetItemOptions } from './types'
 import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
-/**
- * 简单的异步锁实现
- */
 class AsyncLock {
   private locks: Map<string, Promise<void>> = new Map()
 
   async acquire(key: string): Promise<() => void> {
-    // 等待现有锁完成，带最大重试限制防止无限循环
     let attempts = 0
     const maxAttempts = STORAGE_CONSTRAINTS.LOCK_MAX_ATTEMPTS
 
@@ -25,17 +21,14 @@ class AsyncLock {
       try {
         await this.locks.get(key)
       } catch (lockError) {
-        // 锁操作失败，记录但继续尝试
         console.warn(
           `[AsyncLock] Lock operation failed for key "${key}" (attempt ${attempts}):`,
           lockError
         )
-        // 短暂延迟后重试，避免CPU忙等
         await new Promise((resolve) => setTimeout(resolve, STORAGE_CONSTRAINTS.LOCK_RETRY_DELAY_MS))
       }
     }
 
-    // 创建新锁
     let releaseLock: () => void
     const lockPromise = new Promise<void>((resolve) => {
       releaseLock = () => {
@@ -46,14 +39,10 @@ class AsyncLock {
 
     this.locks.set(key, lockPromise)
 
-    // 返回释放函数
     return releaseLock!
   }
 }
 
-/**
- * 增强的LocalStorageProvider，提供事务性操作
- */
 export class LocalStorageProvider implements IStorageProvider {
   private lock = new AsyncLock()
 
@@ -62,7 +51,21 @@ export class LocalStorageProvider implements IStorageProvider {
     try {
       validateStorageKey(key)
       const item = localStorage.getItem(key)
-      return item
+      if (!item) {
+        return null
+      }
+      
+      try {
+        const parsed = JSON.parse(item)
+        if (parsed.expiresAt && parsed.expiresAt < Date.now()) {
+          localStorage.removeItem(key)
+          console.log(`[LocalStorage] Item expired and removed: ${key}`)
+          return null
+        }
+        return parsed.value
+      } catch {
+        return item
+      }
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -73,11 +76,6 @@ export class LocalStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 批量获取存储项
-   * @param keys 要获取的键数组
-   * @returns 键值映射对象，不存在的键对应 null
-   */
   public async getItems(keys: string[]): Promise<Record<string, string | null>> {
     if (!Array.isArray(keys)) {
       throw new StorageError('Keys must be an array', 'validation')
@@ -93,8 +91,25 @@ export class LocalStorageProvider implements IStorageProvider {
       keys.forEach((key) => validateStorageKey(key))
 
       const result: Record<string, string | null> = {}
+      const now = Date.now()
       for (const key of keys) {
-        result[key] = localStorage.getItem(key)
+        const item = localStorage.getItem(key)
+        if (!item) {
+          result[key] = null
+          continue
+        }
+        
+        try {
+          const parsed = JSON.parse(item)
+          if (parsed.expiresAt && parsed.expiresAt < now) {
+            localStorage.removeItem(key)
+            result[key] = null
+          } else {
+            result[key] = parsed.value
+          }
+        } catch {
+          result[key] = item
+        }
       }
 
       return result
@@ -108,12 +123,20 @@ export class LocalStorageProvider implements IStorageProvider {
     }
   }
 
-  public async setItem(key: string, value: string): Promise<void> {
+  public async setItem(key: string, value: string, options?: SetItemOptions): Promise<void> {
     const release = await this.lock.acquire(key)
     try {
       validateStorageKey(key)
       validateStorageValue(value)
-      localStorage.setItem(key, value)
+      
+      const now = Date.now()
+      let expiresAt: number | undefined
+      if (options?.ttl !== undefined && options.ttl > 0) {
+        expiresAt = now + options.ttl
+      }
+      
+      const record = JSON.stringify({ value, expiresAt, timestamp: now })
+      localStorage.setItem(key, record)
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -204,20 +227,15 @@ export class LocalStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 获取存储能力信息
-   */
   public getCapabilities() {
     return {
-      supportsAtomic: true, // 通过手动锁实现
+      supportsAtomic: true,
       supportsBatch: true,
+      supportsTTL: true,
       maxStorageSize: STORAGE_CONSTRAINTS.MAX_STORAGE_SIZE_BYTES,
     }
   }
 
-  /**
-   * 获取所有存储键
-   */
   public async keys(): Promise<string[]> {
     const release = await this.lock.acquire('__keys__')
     try {
@@ -236,25 +254,27 @@ export class LocalStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 批量操作
-   * @param operations 批量操作列表
-   */
   public async batchUpdate(
     operations: Array<{
       key: string
       operation: 'set' | 'remove'
       value?: string
+      options?: SetItemOptions
     }>
   ): Promise<void> {
-    // 获取所有相关键的锁
     const keys = operations.map((op) => op.key)
     const releases = await Promise.all(keys.map((key) => this.lock.acquire(key)))
 
     try {
+      const now = Date.now()
       for (const op of operations) {
         if (op.operation === 'set' && op.value !== undefined) {
-          localStorage.setItem(op.key, op.value)
+          let expiresAt: number | undefined
+          if (op.options?.ttl !== undefined && op.options.ttl > 0) {
+            expiresAt = now + op.options.ttl
+          }
+          const record = JSON.stringify({ value: op.value, expiresAt, timestamp: now })
+          localStorage.setItem(op.key, record)
         } else if (op.operation === 'remove') {
           localStorage.removeItem(op.key)
         }
@@ -262,7 +282,6 @@ export class LocalStorageProvider implements IStorageProvider {
     } catch (error) {
       throw new StorageError('Failed to perform batch update', 'write')
     } finally {
-      // 释放所有锁
       releases.forEach((release) => release())
     }
   }
@@ -379,6 +398,64 @@ export class LocalStorageProvider implements IStorageProvider {
       result.errors.push(
         `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
+    }
+
+    return result
+  }
+
+  public async getExpiredKeys(): Promise<string[]> {
+    const release = await this.lock.acquire('__expired_keys__')
+    try {
+      const expiredKeys: string[] = []
+      const now = Date.now()
+      
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (key === null) continue
+        
+        try {
+          const item = localStorage.getItem(key)
+          if (!item) continue
+          
+          const parsed = JSON.parse(item)
+          if (parsed.expiresAt && parsed.expiresAt < now) {
+            expiredKeys.push(key)
+          }
+        } catch {
+          continue
+        }
+      }
+      
+      return expiredKeys
+    } finally {
+      release()
+    }
+  }
+
+  public async cleanupExpired(): Promise<{
+    cleaned: number
+    failed: number
+    details: Array<{ key: string; reason: string }>
+  }> {
+    const expiredKeys = await this.getExpiredKeys()
+    const result = {
+      cleaned: 0,
+      failed: 0,
+      details: [] as Array<{ key: string; reason: string }>,
+    }
+
+    for (const key of expiredKeys) {
+      try {
+        localStorage.removeItem(key)
+        result.cleaned++
+        result.details.push({ key, reason: 'expired' })
+      } catch {
+        result.failed++
+      }
+    }
+
+    if (result.cleaned > 0) {
+      console.log(`[LocalStorage] TTL cleanup: ${result.cleaned} expired items removed`)
     }
 
     return result

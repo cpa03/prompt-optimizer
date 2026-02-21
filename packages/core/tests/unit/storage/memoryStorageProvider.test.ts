@@ -141,6 +141,7 @@ describe('MemoryStorageProvider', () => {
       expect(capabilities).toEqual({
         supportsAtomic: true,
         supportsBatch: true,
+        supportsTTL: true,
         maxStorageSize: undefined,
       })
     })

@@ -676,6 +676,7 @@ export class FileStorageProvider implements IStorageProvider {
     return {
       supportsAtomic: true,
       supportsBatch: true,
+      supportsTTL: false,
       maxStorageSize: undefined,
     }
   }

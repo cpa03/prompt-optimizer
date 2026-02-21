@@ -3,7 +3,7 @@
  */
 
 // 导出类型
-export type { IStorageProvider } from './types'
+export type { IStorageProvider, SetItemOptions, StorageRecordMetadata, DatabaseHealthStatus } from './types'
 
 // 导出错误类
 export * from './errors'

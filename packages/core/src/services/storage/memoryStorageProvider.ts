@@ -1,26 +1,23 @@
-import type { IStorageProvider, DatabaseHealthStatus } from './types'
+import type { IStorageProvider, DatabaseHealthStatus, SetItemOptions } from './types'
 import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { isStructuredErrorLike } from '../../utils/error'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
-/**
- * 内存存储提供者
- * 用于 Node.js 环境（如 Electron 主进程）和测试环境
- * 数据仅存储在内存中，应用重启后会丢失
- */
 export class MemoryStorageProvider implements IStorageProvider {
-  private storage = new Map<string, string>()
+  private storage = new Map<string, { value: string; expiresAt?: number }>()
 
-  /**
-   * 获取存储项
-   * @param key 存储键
-   * @returns 存储值或null
-   */
   async getItem(key: string): Promise<string | null> {
     try {
       validateStorageKey(key)
-      const value = this.storage.get(key)
-      return value !== undefined ? value : null
+      const record = this.storage.get(key)
+      if (!record) {
+        return null
+      }
+      if (record.expiresAt && record.expiresAt < Date.now()) {
+        this.storage.delete(key)
+        return null
+      }
+      return record.value
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -29,11 +26,6 @@ export class MemoryStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 批量获取存储项
-   * @param keys 要获取的键数组
-   * @returns 键值映射对象，不存在的键对应 null
-   */
   async getItems(keys: string[]): Promise<Record<string, string | null>> {
     if (!Array.isArray(keys)) {
       throw new StorageError('Keys must be an array', 'validation')
@@ -47,9 +39,17 @@ export class MemoryStorageProvider implements IStorageProvider {
       keys.forEach((key) => validateStorageKey(key))
 
       const result: Record<string, string | null> = {}
+      const now = Date.now()
       for (const key of keys) {
-        const value = this.storage.get(key)
-        result[key] = value !== undefined ? value : null
+        const record = this.storage.get(key)
+        if (!record) {
+          result[key] = null
+        } else if (record.expiresAt && record.expiresAt < now) {
+          this.storage.delete(key)
+          result[key] = null
+        } else {
+          result[key] = record.value
+        }
       }
 
       return result
@@ -61,16 +61,16 @@ export class MemoryStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 设置存储项
-   * @param key 存储键
-   * @param value 存储值
-   */
-  async setItem(key: string, value: string): Promise<void> {
+  async setItem(key: string, value: string, options?: SetItemOptions): Promise<void> {
     try {
       validateStorageKey(key)
       validateStorageValue(value)
-      this.storage.set(key, value)
+      const now = Date.now()
+      let expiresAt: number | undefined
+      if (options?.ttl !== undefined && options.ttl > 0) {
+        expiresAt = now + options.ttl
+      }
+      this.storage.set(key, { value, expiresAt })
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -152,21 +152,18 @@ export class MemoryStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 批量更新
-   * @param operations 操作数组
-   */
   async batchUpdate(
     operations: Array<{
       key: string
       operation: 'set' | 'remove'
       value?: string
+      options?: SetItemOptions
     }>
   ): Promise<void> {
     try {
       for (const op of operations) {
         if (op.operation === 'set' && op.value !== undefined) {
-          await this.setItem(op.key, op.value)
+          await this.setItem(op.key, op.value, op.options)
         } else if (op.operation === 'remove') {
           await this.removeItem(op.key)
         }
@@ -179,14 +176,11 @@ export class MemoryStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 获取存储能力
-   * @returns 存储能力信息
-   */
   getCapabilities() {
     return {
       supportsAtomic: true,
       supportsBatch: true,
+      supportsTTL: true,
       maxStorageSize: undefined,
     }
   }
@@ -228,10 +222,6 @@ export class MemoryStorageProvider implements IStorageProvider {
     return Array.from(this.storage.keys())
   }
 
-  /**
-   * 获取存储统计信息
-   * 返回存储项数量、总大小等统计信息
-   */
   async getDatabaseStats(): Promise<{
     itemCount: number
     totalSize: number
@@ -240,8 +230,15 @@ export class MemoryStorageProvider implements IStorageProvider {
     averageRecordSize: number
   }> {
     const items = Array.from(this.storage.entries())
-    const itemCount = items.length
-    const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
+    const now = Date.now()
+    const validItems = items.filter(([, record]) => {
+      if (record.expiresAt && record.expiresAt < now) {
+        return false
+      }
+      return true
+    })
+    const itemCount = validItems.length
+    const totalSize = validItems.reduce((sum, [, record]) => sum + record.value.length, 0)
 
     return {
       itemCount,
@@ -252,10 +249,6 @@ export class MemoryStorageProvider implements IStorageProvider {
     }
   }
 
-  /**
-   * 存储健康检查
-   * 检查存储的读写删能力，返回详细的健康状态
-   */
   async healthCheck(): Promise<DatabaseHealthStatus> {
     const result: DatabaseHealthStatus = {
       healthy: true,
@@ -272,9 +265,8 @@ export class MemoryStorageProvider implements IStorageProvider {
     const startTime = Date.now()
 
     try {
-      // 检查写入能力
       try {
-        this.storage.set(testKey, testValue)
+        this.storage.set(testKey, { value: testValue })
         result.canWrite = true
       } catch (writeError) {
         result.healthy = false
@@ -283,11 +275,10 @@ export class MemoryStorageProvider implements IStorageProvider {
         )
       }
 
-      // 检查读取能力
       if (result.canWrite) {
         try {
-          const readValue = this.storage.get(testKey)
-          if (readValue === testValue) {
+          const record = this.storage.get(testKey)
+          if (record?.value === testValue) {
             result.canRead = true
           } else {
             result.healthy = false
@@ -301,7 +292,6 @@ export class MemoryStorageProvider implements IStorageProvider {
         }
       }
 
-      // 检查删除能力
       if (result.canWrite) {
         try {
           this.storage.delete(testKey)
@@ -322,7 +312,6 @@ export class MemoryStorageProvider implements IStorageProvider {
 
       result.latency = Date.now() - startTime
 
-      // 检查超时
       if (result.latency > STORAGE_CONSTRAINTS.HEALTH_CHECK_TIMEOUT_MS) {
         result.healthy = false
         result.errors.push(
@@ -334,6 +323,38 @@ export class MemoryStorageProvider implements IStorageProvider {
       result.errors.push(
         `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
+    }
+
+    return result
+  }
+
+  async getExpiredKeys(): Promise<string[]> {
+    const now = Date.now()
+    const expiredKeys: string[] = []
+    for (const [key, record] of this.storage.entries()) {
+      if (record.expiresAt && record.expiresAt < now) {
+        expiredKeys.push(key)
+      }
+    }
+    return expiredKeys
+  }
+
+  async cleanupExpired(): Promise<{
+    cleaned: number
+    failed: number
+    details: Array<{ key: string; reason: string }>
+  }> {
+    const expiredKeys = await this.getExpiredKeys()
+    const result = {
+      cleaned: 0,
+      failed: 0,
+      details: [] as Array<{ key: string; reason: string }>,
+    }
+
+    for (const key of expiredKeys) {
+      this.storage.delete(key)
+      result.cleaned++
+      result.details.push({ key, reason: 'expired' })
     }
 
     return result
