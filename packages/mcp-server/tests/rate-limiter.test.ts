@@ -12,6 +12,7 @@ describe('RateLimiter', () => {
   let limiter: RateLimiter
 
   beforeEach(() => {
+    vi.useFakeTimers()
     limiter = createRateLimiter({
       windowMs: 1000,
       maxRequests: 5,
@@ -21,6 +22,7 @@ describe('RateLimiter', () => {
 
   afterEach(() => {
     limiter.stop()
+    vi.useRealTimers()
   })
 
   describe('basic rate limiting', () => {
@@ -62,14 +64,14 @@ describe('RateLimiter', () => {
   })
 
   describe('window reset', () => {
-    it('should reset count after window expires', async () => {
+    it('should reset count after window expires', () => {
       for (let i = 0; i < 5; i++) {
         limiter.check('client-5')
       }
 
       expect(limiter.check('client-5').allowed).toBe(false)
 
-      await new Promise((resolve) => setTimeout(resolve, 1100))
+      vi.advanceTimersByTime(1100)
 
       const result = limiter.check('client-5')
       expect(result.allowed).toBe(true)
