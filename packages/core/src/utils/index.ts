@@ -103,3 +103,15 @@ export type {
   CircuitBreakerStats,
   CircuitBreakerRegistryOptions,
 } from './circuit-breaker'
+
+// String utilities
+export {
+  normalizeBaseUrl,
+  normalizeWhitespace,
+  extractJsonFromCodeBlock,
+  unescapeHtmlEntities,
+  toError,
+  normalizeModelName,
+  isEmptyOrWhitespace,
+  STRING_PATTERNS,
+} from './string'

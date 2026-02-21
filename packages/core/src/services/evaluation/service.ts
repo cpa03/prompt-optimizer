@@ -28,6 +28,7 @@ import {
   EvaluationParseError,
 } from './errors'
 import { jsonrepair } from 'jsonrepair'
+import { toError, extractJsonFromCodeBlock, unescapeHtmlEntities } from '../../utils'
 
 /**
  * 评估服务实现类
@@ -78,14 +79,14 @@ export class EvaluationService implements IEvaluationService {
     try {
       this.validateRequest(request)
     } catch (error) {
-      callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+      callbacks.onError(toError(error))
       return
     }
 
     try {
       await this.validateModel(request.evaluationModelKey)
     } catch (error) {
-      callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+      callbacks.onError(toError(error))
       return
     }
 
@@ -93,7 +94,7 @@ export class EvaluationService implements IEvaluationService {
     try {
       template = await this.getEvaluationTemplate(request.type, request.mode)
     } catch (error) {
-      callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+      callbacks.onError(toError(error))
       return
     }
 
@@ -118,7 +119,7 @@ export class EvaluationService implements IEvaluationService {
           })
           callbacks.onComplete(response)
         } catch (error) {
-          callbacks.onError(error instanceof Error ? error : new Error(String(error)))
+          callbacks.onError(toError(error))
         }
       },
       onError: (error) => {
@@ -333,8 +334,8 @@ export class EvaluationService implements IEvaluationService {
     }
 
     // 尝试解析 JSON
-    const fencedMatch = content.match(/```json\s*([\s\S]*?)\s*```/i)
-    const candidates = [fencedMatch?.[1], content].filter(Boolean) as string[]
+    const fencedJson = extractJsonFromCodeBlock(content)
+    const candidates = [fencedJson, content].filter(Boolean) as string[]
 
     for (const candidate of candidates) {
       try {
@@ -540,25 +541,11 @@ export class EvaluationService implements IEvaluationService {
    * 反转义 HTML 实体
    * LLM 生成 JSON 时可能对 XML 标签进行 HTML 转义
    * 支持：命名实体、十进制实体(&#123;)、十六进制实体(&#x2F;)
+   * 
+   * 注：此方法已迁移到共享工具函数，保留此包装器以保持API兼容性
    */
   private unescapeHtmlEntities(text: string): string {
-    if (!text) return text
-    return (
-      text
-        // 命名实体
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&apos;/g, "'")
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&sol;/g, '/')
-        // 十六进制实体 &#xHH; 或 &#xHHHH;
-        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-        // 十进制实体 &#DDD;
-        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
-    )
+    return unescapeHtmlEntities(text)
   }
 }
 

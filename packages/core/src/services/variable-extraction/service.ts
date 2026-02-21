@@ -22,7 +22,7 @@ import {
   VariableExtractionError,
 } from './errors'
 import { jsonrepair } from 'jsonrepair'
-import { isStructuredErrorLike, toErrorWithCode } from '../../utils/error'
+import { isStructuredErrorLike, toErrorWithCode, extractJsonFromCodeBlock } from '../../utils'
 import { TEMPLATE_IDS } from '../../constants/template-ids'
 
 /**
@@ -159,8 +159,7 @@ export class VariableExtractionService implements IVariableExtractionService {
    */
   private parseExtractionResult(content: string): VariableExtractionResponse {
     // 1. 尝试提取 JSON 代码块
-    const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/i)
-    const jsonText = jsonMatch ? jsonMatch[1] : content
+    const jsonText = extractJsonFromCodeBlock(content) || content
 
     try {
       // 2. 使用 jsonrepair 修复可能的格式问题
