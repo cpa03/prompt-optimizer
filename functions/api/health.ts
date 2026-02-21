@@ -15,6 +15,13 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     'X-Request-ID': requestId,
     'Cache-Control': 'no-store, no-cache, must-revalidate',
     'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'X-Permitted-Cross-Domain-Policies': 'none',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+    'Cross-Origin-Resource-Policy': 'same-origin',
+    'Cross-Origin-Opener-Policy': 'same-origin',
     'Content-Type': 'application/json',
   }
 
