@@ -13,6 +13,8 @@
       :size="8"
       class="px-3 py-2 border-b"
       style="flex: 0 0 auto"
+      role="status"
+      aria-live="polite"
     >
       <NTag v-if="compareResult.summary.additions > 0" type="success" size="small">
         +{{ compareResult.summary.additions }}
@@ -22,15 +24,31 @@
       </NTag>
     </NFlex>
 
+    <!-- Screen reader summary -->
+    <div class="sr-only" aria-live="polite" v-if="compareResult">
+      {{
+        t('diff.summary', {
+          additions: compareResult.summary.additions,
+          deletions: compareResult.summary.deletions,
+        })
+      }}
+    </div>
+
     <!-- 文本内容 -->
     <NScrollbar class="text-diff-content" style="flex: 1; min-height: 0">
       <!-- 对比模式：显示高亮的差异 -->
-      <div class="diff-text" v-if="compareResult">
+      <div
+        class="diff-text"
+        v-if="compareResult"
+        role="region"
+        :aria-label="t('diff.comparisonLabel')"
+      >
         <span
           v-for="fragment in compareResult.fragments"
           :key="fragment.index"
           :class="getFragmentClass(fragment.type)"
           class="text-fragment"
+          :aria-label="getFragmentAriaLabel(fragment.type)"
           >{{ fragment.text }}</span
         >
       </div>
@@ -41,10 +59,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 
+import { useI18n } from 'vue-i18n'
 import { NTag, NCard, NFlex, NScrollbar } from 'naive-ui'
 import type { CompareResult, ChangeType } from '@prompt-optimizer/core'
 import { useNaiveTheme } from '../composables/ui/useNaiveTheme'
 import { FONT_SIZES, SPACING, BORDER_RADIUS } from '../config/constants'
+
+const { t } = useI18n()
 
 interface Props {
   /** 原始文本 */
@@ -72,11 +93,36 @@ const getFragmentClass = (type: ChangeType): string => {
       return 'diff-unchanged'
   }
 }
+
+const getFragmentAriaLabel = (type: ChangeType): string => {
+  switch (type) {
+    case 'added':
+      return t('diff.added')
+    case 'removed':
+      return t('diff.removed')
+    case 'unchanged':
+    default:
+      return ''
+  }
+}
 </script>
 
 <style scoped>
 .text-diff-content {
   min-height: 200px;
+}
+
+/* Screen reader only - visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .diff-text,

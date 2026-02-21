@@ -1239,6 +1239,10 @@ export default {
       exit: 'Exit Compare',
       enable: 'Enable text comparison',
       disable: 'Disable text comparison',
+      summary: 'Text comparison: {additions} additions, {deletions} deletions',
+      comparisonLabel: 'Text comparison view',
+      added: 'Added text',
+      removed: 'Removed text',
     },
     error: {
       noTemplate: 'Please select an iteration template first',
