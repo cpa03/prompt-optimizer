@@ -4,21 +4,43 @@
 
 ### 🔒 Security & Reliability
 
+#### MCP Server Memory Leak Prevention (#386)
+
+- **Stale Request Context Cleanup**: Added periodic cleanup for stale request contexts
+- **Configurable Cleanup**: 5-minute max age and 1-minute cleanup interval
+- **Graceful Shutdown**: Proper timer cleanup on server shutdown
+- **Warning Logs**: Debug warnings when stale contexts are cleaned up
+
 #### MCP Server Error Handling (#352)
 
 - **AI Service Overload Handling**: Added graceful handling for AI service overload errors
 - **Content Filter Error Handling**: Proper error messages for content filtering scenarios
 - **Improved Error Messages**: Better error categorization and user-facing messages
 
-### 📊 Open PRs Pending Review
+### ⚡ Performance
 
-The following PRs are ready for review and merge:
-- #373: chore: add AGPL-3.0-only license to packages missing license field
-- #372: feat(storage): add getItems batch read operation for performance optimization
-- #371: feat(mcp-server): add reset method to CoreServicesManager
-- #370: qa: remove redundant ESLint disable and improve type safety
-- #369: perf(history): optimize getAllChains with single-pass grouping
-- #368: refactor(core): centralize hardcoded timeout and template values
+#### History Optimization (#369)
+
+- **Single-Pass Grouping**: Optimized `getAllChains` with single-pass grouping algorithm
+
+#### Storage Performance (#372)
+
+- **Batch Read Operation**: Added `getItems` batch read operation for better performance
+
+### 🏗️ Code Quality
+
+#### License Compliance (#373)
+
+- **AGPL-3.0-only**: Added license field to packages missing license information
+
+#### Type Safety (#370)
+
+- **ESLint Improvements**: Removed redundant ESLint disable comments
+- **Type Safety**: Improved TypeScript type safety
+
+#### MCP Server Enhancement (#371)
+
+- **Reset Method**: Added reset method to `CoreServicesManager` for better state management
 
 ## [2.5.3] - 2026-02-10
 
