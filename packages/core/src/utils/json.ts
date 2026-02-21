@@ -247,3 +247,112 @@ export function redactSensitiveFields<T>(obj: T, maxDepth: number = 5): T {
 
   return result as T
 }
+
+/**
+ * Options for safe JSON stringification
+ */
+export interface SafeStringifyOptions {
+  /**
+   * Maximum size in bytes for the resulting JSON string.
+   * If exceeded, null is returned. Default: 50MB (50 * 1024 * 1024)
+   */
+  maxSize?: number
+  /**
+   * Placeholder for circular references. Default: '[Circular]'
+   */
+  circularPlaceholder?: string
+  /**
+   * Whether to redact sensitive fields before stringification.
+   * Default: false
+   */
+  redactSensitive?: boolean
+}
+
+const DEFAULT_MAX_SIZE = 50 * 1024 * 1024
+
+/**
+ * Safely stringifies a value to JSON, handling circular references and size limits.
+ *
+ * This function provides protection against:
+ * 1. Circular reference errors that crash JSON.stringify
+ * 2. Memory exhaustion from serializing extremely large objects
+ * 3. Accidental exposure of sensitive data in logs
+ *
+ * @param obj - The value to stringify
+ * @param options - Configuration options
+ * @returns The JSON string, or null if size limit exceeded or unrecoverable error
+ *
+ * @example
+ * ```typescript
+ * // Handle circular references
+ * const obj = { a: 1 }
+ * obj.self = obj
+ * const safe = safeStringify(obj)
+ * // '{"a":1,"self":"[Circular]"}'
+ *
+ * // With size limit
+ * const largeData = { items: new Array(1000000).fill('x') }
+ * const result = safeStringify(largeData, { maxSize: 1024 })
+ * // null (size limit exceeded)
+ *
+ * // With sensitive field redaction
+ * const config = { apiKey: 'secret', model: 'gpt-4' }
+ * const safe = safeStringify(config, { redactSensitive: true })
+ * // '{"apiKey":"[REDACTED]","model":"gpt-4"}'
+ * ```
+ */
+export function safeStringify<T>(obj: T, options?: SafeStringifyOptions): string | null {
+  const maxSize = options?.maxSize ?? DEFAULT_MAX_SIZE
+  const circularPlaceholder = options?.circularPlaceholder ?? '[Circular]'
+
+  const processedObj = options?.redactSensitive ? redactSensitiveFields(obj) : obj
+
+  const seen = new WeakSet<object>()
+
+  try {
+    const result = JSON.stringify(processedObj, (_key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        if (seen.has(value)) {
+          return circularPlaceholder
+        }
+        seen.add(value)
+      }
+      return value
+    })
+
+    if (result !== null && result.length > maxSize) {
+      console.warn(
+        `[safeStringify] Result size ${result.length} exceeds limit ${maxSize}, returning null`
+      )
+      return null
+    }
+
+    return result
+  } catch (error) {
+    console.error('[safeStringify] Failed to stringify:', error)
+    return null
+  }
+}
+
+/**
+ * Safely stringifies a value to JSON with a fallback for errors.
+ * Returns the fallback string instead of null on failure.
+ *
+ * @param obj - The value to stringify
+ * @param fallback - The fallback string to return on error (default: '{}')
+ * @param options - Configuration options
+ * @returns The JSON string or fallback
+ *
+ * @example
+ * ```typescript
+ * const result = safeStringifyOrFallback(circularObj, '{"error":"circular"}')
+ * // '{"error":"circular"}' if serialization fails
+ * ```
+ */
+export function safeStringifyOrFallback<T>(
+  obj: T,
+  fallback: string = '{}',
+  options?: SafeStringifyOptions
+): string {
+  return safeStringify(obj, options) ?? fallback
+}
