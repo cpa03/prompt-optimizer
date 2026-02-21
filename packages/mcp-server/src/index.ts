@@ -446,13 +446,20 @@ async function main() {
       })
 
       // Health check endpoint for monitoring and load balancers
-      app.get('/health', (_req, res) => {
+      app.get('/health', async (_req, res) => {
         const rateLimitStats = rateLimiter.getStats()
         const memUsage = process.memoryUsage()
         const activeSessions = Object.keys(transports).length
 
-        res.status(200).json({
-          status: 'healthy',
+        let coreHealth: { initialized: boolean; services: Record<string, boolean> } | null = null
+        try {
+          coreHealth = await coreServices.getHealthStatus()
+        } catch {
+          coreHealth = null
+        }
+
+        const healthStatus = {
+          status: coreHealth?.initialized ? 'healthy' : 'degraded',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
           version: '0.1.0',
@@ -469,7 +476,10 @@ async function main() {
             rssMB: Math.round(memUsage.rss / 1024 / 1024),
             externalMB: Math.round(memUsage.external / 1024 / 1024),
           },
-        })
+          coreServices: coreHealth,
+        }
+
+        res.status(coreHealth?.initialized ? 200 : 503).json(healthStatus)
       })
 
       const rateLimitMiddleware = (
@@ -501,8 +511,46 @@ async function main() {
         next()
       }
 
-      // 存储每个会话的传输实例
-      const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {}
+      // 存储每个会话的传输实例及元数据
+      interface SessionMetadata {
+        transport: StreamableHTTPServerTransport
+        createdAt: number
+        lastActivityAt: number
+      }
+      const transports: { [sessionId: string]: SessionMetadata } = {}
+
+      // Session configuration
+      const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+      const SESSION_CLEANUP_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
+
+      // Stale session cleanup job
+      const cleanupStaleSessions = () => {
+        const now = Date.now()
+        let cleanedCount = 0
+
+        for (const [sessionId, meta] of Object.entries(transports)) {
+          if (now - meta.lastActivityAt > SESSION_TIMEOUT_MS) {
+            delete transports[sessionId]
+            cleanedCount++
+            logger.debug(`[SessionCleanup] Removed stale session: ${sessionId}`)
+          }
+        }
+
+        if (cleanedCount > 0) {
+          logger.info(`[SessionCleanup] Cleaned ${cleanedCount} stale session(s)`)
+        }
+      }
+
+      const sessionCleanupTimer = setInterval(cleanupStaleSessions, SESSION_CLEANUP_INTERVAL_MS)
+      sessionCleanupTimer.unref() // Don't prevent process exit
+
+      // Helper to update session activity
+      const updateSessionActivity = (sessionId: string) => {
+        const meta = transports[sessionId]
+        if (meta) {
+          meta.lastActivityAt = Date.now()
+        }
+      }
 
       // 处理 POST 请求（客户端到服务器通信）
       app.post('/mcp', rateLimitMiddleware, async (req, res) => {
@@ -512,12 +560,18 @@ async function main() {
 
         if (sessionId && transports[sessionId]) {
           // 重用现有传输
-          httpTransport = transports[sessionId]
+          httpTransport = transports[sessionId].transport
+          updateSessionActivity(sessionId)
         } else if (!sessionId && isInitializeRequest(req.body)) {
           httpTransport = new StreamableHTTPServerTransport({
             sessionIdGenerator: () => randomUUID(),
-            onsessioninitialized: (sessionId) => {
-              transports[sessionId] = httpTransport
+            onsessioninitialized: (newSessionId) => {
+              const now = Date.now()
+              transports[newSessionId] = {
+                transport: httpTransport,
+                createdAt: now,
+                lastActivityAt: now,
+              }
             },
             allowedOrigins: config.allowedOrigins,
             enableDnsRebindingProtection: config.enableDnsRebindingProtection,
@@ -527,6 +581,7 @@ async function main() {
           httpTransport.onclose = () => {
             if (httpTransport.sessionId) {
               delete transports[httpTransport.sessionId]
+              logger.debug(`[SessionCleanup] Session closed: ${httpTransport.sessionId}`)
             }
           }
 
@@ -560,7 +615,8 @@ async function main() {
           return
         }
 
-        const httpTransport = transports[sessionId!]
+        const httpTransport = transports[sessionId!].transport
+        updateSessionActivity(sessionId!)
         await httpTransport.handleRequest(req, res)
       })
 
@@ -571,7 +627,7 @@ async function main() {
           return
         }
 
-        const httpTransport = transports[sessionId!]
+        const httpTransport = transports[sessionId!].transport
         await httpTransport.handleRequest(req, res)
       })
 
@@ -587,6 +643,9 @@ async function main() {
 
         // Stop the rate limiter cleanup timer
         rateLimiter.stop()
+
+        // Stop the session cleanup timer
+        clearInterval(sessionCleanupTimer)
 
         // Stop accepting new connections
         httpServer.close(() => {
