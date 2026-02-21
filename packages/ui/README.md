@@ -428,5 +428,5 @@ GNU Affero General Public License v3.0 (AGPL-3.0-only)
 
 ---
 
-**最后更新：** 2025-01-20  
-**版本：** 1.4.4
+**最后更新：** 2026-02-21  
+**版本：** 0.0.1 (monorepo managed)

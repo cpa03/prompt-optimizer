@@ -34,14 +34,14 @@
 
 ### 📦 [开发过程归档](./archives/)
 
-按功能点归档的开发记录，用于跟踪和排错
+按功能点归档的开发记录，用于跟踪和排错。完整索引请查看 [归档索引](./archives/INDEX.md)。
 
-- 101-singleton-refactor - 单例模式重构 ✅
-- 102-web-architecture-refactor - Web架构重构 ✅
-- 103-desktop-architecture - 桌面端架构 🔄
-- 104-test-panel-refactor - 测试面板重构 📋
-- 105-output-display-v2 - 输出显示v2 📋
-- 106-template-management - 模板管理功能 🔄
+主要归档包括：
+
+- 核心架构演进：101-singleton-refactor, 102-web-architecture-refactor, 103-desktop-architecture
+- UI系统：122-naive-ui-migration, 121-context-editor-refactor
+- 状态管理：117-pinia-refactoring, 126-submode-persistence, 129-session-store-single-source-refactor
+- 最新归档请查看 [归档索引](./archives/INDEX.md)
 
 ### 🛠️ [开发工作区](./workspace/)
 
@@ -131,5 +131,5 @@
 ---
 
 **文档重构完成时间**：2025-01-01
-**最后一次更新**：2026-02-19
+**最后一次更新**：2026-02-21
 **下一次整理计划**：根据开发进度定期更新
