@@ -1,6 +1,11 @@
+import type { IncomingRequestCfProperties } from '@cloudflare/workers-types'
+
 export interface Env {
   ACCESS_PASSWORD?: string
 }
+
+const PERMISSIONS_POLICY =
+  'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
 
 function generateRequestId(): string {
   return `cf_health_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
@@ -19,6 +24,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     'X-XSS-Protection': '1; mode=block',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'X-Permitted-Cross-Domain-Policies': 'none',
+    'Permissions-Policy': PERMISSIONS_POLICY,
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Cross-Origin-Opener-Policy': 'same-origin',
@@ -33,13 +39,10 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     let cfColo = 'unknown'
     let cfTimezone = 'unknown'
 
-    try {
-      const cf = (request as any).cf
-      if (cf) {
-        cfColo = cf.colo || cfColo
-        cfTimezone = cf.timezone || cfTimezone
-      }
-    } catch {
+    const cf = (request as Request & { cf?: IncomingRequestCfProperties }).cf
+    if (cf) {
+      cfColo = cf.colo ?? cfColo
+      cfTimezone = (cf as IncomingRequestCfProperties & { timezone?: string }).timezone ?? cfTimezone
     }
 
     let scheme = 'https'
