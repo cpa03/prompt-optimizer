@@ -240,7 +240,11 @@ export class ContextRepoImpl implements ContextRepo {
         title: ctx.title,
         updatedAt: ctx.updatedAt,
       }))
-      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+      .sort((a, b) => {
+        const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0
+        const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0
+        return bTime - aTime
+      })
   }
 
   async getCurrentId(): Promise<string> {

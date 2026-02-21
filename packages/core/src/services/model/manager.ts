@@ -331,33 +331,26 @@ export class ModelManager implements IModelManager {
     await this.ensureInitialized()
     const models = await this.getModelsFromStorage()
 
-    // 转换为 TextModelConfig 数组（先完成格式/字段迁移）
-    const migratedConfigs = Object.entries(models).map(([key, config]) => {
+    let needsProviderMetaPatch = false
+    const configs = Object.entries(models).map(([key, config]) => {
       let textConfig: TextModelConfig
 
-      // 检查是否已经是新格式
       if (isTextModelConfig(config)) {
         textConfig = config as TextModelConfig
-      }
-      // 传统格式，转换为新格式
-      else if (isLegacyConfig(config)) {
+      } else if (isLegacyConfig(config)) {
         textConfig = convertLegacyToTextModelConfig(key, config)
-      }
-      // 未知格式，尝试转换
-      else {
+      } else {
         textConfig = convertLegacyToTextModelConfig(key, config as ModelConfig)
       }
 
-      // 读时迁移：合并 customParamOverrides 到 paramOverrides
-      return this.migrateConfig(textConfig)
+      const migrated = this.migrateConfig(textConfig)
+      if (migrated.providerMeta && migrated.providerMeta.corsRestricted === undefined) {
+        needsProviderMetaPatch = true
+      }
+      return migrated
     })
 
-    const needsProviderMetaPatch = migratedConfigs.some(
-      (cfg) => cfg.providerMeta && cfg.providerMeta.corsRestricted === undefined
-    )
-
     if (needsProviderMetaPatch) {
-      // Best-effort: ensure registry is available for patching provider metadata.
       try {
         await this.getRegistry()
       } catch {
@@ -365,7 +358,7 @@ export class ModelManager implements IModelManager {
       }
     }
 
-    return migratedConfigs.map((cfg) => this.patchProviderMeta(cfg))
+    return needsProviderMetaPatch ? configs.map((cfg) => this.patchProviderMeta(cfg)) : configs
   }
 
   /**

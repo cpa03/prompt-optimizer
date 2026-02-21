@@ -188,17 +188,17 @@ export class TemplateProcessor {
     return tools
       .map((tool) => {
         const func = tool.function
-        let toolText = `工具名称: ${func.name}`
+        const parts = [`工具名称: ${func.name}`]
 
         if (func.description) {
-          toolText += `\n描述: ${func.description}`
+          parts.push(`描述: ${func.description}`)
         }
 
         if (func.parameters) {
-          toolText += `\n参数结构: ${JSON.stringify(func.parameters, null, 2)}`
+          parts.push(`参数结构: ${JSON.stringify(func.parameters, null, 2)}`)
         }
 
-        return toolText
+        return parts.join('\n')
       })
       .join('\n\n')
   }

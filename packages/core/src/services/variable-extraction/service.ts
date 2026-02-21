@@ -29,6 +29,8 @@ import { TEMPLATE_IDS } from '../../constants/template-ids'
  * 变量提取服务实现类
  */
 export class VariableExtractionService implements IVariableExtractionService {
+  private static readonly normalizeName = (name: string): string => name.trim().toLowerCase()
+
   constructor(
     private llmService: ILLMService,
     private modelManager: IModelManager,
@@ -75,13 +77,16 @@ export class VariableExtractionService implements IVariableExtractionService {
     response: VariableExtractionResponse,
     existingVariableNames?: string[]
   ): VariableExtractionResponse {
-    const normalize = (name: string) => name.trim().toLowerCase()
-
-    const existing = new Set((existingVariableNames ?? []).map(normalize).filter(Boolean))
+    const { normalizeName } = VariableExtractionService
+    const existing = new Set<string>()
+    for (const name of existingVariableNames ?? []) {
+      const normalized = normalizeName(name)
+      if (normalized) existing.add(normalized)
+    }
 
     const seen = new Set<string>()
     const variables = response.variables.filter((v) => {
-      const key = normalize(v.name)
+      const key = normalizeName(v.name)
       if (!key) return false
       if (existing.has(key)) return false
       if (seen.has(key)) return false

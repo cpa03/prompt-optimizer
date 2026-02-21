@@ -541,23 +541,27 @@ export class EvaluationService implements IEvaluationService {
    * LLM 生成 JSON 时可能对 XML 标签进行 HTML 转义
    * 支持：命名实体、十进制实体(&#123;)、十六进制实体(&#x2F;)
    */
+  private static readonly NAMED_ENTITIES: Record<string, string> = {
+    '&lt;': '<',
+    '&gt;': '>',
+    '&amp;': '&',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'",
+    '&nbsp;': ' ',
+    '&sol;': '/',
+  }
+
   private unescapeHtmlEntities(text: string): string {
     if (!text) return text
-    return (
-      text
-        // 命名实体
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&apos;/g, "'")
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&sol;/g, '/')
-        // 十六进制实体 &#xHH; 或 &#xHHHH;
-        .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
-        // 十进制实体 &#DDD;
-        .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+    const { NAMED_ENTITIES } = EvaluationService
+    return text.replace(
+      /&(?:lt|gt|amp|quot|#39|apos|nbsp|sol|x([0-9a-fA-F]+)|#(\d+));/g,
+      (match, hex, dec) => {
+        if (hex) return String.fromCharCode(parseInt(hex, 16))
+        if (dec) return String.fromCharCode(parseInt(dec, 10))
+        return NAMED_ENTITIES[match] ?? match
+      }
     )
   }
 }

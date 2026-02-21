@@ -194,30 +194,28 @@ export class VariableManager implements IVariableManager {
   }
 
   scanVariablesInContent(content: string): string[] {
-    // Check cache first
-    const cached = this.scanCache.get(content)
-    if (cached && Date.now() - cached.timestamp < this.CACHE_EXPIRY_MS) {
-      return [...cached.variables]
-    }
-
-    const variables: string[] = []
-
-    // 防御性编程：确保content是字符串类型
     if (typeof content !== 'string') {
       console.warn(
         '[VariableManager] scanVariablesInContent received non-string input:',
         typeof content,
         content
       )
-      return variables
+      return []
     }
+
+    const cacheKey = this.getCacheKey(content)
+    const cached = this.scanCache.get(cacheKey)
+    if (cached && Date.now() - cached.timestamp < this.CACHE_EXPIRY_MS) {
+      return [...cached.variables]
+    }
+
+    const variables: string[] = []
 
     const matches = content.matchAll(VARIABLE_VALIDATION.VARIABLE_SCAN_PATTERN)
 
     for (const match of matches) {
       if (match[1]) {
         const variableName = match[1].trim()
-        // Skip Mustache control tags (#, /, ^, !, >, &) to avoid false missing-variable reports.
         if (VARIABLE_VALIDATION.FORBIDDEN_PREFIX_PATTERN.test(variableName)) {
           continue
         }
@@ -230,20 +228,25 @@ export class VariableManager implements IVariableManager {
       }
     }
 
-    // Update cache with LRU eviction
     if (this.scanCache.size >= this.MAX_CACHE_SIZE) {
       const oldestKey = this.scanCache.keys().next().value
       if (oldestKey) {
         this.scanCache.delete(oldestKey)
       }
     }
-    this.scanCache.set(content, {
-      content,
+    this.scanCache.set(cacheKey, {
+      content: cacheKey,
       variables: [...variables],
       timestamp: Date.now(),
     })
 
     return variables
+  }
+
+  private getCacheKey(content: string): string {
+    const len = content.length
+    if (len < 100) return content
+    return `${len}:${content.slice(0, 40)}...${content.slice(-40)}`
   }
 
   // 变量来源检查
