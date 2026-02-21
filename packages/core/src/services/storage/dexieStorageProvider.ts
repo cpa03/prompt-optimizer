@@ -522,6 +522,7 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 简单更新（降级方案）
+   * 确保写入的数据包含完整的数据完整性字段
    */
   private async _performSimpleUpdate<T>(
     key: string,
@@ -534,12 +535,18 @@ export class DexieStorageProvider implements IStorageProvider {
 
       // 应用更新函数
       const newValue = updateFn(currentValue)
+      const valueString = JSON.stringify(newValue)
 
-      // 直接写入新值（不使用事务）
+      // 直接写入新值（不使用事务），但包含完整的数据完整性字段
+      const checksum = this.calculateChecksum(valueString)
+      const size = valueString.length
+
       await this.db.storage.put({
         key,
-        value: JSON.stringify(newValue),
+        value: valueString,
         timestamp: Date.now(),
+        size,
+        checksum,
       })
     } catch (error) {
       console.error(`简单更新失败 (${key}):`, error)
@@ -858,15 +865,19 @@ export class DexieStorageProvider implements IStorageProvider {
 
   /**
    * 导入数据（用于恢复）
+   * 确保导入的数据包含完整的数据完整性字段
    */
   async importAll(data: Record<string, string>): Promise<void> {
     await this.initialize()
 
     try {
+      const now = Date.now()
       const records: StorageRecord[] = Object.entries(data).map(([key, value]) => ({
         key,
         value,
-        timestamp: Date.now(),
+        timestamp: now,
+        size: value.length,
+        checksum: this.calculateChecksum(value),
       }))
 
       await this.db.storage.bulkPut(records)

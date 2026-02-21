@@ -371,7 +371,80 @@ if (duration > 1000) {
 
 ## Updated Testing
 
-- ✅ All 985 unit tests passing
+- ✅ All 1007 unit tests passing
 - ✅ No TypeScript compilation errors
 - ✅ No ESLint warnings
 - ✅ Build successful (CJS + ESM + DTS)
+
+### 8. Data Integrity in Fallback Operations (NEW - 2026-02-21)
+
+**Problem**: The `_performSimpleUpdate` fallback method in `DexieStorageProvider` did not include checksum and size fields when writing data, causing inconsistency with normal write operations and potentially breaking data integrity verification.
+
+**Solution**: Updated `_performSimpleUpdate` to include complete data integrity fields (checksum, size, timestamp) consistent with normal `setItem` and batch operations.
+
+**Benefits**:
+
+- Consistent data integrity across all write paths
+- Fallback operations now support data verification
+- Repair operations can properly verify records written during fallback scenarios
+
+**Implementation**:
+
+```typescript
+// Old: Missing integrity fields
+await this.db.storage.put({
+  key,
+  value: JSON.stringify(newValue),
+  timestamp: Date.now(),
+})
+
+// New: Complete integrity fields
+const valueString = JSON.stringify(newValue)
+const checksum = this.calculateChecksum(valueString)
+const size = valueString.length
+
+await this.db.storage.put({
+  key,
+  value: valueString,
+  timestamp: Date.now(),
+  size,
+  checksum,
+})
+```
+
+**Compatibility**: ✅ No breaking changes. Same API, improved data integrity.
+
+### 9. Data Integrity in Import Operations (NEW - 2026-02-21)
+
+**Problem**: The `importAll` method in `DexieStorageProvider` did not include checksum and size fields when importing data, meaning imported records would fail integrity verification.
+
+**Solution**: Updated `importAll` to include complete data integrity fields (checksum, size, timestamp) for all imported records.
+
+**Benefits**:
+
+- Imported data now has complete integrity tracking
+- Consistent with data written through normal operations
+- Repair operations can properly verify imported records
+
+**Implementation**:
+
+```typescript
+// Old: Missing integrity fields
+const records: StorageRecord[] = Object.entries(data).map(([key, value]) => ({
+  key,
+  value,
+  timestamp: Date.now(),
+}))
+
+// New: Complete integrity fields
+const now = Date.now()
+const records: StorageRecord[] = Object.entries(data).map(([key, value]) => ({
+  key,
+  value,
+  timestamp: now,
+  size: value.length,
+  checksum: this.calculateChecksum(value),
+}))
+```
+
+**Compatibility**: ✅ No breaking changes. Same API, improved data integrity.
