@@ -73,5 +73,9 @@
     "brocula:console": "node scripts/brocula-console-monitor.js",
     "brocula:lighthouse": "node scripts/brocula-lighthouse.js",
     "brocula:health": "node scripts/brocula-health-check.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "npm-run-all": "^4.1.5"
   }
 }
