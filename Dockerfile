@@ -32,6 +32,8 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 LABEL org.opencontainers.image.title="Prompt Optimizer"
 LABEL org.opencontainers.image.vendor="Prompt Optimizer Team"
 LABEL org.opencontainers.image.documentation="https://github.com/linshenkx/prompt-optimizer#readme"
+ARG VERSION="unknown"
+LABEL org.opencontainers.image.version="${VERSION}"
 
 RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs npm gettext curl && \
     npm install -g pnpm
@@ -73,7 +75,8 @@ RUN chmod +x /docker-entrypoint.d/40-generate-config.sh \
 EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:${NGINX_PORT:-80}/ && curl -f http://localhost:${NGINX_PORT:-80}/mcp || exit 1
+    CMD curl --fail --silent --max-time 5 http://localhost:${NGINX_PORT:-80}/ > /dev/null 2>&1 && \
+        curl --fail --silent --max-time 5 http://localhost:${NGINX_PORT:-80}/mcp > /dev/null 2>&1 || exit 1
 
 # 使用自定义启动脚本
 CMD ["sh", "/start-services.sh"]
