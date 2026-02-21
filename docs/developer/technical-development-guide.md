@@ -892,4 +892,4 @@ const processedContent = computed(() => {
 
 早期版本(v0.x)曾提供内置代理端点(`/api/proxy`, `/api/stream`)，但因安全审计发现SSRF风险已移除。历史实现可查看 `docs/archives/122-docker-api-proxy/implementation.md`
 
-最后更新：2025-01-21
+最后更新：2026-02-21
