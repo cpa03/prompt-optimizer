@@ -63,7 +63,7 @@ export default function middleware(request) {
 
     if (accessTokenCookie) {
       const accessToken = accessTokenCookie.split('=')[1]?.trim() ?? ''
-      authenticated = timingSafeEqual(accessToken, accessPassword)
+      authenticated = timingSafeEqual(accessToken, 'authenticated')
     }
   }
 
