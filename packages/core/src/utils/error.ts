@@ -159,3 +159,158 @@ export class BaseError extends Error {
     setErrorCause(this, options?.cause)
   }
 }
+
+export const RETRYABLE_ERROR_CODES = new Set([
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ENOTFOUND',
+  'ENETDOWN',
+  'ENETUNREACH',
+  'ETIMEDOUT',
+  'EHOSTUNREACH',
+  'EAI_AGAIN',
+  'UND_ERR_SOCKET',
+  'UND_ERR_CONNECT_TIMEOUT',
+  'UND_ERR_HEADERS_TIMEOUT',
+  'UND_ERR_BODY_TIMEOUT',
+  'UND_ERR_RESPONSE_STATE_TIMEOUT',
+  'UND_ERR_SOCKET_TIMEOUT',
+])
+
+export const RETRYABLE_STATUS_RANGES: Array<{ start: number; end: number }> = [
+  { start: 408, end: 408 },
+  { start: 429, end: 429 },
+  { start: 500, end: 599 },
+]
+
+export interface ErrorClassification {
+  category: 'network' | 'timeout' | 'rate_limit' | 'server' | 'client' | 'unknown'
+  isRetryable: boolean
+  isNetworkError: boolean
+  isTimeout: boolean
+  isRateLimited: boolean
+  isServerError: boolean
+  statusCode?: number
+  errorCode?: string
+}
+
+export function classifyError(error: unknown): ErrorClassification {
+  const result: ErrorClassification = {
+    category: 'unknown',
+    isRetryable: false,
+    isNetworkError: false,
+    isTimeout: false,
+    isRateLimited: false,
+    isServerError: false,
+  }
+
+  if (!error) {
+    return result
+  }
+
+  const err = error instanceof Error ? error : new Error(String(error))
+  const errorCode = (err as any).code
+  const statusCode = (err as any).status ?? (err as any).statusCode
+  const message = err.message.toLowerCase()
+
+  result.errorCode = errorCode
+  result.statusCode = statusCode
+
+  if (errorCode && RETRYABLE_ERROR_CODES.has(errorCode)) {
+    result.isNetworkError = true
+    result.isRetryable = true
+    if (errorCode === 'ETIMEDOUT' || errorCode.includes('TIMEOUT')) {
+      result.category = 'timeout'
+      result.isTimeout = true
+    } else {
+      result.category = 'network'
+    }
+    return result
+  }
+
+  if (typeof statusCode === 'number' && statusCode >= 100 && statusCode < 600) {
+    if (statusCode === 429) {
+      result.category = 'rate_limit'
+      result.isRateLimited = true
+      result.isRetryable = true
+      return result
+    }
+
+    if (statusCode === 408) {
+      result.category = 'timeout'
+      result.isTimeout = true
+      result.isRetryable = true
+      return result
+    }
+
+    if (statusCode >= 500 && statusCode < 600) {
+      result.category = 'server'
+      result.isServerError = true
+      result.isRetryable = true
+      return result
+    }
+
+    if (statusCode >= 400 && statusCode < 500) {
+      result.category = 'client'
+      return result
+    }
+  }
+
+  const networkPatterns = [
+    'network',
+    'econnreset',
+    'econnrefused',
+    'enotfound',
+    'enetdown',
+    'enetunreach',
+    'socket hang up',
+    'socket error',
+    'connection reset',
+    'connection refused',
+    'connection timed out',
+    'getaddrinfo',
+    'dns',
+  ]
+
+  const timeoutPatterns = ['timeout', 'timed out', 'etimedout']
+
+  const rateLimitPatterns = ['rate limit', 'too many requests', '429', 'throttl']
+
+  for (const pattern of networkPatterns) {
+    if (message.includes(pattern)) {
+      result.isNetworkError = true
+      result.isRetryable = true
+      result.category = 'network'
+      return result
+    }
+  }
+
+  for (const pattern of timeoutPatterns) {
+    if (message.includes(pattern)) {
+      result.isTimeout = true
+      result.isRetryable = true
+      result.category = 'timeout'
+      return result
+    }
+  }
+
+  for (const pattern of rateLimitPatterns) {
+    if (message.includes(pattern)) {
+      result.isRateLimited = true
+      result.isRetryable = true
+      result.category = 'rate_limit'
+      return result
+    }
+  }
+
+  return result
+}
+
+export function isRetryableError(error: unknown): boolean {
+  if (!error) {
+    return false
+  }
+
+  const classification = classifyError(error)
+  return classification.isRetryable
+}
