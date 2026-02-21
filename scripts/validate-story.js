@@ -97,7 +97,7 @@ function parseStoryFile(filePath) {
     text: m[2].trim(),
   }))
 
-  const taskMatches = content.matchAll(/^-\s*\[([ x])\]\s*Task\s*(\d+):.*?(?:\(AC:\s*([\d,\s]+)\))?\s*$/gm)
+  const taskMatches = content.matchAll(/^-\s*\[([ x])\]\s*Task\s*(\d+)(?::[^(\n]*)?(?:\s*\(AC:\s*([\d,\s]+)\))?/gm)
   result.tasks = Array.from(taskMatches).map((m) => ({
     number: parseInt(m[2]),
     completed: m[1] === 'x',
