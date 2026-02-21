@@ -536,8 +536,34 @@ async function main() {
         res.json(statsData)
       })
 
+      // Content-Type validation middleware for security
+      const contentTypeMiddleware = (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+      ) => {
+        const contentType = req.headers['content-type']
+        const validContentTypes = ['application/json', 'application/json-rpc']
+
+        if (
+          req.method === 'POST' &&
+          (!contentType || !validContentTypes.some((ct) => contentType.includes(ct)))
+        ) {
+          res.status(415).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32000,
+              message: 'Unsupported Media Type: Content-Type must be application/json',
+            },
+            id: null,
+          })
+          return
+        }
+        next()
+      }
+
       // 处理 POST 请求（客户端到服务器通信）
-      app.post('/mcp', rateLimitMiddleware, async (req, res) => {
+      app.post('/mcp', contentTypeMiddleware, rateLimitMiddleware, async (req, res) => {
         // 检查现有会话ID
         const sessionId = req.headers['mcp-session-id'] as string | undefined
         let httpTransport: StreamableHTTPServerTransport
