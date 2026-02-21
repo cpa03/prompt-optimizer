@@ -321,7 +321,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
 
     if (action === 'logout') {
       clearRateLimit(clientIP)
-      const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`
+      const cookieValue = `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}; Secure`
 
       return new Response(
         JSON.stringify({
