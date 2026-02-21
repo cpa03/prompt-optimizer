@@ -14,7 +14,7 @@
   ></div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { NScrollbar } from 'naive-ui'
 
@@ -25,37 +25,32 @@ import 'highlight.js/styles/github.css'
 import { useClipboard } from '../composables/ui/useClipboard'
 import { useToast } from '../composables/ui/useToast'
 
-const props = defineProps({
-  content: {
-    type: String,
-    default: '',
-  },
-  // 新增：流式模式标识，用于优化流式渲染性能
-  streaming: {
-    type: Boolean,
-    default: false,
-  },
-  // 新增：禁用内部滚动，避免与外层滚动冲突
-  disableInternalScroll: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  content?: string
+  streaming?: boolean
+  disableInternalScroll?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  content: '',
+  streaming: false,
+  disableInternalScroll: false,
 })
 
-const markdownContainer = ref(null)
-const renderError = ref(null)
+const markdownContainer = ref<HTMLElement | null>(null)
+const renderError = ref<string | null>(null)
 
 // Clipboard functionality for code blocks
 const { copyText } = useClipboard()
 const message = useToast()
 
 // Track which code blocks have copy success state
-const copySuccessStates = ref(new Map())
+const copySuccessStates = ref(new Map<string, boolean>())
 
 /**
  * Copy code block content to clipboard
  */
-const copyCodeBlock = async (codeElement, preWrapper) => {
+const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLElement) => {
   if (!codeElement) return
 
   const code = codeElement.textContent || ''
@@ -76,8 +71,7 @@ const copyCodeBlock = async (codeElement, preWrapper) => {
       copySuccessStates.value.set(codeId, false)
       updateCopyButtonVisualState(preWrapper, false)
     }, 2000)
-  } catch (error) {
-    console.error('Failed to copy code:', error)
+  } catch {
     message.error('复制失败，请手动复制')
   }
 }
@@ -85,10 +79,10 @@ const copyCodeBlock = async (codeElement, preWrapper) => {
 /**
  * Update copy button visual state
  */
-const updateCopyButtonVisualState = (preWrapper, isSuccess) => {
-  const copyBtn = preWrapper.querySelector('.code-copy-button')
-  const copyIcon = preWrapper.querySelector('.copy-icon-default')
-  const successIcon = preWrapper.querySelector('.copy-icon-success')
+const updateCopyButtonVisualState = (preWrapper: HTMLElement, isSuccess: boolean) => {
+  const copyBtn = preWrapper.querySelector<HTMLElement>('.code-copy-button')
+  const copyIcon = preWrapper.querySelector<HTMLElement>('.copy-icon-default')
+  const successIcon = preWrapper.querySelector<HTMLElement>('.copy-icon-success')
 
   if (!copyBtn) return
 
@@ -104,19 +98,19 @@ const updateCopyButtonVisualState = (preWrapper, isSuccess) => {
 }
 
 // 通用防抖函数
-const debounce = (fn, delay) => {
-  let timer = null
-  return function (...args) {
+const debounce = <T extends unknown[]>(fn: (...args: T) => void, delay: number) => {
+  let timer: ReturnType<typeof setTimeout> | null = null
+  return (...args: T) => {
     if (timer) clearTimeout(timer)
-    timer = setTimeout(() => fn.apply(this, args), delay)
+    timer = setTimeout(() => fn(...args), delay)
   }
 }
 
 // 统一错误处理
-const handleError = (error, context = '') => {
+const handleError = (error: unknown, context = '') => {
   console.error(`Markdown ${context} error:`, error)
-  renderError.value = error.message
-  return '' // 返回空字符串作为默认值
+  renderError.value = error instanceof Error ? error.message : String(error)
+  return ''
 }
 
 // 创建 markdown-it 实例并配置插件
@@ -125,7 +119,7 @@ const md = new MarkdownIt({
   breaks: false,
   linkify: true,
   typographer: true,
-  highlight: function (str, lang) {
+  highlight: function (str: string, lang: string) {
     if (!lang || !hljs.getLanguage(lang)) return str
 
     try {
@@ -138,7 +132,7 @@ const md = new MarkdownIt({
 })
 
 // 预处理Markdown内容，移除多余空行
-const removeExtraEmptyLines = (content) => {
+const removeExtraEmptyLines = (content: string): string => {
   if (!content) return ''
   return content.replace(/\n\s*\n\s*(\n\s*)+/g, '\n\n')
 }
@@ -149,7 +143,7 @@ let codeBlockIdCounter = 0
 /**
  * Create copy button HTML element
  */
-const createCopyButton = (codeId) => {
+const createCopyButton = (codeId: string): HTMLButtonElement => {
   const button = document.createElement('button')
   button.className = 'code-copy-button'
   button.setAttribute('data-code-id', codeId)
@@ -179,10 +173,10 @@ const addLanguageLabels = () => {
 
   try {
     // 批量操作避免频繁重排
-    const preElements = markdownContainer.value.querySelectorAll('pre')
+    const preElements = markdownContainer.value.querySelectorAll<HTMLPreElement>('pre')
     if (!preElements.length) return
 
-    const processedPres = new Set()
+    const processedPres = new Set<HTMLPreElement>()
 
     preElements.forEach((pre) => {
       // 如果已经处理过，跳过
@@ -190,14 +184,17 @@ const addLanguageLabels = () => {
       processedPres.add(pre)
 
       // 查找代码元素和语言类
-      const codeEl = pre.querySelector('code')
+      const codeEl = pre.querySelector<HTMLElement>('code')
       const langMatch = codeEl?.className?.match(/language-(\w+)/)
       const language = langMatch ? langMatch[1] : ''
 
       // 如果pre已经在pre-wrapper中，只更新标签内容
-      if (pre.parentNode.classList.contains('pre-wrapper')) {
+      if (
+        pre.parentNode instanceof HTMLElement &&
+        pre.parentNode.classList.contains('pre-wrapper')
+      ) {
         const wrapper = pre.parentNode
-        const existingLabel = wrapper.querySelector('.code-language-label')
+        const existingLabel = wrapper.querySelector<HTMLElement>('.code-language-label')
         if (existingLabel && language) {
           existingLabel.textContent = language
         }
@@ -236,14 +233,14 @@ const addLanguageLabels = () => {
       wrapper.appendChild(pre.cloneNode(true))
 
       // 替换原始pre
-      if (nextSibling) {
+      if (nextSibling && parent) {
         parent.insertBefore(wrapper, nextSibling)
-      } else {
+      } else if (parent) {
         parent.appendChild(wrapper)
       }
 
       // 移除原始pre（因为我们已经克隆并添加到wrapper）
-      parent.removeChild(pre)
+      if (parent) parent.removeChild(pre)
     })
   } catch (error) {
     handleError(error, 'language label processing')
@@ -251,12 +248,12 @@ const addLanguageLabels = () => {
 }
 
 // 优化的HTML处理函数
-const processHTML = (html) => {
+const processHTML = (html: string): string => {
   if (!html) return ''
 
   try {
     // 先将代码块提取出来保存，避免处理
-    const codeBlocks = []
+    const codeBlocks: string[] = []
     let processedHtml = html.replace(/<pre\b[^>]*>([\s\S]*?)<\/pre>/g, (match) => {
       const id = `CODE_BLOCK_${codeBlocks.length}`
       codeBlocks.push(match)
@@ -276,9 +273,13 @@ const processHTML = (html) => {
     const fragment = doc.body
 
     // 删除空节点处理函数 - 保持不变
-    const processNode = (node) => {
+    const processNode = (node: Node) => {
       const preserveElements = ['HR', 'BR']
-      if (node.nodeType !== Node.ELEMENT_NODE || preserveElements.includes(node.tagName)) {
+      if (
+        node.nodeType !== Node.ELEMENT_NODE ||
+        !(node instanceof Element) ||
+        preserveElements.includes(node.tagName)
+      ) {
         return
       }
 
@@ -288,20 +289,20 @@ const processHTML = (html) => {
         const child = children[i]
 
         if (child.nodeType === Node.TEXT_NODE) {
-          if (!child.textContent.trim()) {
+          if (!child.textContent?.trim()) {
             node.removeChild(child)
-          } else {
+          } else if (child.textContent) {
             child.textContent = child.textContent.replace(/\s{2,}/g, ' ')
           }
           continue
         }
 
-        if (child.nodeType === Node.ELEMENT_NODE) {
+        if (child.nodeType === Node.ELEMENT_NODE && child instanceof Element) {
           processNode(child)
 
           if (
             child.tagName === 'P' &&
-            !child.textContent.trim() &&
+            !child.textContent?.trim() &&
             !child.querySelector('img, br')
           ) {
             node.removeChild(child)

@@ -155,7 +155,6 @@ const forwardedAttrs = computed(() => {
     )
   }
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ['onUpdate:value']: _unused,
     multiple: attrsMultiple,
     class: rootClass,
