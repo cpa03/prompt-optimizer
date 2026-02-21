@@ -272,6 +272,9 @@ export * from './services/favorite/errors'
 // 导出高级模块相关类型
 export * from './types/advanced'
 
+// 导出类型辅助工具 - DX improvement for better TypeScript experience
+export * from './types/helpers'
+
 // 导出评估服务相关
 export * from './services/evaluation/types'
 export * from './services/evaluation/errors'
