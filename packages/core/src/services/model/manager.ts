@@ -16,6 +16,9 @@ import {
 import type { ITextAdapterRegistry } from '../llm/types'
 import { SERVICE_KEYS } from '../../config/core-config'
 import { PROVIDER_OLLAMA } from '../../constants'
+import { createDebugLogger } from '../../utils'
+
+const logger = createDebugLogger('ModelManager')
 
 /**
  * 模型管理器实现
@@ -31,7 +34,7 @@ export class ModelManager implements IModelManager {
     this.storage = new StorageAdapter(storageProvider)
     this.registry = registry
     this.initPromise = this.init().catch((err) => {
-      console.error('Model manager initialization failed:', err)
+      logger.error('Model manager initialization failed:', err)
       throw err
     })
   }
@@ -46,9 +49,9 @@ export class ModelManager implements IModelManager {
         // 动态导入避免循环依赖
         const { TextAdapterRegistry } = await import('../llm/adapters/registry')
         this.registry = new TextAdapterRegistry()
-        console.log('[ModelManager] Lazy-loaded TextAdapterRegistry')
+        logger.debug('Lazy-loaded TextAdapterRegistry')
       } catch (error) {
-        console.error('[ModelManager] Failed to load TextAdapterRegistry:', error)
+        logger.error('Failed to load TextAdapterRegistry:', error)
         throw new ModelConfigError('Failed to load model adapter registry')
       }
     }
@@ -75,16 +78,14 @@ export class ModelManager implements IModelManager {
    */
   private async init(): Promise<void> {
     try {
-      console.log('[ModelManager] Initializing...')
+      logger.debug('Initializing...')
 
       // 在Electron渲染进程中，先同步环境变量
       if (isElectronRenderer()) {
-        console.log(
-          '[ModelManager] Electron environment detected, syncing config from main process...'
-        )
+        logger.debug('Electron environment detected, syncing config from main process...')
         const configManager = ElectronConfigManager.getInstance()
         await configManager.syncFromMainProcess()
-        console.log('[ModelManager] Environment variables synced from main process')
+        logger.debug('Environment variables synced from main process')
       }
 
       // 从存储中加载现有配置
@@ -93,7 +94,7 @@ export class ModelManager implements IModelManager {
       if (storedData) {
         try {
           const storedModels = JSON.parse(storedData)
-          console.log('[ModelManager] Loaded existing models from storage')
+          logger.debug('Loaded existing models from storage')
 
           // 确保所有默认模型都存在，但保留用户的自定义配置
           const defaults = this.getDefaultModels()
@@ -105,7 +106,7 @@ export class ModelManager implements IModelManager {
               // 添加缺失的默认模型
               updatedModels[key] = defaultConfig
               hasUpdates = true
-              console.log(`[ModelManager] Added missing default model: ${key}`)
+              logger.debug(`Added missing default model: ${key}`)
             } else {
               // 检查现有模型是否为新格式
               const existingModel = updatedModels[key]
@@ -128,7 +129,7 @@ export class ModelManager implements IModelManager {
                 if (patched) {
                   updatedModels[key] = updatedModel
                   hasUpdates = true
-                  console.log(`[ModelManager] Patched missing metadata for model: ${key}`)
+                  logger.debug(`Patched missing metadata for model: ${key}`)
                 }
 
                 // 检查是否需要自动注入 apiKey 并启用内置模型
@@ -142,7 +143,7 @@ export class ModelManager implements IModelManager {
                     enabled: true,
                   }
                   hasUpdates = true
-                  console.log(`[ModelManager] Auto-enabled builtin model with new API key: ${key}`)
+                  logger.debug(`Auto-enabled builtin model with new API key: ${key}`)
                 }
               } else if (isLegacyConfig(existingModel)) {
                 // 旧格式，尝试使用 Registry 转换为新格式
@@ -155,27 +156,20 @@ export class ModelManager implements IModelManager {
                   )
                   updatedModels[key] = convertedModel
                   hasUpdates = true
-                  console.log(
-                    `[ModelManager] Converted legacy model to new format (via Registry): ${key}`
-                  )
+                  logger.debug(`Converted legacy model to new format (via Registry): ${key}`)
                 } catch (error) {
                   // Fallback 到硬编码转换
-                  console.warn(
-                    `[ModelManager] Registry conversion failed for ${key}, using fallback:`,
-                    error
-                  )
+                  logger.warn(`Registry conversion failed for ${key}, using fallback:`, error)
                   const convertedModel = convertLegacyToTextModelConfig(key, existingModel)
                   updatedModels[key] = convertedModel
                   hasUpdates = true
-                  console.log(
-                    `[ModelManager] Converted legacy model to new format (via fallback): ${key}`
-                  )
+                  logger.debug(`Converted legacy model to new format (via fallback): ${key}`)
                 }
               } else {
                 // 未知格式，使用默认配置替换
                 updatedModels[key] = defaultConfig
                 hasUpdates = true
-                console.log(`[ModelManager] Replaced unknown format with default: ${key}`)
+                logger.debug(`Replaced unknown format with default: ${key}`)
               }
             }
           }
@@ -183,28 +177,25 @@ export class ModelManager implements IModelManager {
           // 如果有更新，保存到存储
           if (hasUpdates) {
             await this.storage.setItem(this.storageKey, JSON.stringify(updatedModels))
-            console.log('[ModelManager] Saved updated models to storage')
+            logger.debug('Saved updated models to storage')
           }
         } catch (error) {
-          console.error(
-            '[ModelManager] Failed to parse stored models, initializing with defaults:',
-            error
-          )
+          logger.error('Failed to parse stored models, initializing with defaults:', error)
           await this.storage.setItem(this.storageKey, JSON.stringify(this.getDefaultModels()))
         }
       } else {
-        console.log('[ModelManager] No existing models found, initializing with defaults')
+        logger.debug('No existing models found, initializing with defaults')
         await this.storage.setItem(this.storageKey, JSON.stringify(this.getDefaultModels()))
       }
 
-      console.log('[ModelManager] Initialization completed')
+      logger.debug('Initialization completed')
     } catch (error) {
-      console.error('[ModelManager] Initialization failed:', error)
+      logger.error('Initialization failed:', error)
       // 如果初始化失败，至少保存默认配置到存储
       try {
         await this.storage.setItem(this.storageKey, JSON.stringify(this.getDefaultModels()))
       } catch (saveError) {
-        console.error('[ModelManager] Failed to save default models:', saveError)
+        logger.error('Failed to save default models:', saveError)
       }
     }
   }
@@ -238,8 +229,8 @@ export class ModelManager implements IModelManager {
     }
 
     // 添加迁移日志
-    console.warn(
-      `[ModelManager] Migrating customParamOverrides to paramOverrides for model '${config.id}'. ` +
+    logger.warn(
+      `Migrating customParamOverrides to paramOverrides for model '${config.id}'. ` +
         `The 'customParamOverrides' field is deprecated and will be removed in v3.0.`
     )
 
@@ -318,7 +309,7 @@ export class ModelManager implements IModelManager {
       try {
         return JSON.parse(storedData)
       } catch (error) {
-        console.error('[ModelManager] Failed to parse stored models, using defaults:', error)
+        logger.error('Failed to parse stored models, using defaults:', error)
       }
     }
     return this.getDefaultModels()
@@ -693,7 +684,7 @@ export class ModelManager implements IModelManager {
     if (validation.warnings.length > 0) {
       // warnings 不阻止保存，但在控制台提示
       validation.warnings.forEach((warning) => {
-        console.warn(`[ModelManager] ${warning.message}`)
+        logger.warn(warning.message)
       })
     }
 
@@ -761,7 +752,7 @@ export class ModelManager implements IModelManager {
           // 旧格式：转换后使用
           const legacyModel = model as ModelConfig & { key: string }
           if (!legacyModel.key) {
-            console.warn(`Skipping model without key:`, model)
+            logger.warn('Skipping model without key:', model)
             failedModels.push({ model, error: new Error('Missing key field') })
             continue
           }
@@ -771,7 +762,7 @@ export class ModelManager implements IModelManager {
 
         // 验证单个模型
         if (!this.validateSingleTextModel(textModelConfig)) {
-          console.warn(`Skipping invalid model configuration:`, model)
+          logger.warn('Skipping invalid model configuration:', model)
           failedModels.push({ model, error: new Error('Invalid model configuration') })
           continue
         }
@@ -788,20 +779,20 @@ export class ModelManager implements IModelManager {
                 ? textModelConfig.enabled
                 : existingModel.enabled,
           })
-          console.log(`Model ${key} already exists, configuration updated`)
+          logger.debug(`Model ${key} already exists, configuration updated`)
         } else {
           // 如果模型不存在，添加新模型
           await this.addModel(key, textModelConfig)
-          console.log(`Imported new model ${key}`)
+          logger.debug(`Imported new model ${key}`)
         }
       } catch (error) {
-        console.warn(`Error importing model:`, error)
+        logger.warn('Error importing model:', error)
         failedModels.push({ model, error: error as Error })
       }
     }
 
     if (failedModels.length > 0) {
-      console.warn(`Failed to import ${failedModels.length} models`)
+      logger.warn(`Failed to import ${failedModels.length} models`)
       // 不抛出错误，允许部分成功的导入
     }
   }
