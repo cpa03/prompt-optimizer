@@ -7,6 +7,7 @@ import {
   redactSensitiveFields,
   safeStringify,
   safeStringifyOrFallback,
+  tryParseJson,
 } from '../../../src/utils/json'
 
 describe('safeJsonParse', () => {
@@ -579,5 +580,161 @@ describe('safeStringifyOrFallback', () => {
     const result = safeStringifyOrFallback(input, '{}', { redactSensitive: true })
 
     expect(result).toContain('[REDACTED]')
+  })
+})
+
+describe('tryParseJson', () => {
+  describe('successful parsing', () => {
+    it('should return success result for valid JSON', () => {
+      const input = '{"name": "test", "value": 123}'
+      const result = tryParseJson(input)
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual({ name: 'test', value: 123 })
+      expect(result.error).toBeUndefined()
+    })
+
+    it('should parse arrays', () => {
+      const input = '[1, 2, 3]'
+      const result = tryParseJson<number[]>(input)
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual([1, 2, 3])
+    })
+
+    it('should parse nested objects', () => {
+      const input = '{"outer": {"inner": {"deep": "value"}}}'
+      const result = tryParseJson(input)
+
+      expect(result.success).toBe(true)
+      expect(result.data).toEqual({ outer: { inner: { deep: 'value' } } })
+    })
+
+    it('should parse primitive values', () => {
+      expect(tryParseJson('null').data).toBe(null)
+      expect(tryParseJson('true').data).toBe(true)
+      expect(tryParseJson('false').data).toBe(false)
+      expect(tryParseJson('42').data).toBe(42)
+      expect(tryParseJson('"string"').data).toBe('string')
+    })
+
+    it('should support generic type parameter', () => {
+      interface TestData {
+        id: number
+        name: string
+      }
+      const input = '{"id": 1, "name": "test"}'
+      const result = tryParseJson<TestData>(input)
+
+      expect(result.success).toBe(true)
+      expect(result.data?.id).toBe(1)
+      expect(result.data?.name).toBe('test')
+    })
+  })
+
+  describe('failed parsing', () => {
+    it('should return failure result for invalid JSON', () => {
+      const input = 'not json'
+      const result = tryParseJson(input)
+
+      expect(result.success).toBe(false)
+      expect(result.data).toBeUndefined()
+      expect(result.error).toBeInstanceOf(SyntaxError)
+    })
+
+    it('should return failure for malformed JSON', () => {
+      const result = tryParseJson('{invalid}')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBeInstanceOf(Error)
+    })
+
+    it('should return failure for truncated JSON', () => {
+      const result = tryParseJson('{"key": "value"')
+
+      expect(result.success).toBe(false)
+      expect(result.error).toBeInstanceOf(SyntaxError)
+    })
+
+    it('should preserve error message for debugging', () => {
+      const result = tryParseJson('not json')
+
+      expect(result.error?.message).toContain('JSON')
+    })
+  })
+
+  describe('prototype pollution protection', () => {
+    it('should block __proto__ assignment', () => {
+      const input = '{"__proto__": {"polluted": true}, "name": "test"}'
+      const result = tryParseJson(input) as { data: any }
+
+      expect(result.success).toBe(true)
+      expect(result.data.name).toBe('test')
+      expect(Object.hasOwn(result.data, '__proto__')).toBe(false)
+      expect(({} as any).polluted).toBeUndefined()
+    })
+
+    it('should block constructor assignment', () => {
+      const input = '{"constructor": {"prototype": {"polluted": true}}}'
+      const result = tryParseJson(input) as { data: any }
+
+      expect(result.success).toBe(true)
+      expect(Object.hasOwn(result.data, 'constructor')).toBe(false)
+    })
+
+    it('should block nested prototype pollution', () => {
+      const input = '{"data": {"__proto__": {"polluted": true}}}'
+      const result = tryParseJson(input) as { data: any }
+
+      expect(result.success).toBe(true)
+      expect(Object.hasOwn(result.data.data, '__proto__')).toBe(false)
+      expect(({} as any).polluted).toBeUndefined()
+    })
+  })
+
+  describe('with custom reviver', () => {
+    it('should apply custom reviver after safe reviver', () => {
+      const input = '{"date": "2024-01-01", "__proto__": {"bad": true}}'
+      const result = tryParseJson(input, {
+        reviver: (key, value) => {
+          if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return new Date(value)
+          }
+          return value
+        },
+      }) as { data: any }
+
+      expect(result.success).toBe(true)
+      expect(result.data.date instanceof Date).toBe(true)
+      expect(Object.hasOwn(result.data, '__proto__')).toBe(false)
+    })
+  })
+
+  describe('usefulness for error handling', () => {
+    it('enables pattern matching on result', () => {
+      const successResult = tryParseJson('{"valid": true}')
+      if (successResult.success) {
+        expect(successResult.data).toBeDefined()
+      } else {
+        expect.fail('Should have succeeded')
+      }
+
+      const failResult = tryParseJson('invalid')
+      if (!failResult.success) {
+        expect(failResult.error).toBeDefined()
+      } else {
+        expect.fail('Should have failed')
+      }
+    })
+
+    it('provides error details for logging', () => {
+      const result = tryParseJson('{"truncated":')
+
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error?.message).toBeTruthy()
+        expect(result.error?.name).toBe('SyntaxError')
+      }
+    })
   })
 })
