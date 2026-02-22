@@ -7,6 +7,11 @@
 # - Health endpoint with Cloudflare-specific metadata
 # - Smart placement for optimal latency
 # - Built-in observability
+#
+# Branch Configuration:
+# - Production: Set up custom domain in Cloudflare Dashboard
+# - Preview: Automatic for all branches when connected via GitHub
+# - The default branch (develop) will be deployed automatically when connected
 
 name = "prompt-optimizer"
 compatibility_date = "2025-02-18"
