@@ -449,7 +449,7 @@ async function main() {
     if (transport === 'http') {
       logger.info('Starting HTTP server with session management...')
       const app = express()
-      app.use(express.json())
+      app.use(express.json({ limit: MCP_CONFIG.server.maxBodySizeBytes }))
 
       app.use((_req, res, next) => {
         res.setHeader('X-Content-Type-Options', 'nosniff')
