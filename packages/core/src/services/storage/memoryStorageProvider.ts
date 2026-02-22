@@ -4,12 +4,21 @@ import { isStructuredErrorLike } from '../../utils/error'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
 /**
+ * 内部存储记录结构
+ * 包含值和时间戳元数据
+ */
+interface MemoryStorageRecord {
+  value: string
+  timestamp: number
+}
+
+/**
  * 内存存储提供者
  * 用于 Node.js 环境（如 Electron 主进程）和测试环境
  * 数据仅存储在内存中，应用重启后会丢失
  */
 export class MemoryStorageProvider implements IStorageProvider {
-  private storage = new Map<string, string>()
+  private storage = new Map<string, MemoryStorageRecord>()
 
   /**
    * 获取存储项
@@ -19,8 +28,8 @@ export class MemoryStorageProvider implements IStorageProvider {
   async getItem(key: string): Promise<string | null> {
     try {
       validateStorageKey(key)
-      const value = this.storage.get(key)
-      return value !== undefined ? value : null
+      const record = this.storage.get(key)
+      return record !== undefined ? record.value : null
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -48,8 +57,8 @@ export class MemoryStorageProvider implements IStorageProvider {
 
       const result: Record<string, string | null> = {}
       for (const key of keys) {
-        const value = this.storage.get(key)
-        result[key] = value !== undefined ? value : null
+        const record = this.storage.get(key)
+        result[key] = record !== undefined ? record.value : null
       }
 
       return result
@@ -70,7 +79,10 @@ export class MemoryStorageProvider implements IStorageProvider {
     try {
       validateStorageKey(key)
       validateStorageValue(value)
-      this.storage.set(key, value)
+      this.storage.set(key, {
+        value,
+        timestamp: Date.now(),
+      })
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -113,12 +125,12 @@ export class MemoryStorageProvider implements IStorageProvider {
    */
   async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
     try {
-      const currentValue = await this.getItem(key)
+      const currentRecord = this.storage.get(key)
       let parsedValue: T | null = null
 
-      if (currentValue) {
+      if (currentRecord) {
         try {
-          parsedValue = JSON.parse(currentValue) as T
+          parsedValue = JSON.parse(currentRecord.value) as T
         } catch (parseError) {
           throw new StorageError(
             `Failed to parse stored data for key "${key}": ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`,
@@ -128,7 +140,10 @@ export class MemoryStorageProvider implements IStorageProvider {
       }
 
       const newValue = modifier(parsedValue)
-      await this.setItem(key, JSON.stringify(newValue))
+      this.storage.set(key, {
+        value: JSON.stringify(newValue),
+        timestamp: Date.now(),
+      })
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -241,13 +256,25 @@ export class MemoryStorageProvider implements IStorageProvider {
   }> {
     const items = Array.from(this.storage.entries())
     const itemCount = items.length
-    const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
+    const totalSize = items.reduce((sum, [, record]) => sum + record.value.length, 0)
+
+    let oldestTimestamp: number | null = null
+    let newestTimestamp: number | null = null
+
+    for (const [, record] of items) {
+      if (oldestTimestamp === null || record.timestamp < oldestTimestamp) {
+        oldestTimestamp = record.timestamp
+      }
+      if (newestTimestamp === null || record.timestamp > newestTimestamp) {
+        newestTimestamp = record.timestamp
+      }
+    }
 
     return {
       itemCount,
       totalSize,
-      oldestRecord: null,
-      newestRecord: null,
+      oldestRecord: oldestTimestamp,
+      newestRecord: newestTimestamp,
       averageRecordSize: itemCount > 0 ? totalSize / itemCount : 0,
     }
   }
@@ -274,7 +301,7 @@ export class MemoryStorageProvider implements IStorageProvider {
     try {
       // 检查写入能力
       try {
-        this.storage.set(testKey, testValue)
+        this.storage.set(testKey, { value: testValue, timestamp: Date.now() })
         result.canWrite = true
       } catch (writeError) {
         result.healthy = false
@@ -286,8 +313,8 @@ export class MemoryStorageProvider implements IStorageProvider {
       // 检查读取能力
       if (result.canWrite) {
         try {
-          const readValue = this.storage.get(testKey)
-          if (readValue === testValue) {
+          const record = this.storage.get(testKey)
+          if (record?.value === testValue) {
             result.canRead = true
           } else {
             result.healthy = false
