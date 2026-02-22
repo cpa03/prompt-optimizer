@@ -10,6 +10,7 @@ import {
   getBuiltinModelIds,
   CONSTRAINTS,
 } from '@prompt-optimizer/core'
+import { generateSecureId } from '@prompt-optimizer/core'
 import { getI18nErrorMessage } from '../../utils/error'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
 import { computeConnectionConfig } from './useConnectionConfig'
@@ -42,10 +43,10 @@ interface SetProviderOptions {
 
 const generateTextModelId = (providerId: string, nonce?: number) => {
   const normalizedProvider = (providerId || 'custom').toLowerCase().replace(/[^a-z0-9_-]/g, '_')
-  const rand = Math.random().toString(36).slice(2, 10)
+  const secureRandom = generateSecureId()
   // Include a nonce so retries remain unique even if Date.now/Math.random are mocked/stubbed.
   const noncePart = typeof nonce === 'number' ? `_${nonce}` : ''
-  return `text_${normalizedProvider}_${Date.now()}_${rand}${noncePart}`
+  return `text_${normalizedProvider}_${Date.now()}_${secureRandom}${noncePart}`
 }
 
 export function useTextModelManager() {

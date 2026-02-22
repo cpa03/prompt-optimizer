@@ -35,9 +35,10 @@ const withTimeout = (promise, timeoutMs = 30000) => {
   ])
 }
 
-// 生成唯一的流式请求ID
+// Generate unique stream request ID using crypto for security
 function generateStreamId() {
-  return `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const randomPart = crypto.randomUUID().split('-')[0]
+  return `stream_${Date.now()}_${randomPart}`
 }
 
 function createIpcError(payload) {

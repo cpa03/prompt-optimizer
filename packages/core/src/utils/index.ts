@@ -35,6 +35,8 @@ export {
   SUFFIX_PATTERN,
   MAX_SUFFIX_LENGTH,
   validateCustomModelConfig,
+  generateSecureId,
+  generateSecureTimestampedId,
 } from './environment'
 export type {
   CustomModelEnvConfig,

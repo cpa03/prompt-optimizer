@@ -11,6 +11,7 @@ import type {
   IImageModelManager,
   IImageService,
 } from '@prompt-optimizer/core'
+import { generateSecureId } from '@prompt-optimizer/core'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
 import { computeConnectionConfig, normalizeProviderChangeOptions } from './useConnectionConfig'
 
@@ -712,9 +713,9 @@ export function useImageModelManager() {
     testResult.value = null
   }
 
-  // 生成配置ID
+  // Generate config ID using secure random
   const generateConfigId = () => {
-    return `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `config_${Date.now()}_${generateSecureId()}`
   }
 
   // 初始化

@@ -19,6 +19,7 @@ import { TypeMapper } from './type-mapper'
 import { TagTypeConverter } from './type-converter'
 import { FAVORITE_KEYS } from '../../constants/storage-keys'
 import { VALIDATION_CONSTRAINTS } from '../../constants/constraints'
+import { generateSecureTimestampedId } from '../../utils/environment'
 
 /**
  * 收藏管理器实现
@@ -231,7 +232,7 @@ export class FavoriteManager implements IFavoriteManager {
     }
 
     const now = Date.now()
-    const id = `fav_${now}_${Math.random().toString(36).substr(2, 9)}`
+    const id = generateSecureTimestampedId('fav', '_')
 
     const newFavorite: FavoritePrompt = {
       ...favoriteData,
@@ -470,7 +471,7 @@ export class FavoriteManager implements IFavoriteManager {
     }
 
     const now = Date.now()
-    const id = `cat_${now}_${Math.random().toString(36).substr(2, 9)}`
+    const id = generateSecureTimestampedId('cat', '_')
 
     const newCategory: FavoriteCategory = {
       ...category,
@@ -1175,7 +1176,7 @@ export class FavoriteManager implements IFavoriteManager {
             }
             let newId = ''
             do {
-              newId = `fav_${baseTimestamp + timestampOffset}_${Math.random().toString(36).slice(2, 11)}`
+              newId = generateSecureTimestampedId('fav', '_')
             } while (existingIds.has(newId))
             existingIds.add(newId)
             return newId

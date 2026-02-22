@@ -8,6 +8,7 @@ import { CORE_SERVICE_KEYS } from '../../constants/storage-keys'
 import { ImportExportError } from '../../interfaces/import-export'
 import { IMPORT_EXPORT_ERROR_CODES, TEMPLATE_ERROR_CODES } from '../../constants/error-codes'
 import { TEMPLATE_CONFIG } from '../../config/core-config'
+import { generateSecureId } from '../../utils/environment'
 
 /**
  * 提示词管理器实现
@@ -387,9 +388,9 @@ export class TemplateManager implements ITemplateManager {
         let finalTemplateName = template.name
 
         if (builtinTemplate) {
-          // 为冲突的模板生成新的ID和名称
+          // Generate new ID and name for conflicting template
           const timestamp = Date.now()
-          const random = Math.random().toString(36).substr(2, TEMPLATE_CONFIG.randomSuffixLength)
+          const random = generateSecureId()
           finalTemplateId = `user-${template.id}-${timestamp}-${random}`
           finalTemplateName = `${template.name} (导入副本)`
           console.warn(

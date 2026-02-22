@@ -411,10 +411,40 @@ export function scanCustomModelEnvVars(
 }
 
 /**
- * 清除自定义模型环境变量扫描缓存
- * 在环境变量发生变化时调用
+ * Clear custom model environment variable scan cache
+ * Called when environment variables change
  */
 export function clearCustomModelEnvCache(): void {
   cachedCustomModels = null
   logger.log('Cache cleared')
+}
+
+/**
+ * Generate a secure random ID using crypto.randomUUID()
+ * Falls back to timestamp + random string in environments without crypto support
+ * @param prefix Optional prefix for the ID
+ * @param separator Separator between parts (default: '_')
+ * @returns A secure random ID string
+ */
+export function generateSecureId(prefix?: string, separator: string = '_'): string {
+  const randomPart = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID().split('-')[0]
+    : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+  
+  return prefix ? `${prefix}${separator}${randomPart}` : randomPart
+}
+
+/**
+ * Generate a secure timestamped ID
+ * @param prefix Prefix for the ID (e.g., 'ctx', 'fav', 'config')
+ * @param separator Separator between parts (default: '-')
+ * @returns A secure ID in format: prefix{separator}timestamp{separator}random
+ */
+export function generateSecureTimestampedId(prefix: string, separator: string = '-'): string {
+  const timestamp = Date.now()
+  const randomPart = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID().split('-')[0]
+    : Math.random().toString(36).slice(2, 11)
+  
+  return `${prefix}${separator}${timestamp}${separator}${randomPart}`
 }

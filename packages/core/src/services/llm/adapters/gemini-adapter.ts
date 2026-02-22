@@ -6,6 +6,7 @@ import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
 import { API_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
 import { PROVIDER_GEMINI } from '../../../constants'
+import { generateSecureTimestampedId } from '../../../utils/environment'
 import type {
   TextProvider,
   TextModel,
@@ -441,7 +442,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     }
 
     return functionCalls.map((fc) => ({
-      id: fc.id || `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: fc.id || generateSecureTimestampedId('call'),
       type: 'function' as const,
       function: {
         name: fc.name || '',

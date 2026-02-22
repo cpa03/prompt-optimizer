@@ -925,6 +925,7 @@ import {
   type MessageTemplate,
   type ITemplateManager,
   TemplateLanguageService,
+  generateSecureId,
 } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import MarkdownRenderer from './MarkdownRenderer.vue'
@@ -1266,13 +1267,13 @@ const cancelEdit = () => {
   }
 }
 
-// 生成唯一的模板ID
+// Generate unique template ID using secure random
 const generateUniqueTemplateId = (baseName = 'template') => {
   const timestamp = Date.now()
-  const random = Math.random().toString(36).slice(2, 8)
+  const random = generateSecureId()
   let candidateId = `${baseName}-${timestamp}-${random}`
 
-  // 确保ID不与现有模板冲突
+  // Ensure ID doesn't conflict with existing templates
   const existingIds = templates.value.map((t) => t.id)
   let counter = 1
   while (existingIds.includes(candidateId)) {
