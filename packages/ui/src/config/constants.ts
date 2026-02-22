@@ -73,6 +73,9 @@ export const VARIABLE_CONSTRAINTS = {
   MAX_VALUE_LENGTH: getViteEnvInt('VITE_VARIABLE_MAX_VALUE_LENGTH', 10000),
   MAX_DISPLAY_LENGTH: getViteEnvInt('VITE_VARIABLE_MAX_DISPLAY_LENGTH', 5000),
   MAX_HISTORY_ITEMS: getViteEnvInt('VITE_VARIABLE_MAX_HISTORY_ITEMS', 50),
+  // Warning thresholds (percentage of MAX_DISPLAY_LENGTH)
+  WARNING_THRESHOLD_PERCENT: 90, // 4500 chars - show warning
+  NEAR_LIMIT_THRESHOLD_PERCENT: 80, // 4000 chars - start highlighting
 } as const
 
 // UI constants - environment configurable
