@@ -111,6 +111,7 @@
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 
 import { NInput, NButton, NCard, NEmpty, NSpace } from 'naive-ui'
+import { TIME_CONSTANTS } from '../config/constants'
 
 const props = defineProps({
   modelValue: {
@@ -203,12 +204,11 @@ const toggleDropdown = async () => {
   if (isOpen.value) {
     highlightedIndex.value = -1
     emit('fetchOptions')
-    // 等待DOM更新后聚焦
     setTimeout(() => {
       if (inputRef.value && inputRef.value.focus) {
         inputRef.value.focus()
       }
-    }, 10)
+    }, TIME_CONSTANTS.DOM_UPDATE_DELAY_MS)
   } else {
     highlightedIndex.value = -1
   }

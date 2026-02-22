@@ -65,6 +65,9 @@ export const TIME_CONSTANTS = {
 
   // Scroll listener delays
   SCROLL_LISTENER_DELAY_MS: getViteEnvInt('VITE_SCROLL_LISTENER_DELAY_MS', 100),
+
+  // DOM update delay for focus operations
+  DOM_UPDATE_DELAY_MS: getViteEnvInt('VITE_DOM_UPDATE_DELAY_MS', 10),
 } as const
 
 // Variable constraints - environment configurable

@@ -147,6 +147,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { ANIMATION_CONSTANTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -172,7 +173,7 @@ const handleClick = () => {
     isBouncing.value = true
     setTimeout(() => {
       isBouncing.value = false
-    }, 300)
+    }, ANIMATION_CONSTANTS.FEEDBACK_ANIMATION_MS)
   }
 }
 </script>

@@ -430,18 +430,11 @@ const handleRemoveWithConfirm = (key: string) => {
     // Second click - actually remove
     removingKey.value = key
 
-    // Clear confirmation timeout
-    if (confirmTimeout.value) {
-      clearTimeout(confirmTimeout.value)
-      confirmTimeout.value = null
-    }
-
-    // Wait for exit animation then actually remove
     setTimeout(() => {
       handleRemove(key)
       removingKey.value = null
       removeConfirmKey.value = null
-    }, 200)
+    }, TIME_CONSTANTS.ANIMATION_SHORT_DELAY)
   } else {
     // First click - enter confirmation state
     // Clear any existing confirmation

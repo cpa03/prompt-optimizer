@@ -64,7 +64,7 @@ import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
 
 import { useI18n } from 'vue-i18n'
 import { NModal, NButton } from 'naive-ui'
-import { UI_DIMENSIONS, TIME_CONSTANTS } from '../config/constants'
+import { UI_DIMENSIONS, TIME_CONSTANTS, BREAKPOINTS } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -147,7 +147,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 // 在桌面端显示键盘提示（移动端隐藏）
 const showKeyboardHints = computed(() => {
   if (typeof window === 'undefined') return false
-  return window.innerWidth >= 768
+  return window.innerWidth >= BREAKPOINTS.TABLET
 })
 
 // 添加全局键盘监听
