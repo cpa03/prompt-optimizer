@@ -54,7 +54,7 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
   if (!codeElement) return
 
   const code = codeElement.textContent || ''
-  const codeId = preWrapper.dataset.codeId
+  const codeId = preWrapper.dataset.codeId ?? ''
 
   if (!codeId) return
 
