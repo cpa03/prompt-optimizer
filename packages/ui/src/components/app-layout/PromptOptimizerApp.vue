@@ -316,7 +316,6 @@ import { TIME_CONSTANTS, ANIMATION_CONSTANTS } from '../../config/constants'
 // 1. 基础 composables
 const hljsInstance = hljs
 const i18n = useI18n()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const t = i18n.t // 在模板中使用
 const toast = useToast()
 
