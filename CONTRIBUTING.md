@@ -18,6 +18,24 @@ Thank you for your interest in contributing to Prompt Optimizer! This document p
 
 ### Initial Setup
 
+#### Option 1: DevContainer (Recommended)
+
+The fastest way to get started is using the DevContainer, which provides a fully-configured development environment:
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Install [VS Code](https://code.visualstudio.com/) with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+3. Clone and open the repository in VS Code
+4. When prompted, click "Reopen in Container"
+
+The DevContainer automatically:
+- Installs Node.js 20 and pnpm 10.6.1
+- Configures all recommended VS Code extensions
+- Runs `pnpm install` and builds the core package
+
+See [.devcontainer/README.md](../.devcontainer/README.md) for details.
+
+#### Option 2: Manual Setup
+
 ```bash
 # 1. Fork and clone the repository
 git clone https://github.com/YOUR_USERNAME/prompt-optimizer.git

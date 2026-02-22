@@ -23,6 +23,12 @@ Welcome to the Prompt Optimizer documentation. This index provides organized acc
 - **[Environment Variables](ENVIRONMENT_VARIABLES.md)** - Complete environment configuration reference
 - **[Developer Guide](developer/README.md)** - Comprehensive development guide
 
+### DevContainer Setup
+
+For the fastest onboarding experience, use the DevContainer:
+
+- **[DevContainer Configuration](../.devcontainer/README.md)** - One-click development environment setup
+
 ### Quick Start
 
 ```bash
