@@ -406,6 +406,7 @@ describe('MCP Server Tools', () => {
         expect(formatted).toContain('Category: ai-rate-limit')
         expect(formatted).toContain('Original Error: APIError')
         expect(formatted).toContain('Retryable: true')
+        expect(formatted).toContain('Timestamp:')
       })
 
       it('应该处理没有原始错误的情况', () => {
@@ -415,6 +416,7 @@ describe('MCP Server Tools', () => {
         expect(formatted).toContain('Code: -32000')
         expect(formatted).toContain('test error')
         expect(formatted).toContain('Category: internal')
+        expect(formatted).toContain('Timestamp:')
       })
     })
 
@@ -428,6 +430,8 @@ describe('MCP Server Tools', () => {
         expect(summary.category).toBe('ai-rate-limit')
         expect(summary.message).toContain('Rate limit exceeded')
         expect(summary.retryable).toBe(true)
+        expect(summary.timestamp).toBeDefined()
+        expect(new Date(summary.timestamp).toISOString()).toBe(summary.timestamp)
       })
 
       it('应该创建正确的错误摘要 - 不可重试错误', () => {
@@ -438,6 +442,7 @@ describe('MCP Server Tools', () => {
         expect(summary.code).toBe(MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED)
         expect(summary.category).toBe('ai-auth')
         expect(summary.retryable).toBe(false)
+        expect(summary.timestamp).toBeDefined()
       })
 
       it('应该创建正确的错误摘要 - 内部错误', () => {
@@ -447,6 +452,7 @@ describe('MCP Server Tools', () => {
         expect(summary.code).toBe(MCP_ERROR_CODES.INTERNAL_ERROR)
         expect(summary.category).toBe('internal')
         expect(summary.retryable).toBe(false)
+        expect(summary.timestamp).toBeDefined()
       })
     })
   })
