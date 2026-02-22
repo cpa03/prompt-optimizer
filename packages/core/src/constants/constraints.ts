@@ -158,4 +158,4 @@ export const CORE_CONSTRAINTS = {
 } as const
 
 // Re-export env helpers for convenience
-export { getEnvInt, getEnvFloat, getEnvString, getEnvBoolean as getEnvBool } from '../config/env'
+export { getEnvInt, getEnvFloat, getEnvString, getEnvBoolean as getEnvBool, getEnvArray, getEnvJSON } from '../config/env'
