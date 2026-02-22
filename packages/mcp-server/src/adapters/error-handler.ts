@@ -21,6 +21,7 @@
  */
 
 import { McpError } from '@modelcontextprotocol/sdk/types.js'
+import { classifyError, isRetryableError as coreIsRetryableError } from '@prompt-optimizer/core'
 
 /**
  * Error category types for better type safety
@@ -123,7 +124,7 @@ export class MCPErrorHandler {
     }
 
     // Check for AI-specific errors first (higher priority)
-    const aiError = this.classifyAIError(errorMessage, errorName)
+    const aiError = this.classifyAIError(errorMessage, errorName, error)
     if (aiError) {
       return aiError
     }
@@ -169,15 +170,58 @@ export class MCPErrorHandler {
 
   /**
    * Classifies AI-specific errors from error message patterns.
+   * Uses core's classifyError utility for consistent error classification across packages.
    *
    * @param errorMessage - The error message to analyze
    * @param errorName - The error name/class
+   * @param originalError - The original error object for core classification
    * @returns McpError if AI-specific error detected, null otherwise
    * @private
    */
-  private static classifyAIError(errorMessage: string, errorName: string): McpError | null {
-    // Rate limiting
-    if (AI_ERROR_PATTERNS.rateLimit.test(errorMessage)) {
+  private static classifyAIError(
+    errorMessage: string,
+    errorName: string,
+    originalError?: Error
+  ): McpError | null {
+    const msg = errorMessage.toLowerCase()
+
+    if (originalError) {
+      const classification = classifyError(originalError)
+
+      if (classification.isRateLimited) {
+        return new McpError(
+          MCP_ERROR_CODES.AI_RATE_LIMITED,
+          `AI 服务请求频率超限: ${errorMessage}`,
+          {
+            originalError: errorName,
+            category: 'ai-rate-limit',
+            retryable: true,
+          }
+        )
+      }
+
+      if (classification.isTimeout) {
+        return new McpError(
+          MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT,
+          `AI 服务响应超时: ${errorMessage}`,
+          {
+            originalError: errorName,
+            category: 'ai-timeout',
+            retryable: true,
+          }
+        )
+      }
+
+      if (classification.isServerError) {
+        return new McpError(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED, `AI 服务过载: ${errorMessage}`, {
+          originalError: errorName,
+          category: 'ai-overload',
+          retryable: true,
+        })
+      }
+    }
+
+    if (AI_ERROR_PATTERNS.rateLimit.test(msg)) {
       return new McpError(MCP_ERROR_CODES.AI_RATE_LIMITED, `AI 服务请求频率超限: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-rate-limit',
@@ -185,8 +229,7 @@ export class MCPErrorHandler {
       })
     }
 
-    // Context length exceeded
-    if (AI_ERROR_PATTERNS.contextLength.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.contextLength.test(msg)) {
       return new McpError(
         MCP_ERROR_CODES.AI_CONTEXT_LENGTH_EXCEEDED,
         `AI 上下文长度超限: ${errorMessage}`,
@@ -194,8 +237,7 @@ export class MCPErrorHandler {
       )
     }
 
-    // Timeout
-    if (AI_ERROR_PATTERNS.timeout.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.timeout.test(msg)) {
       return new McpError(MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT, `AI 服务响应超时: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-timeout',
@@ -203,8 +245,7 @@ export class MCPErrorHandler {
       })
     }
 
-    // Authentication
-    if (AI_ERROR_PATTERNS.auth.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.auth.test(msg)) {
       return new McpError(
         MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED,
         `AI 服务认证失败: ${errorMessage}`,
@@ -212,16 +253,14 @@ export class MCPErrorHandler {
       )
     }
 
-    // Model unavailable
-    if (AI_ERROR_PATTERNS.modelUnavailable.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.modelUnavailable.test(msg)) {
       return new McpError(MCP_ERROR_CODES.AI_MODEL_UNAVAILABLE, `AI 模型不可用: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-model',
       })
     }
 
-    // Service overloaded
-    if (AI_ERROR_PATTERNS.serviceOverloaded.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.serviceOverloaded.test(msg)) {
       return new McpError(MCP_ERROR_CODES.AI_SERVICE_OVERLOADED, `AI 服务过载: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-overload',
@@ -229,8 +268,7 @@ export class MCPErrorHandler {
       })
     }
 
-    // Content filtered
-    if (AI_ERROR_PATTERNS.contentFiltered.test(errorMessage)) {
+    if (AI_ERROR_PATTERNS.contentFiltered.test(msg)) {
       return new McpError(MCP_ERROR_CODES.AI_CONTENT_FILTERED, `AI 内容过滤: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-content-filter',
@@ -331,6 +369,7 @@ export class MCPErrorHandler {
 
   /**
    * Checks if an error is retryable based on its code.
+   * Also uses core's isRetryableError for enhanced classification.
    *
    * @param error - The McpError to check
    * @returns true if the error is potentially recoverable with retry
@@ -342,7 +381,20 @@ export class MCPErrorHandler {
       MCP_ERROR_CODES.AI_SERVICE_OVERLOADED,
       MCP_ERROR_CODES.SERVICE_UNAVAILABLE,
     ]
-    return retryableCodes.includes(error.code as (typeof retryableCodes)[number])
+
+    if (retryableCodes.includes(error.code as (typeof retryableCodes)[number])) {
+      return true
+    }
+
+    const data = error.data as MCPErrorData | undefined
+    if (data?.originalError) {
+      const originalError = new Error(data.originalError)
+      if (coreIsRetryableError(originalError)) {
+        return true
+      }
+    }
+
+    return false
   }
 
   /**
