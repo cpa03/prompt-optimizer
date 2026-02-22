@@ -47,6 +47,10 @@ const REQUIRED_SECTIONS = [
 
 const VALID_STATUSES = ['Draft', 'Approved', 'InProgress', 'Review', 'Done']
 
+const VALID_PRIORITIES = ['P0-Critical', 'P1-High', 'P2-Medium', 'P3-Low']
+
+const VALID_STORY_POINTS = [1, 2, 3, 5, 8, 13, 21]
+
 const PLACEHOLDER_PATTERNS = [
   { pattern: /\[TBD\]/gi, description: 'To be determined' },
   { pattern: /\[To be filled/gi, description: 'To be filled' },
@@ -81,6 +85,12 @@ function parseStoryFile(filePath) {
 
   const statusMatch = content.match(/\*\*Status\*\*:?\s*(\w+)/im)
   result.status = statusMatch ? statusMatch[1] : null
+
+  const priorityMatch = content.match(/\*\*Priority\*\*:?\s*(P[0-3]-?\w*)/im)
+  result.priority = priorityMatch ? priorityMatch[1] : null
+
+  const storyPointsMatch = content.match(/\*\*Story Points\*\*:?\s*(\d+)/im)
+  result.storyPoints = storyPointsMatch ? parseInt(storyPointsMatch[1]) : null
 
   const storyMatch = content.match(/>\s*\*\*As a\*\*\s*(.+?),/is)
   result.userRole = storyMatch ? storyMatch[1].trim() : null
@@ -156,6 +166,26 @@ function validateStory(parsed) {
     }
   } else {
     issues.push('No status defined')
+  }
+
+  if (parsed.priority) {
+    if (VALID_PRIORITIES.includes(parsed.priority)) {
+      passed.push(`Valid priority: "${parsed.priority}"`)
+    } else {
+      issues.push(`Invalid priority: "${parsed.priority}". Must be one of: ${VALID_PRIORITIES.join(', ')}`)
+    }
+  } else {
+    warnings.push('No priority defined (P0-Critical, P1-High, P2-Medium, or P3-Low)')
+  }
+
+  if (parsed.storyPoints) {
+    if (VALID_STORY_POINTS.includes(parsed.storyPoints)) {
+      passed.push(`Valid story points: ${parsed.storyPoints}`)
+    } else {
+      warnings.push(`Story points "${parsed.storyPoints}" not in Fibonacci scale. Recommended: ${VALID_STORY_POINTS.join(', ')}`)
+    }
+  } else {
+    warnings.push('No story points defined')
   }
 
   if (parsed.userRole && parsed.action && parsed.benefit) {
@@ -294,6 +324,8 @@ function printReport(parsed, jsonOutput = false) {
         userRole: parsed.userRole,
         action: parsed.action,
         benefit: parsed.benefit,
+        priority: parsed.priority,
+        storyPoints: parsed.storyPoints,
         acceptanceCriteriaCount: parsed.acceptanceCriteria.length,
         tasksCount: parsed.tasks.length,
         sourceReferencesCount: parsed.sourceReferences.length,

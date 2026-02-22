@@ -83,6 +83,10 @@ function generateStoryContent(epic, story, title) {
 
 **Status**: Draft
 
+**Priority**: P2-Medium
+
+**Story Points**: 3
+
 ## Story
 
 > **As a** [user role],
@@ -146,6 +150,26 @@ packages/web/src/
 - **Coverage Target**: >80%
 - **Patterns**: Follow existing test patterns in codebase
 - **Reference**: [Testing Guide](../developer/technical-development-guide.md)
+
+## Dependencies
+
+### Prerequisites
+
+| Story ID | Type     | Description                    | Status |
+| -------- | -------- | ------------------------------ | ------ |
+| [To be identified] | Required/Optional | [Description] | [Status] |
+
+### Blocked By
+
+| Story ID | Description                    |
+| -------- | ------------------------------ |
+| [To be identified] | [Reason for blocking] |
+
+### Blocks
+
+| Story ID | Description                    |
+| -------- | ------------------------------ |
+| [To be identified] | [What is blocked by this story] |
 
 ## Testing
 
