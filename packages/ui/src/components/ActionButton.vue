@@ -317,6 +317,18 @@ defineExpose({
   }
 }
 
+/* Extra small screens: reduce button size */
+@media (max-width: 480px) {
+  .action-button {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  .action-button :deep(.n-button__icon) {
+    margin-right: 0 !important;
+  }
+}
+
 /* 尊重用户减少动画的偏好设置 */
 @media (prefers-reduced-motion: reduce) {
   .action-button,
