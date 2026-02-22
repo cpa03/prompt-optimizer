@@ -1,8 +1,8 @@
 # DevOps CI/CD Improvements
 
-## Status: Recommended
+## Status: Ready for Implementation
 
-This document outlines recommended improvements to the CI/CD pipeline that require repository administrator approval to implement.
+This document outlines recommended improvements to the CI/CD pipeline. The changes have been prepared on the `devops-engineer` branch and require repository administrator approval (workflows permission) to merge.
 
 ## Critical Issues
 
@@ -74,13 +74,15 @@ concurrency:
 
 ## Implementation
 
-These changes require a user with `workflows` permission to apply. To implement:
+These changes require a user with `workflows` permission to apply. 
 
-1. Create a branch from `develop`
-2. Apply the changes to `.github/workflows/test.yml`
-3. Apply the changes to `.github/workflows/docker.yml`
-4. Apply the changes to `.github/workflows/release.yml`
-5. Create a PR with label `devops-engineer`
+**Implementation Branch:** `devops-engineer`
+
+To implement:
+1. Review the changes on the `devops-engineer` branch
+2. Create a PR from `devops-engineer` to `develop`
+3. Add the `devops-engineer` label to the PR
+4. Merge after CI passes
 
 ## Benefits
 
