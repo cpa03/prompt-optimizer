@@ -10,6 +10,29 @@ import type {
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { TEST_IMAGES } from '../../../config/test-data'
+import { withRetry, RETRY_PRESETS } from '../../../utils/retry'
+import { createDebugLogger } from '../../../utils/debug'
+
+const logger = createDebugLogger('image-adapter')
+
+const IMAGE_RETRYABLE_ERRORS = [
+  'rate_limit',
+  'rate limit',
+  'overloaded',
+  'overload',
+  'timeout',
+  'timed out',
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'fetch failed',
+  'network error',
+  'internal error',
+  'server error',
+  'service unavailable',
+]
 
 /**
  * 抽象图像提供商适配器基类
@@ -63,8 +86,19 @@ export abstract class AbstractImageProviderAdapter implements IImageProviderAdap
     // 2. 验证配置合法性
     this.validateConfig(config)
 
-    // 3. 调用具体实现（让具体适配器处理模型相关逻辑）
-    return await this.doGenerate(request, config)
+    // 3. 调用具体实现（带重试逻辑）
+    return withRetry(
+      async () => this.doGenerate(request, config),
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: IMAGE_RETRYABLE_ERRORS,
+        onRetry: (attempt, error, delayMs) => {
+          logger.warn(
+            `[${this.getProvider().id}] Retry attempt ${attempt} after ${delayMs}ms: ${error.message}`
+          )
+        },
+      }
+    )
   }
 
   // ===== 统一的 URL 解析与代理封装 =====
