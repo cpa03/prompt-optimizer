@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { NScrollbar } from 'naive-ui'
 
 import MarkdownIt from 'markdown-it'
@@ -46,6 +46,17 @@ const message = useToast()
 
 // Track which code blocks have copy success state
 const copySuccessStates = ref(new Map<string, boolean>())
+
+// Track cleanup functions for event listeners to prevent memory leaks
+const cleanupFns: Array<() => void> = []
+
+/**
+ * Clean up all tracked event listeners
+ */
+const cleanupEventListeners = () => {
+  cleanupFns.forEach((fn) => fn())
+  cleanupFns.length = 0
+}
 
 /**
  * Copy code block content to clipboard
@@ -221,10 +232,13 @@ const addLanguageLabels = () => {
 
       // 创建复制按钮
       const copyButton = createCopyButton(codeId)
-      copyButton.addEventListener('click', (e) => {
+      const clickHandler = (e: MouseEvent) => {
         e.stopPropagation()
         copyCodeBlock(codeEl, wrapper)
-      })
+      }
+      copyButton.addEventListener('click', clickHandler)
+      // Track cleanup for this listener
+      cleanupFns.push(() => copyButton.removeEventListener('click', clickHandler))
       wrapper.appendChild(copyButton)
 
       // 获取pre的父元素和位置
@@ -355,6 +369,8 @@ const renderMarkdown = () => {
     const cleanHtml = DOMPurify.sanitize(processedHtml)
 
     if (markdownContainer.value) {
+      // Clean up previous event listeners before replacing content
+      cleanupEventListeners()
       markdownContainer.value.innerHTML = cleanHtml
 
       // 使用requestAnimationFrame提高渲染性能
@@ -402,6 +418,9 @@ watch(
 
 // 组件挂载时渲染
 onMounted(renderMarkdown)
+
+// Clean up event listeners on unmount
+onUnmounted(cleanupEventListeners)
 </script>
 
 <style>

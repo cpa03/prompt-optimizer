@@ -96,10 +96,10 @@ export function usePromptHistory(
         const chain = allChains.find((c) => c.chainId === chainId)
 
         if (chain) {
-          // 删除链中的所有记录
-          for (const record of chain.versions) {
-            await historyManager.value!.deleteRecord(record.id)
-          }
+          // Delete all records in chain in parallel
+          await Promise.all(
+            chain.versions.map((record) => historyManager.value!.deleteRecord(record.id))
+          )
 
           // 如果当前正在查看的是被删除的链，则清空当前显示
           if (currentChainId.value === chainId) {
