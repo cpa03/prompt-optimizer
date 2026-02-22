@@ -24,6 +24,10 @@ const UI_SETTINGS_KEYS = [
   PREFERENCE_CONFIG.keys.selectedIterateTemplate, // 迭代模板
 ] as const
 
+type UISettingsKey = (typeof UI_SETTINGS_KEYS)[number]
+
+const UI_SETTINGS_KEYS_SET = new Set<string>(UI_SETTINGS_KEYS)
+
 // 旧版本键名映射表 - 用于兼容性处理
 const LEGACY_KEY_MAPPING: Record<string, string> = {
   // 旧版本的简短键名 -> 新版本的完整键名
@@ -49,7 +53,7 @@ const isValidSettingKey = (key: string): boolean => {
   // 先标准化键名，再验证
   const normalizedKey = normalizeSettingKey(key)
   return (
-    UI_SETTINGS_KEYS.includes(normalizedKey as any) &&
+    UI_SETTINGS_KEYS_SET.has(normalizedKey) &&
     normalizedKey.length <= VALIDATION_CONSTRAINTS.KEY_MAX_LENGTH &&
     normalizedKey.length >= VALIDATION_CONSTRAINTS.KEY_MIN_LENGTH &&
     !/[<>"\\'&\x00-\x1f\x7f-\x9f]/.test(normalizedKey)
