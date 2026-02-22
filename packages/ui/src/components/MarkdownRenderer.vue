@@ -56,6 +56,8 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
   const code = codeElement.textContent || ''
   const codeId = preWrapper.dataset.codeId
 
+  if (!codeId) return
+
   try {
     await copyText(code)
 
