@@ -14,7 +14,8 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 import { RETRY_CONFIG } from '../../../constants/templates'
-import { MIME_TYPES, HTTP_HEADERS, HTTP_METHODS } from '../../../config'
+import { MIME_TYPES, HTTP_HEADERS, HTTP_METHODS, TIMEOUTS } from '../../../config'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
 
 /**
  * ModelScope (魔搭) 图像生成适配器
@@ -152,6 +153,7 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
   ): Promise<ImageResult> {
     const url = this.resolveEndpointUrl(config, '/images/generations')
     const sizes = IMAGE_SIZE_PRESETS.modelscope
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
     const merged: Record<string, any> = {
       ...config.paramOverrides,
@@ -165,31 +167,48 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
       n: merged.n || request.count || 1,
     }
 
-    // 提交异步任务
-    const response = await fetch(url, {
-      method: HTTP_METHODS.POST,
-      headers: {
-        ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
-        ...HTTP_HEADERS.json,
-        'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode, // 异步模式
-      },
-      body: JSON.stringify(payload),
-    })
+    const submitData = await withRetry(
+      async (_signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
-    if (!response.ok) {
-      let errorMessage = `ModelScope API error: ${response.status} ${response.statusText}`
-      try {
-        const errorData = await response.json()
-        if (errorData.message || errorData.error?.message) {
-          errorMessage = errorData.message || errorData.error.message
+        try {
+          const response = await fetch(url, {
+            method: HTTP_METHODS.POST,
+            headers: {
+              ...HTTP_HEADERS.authorization(config.connectionConfig?.apiKey || ''),
+              ...HTTP_HEADERS.json,
+              'X-ModelScope-Async-Mode': IMAGE_ADAPTER_CONFIG.modelscope.asyncMode,
+            },
+            body: JSON.stringify(payload),
+            signal: timeoutSignal,
+          })
+
+          if (!response.ok) {
+            let errorMessage = `ModelScope API error: ${response.status} ${response.statusText}`
+            try {
+              const errorData = await response.json()
+              if (errorData.message || errorData.error?.message) {
+                errorMessage = errorData.message || errorData.error.message
+              }
+            } catch {
+              // 忽略 JSON 解析错误
+            }
+            const error = new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
         }
-      } catch {
-        // 忽略 JSON 解析错误
+      },
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout', '429', '503', '500'],
       }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
-    }
+    )
 
-    const submitData = await response.json()
     const taskId = submitData.task_id
 
     if (!taskId) {
@@ -199,7 +218,6 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
       )
     }
 
-    // 轮询任务状态
     return await this.pollTaskResult(
       taskId,
       config,
@@ -218,40 +236,57 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
     intervalMs: number = IMAGE_CONSTRAINTS.DEFAULT_POLL_INTERVAL_MS
   ): Promise<ImageResult> {
     const taskUrl = this.resolveEndpointUrl(config, `/tasks/${taskId}`)
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
 
-      const response = await fetch(taskUrl, {
-        method: HTTP_METHODS.GET,
-        headers: {
-          Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
-          'X-ModelScope-Task-Type': 'image_generation',
-        },
-      })
+      const data = await withRetry(
+        async (_signal) => {
+          const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
-      if (!response.ok) {
-        // 尝试解析错误响应体以提供更详细的错误信息
-        let errorMessage = `${response.status} ${response.statusText}`
-        try {
-          const errorData = await response.json()
-          if (errorData.error || errorData.message) {
-            errorMessage = errorData.error || errorData.message
+          try {
+            const response = await fetch(taskUrl, {
+              method: HTTP_METHODS.GET,
+              headers: {
+                Authorization: `Bearer ${config.connectionConfig?.apiKey}`,
+                'X-ModelScope-Task-Type': 'image_generation',
+              },
+              signal: timeoutSignal,
+            })
+
+            if (!response.ok) {
+              let errorMessage = `${response.status} ${response.statusText}`
+              try {
+                const errorData = await response.json()
+                if (errorData.error || errorData.message) {
+                  errorMessage = errorData.error || errorData.message
+                }
+              } catch {
+                // 如果无法解析 JSON，使用默认错误信息
+              }
+              const error = new ImageError(
+                IMAGE_ERROR_CODES.GENERATION_FAILED,
+                `Failed to poll task status: ${errorMessage}`
+              )
+              ;(error as any).status = response.status
+              throw error
+            }
+
+            return await response.json()
+          } finally {
+            cleanup()
           }
-        } catch {
-          // 如果无法解析 JSON，使用默认错误信息
+        },
+        {
+          ...RETRY_PRESETS.standard,
+          retryableErrors: ['rate_limit', 'overloaded', 'timeout', '429', '503', '500'],
         }
-        throw new ImageError(
-          IMAGE_ERROR_CODES.GENERATION_FAILED,
-          `Failed to poll task status: ${errorMessage}`
-        )
-      }
+      )
 
-      const data = await response.json()
       const status = data.task_status
 
       if (status === 'SUCCEED') {
-        // 任务成功，解析结果
         const outputImages = data.output_images || []
         if (outputImages.length === 0) {
           throw new ImageError(IMAGE_ERROR_CODES.INVALID_RESPONSE_FORMAT)
@@ -272,17 +307,14 @@ export class ModelScopeImageAdapter extends AbstractImageProviderAdapter {
           },
         }
       } else if (IMAGE_ADAPTER_CONFIG.modelscope.status.terminal.includes(status)) {
-        // 任务失败或被取消，提取错误信息
         const errorMessage = data.error?.message || data.error || data.message || 'Unknown error'
         throw new ImageError(
           IMAGE_ERROR_CODES.GENERATION_FAILED,
           `Task ${status.toLowerCase()}: ${errorMessage}`
         )
       } else if (!IMAGE_ADAPTER_CONFIG.modelscope.status.pending.includes(status)) {
-        // 未知的终态，视为失败
         throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, `Unknown task status: ${status}`)
       }
-      // task_status 为 PENDING、RUNNING 或 PROCESSING，继续轮询
     }
 
     throw new ImageError(
