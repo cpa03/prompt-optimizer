@@ -58,8 +58,11 @@
   Cache-Control: public, max-age=86400
 
 # API routes - no cache for dynamic responses
+# Security: Prevent search engine indexing of API endpoints
 /api/*
   Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow, nosnippet, noarchive
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, POST, OPTIONS
   Access-Control-Allow-Headers: Content-Type, Authorization
+  Vary: Origin

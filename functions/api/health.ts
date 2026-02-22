@@ -28,6 +28,7 @@ export async function onRequest(context: {
   const { request } = context
   const requestId = generateRequestId()
   const timestamp = new Date().toISOString()
+  const startTime = Date.now()
 
   const headers: Record<string, string> = {
     'X-Request-ID': requestId,
@@ -66,6 +67,9 @@ export async function onRequest(context: {
       }
     }
 
+    const responseTime = Date.now() - startTime
+    headers['X-Response-Time'] = `${responseTime}ms`
+
     return new Response(
       JSON.stringify({
         status: 'ok',
@@ -80,11 +84,14 @@ export async function onRequest(context: {
         scheme,
         cfRay,
         cfConnectingIp,
+        responseTime: `${responseTime}ms`,
       }),
       { status: 200, headers }
     )
   }
 
+  const responseTime = Date.now() - startTime
+  headers['X-Response-Time'] = `${responseTime}ms`
   headers['Allow'] = 'GET'
   return new Response(
     JSON.stringify({

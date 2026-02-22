@@ -166,6 +166,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
   const origin = request.headers.get('Origin')
   const corsHeaders = getCorsHeaders(origin)
   const clientIP = getClientIP(request)
+  const startTime = Date.now()
 
   const baseHeaders = {
     ...corsHeaders,
@@ -176,7 +177,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
   if (request.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
-      headers: baseHeaders,
+      headers: { ...baseHeaders, 'X-Response-Time': `${Date.now() - startTime}ms` },
     })
   }
 
@@ -200,7 +201,15 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
 
   if (request.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
+    const rateLimitHeaders: Record<string, string> = {
+      'X-RateLimit-Limit': String(RATE_LIMIT.MAX_ATTEMPTS),
+      'X-RateLimit-Remaining': String(rateLimitResult.remaining || 0),
+    }
+
     if (!rateLimitResult.allowed) {
+      rateLimitHeaders['X-RateLimit-Reset'] = String(
+        Math.ceil((Date.now() + (rateLimitResult.retryAfter || 60) * 1000) / 1000)
+      )
       return new Response(
         JSON.stringify({
           success: false,
@@ -213,6 +222,8 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             'Content-Type': 'application/json',
             'Retry-After': String(rateLimitResult.retryAfter || 60),
             ...baseHeaders,
+            ...rateLimitHeaders,
+            'X-Response-Time': `${Date.now() - startTime}ms`,
           },
         }
       )
@@ -272,6 +283,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
                 'Content-Type': 'application/json',
                 'Set-Cookie': cookieValue,
                 ...baseHeaders,
+                'X-Response-Time': `${Date.now() - startTime}ms`,
               },
             }
           )
@@ -290,6 +302,9 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
               headers: {
                 'Content-Type': 'application/json',
                 ...baseHeaders,
+                'X-RateLimit-Limit': String(RATE_LIMIT.MAX_ATTEMPTS),
+                'X-RateLimit-Remaining': String(remaining),
+                'X-Response-Time': `${Date.now() - startTime}ms`,
               },
             }
           )
@@ -339,6 +354,7 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
             'Content-Type': 'application/json',
             'Set-Cookie': cookieValue,
             ...baseHeaders,
+            'X-Response-Time': `${Date.now() - startTime}ms`,
           },
         }
       )
