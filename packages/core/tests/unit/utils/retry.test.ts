@@ -126,4 +126,62 @@ describe('retry utility', () => {
       expect(RETRY_PRESETS.conservative.maxDelayMs).toBe(20000)
     })
   })
+
+  describe('retryable error codes', () => {
+    it('should retry on ENETDOWN error', async () => {
+      vi.useFakeTimers()
+      const error = new Error('Network down') as any
+      error.code = 'ENETDOWN'
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 10,
+      })
+
+      await vi.runAllTimersAsync()
+      const result = await resultPromise
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+
+    it('should retry on UND_ERR_RESPONSE_STATE_TIMEOUT error', async () => {
+      vi.useFakeTimers()
+      const error = new Error('Response state timeout') as any
+      error.code = 'UND_ERR_RESPONSE_STATE_TIMEOUT'
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 10,
+      })
+
+      await vi.runAllTimersAsync()
+      const result = await resultPromise
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+
+    it('should retry on fetch failed error message', async () => {
+      vi.useFakeTimers()
+      const error = new Error('fetch failed')
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 10,
+      })
+
+      await vi.runAllTimersAsync()
+      const result = await resultPromise
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+  })
 })
