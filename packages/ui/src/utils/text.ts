@@ -59,3 +59,38 @@ export function normalizeWhitespace(text: string): string {
   if (!text) return text
   return text.replace(/\s+/g, ' ').trim()
 }
+
+/**
+ * Escape HTML special characters to prevent XSS attacks
+ * Useful when displaying user input in HTML context without using a sanitizer
+ * @param text - The text to escape
+ * @returns Escaped text safe for HTML rendering
+ */
+export function escapeHtml(text: string): string {
+  if (!text) return text
+  const htmlEscapes: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  }
+  return text.replace(/[&<>"']/g, (char) => htmlEscapes[char])
+}
+
+/**
+ * Unescape HTML entities back to their original characters
+ * @param text - The text with HTML entities to unescape
+ * @returns Unescaped text
+ */
+export function unescapeHtml(text: string): string {
+  if (!text) return text
+  const htmlUnescapes: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+  }
+  return text.replace(/&(?:amp|lt|gt|quot|#39);/g, (entity) => htmlUnescapes[entity])
+}
