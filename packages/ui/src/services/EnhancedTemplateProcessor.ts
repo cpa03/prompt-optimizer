@@ -16,6 +16,10 @@ import { VARIABLE_VALIDATION, isValidVariableName, sanitizeVariableRecord } from
 export class EnhancedTemplateProcessor implements TemplateProcessor {
   // Cache for levenshtein distance calculations to avoid redundant computations
   private levenshteinCache = new Map<string, number>()
+  // Track access order for LRU eviction
+  private levenshteinCacheOrder: string[] = []
+  // Maximum cache entries to prevent unbounded memory growth
+  private readonly MAX_LEVENSHTEIN_CACHE_SIZE = 100
 
   /**
    * Generate cache key for two strings (always use alphabetically sorted order)
@@ -458,6 +462,12 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
     const cacheKey = this.getLevenshteinCacheKey(str1, str2)
     const cached = this.levenshteinCache.get(cacheKey)
     if (cached !== undefined) {
+      // Move to end for LRU (most recently used)
+      const idx = this.levenshteinCacheOrder.indexOf(cacheKey)
+      if (idx !== -1) {
+        this.levenshteinCacheOrder.splice(idx, 1)
+        this.levenshteinCacheOrder.push(cacheKey)
+      }
       return cached
     }
 
@@ -465,11 +475,11 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
     const n = str2.length
 
     if (m === 0) {
-      this.levenshteinCache.set(cacheKey, n)
+      this.cacheLevenshteinResult(cacheKey, n)
       return n
     }
     if (n === 0) {
-      this.levenshteinCache.set(cacheKey, m)
+      this.cacheLevenshteinResult(cacheKey, m)
       return m
     }
 
@@ -495,8 +505,20 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
     }
 
     const result = prev[len1]
-    this.levenshteinCache.set(cacheKey, result)
+    this.cacheLevenshteinResult(cacheKey, result)
     return result
+  }
+
+  private cacheLevenshteinResult(cacheKey: string, result: number): void {
+    // Enforce LRU eviction if cache is full
+    if (this.levenshteinCache.size >= this.MAX_LEVENSHTEIN_CACHE_SIZE) {
+      const oldestKey = this.levenshteinCacheOrder.shift()
+      if (oldestKey) {
+        this.levenshteinCache.delete(oldestKey)
+      }
+    }
+    this.levenshteinCache.set(cacheKey, result)
+    this.levenshteinCacheOrder.push(cacheKey)
   }
 
   // 私有方法：转义正则表达式特殊字符
