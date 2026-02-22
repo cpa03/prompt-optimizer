@@ -246,6 +246,21 @@ Standard templates for consistent documentation:
 
 ---
 
+## Quality Assurance
+
+### QA Documentation
+
+- **[QA Documentation](qa/README.md)** - Quality assurance artifacts overview
+  - Quality gate decision files
+  - Assessment reports (test design, traceability, risk profiles, NFR assessments)
+
+### QA Directory Structure
+
+- `qa/gates/` - Quality gate decision files for stories
+- `qa/assessments/` - QA assessment reports
+
+---
+
 ## Audit Reports
 
 All audit reports are consolidated in the `audit/` directory:
