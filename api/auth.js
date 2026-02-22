@@ -16,17 +16,42 @@ import { COOKIE_CONFIG, RATE_LIMIT_CONFIG } from '../scripts/config/constants.js
  * @see https://vercel.com/docs/storage/vercel-kv
  */
 
+/**
+ * Structured logging for Vercel serverless functions
+ * Outputs JSON format compatible with Vercel logs
+ * @param {string} level - Log level (debug, info, warn, error)
+ * @param {string} message - Log message
+ * @param {object} data - Additional data to log
+ */
+function log(level, message, data = {}) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    level,
+    message,
+    service: 'auth-api',
+    region: process.env.VERCEL_REGION || 'local',
+    ...data,
+  }
+  console.log(JSON.stringify(logEntry))
+}
+
 const rateLimitStore = {
   attempts: new Map(),
 }
 
 /**
  * Get client IP address from request
+ * Handles multiple headers in order of preference:
+ * 1. x-vercel-forwarded-for (Vercel-specific, most reliable)
+ * 2. x-forwarded-for (standard proxy header)
+ * 3. x-real-ip (Nginx-style)
+ * 4. connection.remoteAddress (fallback)
  * @param {object} req - Express-like request object
  * @returns {string} - Client IP address
  */
 function getClientIP(req) {
   return (
+    req.headers['x-vercel-forwarded-for']?.split(',')[0]?.trim() ||
     req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
     req.headers['x-real-ip'] ||
     req.connection?.remoteAddress ||
@@ -162,6 +187,9 @@ export default function handler(req, res) {
   const requestId = generateRequestId()
   const clientIP = getClientIP(req)
   const isProduction = process.env.NODE_ENV === 'production'
+  const startTime = Date.now()
+
+  log('info', 'Request received', { requestId, method: req.method, path: req.url, ip: clientIP })
 
   const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
 
@@ -178,7 +206,23 @@ export default function handler(req, res) {
     res.setHeader(key, value)
   })
 
+  // Add response time header before sending response
+  const originalEnd = res.end.bind(res)
+  res.end = function (...args) {
+    const responseTime = Date.now() - startTime
+    res.setHeader('X-Response-Time', `${responseTime}ms`)
+    return originalEnd(...args)
+  }
+
+  const originalJson = res.json.bind(res)
+  res.json = function (data) {
+    const responseTime = Date.now() - startTime
+    res.setHeader('X-Response-Time', `${responseTime}ms`)
+    return originalJson(data)
+  }
+
   if (req.method === 'OPTIONS') {
+    log('debug', 'CORS preflight handled', { requestId })
     res.status(200).end()
     return
   }
@@ -186,6 +230,7 @@ export default function handler(req, res) {
   const accessPassword = process.env.ACCESS_PASSWORD
 
   if (!accessPassword) {
+    log('warn', 'No password protection configured', { requestId })
     return res.status(200).json({
       success: true,
       message: 'No password protection configured',
@@ -195,6 +240,7 @@ export default function handler(req, res) {
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
     if (!rateLimitResult.allowed) {
+      log('warn', 'Rate limit exceeded', { requestId, ip: clientIP, retryAfter: rateLimitResult.retryAfter })
       res.setHeader(
         'Retry-After',
         String(rateLimitResult.retryAfter || RATE_LIMIT_CONFIG.DEFAULT_RETRY_AFTER_SECONDS)
@@ -209,6 +255,7 @@ export default function handler(req, res) {
     const { password, action } = req.body || {}
 
     if (!validateBody(req.body, ['action'])) {
+      log('warn', 'Invalid request body', { requestId })
       return res.status(400).json({
         success: false,
         message: 'Invalid request body',
@@ -217,6 +264,7 @@ export default function handler(req, res) {
 
     if (action === 'verify') {
       if (!validateBody(req.body, ['password'])) {
+        log('warn', 'Password missing in verify request', { requestId })
         return res.status(400).json({
           success: false,
           message: 'Password is required',
@@ -231,6 +279,8 @@ export default function handler(req, res) {
           `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=authenticated; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}${secureFlag}`,
         ])
 
+        const responseTime = Date.now() - startTime
+        log('info', 'Authentication successful', { requestId, ip: clientIP, responseTime: `${responseTime}ms` })
         return res.status(200).json({
           success: true,
           message: 'Authentication successful',
@@ -239,6 +289,7 @@ export default function handler(req, res) {
         recordFailedAttempt(clientIP)
         const remaining = checkRateLimit(clientIP).remaining || 0
 
+        log('warn', 'Authentication failed', { requestId, ip: clientIP, attemptsRemaining: remaining })
         return res.status(401).json({
           success: false,
           message: 'Invalid password',
@@ -247,6 +298,7 @@ export default function handler(req, res) {
       }
     }
 
+    log('warn', 'Invalid action', { requestId, action })
     return res.status(400).json({
       success: false,
       message: 'Invalid action',
@@ -262,17 +314,21 @@ export default function handler(req, res) {
         `${COOKIE_CONFIG.ACCESS_TOKEN_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=${COOKIE_CONFIG.SAME_SITE_POLICY}`,
       ])
 
+      const responseTime = Date.now() - startTime
+      log('info', 'Logout successful', { requestId, ip: clientIP, responseTime: `${responseTime}ms` })
       return res.status(200).json({
         success: true,
         message: 'Logged out successfully',
       })
     }
 
+    log('warn', 'Invalid GET action', { requestId, action })
     return res.status(400).json({
       success: false,
       message: 'Invalid action',
     })
   }
 
-  res.status(405).json({ success: false, error: 'Method not allowed' })
+  log('warn', 'Method not allowed', { requestId, method: req.method })
+  res.status(405).json({ success: false, error: 'Method not allowed', allowedMethods: ['GET', 'POST', 'OPTIONS'] })
 }
