@@ -14,6 +14,16 @@ import type {
 import { VARIABLE_VALIDATION, isValidVariableName, sanitizeVariableRecord } from '../types/variable'
 
 export class EnhancedTemplateProcessor implements TemplateProcessor {
+  // Cache for levenshtein distance calculations to avoid redundant computations
+  private levenshteinCache = new Map<string, number>()
+
+  /**
+   * Generate cache key for two strings (always use alphabetically sorted order)
+   */
+  private getLevenshteinCacheKey(str1: string, str2: string): string {
+    return str1 < str2 ? `${str1}|${str2}` : `${str2}|${str1}`
+  }
+
   /**
    * 将StandardPromptData转换为模板+变量形式
    */
@@ -444,29 +454,49 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
   }
 
   private levenshteinDistance(str1: string, str2: string): number {
+    // Check cache first
+    const cacheKey = this.getLevenshteinCacheKey(str1, str2)
+    const cached = this.levenshteinCache.get(cacheKey)
+    if (cached !== undefined) {
+      return cached
+    }
+
     const m = str1.length
     const n = str2.length
 
-    if (m === 0) return n
-    if (n === 0) return m
-
-    if (m > n) {
-      return this.levenshteinDistance(str2, str1)
+    if (m === 0) {
+      this.levenshteinCache.set(cacheKey, n)
+      return n
+    }
+    if (n === 0) {
+      this.levenshteinCache.set(cacheKey, m)
+      return m
     }
 
-    let prev = Array.from({ length: m + 1 }, (_, i) => i)
-    let curr = new Array(m + 1).fill(0)
+    // Ensure m <= n for space optimization
+    let s1 = str1,
+      s2 = str2
+    if (m > n) {
+      ;[s1, s2] = [s2, s1]
+    }
+    const len1 = s1.length,
+      len2 = s2.length
 
-    for (let j = 1; j <= n; j++) {
+    let prev = Array.from({ length: len1 + 1 }, (_, i) => i)
+    let curr = new Array(len1 + 1).fill(0)
+
+    for (let j = 1; j <= len2; j++) {
       curr[0] = j
-      for (let i = 1; i <= m; i++) {
-        const cost = str1[i - 1] === str2[j - 1] ? 0 : 1
+      for (let i = 1; i <= len1; i++) {
+        const cost = s1[i - 1] === s2[j - 1] ? 0 : 1
         curr[i] = Math.min(prev[i] + 1, curr[i - 1] + 1, prev[i - 1] + cost)
       }
       ;[prev, curr] = [curr, prev]
     }
 
-    return prev[m]
+    const result = prev[len1]
+    this.levenshteinCache.set(cacheKey, result)
+    return result
   }
 
   // 私有方法：转义正则表达式特殊字符
