@@ -56,6 +56,23 @@ import { scheduleImageStorageGc } from '../../stores/session/imageStorageMainten
 import { FILE_SIZE_LIMITS } from '../../config/constants'
 
 /**
+ * Debug logging configuration
+ * Set to true to enable detailed initialization logs (useful for debugging)
+ * Can be controlled via VITE_DEBUG_APP_INITIALIZER environment variable
+ */
+const DEBUG =
+  typeof import.meta !== 'undefined' && import.meta.env?.VITE_DEBUG_APP_INITIALIZER === 'true'
+
+/**
+ * Debug logger - only outputs when DEBUG is true
+ */
+const debugLog = DEBUG ? (...args: unknown[]) => console.log('[AppInitializer]', ...args) : () => {}
+
+const debugWarn = DEBUG
+  ? (...args: unknown[]) => console.warn('[AppInitializer]', ...args)
+  : () => {}
+
+/**
  * Image storage configuration - centralized to eliminate duplication
  * Flexy loves modularity! Used by both Electron and Web environments
  */
@@ -82,7 +99,7 @@ export function useAppInitializer(): {
 
   onMounted(async () => {
     try {
-      console.log('[AppInitializer] 开始应用初始化...')
+      debugLog('开始应用初始化...')
 
       let modelManager: IModelManager
       let templateManager: ITemplateManager
@@ -102,7 +119,7 @@ export function useAppInitializer(): {
       let textAdapterRegistryInstance: ITextAdapterRegistry | undefined
 
       if (isRunningInElectron()) {
-        console.log('[AppInitializer] 检测到Electron环境，等待API就绪...')
+        debugLog('检测到Electron环境，等待API就绪...')
 
         // 等待 Electron API 完全就绪
         const apiReady = await waitForElectronApi()
@@ -110,7 +127,7 @@ export function useAppInitializer(): {
           throw new Error('Electron API 初始化超时，请检查preload脚本是否正确加载')
         }
 
-        console.log('[AppInitializer] Electron API 就绪，初始化代理服务...')
+        debugLog('Electron API 就绪，初始化代理服务...')
 
         // 在Electron环境中，不需要storageProvider
         // 所有存储操作都通过各个manager的代理完成
@@ -134,7 +151,7 @@ export function useAppInitializer(): {
         imageService = new ElectronImageServiceProxy()
 
         // 🆕 图像存储服务：Electron 渲染进程同样使用 IndexedDB（与 Web 行为一致）
-        console.log('[AppInitializer] 初始化图像存储服务（Electron）...')
+        debugLog('初始化图像存储服务（Electron）...')
         imageStorageService = createImageStorageService(IMAGE_STORAGE_CONFIG)
 
         // DataManager在Electron环境下使用代理模式
@@ -171,15 +188,15 @@ export function useAppInitializer(): {
         )
 
         // 🆕 读取当前上下文的模式
-        console.log('[AppInitializer] 读取当前上下文模式...')
+        debugLog('读取当前上下文模式...')
         const contextMode = ref<ContextMode>(DEFAULT_CONTEXT_MODE)
         try {
           const currentId = await contextRepo.getCurrentId()
           const currentContext = await contextRepo.get(currentId)
           contextMode.value = currentContext.mode || DEFAULT_CONTEXT_MODE
-          console.log('[AppInitializer] 当前上下文模式:', contextMode.value)
+          debugLog('当前上下文模式:', contextMode.value)
         } catch (err) {
-          console.warn('[AppInitializer] 读取上下文模式失败，使用默认值:', err)
+          debugWarn('读取上下文模式失败，使用默认值:', err)
         }
 
         services.value = {
@@ -204,14 +221,14 @@ export function useAppInitializer(): {
           variableExtractionService, // 🆕 变量提取服务
           variableValueGenerationService, // 🆕 变量值生成服务
         }
-        console.log('[AppInitializer] Electron代理服务初始化完成')
+        debugLog('Electron代理服务初始化完成')
 
         // 只保留 session 引用的图片：启动后做一次 best-effort GC
         if (imageStorageService) {
           scheduleImageStorageGc(preferenceService, imageStorageService)
         }
       } else {
-        console.log('[AppInitializer] 检测到Web环境，初始化完整服务...')
+        debugLog('检测到Web环境，初始化完整服务...')
         // 在Web环境中，我们创建一套完整的、真实的服务
         const storageProvider = StorageFactory.create('dexie')
 
@@ -237,25 +254,25 @@ export function useAppInitializer(): {
         )
 
         // 🆕 创建图像存储服务（独立 IndexedDB 数据库）
-        console.log('[AppInitializer] 初始化图像存储服务...')
+        debugLog('初始化图像存储服务...')
         imageStorageService = createImageStorageService(IMAGE_STORAGE_CONFIG)
 
         // 📝 图像数据迁移已移除（session 是本次重构新引入，无历史数据需要迁移）
         // 如果将来需要迁移，可以使用 migrateLegacySessions() 函数
 
         // Initialize language service first, as template manager depends on it
-        console.log('[AppInitializer] 初始化语言服务...')
+        debugLog('初始化语言服务...')
         await languageService.initialize()
 
         const templateManagerInstance = createTemplateManager(storageProvider, languageService)
         templateManager = templateManagerInstance
-        console.log('[AppInitializer] TemplateManager instance in Web:', templateManager)
+        debugLog('TemplateManager instance in Web:', templateManager)
 
         // Initialize managers that depend on other managers
         const historyManagerInstance = createHistoryManager(storageProvider, modelManagerInstance)
 
         // Now ensure model manager with async init is ready (template manager no longer needs async init)
-        console.log('[AppInitializer] 确保模型管理器初始化完成...')
+        debugLog('确保模型管理器初始化完成...')
         await modelManagerInstance.ensureInitialized()
 
         // Assign instances after they are fully initialized
@@ -323,7 +340,7 @@ export function useAppInitializer(): {
         }
 
         // Services that depend on initialized managers
-        console.log('[AppInitializer] 创建依赖其他管理器的服务...')
+        debugLog('创建依赖其他管理器的服务...')
         llmService = createLLMService(modelManagerInstance)
         promptService = createPromptService(
           modelManager,
@@ -339,10 +356,7 @@ export function useAppInitializer(): {
             await imageModelManagerInstance.ensureInitialized()
           }
         } catch (e) {
-          console.warn(
-            '[AppInitializer] ImageModelManager ensureInitialized failed (non-critical):',
-            e
-          )
+          debugWarn('ImageModelManager ensureInitialized failed (non-critical):', e)
         }
 
         // 创建 CompareService（直接使用）
@@ -385,15 +399,15 @@ export function useAppInitializer(): {
         )
 
         // 🆕 读取当前上下文的模式
-        console.log('[AppInitializer] 读取当前上下文模式...')
+        debugLog('读取当前上下文模式...')
         const contextMode = ref<ContextMode>(DEFAULT_CONTEXT_MODE)
         try {
           const currentId = await contextRepo.getCurrentId()
           const currentContext = await contextRepo.get(currentId)
           contextMode.value = currentContext.mode || DEFAULT_CONTEXT_MODE
-          console.log('[AppInitializer] 当前上下文模式:', contextMode.value)
+          debugLog('当前上下文模式:', contextMode.value)
         } catch (err) {
-          console.warn('[AppInitializer] 读取上下文模式失败，使用默认值:', err)
+          debugWarn('读取上下文模式失败，使用默认值:', err)
         }
 
         // 将所有服务实例赋值给 services.value
@@ -420,7 +434,7 @@ export function useAppInitializer(): {
           variableValueGenerationService, // 🆕 变量值生成服务
         }
 
-        console.log('[AppInitializer] 所有服务初始化完成')
+        debugLog('所有服务初始化完成')
 
         // 只保留 session 引用的图片：启动后做一次 best-effort GC
         if (imageStorageService) {
@@ -434,7 +448,7 @@ export function useAppInitializer(): {
       error.value = err instanceof Error ? err : new Error(String(err))
     } finally {
       isInitializing.value = false
-      console.log('[AppInitializer] 应用初始化完成')
+      debugLog('应用初始化完成')
     }
   })
 
