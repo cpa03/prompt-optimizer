@@ -72,6 +72,30 @@ The Docker deployment includes the following security headers:
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Strict-Transport-Security` (HSTS)
 - `Content-Security-Policy`
+- `Cross-Origin-Embedder-Policy: require-corp`
+- `Cross-Origin-Opener-Policy: same-origin`
+- `Cross-Origin-Resource-Policy: same-origin`
+
+### MCP Server CORS Configuration
+
+The MCP server endpoint uses CORS headers to allow cross-origin requests. By default, it allows all origins (`*`), which is suitable for development but not recommended for production.
+
+**For production deployments:**
+
+Set the `MCP_ALLOWED_ORIGINS` environment variable to restrict access to trusted origins:
+
+```bash
+# Single origin
+MCP_ALLOWED_ORIGINS=https://yourdomain.com
+
+# Multiple origins (comma-separated)
+MCP_ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
+```
+
+**Security implications:**
+- Using `*` allows any website to make requests to your MCP server
+- This could expose your API keys and prompt data to malicious websites
+- Always restrict origins in production environments
 
 ## Security Audit
 
