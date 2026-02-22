@@ -106,6 +106,20 @@
       "script": "mcp:test",
       "problemMatcher": [],
       "detail": "Run MCP server tests"
+    },
+    {
+      "label": "Quality: All Checks",
+      "dependsOn": ["Lint: Check", "Type Check: All", "Test: Fast"],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "detail": "Run all quality checks (lint, type-check, tests) in sequence"
+    },
+    {
+      "label": "Dev: Fresh Start",
+      "type": "npm",
+      "script": "dev:fresh",
+      "problemMatcher": [],
+      "detail": "Clean and restart development environment"
     }
   ]
 }
