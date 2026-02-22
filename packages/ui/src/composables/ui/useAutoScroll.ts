@@ -125,9 +125,10 @@ export function useAutoScroll<T extends HTMLElement>(
   }
 
   // 添加和移除滚动事件监听器
+  // 使用 passive: true 提升滚动性能（因为这里不调用 preventDefault）
   onMounted(() => {
     if (elementRef.value) {
-      elementRef.value.addEventListener('scroll', handleScroll)
+      elementRef.value.addEventListener('scroll', handleScroll, { passive: true })
     }
   })
 
@@ -137,7 +138,7 @@ export function useAutoScroll<T extends HTMLElement>(
       oldEl.removeEventListener('scroll', handleScroll)
     }
     if (newEl) {
-      newEl.addEventListener('scroll', handleScroll)
+      newEl.addEventListener('scroll', handleScroll, { passive: true })
     }
   })
 
