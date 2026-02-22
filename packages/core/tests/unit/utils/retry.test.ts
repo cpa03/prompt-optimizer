@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from 'vitest'
-import { withRetry, sleep, createTimeoutSignal, RETRY_PRESETS } from '../../../src/utils/retry'
+import {
+  withRetry,
+  sleep,
+  createTimeoutSignal,
+  RETRY_PRESETS,
+  TimeoutError,
+} from '../../../src/utils/retry'
 
 describe('retry utility', () => {
   describe('sleep', () => {
@@ -108,6 +114,99 @@ describe('retry utility', () => {
       expect(result).toBe('success')
       expect(operation).toHaveBeenCalledTimes(2)
       vi.useRealTimers()
+    })
+
+    it('should call onRetry callback with correct parameters', async () => {
+      vi.useFakeTimers()
+      const error = new Error('ECONNRESET')
+      const onRetry = vi.fn()
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 100,
+        maxDelayMs: 1000,
+        onRetry,
+      })
+
+      await vi.runAllTimersAsync()
+      await resultPromise
+
+      expect(onRetry).toHaveBeenCalledTimes(1)
+      expect(onRetry).toHaveBeenCalledWith(1, error, expect.any(Number))
+      const delayArg = onRetry.mock.calls[0][2]
+      expect(delayArg).toBeGreaterThanOrEqual(100)
+      expect(delayArg).toBeLessThanOrEqual(130)
+      vi.useRealTimers()
+    })
+
+    it('should support custom retryable errors', async () => {
+      vi.useFakeTimers()
+      const error = new Error('Custom error')
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 10,
+        retryableErrors: ['Custom error'],
+      })
+
+      await vi.runAllTimersAsync()
+      const result = await resultPromise
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+
+    it('should retry on HTTP 408 status', async () => {
+      vi.useFakeTimers()
+      const error = new Error('Request timeout') as any
+      error.status = 408
+      const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+      const resultPromise = withRetry(operation, {
+        maxAttempts: 3,
+        baseDelayMs: 10,
+      })
+
+      await vi.runAllTimersAsync()
+      const result = await resultPromise
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalledTimes(2)
+      vi.useRealTimers()
+    })
+
+    it('should retry on HTTP 502, 503, 504 status codes', async () => {
+      const statusCodes = [502, 503, 504]
+
+      for (const statusCode of statusCodes) {
+        vi.useFakeTimers()
+        const error = new Error(`Server error ${statusCode}`) as any
+        error.status = statusCode
+        const operation = vi.fn().mockRejectedValueOnce(error).mockResolvedValueOnce('success')
+
+        const resultPromise = withRetry(operation, {
+          maxAttempts: 3,
+          baseDelayMs: 10,
+        })
+
+        await vi.runAllTimersAsync()
+        const result = await resultPromise
+
+        expect(result).toBe('success')
+        expect(operation).toHaveBeenCalledTimes(2)
+        vi.useRealTimers()
+      }
+    })
+  })
+
+  describe('TimeoutError', () => {
+    it('should have correct name and message', () => {
+      const error = new TimeoutError(5000)
+      expect(error.name).toBe('TimeoutError')
+      expect(error.message).toBe('Operation timed out after 5000ms')
     })
   })
 
