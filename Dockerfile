@@ -1,7 +1,7 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g corepack@latest && corepack enable
+RUN npm install -g corepack@0.31.0 && corepack enable
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -32,6 +32,7 @@ LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
 LABEL org.opencontainers.image.title="Prompt Optimizer"
 LABEL org.opencontainers.image.vendor="Prompt Optimizer Team"
 LABEL org.opencontainers.image.documentation="https://github.com/linshenkx/prompt-optimizer#readme"
+LABEL org.opencontainers.image.maintainer="Prompt Optimizer Team"
 ARG VERSION="unknown"
 LABEL org.opencontainers.image.version="${VERSION}"
 
