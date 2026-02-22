@@ -55,3 +55,19 @@ export function getEnvBoolean(key: string, defaultValue: boolean): boolean {
   if (value === undefined || value === '') return defaultValue
   return value.toLowerCase() === 'true' || value === '1'
 }
+
+export function getEnvArray(key: string, defaultValue: string[], separator = ','): string[] {
+  const value = getEnvValue(key)
+  if (value === undefined || value === '') return defaultValue
+  return value.split(separator).map((s) => s.trim()).filter((s) => s.length > 0)
+}
+
+export function getEnvJSON<T>(key: string, defaultValue: T): T {
+  const value = getEnvValue(key)
+  if (value === undefined || value === '') return defaultValue
+  try {
+    return JSON.parse(value) as T
+  } catch {
+    return defaultValue
+  }
+}
