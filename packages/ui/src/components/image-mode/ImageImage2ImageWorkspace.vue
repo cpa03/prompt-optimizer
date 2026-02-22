@@ -794,6 +794,12 @@ import { useWorkspaceTemplateSelection } from '../../composables/workspaces/useW
 import { useWorkspaceTextModelSelection } from '../../composables/workspaces/useWorkspaceTextModelSelection'
 import { useElementSize } from '@vueuse/core'
 import {
+  WORKSPACE_LAYOUT,
+  FILE_SIZE_LIMITS,
+  COMPONENT_CONSTANTS,
+  ANIMATION_CONSTANTS,
+} from '../../config/constants'
+import {
   applyPatchOperationsToText,
   type ContextMode,
   type ImageModelConfig,
@@ -808,7 +814,6 @@ import {
   type Template,
 } from '@prompt-optimizer/core'
 import { v4 as uuidv4 } from 'uuid'
-import { FILE_SIZE_LIMITS, COMPONENT_CONSTANTS, ANIMATION_CONSTANTS } from '../../config/constants'
 
 // 国际化
 const { t } = useI18n()
@@ -1158,7 +1163,9 @@ const variantModelKeyModels = {
 
 // 测试区宽度：用于禁用 4 列（避免横向滚动）
 const { width: testPaneWidth } = useElementSize(testPaneRef)
-const canUseFourColumns = computed(() => testPaneWidth.value >= 1000)
+const canUseFourColumns = computed(
+  () => testPaneWidth.value >= WORKSPACE_LAYOUT.FOUR_COLUMN_MIN_WIDTH_PX
+)
 watch(
   canUseFourColumns,
   (ok) => {

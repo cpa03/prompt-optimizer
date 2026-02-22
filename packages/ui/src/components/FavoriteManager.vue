@@ -327,7 +327,7 @@ import { useI18n } from 'vue-i18n'
 import { useToast } from '../composables/ui/useToast'
 import { useFavoriteInitializer } from '../composables/storage/useFavoriteInitializer'
 import ToastUI from './Toast.vue'
-import { UI_DIMENSIONS, CALCULATION_CONSTANTS } from '../config/constants'
+import { UI_DIMENSIONS, CALCULATION_CONSTANTS, FAVORITE_MANAGER } from '../config/constants'
 
 const { MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
 
@@ -514,10 +514,10 @@ const gridCols = computed(() => {
 // 计算每个卡片的高度：根据列数动态计算
 const cardHeight = computed(() => {
   const cols = gridCols.value
-  const rows = cols === 1 ? 4 : 2 // 1列显示4行，其他显示2行
-  const gap = 20 // y-gap
-  const contentPadding = 32 // content 的 padding
-  const availableHeight = 540 - contentPadding // 508px
+  const rows = cols === 1 ? FAVORITE_MANAGER.ROWS_SINGLE_COLUMN : FAVORITE_MANAGER.ROWS_MULTI_COLUMN
+  const gap = FAVORITE_MANAGER.GRID_GAP_PX
+  const contentPadding = FAVORITE_MANAGER.CONTENT_PADDING_PX
+  const availableHeight = FAVORITE_MANAGER.CONTAINER_HEIGHT_PX - contentPadding
   const totalGapHeight = gap * (rows - 1)
   const availableForCards = availableHeight - totalGapHeight
   const height = Math.floor(availableForCards / rows)
@@ -527,7 +527,7 @@ const cardHeight = computed(() => {
 // 每页显示数量：根据列数和行数计算
 const pageSize = computed(() => {
   const cols = gridCols.value
-  const rows = cols === 1 ? 4 : 2
+  const rows = cols === 1 ? FAVORITE_MANAGER.ROWS_SINGLE_COLUMN : FAVORITE_MANAGER.ROWS_MULTI_COLUMN
   return cols * rows
 })
 
