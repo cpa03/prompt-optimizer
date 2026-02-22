@@ -375,3 +375,72 @@ if (duration > 1000) {
 - ✅ No TypeScript compilation errors
 - ✅ No ESLint warnings
 - ✅ Build successful (CJS + ESM + DTS)
+
+### 8. Unified Timestamp Tracking Across All Storage Providers (NEW - 2026-02-22)
+
+**Problem**: Only `DexieStorageProvider` tracked record timestamps, while `MemoryStorageProvider` and `FileStorageProvider` always returned `null` for `oldestRecord` and `newestRecord` in `getDatabaseStats()`.
+
+**Solution**: Added timestamp tracking to `MemoryStorageProvider` and `FileStorageProvider` for consistent behavior across all storage providers.
+
+**Benefits**:
+
+- Consistent API behavior across all storage providers
+- Better observability for storage lifecycle management
+- Ability to identify old data for cleanup in any storage backend
+- Uniform statistics reporting across storage implementations
+
+**Implementation**:
+
+For `MemoryStorageProvider`:
+```typescript
+// Internal record structure with timestamp
+interface MemoryStorageRecord {
+  value: string
+  timestamp: number
+}
+
+// Store with timestamp
+this.storage.set(key, {
+  value,
+  timestamp: Date.now(),
+})
+
+// Calculate timestamps in getDatabaseStats
+for (const [, record] of items) {
+  if (oldestTimestamp === null || record.timestamp < oldestTimestamp) {
+    oldestTimestamp = record.timestamp
+  }
+  if (newestTimestamp === null || record.timestamp > newestTimestamp) {
+    newestTimestamp = record.timestamp
+  }
+}
+```
+
+For `FileStorageProvider`:
+```typescript
+// Separate timestamp map for backward compatibility
+private timestamps: Map<string, number> = new Map()
+
+// Track on set
+this.data.set(key, value)
+this.timestamps.set(key, Date.now())
+
+// Clean up on remove
+this.data.delete(key)
+this.timestamps.delete(key)
+```
+
+**Updated Providers**:
+
+- `DexieStorageProvider` - Already tracked timestamps (reference implementation)
+- `MemoryStorageProvider` - Now tracks timestamps with record wrapper
+- `FileStorageProvider` - Now tracks timestamps with separate map
+
+**Compatibility**: ✅ No breaking changes. Same API, enhanced statistics.
+
+## Final Testing
+
+- ✅ All 1035 unit tests passing
+- ✅ No TypeScript compilation errors
+- ✅ No ESLint warnings
+- ✅ Build successful (CJS + ESM + DTS)

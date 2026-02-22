@@ -34,11 +34,13 @@ async function loadNodeModules() {
  * - 数据备份和智能恢复机制
  * - 原子性updateData操作
  * - 严格的初始化控制
+ * - 时间戳跟踪用于统计
  */
 export class FileStorageProvider implements IStorageProvider {
   private filePath: string
   private backupPath: string
   private data: Map<string, string> = new Map()
+  private timestamps: Map<string, number> = new Map()
   private writeTimeout: ReturnType<typeof setTimeout> | null = null
   private isDirty: boolean = false
   private writeLock: Promise<void> = Promise.resolve()
@@ -478,6 +480,7 @@ export class FileStorageProvider implements IStorageProvider {
       validateStorageKey(key)
       validateStorageValue(value)
       this.data.set(key, value)
+      this.timestamps.set(key, Date.now())
       this.scheduleWrite()
     } catch (error) {
       if (error instanceof StorageError) {
@@ -492,6 +495,7 @@ export class FileStorageProvider implements IStorageProvider {
     try {
       validateStorageKey(key)
       this.data.delete(key)
+      this.timestamps.delete(key)
       this.scheduleWrite()
     } catch (error) {
       if (error instanceof StorageError) {
@@ -504,6 +508,7 @@ export class FileStorageProvider implements IStorageProvider {
   async clearAll(): Promise<void> {
     await this.ensureInitialized()
     this.data.clear()
+    this.timestamps.clear()
     // 强制写入，即使没有脏数据
     await this.acquireWriteLock(async () => {
       await this.saveToFile()
@@ -607,7 +612,9 @@ export class FileStorageProvider implements IStorageProvider {
     this.validateValue(newValue)
 
     // 写入新值
-    this.data.set(key, JSON.stringify(newValue))
+    const serializedValue = JSON.stringify(newValue)
+    this.data.set(key, serializedValue)
+    this.timestamps.set(key, Date.now())
     this.scheduleWrite() // 延迟写入
 
     console.log(`[FileStorage] Atomic update completed for key: ${key}`)
@@ -658,11 +665,14 @@ export class FileStorageProvider implements IStorageProvider {
     await this.ensureInitialized()
 
     try {
+      const now = Date.now()
       for (const op of operations) {
         if (op.operation === 'set' && op.value !== undefined) {
           this.data.set(op.key, op.value)
+          this.timestamps.set(op.key, now)
         } else if (op.operation === 'remove') {
           this.data.delete(op.key)
+          this.timestamps.delete(op.key)
         }
       }
 
@@ -697,11 +707,26 @@ export class FileStorageProvider implements IStorageProvider {
     const itemCount = items.length
     const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
 
+    let oldestTimestamp: number | null = null
+    let newestTimestamp: number | null = null
+
+    for (const [key] of items) {
+      const ts = this.timestamps.get(key)
+      if (ts !== undefined) {
+        if (oldestTimestamp === null || ts < oldestTimestamp) {
+          oldestTimestamp = ts
+        }
+        if (newestTimestamp === null || ts > newestTimestamp) {
+          newestTimestamp = ts
+        }
+      }
+    }
+
     return {
       itemCount,
       totalSize,
-      oldestRecord: null,
-      newestRecord: null,
+      oldestRecord: oldestTimestamp,
+      newestRecord: newestTimestamp,
       averageRecordSize: itemCount > 0 ? totalSize / itemCount : 0,
     }
   }
@@ -731,6 +756,7 @@ export class FileStorageProvider implements IStorageProvider {
       // 检查写入能力
       try {
         this.data.set(testKey, testValue)
+        this.timestamps.set(testKey, Date.now())
         await this.flush()
         result.canWrite = true
       } catch (writeError) {
@@ -762,6 +788,7 @@ export class FileStorageProvider implements IStorageProvider {
       if (result.canWrite) {
         try {
           this.data.delete(testKey)
+          this.timestamps.delete(testKey)
           await this.flush()
           const verifyDeleted = this.data.get(testKey)
           if (verifyDeleted === undefined) {
