@@ -1,4 +1,23 @@
 /**
+ * Structured logging for Vercel serverless functions
+ * Outputs JSON format compatible with Vercel logs
+ * @param {string} level - Log level (debug, info, warn, error)
+ * @param {string} message - Log message
+ * @param {object} data - Additional data to log
+ */
+function log(level, message, data = {}) {
+  const logEntry = {
+    timestamp: new Date().toISOString(),
+    level,
+    message,
+    service: 'health-api',
+    region: process.env.VERCEL_REGION || 'local',
+    ...data,
+  }
+  console.log(JSON.stringify(logEntry))
+}
+
+/**
  * Generate a unique request ID for logging/tracing
  * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers
  * @returns {string} - Unique request ID
@@ -38,6 +57,8 @@ export default function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
   res.setHeader('X-Content-Type-Options', 'nosniff')
 
+  log('debug', 'Health check request received', { requestId, method: req.method })
+
   if (req.method === 'GET') {
     const responseTime = Date.now() - startTime
     res.setHeader('X-Response-Time', `${responseTime}ms`)
@@ -53,12 +74,14 @@ export default function handler(req, res) {
       responseTime: `${responseTime}ms`,
     }
 
+    log('info', 'Health check completed', { requestId, responseTime: `${responseTime}ms` })
     return res.status(200).json(healthData)
   }
 
   res.setHeader('Allow', 'GET')
   const responseTime = Date.now() - startTime
   res.setHeader('X-Response-Time', `${responseTime}ms`)
+  log('warn', 'Method not allowed', { requestId, method: req.method })
   return res.status(405).json({
     status: 'error',
     message: 'Method not allowed',

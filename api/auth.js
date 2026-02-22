@@ -239,12 +239,16 @@ export default function handler(req, res) {
 
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
+    res.setHeader('X-RateLimit-Remaining', String(rateLimitResult.remaining || 0))
+    res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_CONFIG.MAX_ATTEMPTS))
+
     if (!rateLimitResult.allowed) {
       log('warn', 'Rate limit exceeded', { requestId, ip: clientIP, retryAfter: rateLimitResult.retryAfter })
       res.setHeader(
         'Retry-After',
         String(rateLimitResult.retryAfter || RATE_LIMIT_CONFIG.DEFAULT_RETRY_AFTER_SECONDS)
       )
+      res.setHeader('X-RateLimit-Reset', String(Math.ceil((Date.now() + (rateLimitResult.retryAfter || 60) * 1000) / 1000)))
       return res.status(429).json({
         success: false,
         message: 'Too many attempts. Please try again later.',
