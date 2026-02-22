@@ -73,6 +73,8 @@ export {
   BaseError,
   classifyError,
   isRetryableError,
+  getUserFriendlyMessage,
+  getSuggestedRetryDelay,
   RETRYABLE_ERROR_CODES,
   RETRYABLE_STATUS_RANGES,
 } from './error'

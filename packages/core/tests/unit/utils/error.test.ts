@@ -13,6 +13,8 @@ import {
   toErrorWithCode,
   classifyError,
   isRetryableError,
+  getUserFriendlyMessage,
+  getSuggestedRetryDelay,
   type StructuredErrorLike,
 } from '../../../src/utils/error'
 
@@ -458,6 +460,113 @@ describe('error utilities', () => {
 
     it('should return false for undefined', () => {
       expect(isRetryableError(undefined)).toBe(false)
+    })
+  })
+
+  describe('getUserFriendlyMessage', () => {
+    describe('with classified errors', () => {
+      it('should return network message for network errors', () => {
+        const err = new Error('Connection reset')
+        ;(err as any).code = 'ECONNRESET'
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('Network connection error. Please check your internet connection and try again.')
+      })
+
+      it('should return timeout message for timeout errors', () => {
+        const err = new Error('Timed out')
+        ;(err as any).code = 'ETIMEDOUT'
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('The request timed out. Please try again.')
+      })
+
+      it('should return rate limit message for rate limit errors', () => {
+        const err = new Error('Too many requests')
+        ;(err as any).status = 429
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('Too many requests. Please wait a moment and try again.')
+      })
+
+      it('should return server message for server errors', () => {
+        const err = new Error('Internal server error')
+        ;(err as any).status = 500
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('Server error. The service is temporarily unavailable. Please try again later.')
+      })
+
+      it('should return client message for client errors', () => {
+        const err = new Error('Bad request')
+        ;(err as any).status = 400
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('Invalid request. Please check your input and try again.')
+      })
+    })
+
+    describe('with unknown errors', () => {
+      it('should return fallback message when provided', () => {
+        const result = getUserFriendlyMessage(new Error('Unknown'), 'Custom fallback')
+        expect(result).toBe('Custom fallback')
+      })
+
+      it('should return error message when no fallback', () => {
+        const err = new Error('Specific error message')
+        const result = getUserFriendlyMessage(err)
+        expect(result).toBe('Specific error message')
+      })
+
+      it('should return default message for null', () => {
+        const result = getUserFriendlyMessage(null)
+        expect(result).toBe('An unexpected error occurred. Please try again.')
+      })
+
+      it('should return default message for undefined', () => {
+        const result = getUserFriendlyMessage(undefined)
+        expect(result).toBe('An unexpected error occurred. Please try again.')
+      })
+    })
+  })
+
+  describe('getSuggestedRetryDelay', () => {
+    describe('with retryable errors', () => {
+      it('should return 60000ms for rate limit errors', () => {
+        const err = new Error('Too many requests')
+        ;(err as any).status = 429
+        expect(getSuggestedRetryDelay(err)).toBe(60000)
+      })
+
+      it('should return 5000ms for server errors', () => {
+        const err = new Error('Server error')
+        ;(err as any).status = 500
+        expect(getSuggestedRetryDelay(err)).toBe(5000)
+      })
+
+      it('should return 2000ms for timeout errors', () => {
+        const err = new Error('Timed out')
+        ;(err as any).code = 'ETIMEDOUT'
+        expect(getSuggestedRetryDelay(err)).toBe(2000)
+      })
+
+      it('should return 3000ms for network errors', () => {
+        const err = new Error('Connection reset')
+        ;(err as any).code = 'ECONNRESET'
+        expect(getSuggestedRetryDelay(err)).toBe(3000)
+      })
+    })
+
+    describe('with non-retryable errors', () => {
+      it('should return 0ms for client errors', () => {
+        const err = new Error('Bad request')
+        ;(err as any).status = 400
+        expect(getSuggestedRetryDelay(err)).toBe(0)
+      })
+
+      it('should return 0ms for unknown errors', () => {
+        const err = new Error('Unknown error')
+        expect(getSuggestedRetryDelay(err)).toBe(0)
+      })
+
+      it('should return 0ms for null', () => {
+        expect(getSuggestedRetryDelay(null)).toBe(0)
+      })
     })
   })
 })

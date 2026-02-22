@@ -313,3 +313,80 @@ export function isRetryableError(error: unknown): boolean {
   const classification = classifyError(error)
   return classification.isRetryable
 }
+
+/**
+ * User-friendly error messages for different error categories.
+ * These messages are designed to be shown to end users.
+ */
+const USER_FRIENDLY_MESSAGES: Record<ErrorClassification['category'], string> = {
+  network: 'Network connection error. Please check your internet connection and try again.',
+  timeout: 'The request timed out. Please try again.',
+  rate_limit: 'Too many requests. Please wait a moment and try again.',
+  server: 'Server error. The service is temporarily unavailable. Please try again later.',
+  client: 'Invalid request. Please check your input and try again.',
+  unknown: 'An unexpected error occurred. Please try again.',
+}
+
+/**
+ * Generates a user-friendly error message based on error classification.
+ * This function categorizes errors and returns appropriate messages for end users.
+ *
+ * @param error - The error to get a friendly message for
+ * @param fallbackMessage - Optional custom fallback message
+ * @returns A user-friendly error message
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await fetchData()
+ * } catch (err) {
+ *   const message = getUserFriendlyMessage(err, 'Failed to fetch data')
+ *   showToast(message) // Shows: "Network connection error. Please check..."
+ * }
+ * ```
+ */
+export function getUserFriendlyMessage(error: unknown, fallbackMessage?: string): string {
+  const classification = classifyError(error)
+
+  if (classification.category !== 'unknown') {
+    return USER_FRIENDLY_MESSAGES[classification.category]
+  }
+
+  if (fallbackMessage) {
+    return fallbackMessage
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message
+  }
+
+  return USER_FRIENDLY_MESSAGES.unknown
+}
+
+/**
+ * Gets suggested retry delay in milliseconds based on error type.
+ * Returns 0 for non-retryable errors.
+ *
+ * @param error - The error to get retry delay for
+ * @returns Suggested delay in milliseconds before retry
+ */
+export function getSuggestedRetryDelay(error: unknown): number {
+  const classification = classifyError(error)
+
+  if (!classification.isRetryable) {
+    return 0
+  }
+
+  switch (classification.category) {
+    case 'rate_limit':
+      return 60000 // 1 minute for rate limits
+    case 'server':
+      return 5000 // 5 seconds for server errors
+    case 'timeout':
+      return 2000 // 2 seconds for timeouts
+    case 'network':
+      return 3000 // 3 seconds for network errors
+    default:
+      return 1000 // 1 second default
+  }
+}
