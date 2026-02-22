@@ -3,7 +3,7 @@
  * 简化的参数验证，移除过度抽象
  */
 
-import { CONSTRAINTS } from '@prompt-optimizer/core'
+import { MCP_CONSTRAINTS } from '@prompt-optimizer/core'
 
 export class ParameterValidator {
   /**
@@ -19,9 +19,9 @@ export class ParameterValidator {
     if (prompt.trim().length === 0) {
       throw new Error('提示词不能为空字符串或纯空白字符')
     }
-    if (prompt.length > CONSTRAINTS.mcp.maxPromptLength) {
+    if (prompt.length > MCP_CONSTRAINTS.MAX_PROMPT_LENGTH) {
       throw new Error(
-        `提示词过长: ${prompt.length.toLocaleString()} 字符 (最大 ${CONSTRAINTS.mcp.maxPromptLength.toLocaleString()} 字符)`
+        `提示词过长: ${prompt.length.toLocaleString()} 字符 (最大 ${MCP_CONSTRAINTS.MAX_PROMPT_LENGTH.toLocaleString()} 字符)`
       )
     }
   }
@@ -39,9 +39,9 @@ export class ParameterValidator {
     if (template.trim().length === 0) {
       throw new Error('模板不能为空字符串或纯空白字符')
     }
-    if (template.length > CONSTRAINTS.mcp.maxTemplateLength) {
+    if (template.length > MCP_CONSTRAINTS.MAX_TEMPLATE_LENGTH) {
       throw new Error(
-        `模板标识过长: ${template.length} 字符 (最大 ${CONSTRAINTS.mcp.maxTemplateLength} 字符)`
+        `模板标识过长: ${template.length} 字符 (最大 ${MCP_CONSTRAINTS.MAX_TEMPLATE_LENGTH} 字符)`
       )
     }
   }
@@ -59,9 +59,9 @@ export class ParameterValidator {
     if (requirements.trim().length === 0) {
       throw new Error('需求描述不能为空字符串或纯空白字符')
     }
-    if (requirements.length > CONSTRAINTS.mcp.maxRequirementsLength) {
+    if (requirements.length > MCP_CONSTRAINTS.MAX_REQUIREMENTS_LENGTH) {
       throw new Error(
-        `需求描述过长: ${requirements.length.toLocaleString()} 字符 (最大 ${CONSTRAINTS.mcp.maxRequirementsLength.toLocaleString()} 字符)`
+        `需求描述过长: ${requirements.length.toLocaleString()} 字符 (最大 ${MCP_CONSTRAINTS.MAX_REQUIREMENTS_LENGTH.toLocaleString()} 字符)`
       )
     }
   }

@@ -175,6 +175,7 @@ export {
   IMAGE_CONSTRAINTS,
   SESSION_CONSTRAINTS,
   API_CONSTRAINTS,
+  MCP_CONSTRAINTS,
   CORE_CONSTRAINTS,
 } from './constants/constraints'
 export type {

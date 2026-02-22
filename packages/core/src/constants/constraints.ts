@@ -145,6 +145,16 @@ export const HISTORY_CONSTRAINTS = {
   MAX_RECORDS: getEnvInt('HISTORY_MAX_RECORDS', 50),
 } as const
 
+// MCP constraints - for Model Context Protocol server integration
+export const MCP_CONSTRAINTS = {
+  // Maximum prompt length for MCP requests
+  MAX_PROMPT_LENGTH: getEnvInt('MCP_MAX_PROMPT_LENGTH', 50000),
+  // Maximum requirements description length
+  MAX_REQUIREMENTS_LENGTH: getEnvInt('MCP_MAX_REQUIREMENTS_LENGTH', 10000),
+  // Maximum template identifier length
+  MAX_TEMPLATE_LENGTH: getEnvInt('MCP_MAX_TEMPLATE_LENGTH', 100),
+} as const
+
 // Export all constraints
 export const CORE_CONSTRAINTS = {
   VALIDATION: VALIDATION_CONSTRAINTS,
@@ -155,6 +165,7 @@ export const CORE_CONSTRAINTS = {
   SESSION: SESSION_CONSTRAINTS,
   API: API_CONSTRAINTS,
   HISTORY: HISTORY_CONSTRAINTS,
+  MCP: MCP_CONSTRAINTS,
 } as const
 
 // Re-export env helpers for convenience
