@@ -15,6 +15,9 @@ workflow:
 agent_config:
   editable_sections:
     - Status
+    - Priority
+    - Story Points
+    - Dependencies
     - Story
     - Acceptance Criteria
     - Tasks / Subtasks
@@ -30,6 +33,42 @@ sections:
     instruction: Select the current status of the story
     owner: scrum-master
     editors: [scrum-master, dev-agent]
+
+  - id: priority
+    title: Priority
+    type: choice
+    choices: [P0-Critical, P1-High, P2-Medium, P3-Low]
+    instruction: |
+      Story priority for sprint planning:
+      - P0-Critical: Blocking, must complete immediately
+      - P1-High: Important for current sprint
+      - P2-Medium: Should complete soon
+      - P3-Low: Nice to have, can be deferred
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: story-points
+    title: Story Points
+    type: number
+    instruction: |
+      Estimated effort in story points (Fibonacci: 1, 2, 3, 5, 8, 13, 21):
+      - 1-2: Trivial, few hours
+      - 3-5: Small, half day to day
+      - 8: Medium, 2-3 days
+      - 13: Large, up to a week
+      - 21: Very large, consider splitting
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: dependencies
+    title: Dependencies
+    type: list
+    instruction: |
+      List any dependencies this story has on other stories or external factors.
+      Format: "Story X.Y - brief description of dependency"
+      Use "None" if no dependencies.
+    owner: scrum-master
+    editors: [scrum-master]
 
   - id: story
     title: Story
