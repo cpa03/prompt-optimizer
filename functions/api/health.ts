@@ -2,6 +2,16 @@ export interface Env {
   ACCESS_PASSWORD?: string
 }
 
+type CloudflareRequest = Request<unknown, IncomingRequestCfProperties>
+
+interface IncomingRequestCfProperties {
+  colo?: string
+  timezone?: string
+  country?: string
+  city?: string
+  continent?: string
+}
+
 /**
  * Generate a unique request ID for logging/tracing
  * Uses crypto.randomUUID() for cryptographically secure, unpredictable identifiers
@@ -11,7 +21,10 @@ function generateRequestId(): string {
   return `cf_health_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
 }
 
-export async function onRequest(context: { request: Request; env: Env }): Promise<Response> {
+export async function onRequest(context: {
+  request: CloudflareRequest
+  env: Env
+}): Promise<Response> {
   const { request } = context
   const requestId = generateRequestId()
   const timestamp = new Date().toISOString()
@@ -38,13 +51,10 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
     let cfColo = 'unknown'
     let cfTimezone = 'unknown'
 
-    try {
-      const cf = (request as any).cf
-      if (cf) {
-        cfColo = cf.colo || cfColo
-        cfTimezone = cf.timezone || cfTimezone
-      }
-    } catch {
+    const cf = request.cf
+    if (cf) {
+      cfColo = cf.colo ?? cfColo
+      cfTimezone = cf.timezone ?? cfTimezone
     }
 
     let scheme = 'https'
