@@ -196,6 +196,22 @@ pnpm build
 gh pr create --label "repository manager" --title "chore: repository management improvements"
 ```
 
+### Repository Manager Best Practices
+
+1. **Monitor Open PRs**
+   - Check for PRs ready to merge
+   - Ensure all PRs pass CI/CD
+   - Help resolve merge conflicts
+
+2. **No Changes Required**
+   - If repository is healthy with no issues, document the status
+   - Create a PR summarizing repository health
+   - Note any PRs ready for review/merge
+
+3. **Coordinate with Other Agents**
+   - Avoid conflicts with open PRs from other agents
+   - Wait for dependent PRs to merge before making related changes
+
 ## 📚 Documentation Standards
 
 ### Documentation Structure
