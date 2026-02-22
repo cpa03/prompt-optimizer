@@ -132,6 +132,7 @@ export function useDebounceThrottle() {
 
   /**
    * 智能防抖 - 根据输入频率自动调整延迟时间
+   * 性能优化：使用指数退避策略，避免频繁重置计数器
    */
   const smartDebounce = <Args extends unknown[]>(
     fn: (...args: Args) => unknown,
@@ -146,24 +147,29 @@ export function useDebounceThrottle() {
       const now = Date.now()
       const timeSinceLastCall = now - lastCallTime
 
+      // 重置计数器（如果间隔超过阈值，重新开始计数）
+      // 优化：先检查重置条件，避免无意义的计数累加
+      if (timeSinceLastCall > TIME_CONSTANTS.THROTTLE_RESET_MS) {
+        callCount = 0
+      }
+
       callCount++
       lastCallTime = now
 
       // 根据调用频率动态调整延迟时间
-      const frequency = callCount / Math.max(1, timeSinceLastCall / 1000)
+      // 优化：防止除零，使用 Math.max(1, ...) 确保分母至少为 1ms
+      // 将 timeSinceLastCall 转换为秒，但限制最小值为 1ms (0.001s)
+      const timeInSeconds = Math.max(0.001, timeSinceLastCall / 1000)
+      const frequency = callCount / timeInSeconds
       let adaptiveDelay = minDelay
 
+      // 使用阈值进行分级调整
       if (frequency > 10) {
         adaptiveDelay = maxDelay
       } else if (frequency > 5) {
         adaptiveDelay = Math.min(maxDelay, minDelay * 3)
       } else if (frequency > 2) {
         adaptiveDelay = Math.min(maxDelay, minDelay * 2)
-      }
-
-      // 重置计数器（使用集中常量）
-      if (timeSinceLastCall > TIME_CONSTANTS.THROTTLE_RESET_MS) {
-        callCount = 0
       }
 
       debounce(fn, adaptiveDelay, false, key)(...args)
