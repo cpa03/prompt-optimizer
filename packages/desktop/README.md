@@ -58,7 +58,7 @@ Windows用户：
 ```cmd
 set VITE_OPENAI_API_KEY=your_openai_key_here
 set VITE_GEMINI_API_KEY=your_gemini_key_here
-npm start
+pnpm start
 ```
 
 macOS/Linux用户：
@@ -66,7 +66,7 @@ macOS/Linux用户：
 ```bash
 export VITE_OPENAI_API_KEY=your_openai_key_here
 export VITE_GEMINI_API_KEY=your_gemini_key_here
-npm start
+pnpm start
 ```
 
 ## 验证配置
