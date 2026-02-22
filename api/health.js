@@ -48,6 +48,25 @@ function getUptime() {
   return Math.round(process.uptime())
 }
 
+/**
+ * Get Vercel deployment information
+ * @returns {object} - Deployment info object
+ */
+function getDeploymentInfo() {
+  return {
+    id: process.env.VERCEL_DEPLOYMENT_ID || null,
+    url: process.env.VERCEL_URL || null,
+    projectUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL || null,
+    branch: process.env.VERCEL_GIT_COMMIT_REF || null,
+    commitSha: process.env.VERCEL_GIT_COMMIT_SHA || null,
+    commitMessage: process.env.VERCEL_GIT_COMMIT_MESSAGE || null,
+    commitAuthorLogin: process.env.VERCEL_GIT_COMMIT_AUTHOR_LOGIN || null,
+    provider: process.env.VERCEL_GIT_PROVIDER || null,
+    repoOwner: process.env.VERCEL_GIT_REPO_OWNER || null,
+    repoSlug: process.env.VERCEL_GIT_REPO_SLUG || null,
+  }
+}
+
 export default function handler(req, res) {
   const requestId = generateRequestId()
   const timestamp = new Date().toISOString()
@@ -71,6 +90,7 @@ export default function handler(req, res) {
       environment: process.env.NODE_ENV || 'unknown',
       uptime: getUptime(),
       memory: getMemoryStats(),
+      deployment: getDeploymentInfo(),
       responseTime: `${responseTime}ms`,
     }
 
