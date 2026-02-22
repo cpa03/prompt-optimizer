@@ -54,6 +54,37 @@ const DEFAULT_RETRYABLE_ERRORS = [
 
 const DEFAULT_RETRYABLE_STATUS_CODES = [408, 429, 500, 502, 503, 504]
 
+/**
+ * LLM-specific retryable errors
+ * Includes rate limiting, overload, and timeout patterns common in LLM APIs
+ */
+export const LLM_RETRYABLE_ERRORS = [
+  'rate_limit',
+  'rate limit',
+  'overloaded',
+  'overload',
+  'timeout',
+  'timed out',
+  'ECONNRESET',
+  'ECONNREFUSED',
+  'ETIMEDOUT',
+  'ENOTFOUND',
+  'EAI_AGAIN',
+  'fetch failed',
+  'network error',
+]
+
+/**
+ * Image API-specific retryable errors
+ * Extends LLM errors with server-side errors common in image generation APIs
+ */
+export const IMAGE_RETRYABLE_ERRORS = [
+  ...LLM_RETRYABLE_ERRORS,
+  'internal error',
+  'server error',
+  'service unavailable',
+]
+
 function isRetryableError(error: unknown, customRetryableErrors: string[]): boolean {
   if (!(error instanceof Error)) {
     return false

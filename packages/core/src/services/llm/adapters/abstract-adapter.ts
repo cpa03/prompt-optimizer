@@ -11,26 +11,9 @@ import type {
 } from '../types'
 import { RequestConfigError } from '../errors'
 import { MODEL_CONTEXT_LIMITS } from '../../../constants/templates'
-import { withRetry, RETRY_PRESETS } from '../../../utils/retry'
-import { createDebugLogger } from '../../../utils/debug'
+import { withRetry, RETRY_PRESETS, LLM_RETRYABLE_ERRORS, createDebugLogger } from '../../../utils'
 
 const logger = createDebugLogger('llm-adapter')
-
-const LLM_RETRYABLE_ERRORS = [
-  'rate_limit',
-  'rate limit',
-  'overloaded',
-  'overload',
-  'timeout',
-  'timed out',
-  'ECONNRESET',
-  'ECONNREFUSED',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  'EAI_AGAIN',
-  'fetch failed',
-  'network error',
-]
 
 /**
  * 抽象文本模型Provider适配器基类

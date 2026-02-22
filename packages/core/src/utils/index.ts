@@ -101,6 +101,8 @@ export {
   createTimeoutSignal,
   TimeoutError,
   RETRY_PRESETS,
+  LLM_RETRYABLE_ERRORS,
+  IMAGE_RETRYABLE_ERRORS,
 } from './retry'
 export type { RetryOptions } from './retry'
 

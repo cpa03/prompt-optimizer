@@ -10,29 +10,9 @@ import type {
 import { ImageError } from '../errors'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { TEST_IMAGES } from '../../../config/test-data'
-import { withRetry, RETRY_PRESETS } from '../../../utils/retry'
-import { createDebugLogger } from '../../../utils/debug'
+import { withRetry, RETRY_PRESETS, IMAGE_RETRYABLE_ERRORS, createDebugLogger } from '../../../utils'
 
 const logger = createDebugLogger('image-adapter')
-
-const IMAGE_RETRYABLE_ERRORS = [
-  'rate_limit',
-  'rate limit',
-  'overloaded',
-  'overload',
-  'timeout',
-  'timed out',
-  'ECONNRESET',
-  'ECONNREFUSED',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  'EAI_AGAIN',
-  'fetch failed',
-  'network error',
-  'internal error',
-  'server error',
-  'service unavailable',
-]
 
 /**
  * 抽象图像提供商适配器基类
