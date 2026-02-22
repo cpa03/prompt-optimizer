@@ -1329,4 +1329,32 @@ defineExpose({
   max-height: 100%;
   overflow: hidden;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .basic-system-split {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px;
+  }
+
+  .basic-system-split > *:nth-child(2) {
+    display: none;
+  }
+
+  .split-pane {
+    min-height: 200px;
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .basic-system-split {
+    gap: 8px;
+  }
+
+  .split-pane {
+    min-height: 150px;
+  }
+}
 </style>

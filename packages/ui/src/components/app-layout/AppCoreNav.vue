@@ -10,7 +10,7 @@
         - 从路由参数计算当前模式
         - 导航操作直接调用 router.push
     -->
-  <NSpace :size="SPACING.MD" align="center" data-testid="core-nav">
+  <NSpace :size="SPACING.MD" align="center" data-testid="core-nav" class="core-nav-wrapper">
     <!-- 功能模式选择器 -->
     <FunctionModeSelector
       :modelValue="functionMode"
@@ -23,6 +23,7 @@
       :modelValue="basicSubMode"
       functionMode="basic"
       @change="handleBasicSubModeChange"
+      class="sub-mode-selector"
     />
 
     <!-- 子模式选择器 - 上下文模式 -->
@@ -31,6 +32,7 @@
       :modelValue="proSubMode"
       functionMode="pro"
       @change="handleProSubModeChange"
+      class="sub-mode-selector"
     />
 
     <!-- 子模式选择器 - 图像模式 -->
@@ -38,6 +40,7 @@
       v-if="functionMode === 'image'"
       :modelValue="imageSubMode"
       @change="handleImageSubModeChange"
+      class="sub-mode-selector"
     />
   </NSpace>
 </template>
@@ -151,3 +154,29 @@ const handleImageSubModeChange = (mode: ImageSubMode) => {
   routerInstance.push(`/image/${mode}`)
 }
 </script>
+
+<style scoped>
+.core-nav-wrapper {
+  flex-wrap: nowrap;
+}
+
+.sub-mode-selector {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .core-nav-wrapper {
+    gap: 8px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .core-nav-wrapper {
+    gap: 4px !important;
+  }
+
+  .sub-mode-selector {
+    display: none;
+  }
+}
+</style>

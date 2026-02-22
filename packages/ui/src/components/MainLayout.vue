@@ -294,6 +294,33 @@ const logoSize = computed(() => {
   }
 }
 
+/* Extra small screens (mobile phones) */
+@media (max-width: 480px) {
+  .nav-header-enhanced {
+    min-height: 56px !important;
+    padding: 8px 12px !important;
+  }
+
+  .core-navigation {
+    margin-left: 4px;
+    padding-left: 4px;
+    border-left: none;
+  }
+
+  .theme-title {
+    display: none;
+  }
+
+  .nav-content {
+    flex-wrap: nowrap;
+  }
+
+  .nav-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
 .custom-select {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
