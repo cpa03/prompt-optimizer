@@ -199,6 +199,7 @@ export const MCP_CONFIG = {
       request: 30000,
       keepAlive: 5000,
     },
+    maxBodySizeBytes: 102400,
   },
   logging: {
     defaultLevel: 'debug' as const,
