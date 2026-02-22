@@ -10,7 +10,6 @@
   "support": {
     "source": "https://github.com/cpa03/prompt-optimizer/issues"
   },
-  "regions": ["iad1", "sfo1", "fra1"],
   "images": {
     "remotePatterns": [
       {
