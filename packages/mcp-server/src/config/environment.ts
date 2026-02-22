@@ -125,8 +125,7 @@ export function validateConfig(config: MCPServerConfig): void {
     )
   }
 
-  const validLogLevels = [...MCP_CONFIG.logging.validLevels]
-  if (!validLogLevels.includes(config.logLevel)) {
-    throw new Error(`Log level must be one of: ${validLogLevels.join(', ')}`)
+  if (!MCP_CONFIG.logging.validLevels.includes(config.logLevel)) {
+    throw new Error(`Log level must be one of: ${MCP_CONFIG.logging.validLevels.join(', ')}`)
   }
 }
