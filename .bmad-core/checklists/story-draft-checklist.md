@@ -32,7 +32,23 @@ REMEMBER: We assume competent developer agents who can:
 
 We're checking for SUFFICIENT guidance, not exhaustive detail.]]
 
-## 1. GOAL & CONTEXT CLARITY
+## 1. PLANNING METADATA
+
+[[LLM: Stories need proper metadata for sprint planning and prioritization. Verify:
+
+1. Priority is assigned (P0-P3) to help with sprint planning
+2. Story points are estimated for capacity planning
+3. Dependencies are explicitly listed (or "None" if no dependencies)
+4. Priority aligns with business value and urgency
+5. Story points are reasonable for the scope described]]
+
+- [ ] Priority is assigned (P0-Critical, P1-High, P2-Medium, or P3-Low)
+- [ ] Story points are estimated using Fibonacci scale
+- [ ] Dependencies are explicitly listed (use "None" if none exist)
+- [ ] Priority aligns with business context and epic goals
+- [ ] Story points estimate is reasonable for the described scope
+
+## 2. GOAL & CONTEXT CLARITY
 
 [[LLM: Without clear goals, developers build the wrong thing. Verify:
 
@@ -48,7 +64,7 @@ We're checking for SUFFICIENT guidance, not exhaustive detail.]]
 - [ ] Dependencies on previous stories are identified (if applicable)
 - [ ] Business context and value are clear
 
-## 2. TECHNICAL IMPLEMENTATION GUIDANCE
+## 3. TECHNICAL IMPLEMENTATION GUIDANCE
 
 [[LLM: Developers need enough technical context to start coding. Check:
 
@@ -67,7 +83,7 @@ Note: We don't need every file listed - just the important ones.]]
 - [ ] Required environment variables are listed (if applicable)
 - [ ] Any exceptions to standard coding patterns are noted
 
-## 3. REFERENCE EFFECTIVENESS
+## 4. REFERENCE EFFECTIVENESS
 
 [[LLM: References should help, not create a treasure hunt. Ensure:
 
@@ -82,7 +98,7 @@ Note: We don't need every file listed - just the important ones.]]
 - [ ] Context is provided for why references are relevant
 - [ ] References use consistent format (e.g., `docs/filename.md#section`)
 
-## 4. SELF-CONTAINMENT ASSESSMENT
+## 5. SELF-CONTAINMENT ASSESSMENT
 
 [[LLM: Stories should be mostly self-contained to avoid context switching. Verify:
 
@@ -97,7 +113,7 @@ Note: We don't need every file listed - just the important ones.]]
 - [ ] Domain-specific terms or concepts are explained
 - [ ] Edge cases or error scenarios are addressed
 
-## 5. TESTING GUIDANCE
+## 6. TESTING GUIDANCE
 
 [[LLM: Testing ensures the implementation actually works. Check:
 
@@ -142,11 +158,12 @@ Be pragmatic - perfect documentation doesn't exist, but it must be enough to pro
 
 | Category                             | Status | Issues |
 | ------------------------------------ | ------ | ------ |
-| 1. Goal & Context Clarity            | _TBD_  |        |
-| 2. Technical Implementation Guidance | _TBD_  |        |
-| 3. Reference Effectiveness           | _TBD_  |        |
-| 4. Self-Containment Assessment       | _TBD_  |        |
-| 5. Testing Guidance                  | _TBD_  |        |
+| 1. Planning Metadata                 | _TBD_  |        |
+| 2. Goal & Context Clarity            | _TBD_  |        |
+| 3. Technical Implementation Guidance | _TBD_  |        |
+| 4. Reference Effectiveness           | _TBD_  |        |
+| 5. Self-Containment Assessment       | _TBD_  |        |
+| 6. Testing Guidance                  | _TBD_  |        |
 
 **Final Assessment:**
 
