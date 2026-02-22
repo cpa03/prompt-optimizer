@@ -75,6 +75,8 @@ The Docker deployment includes the following security headers:
 - `Cross-Origin-Embedder-Policy: require-corp`
 - `Cross-Origin-Opener-Policy: same-origin`
 - `Cross-Origin-Resource-Policy: same-origin`
+- `X-Robots-Tag: noindex, nofollow, nosnippet, noarchive` (prevents search engine indexing)
+- `Permissions-Policy` (restricts browser features)
 
 ### MCP Server CORS Configuration
 
