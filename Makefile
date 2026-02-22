@@ -1,4 +1,4 @@
-.PHONY: help install build dev test lint clean docker docker-dev k8s-deploy k8s-destroy docker-clean docker-prune health-check
+.PHONY: help install build dev test lint clean docker docker-dev k8s-deploy k8s-destroy docker-clean docker-prune health-check version-info docker-inspect docker-pull
 
 help:
 	@echo "Prompt Optimizer - DevOps Commands"
@@ -19,6 +19,8 @@ help:
 	@echo "  docker-logs   View Docker logs"
 	@echo "  docker-clean  Remove containers, images, and volumes"
 	@echo "  docker-prune  Prune unused Docker resources"
+	@echo "  docker-inspect Inspect running containers"
+	@echo "  docker-pull   Pull latest Docker image"
 	@echo "  health-check  Check container health status"
 	@echo ""
 	@echo "Kubernetes:"
@@ -128,3 +130,30 @@ health-check:
 	@echo "Testing application endpoint..."
 	@curl -sf http://localhost:28081/ > /dev/null && echo "Web: OK" || echo "Web: FAILED"
 	@curl -sf http://localhost:28081/mcp > /dev/null && echo "MCP: OK" || echo "MCP: FAILED"
+
+version-info:
+	@echo "Prompt Optimizer Version Information"
+	@echo "===================================="
+	@echo "Version: $$(grep -m1 '"version":' package.json | cut -d'"' -f4)"
+	@echo "Node: $$(node --version 2>/dev/null || echo 'Not installed')"
+	@echo "pnpm: $$(pnpm --version 2>/dev/null || echo 'Not installed')"
+	@echo "Docker: $$(docker --version 2>/dev/null || echo 'Not installed')"
+	@echo ""
+	@echo "Package Versions:"
+	@echo "  Core:     $$(grep -m1 '"version":' packages/core/package.json | cut -d'"' -f4)"
+	@echo "  UI:       $$(grep -m1 '"version":' packages/ui/package.json | cut -d'"' -f4)"
+	@echo "  Web:      $$(grep -m1 '"version":' packages/web/package.json | cut -d'"' -f4)"
+	@echo "  Desktop:  $$(grep -m1 '"version":' packages/desktop/package.json | cut -d'"' -f4)"
+	@echo "  MCP:      $$(grep -m1 '"version":' packages/mcp-server/package.json | cut -d'"' -f4)"
+
+docker-inspect:
+	@echo "Container Inspection"
+	@echo "==================="
+	@docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "No containers running"
+	@echo ""
+	@docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}" 2>/dev/null || echo "No stats available"
+
+docker-pull:
+	@echo "Pulling latest Docker image..."
+	docker pull linshen/prompt-optimizer:latest
+	@echo "Image pulled successfully. Run 'make docker' to start the container."
