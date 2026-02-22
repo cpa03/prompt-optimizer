@@ -28,7 +28,7 @@ import {
   type TestVariantResultsMap,
   type WorkspaceLayoutConfig,
 } from './types/test-variant'
-import { coerceVariantResult, areTestResultsEqual } from './utils'
+import { areTestResultsEqual } from './utils'
 
 /** Layout config alias for backward compatibility */
 export type ProMultiLayoutConfig = WorkspaceLayoutConfig
