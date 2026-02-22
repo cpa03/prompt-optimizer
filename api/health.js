@@ -29,14 +29,23 @@ function getUptime() {
   return Math.round(process.uptime())
 }
 
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Cache-Control': 'no-store, no-cache, must-revalidate',
+}
+
 export default function handler(req, res) {
   const requestId = generateRequestId()
   const timestamp = new Date().toISOString()
   const startTime = Date.now()
 
   res.setHeader('X-Request-ID', requestId)
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
-  res.setHeader('X-Content-Type-Options', 'nosniff')
+  Object.entries(SECURITY_HEADERS).forEach(([key, value]) => {
+    res.setHeader(key, value)
+  })
 
   if (req.method === 'GET') {
     const responseTime = Date.now() - startTime

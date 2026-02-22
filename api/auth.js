@@ -239,6 +239,9 @@ export default function handler(req, res) {
 
   if (req.method === 'POST') {
     const rateLimitResult = checkRateLimit(clientIP)
+    res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_CONFIG.MAX_ATTEMPTS))
+    res.setHeader('X-RateLimit-Remaining', String(rateLimitResult.remaining))
+    
     if (!rateLimitResult.allowed) {
       log('warn', 'Rate limit exceeded', { requestId, ip: clientIP, retryAfter: rateLimitResult.retryAfter })
       res.setHeader(
