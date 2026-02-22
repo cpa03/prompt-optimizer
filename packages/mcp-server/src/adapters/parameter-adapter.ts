@@ -5,64 +5,73 @@
 
 import { CONSTRAINTS } from '@prompt-optimizer/core'
 
+type StringValidationOptions = {
+  fieldName: string
+  value: unknown
+  required: boolean
+  maxLength: number
+  allowWhitespace?: boolean
+}
+
+function validateString(options: StringValidationOptions): void {
+  const { fieldName, value, required, maxLength, allowWhitespace = false } = options
+
+  if (value === null || value === undefined) {
+    if (required) {
+      throw new Error(`${fieldName}参数不能为空`)
+    }
+    return
+  }
+
+  if (typeof value !== 'string') {
+    throw new Error(`${fieldName}必须是字符串类型，当前类型: ${typeof value}`)
+  }
+
+  if (!allowWhitespace && value.trim().length === 0) {
+    throw new Error(`${fieldName}不能为空字符串或纯空白字符`)
+  }
+
+  if (value.length > maxLength) {
+    throw new Error(
+      `${fieldName}过长: ${value.length.toLocaleString()} 字符 (最大 ${maxLength.toLocaleString()} 字符)`
+    )
+  }
+}
+
 export class ParameterValidator {
   /**
    * 验证提示词输入
    */
-  static validatePrompt(prompt: string): void {
-    if (prompt === null || prompt === undefined) {
-      throw new Error('提示词参数不能为空')
-    }
-    if (typeof prompt !== 'string') {
-      throw new Error(`提示词必须是字符串类型，当前类型: ${typeof prompt}`)
-    }
-    if (prompt.trim().length === 0) {
-      throw new Error('提示词不能为空字符串或纯空白字符')
-    }
-    if (prompt.length > CONSTRAINTS.mcp.maxPromptLength) {
-      throw new Error(
-        `提示词过长: ${prompt.length.toLocaleString()} 字符 (最大 ${CONSTRAINTS.mcp.maxPromptLength.toLocaleString()} 字符)`
-      )
-    }
+  static validatePrompt(prompt: unknown): void {
+    validateString({
+      fieldName: '提示词',
+      value: prompt,
+      required: true,
+      maxLength: CONSTRAINTS.mcp.maxPromptLength,
+    })
   }
 
   /**
    * 验证模板输入
    */
-  static validateTemplate(template?: string): void {
-    if (template === undefined) {
-      return
-    }
-    if (typeof template !== 'string') {
-      throw new Error(`模板必须是字符串类型，当前类型: ${typeof template}`)
-    }
-    if (template.trim().length === 0) {
-      throw new Error('模板不能为空字符串或纯空白字符')
-    }
-    if (template.length > CONSTRAINTS.mcp.maxTemplateLength) {
-      throw new Error(
-        `模板标识过长: ${template.length} 字符 (最大 ${CONSTRAINTS.mcp.maxTemplateLength} 字符)`
-      )
-    }
+  static validateTemplate(template: unknown): void {
+    validateString({
+      fieldName: '模板',
+      value: template,
+      required: false,
+      maxLength: CONSTRAINTS.mcp.maxTemplateLength,
+    })
   }
 
   /**
    * 验证需求描述输入
    */
-  static validateRequirements(requirements: string): void {
-    if (requirements === null || requirements === undefined) {
-      throw new Error('需求描述参数不能为空')
-    }
-    if (typeof requirements !== 'string') {
-      throw new Error(`需求描述必须是字符串类型，当前类型: ${typeof requirements}`)
-    }
-    if (requirements.trim().length === 0) {
-      throw new Error('需求描述不能为空字符串或纯空白字符')
-    }
-    if (requirements.length > CONSTRAINTS.mcp.maxRequirementsLength) {
-      throw new Error(
-        `需求描述过长: ${requirements.length.toLocaleString()} 字符 (最大 ${CONSTRAINTS.mcp.maxRequirementsLength.toLocaleString()} 字符)`
-      )
-    }
+  static validateRequirements(requirements: unknown): void {
+    validateString({
+      fieldName: '需求描述',
+      value: requirements,
+      required: true,
+      maxLength: CONSTRAINTS.mcp.maxRequirementsLength,
+    })
   }
 }
