@@ -24,6 +24,15 @@ async function loadNodeModules() {
 }
 
 /**
+ * 存储文件数据结构（包含数据和时间戳）
+ */
+interface StorageFileData {
+  version: number
+  data: Record<string, string>
+  timestamps?: Record<string, number>
+}
+
+/**
  * 基于文件的存储提供器 - 增强版
  * 专为Electron桌面环境设计，使用JSON文件持久化存储数据
  *
@@ -34,7 +43,7 @@ async function loadNodeModules() {
  * - 数据备份和智能恢复机制
  * - 原子性updateData操作
  * - 严格的初始化控制
- * - 时间戳跟踪用于统计
+ * - 时间戳跟踪用于统计（持久化到磁盘）
  */
 export class FileStorageProvider implements IStorageProvider {
   private filePath: string
@@ -124,33 +133,29 @@ export class FileStorageProvider implements IStorageProvider {
    * 从文件加载数据到内存 - 增强版，包含智能恢复机制
    */
   private async loadFromFileWithRecovery(): Promise<void> {
-    // 尝试从主文件加载
     const mainFileResult = await this.tryLoadFromFile(this.filePath, 'main')
     if (mainFileResult.success) {
       this.data = mainFileResult.data!
-      // 成功加载主文件后，创建备份
+      this.timestamps = mainFileResult.timestamps || new Map()
       await this.createBackup()
       return
     }
 
     console.warn('[FileStorage] Main file failed, trying backup...')
 
-    // 尝试从备份文件加载
     const backupFileResult = await this.tryLoadFromFile(this.backupPath, 'backup')
     if (backupFileResult.success) {
       this.data = backupFileResult.data!
+      this.timestamps = backupFileResult.timestamps || new Map()
       console.log('[FileStorage] Successfully recovered from backup')
 
-      // 从备份恢复后，重新创建主文件（跳过备份创建以保护现有备份）
       await this.saveToFileWithoutBackup()
 
-      // 主文件恢复成功后，重新创建备份以确保备份是最新的
       try {
         await this.createBackup()
         console.log('[FileStorage] Backup refreshed after recovery')
       } catch (error) {
         console.warn('[FileStorage] Failed to refresh backup after recovery:', error)
-        // 备份失败不应该影响恢复流程
       }
 
       return
@@ -158,24 +163,21 @@ export class FileStorageProvider implements IStorageProvider {
 
     console.warn('[FileStorage] Both main and backup files failed, checking if files exist...')
 
-    // 检查是否是首次运行（文件不存在）
     const mainExists = await this.fileExists(this.filePath)
     const backupExists = await this.fileExists(this.backupPath)
 
     if (!mainExists && !backupExists) {
-      // 首次运行，创建空存储
       console.log('[FileStorage] First run detected, creating new storage')
       this.data = new Map()
+      this.timestamps = new Map()
       await this.saveToFile()
       return
     }
 
-    // 文件存在但都损坏了，这是严重问题
     console.error('[FileStorage] CRITICAL: Both storage files exist but are corrupted!')
     console.error('[FileStorage] Main file error:', mainFileResult.error)
     console.error('[FileStorage] Backup file error:', backupFileResult.error)
 
-    // 在这种情况下，我们不能简单地重置数据，而是抛出错误让上层处理
     throw new StorageError(
       `Storage corruption detected. Main: ${mainFileResult.error}, Backup: ${backupFileResult.error}`,
       'read'
@@ -184,6 +186,7 @@ export class FileStorageProvider implements IStorageProvider {
 
   /**
    * 尝试从指定文件加载数据
+   * 支持新格式（包含版本和时间戳）和旧格式（仅有数据）
    */
   private async tryLoadFromFile(
     filePath: string,
@@ -191,17 +194,15 @@ export class FileStorageProvider implements IStorageProvider {
   ): Promise<{
     success: boolean
     data?: Map<string, string>
+    timestamps?: Map<string, number>
     error?: string
   }> {
     const { fs } = await loadNodeModules()
     try {
-      // 检查文件是否存在
       await fs.access(filePath)
 
-      // 读取文件内容
       const content = await fs.readFile(filePath, 'utf8')
 
-      // 验证JSON格式
       if (!this.validateJSON(content)) {
         return {
           success: false,
@@ -209,20 +210,39 @@ export class FileStorageProvider implements IStorageProvider {
         }
       }
 
-      // 解析数据
       const parsed = JSON.parse(content)
       const data = new Map<string, string>()
+      const timestamps = new Map<string, number>()
 
-      // 确保所有值都是字符串类型
-      for (const [key, value] of Object.entries(parsed || {})) {
-        data.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+      if (parsed && typeof parsed === 'object') {
+        if ('version' in parsed && 'data' in parsed) {
+          for (const [key, value] of Object.entries(parsed.data || {})) {
+            data.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+          }
+          if (parsed.timestamps && typeof parsed.timestamps === 'object') {
+            for (const [key, value] of Object.entries(parsed.timestamps)) {
+              if (typeof value === 'number') {
+                timestamps.set(key, value)
+              }
+            }
+          }
+          console.log(
+            `[FileStorage] Loaded ${data.size} items and ${timestamps.size} timestamps from ${fileType} file (v${parsed.version})`
+          )
+        } else {
+          for (const [key, value] of Object.entries(parsed)) {
+            data.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+          }
+          console.log(
+            `[FileStorage] Loaded ${data.size} items from ${fileType} file (legacy format)`
+          )
+        }
       }
-
-      console.log(`[FileStorage] Successfully loaded ${data.size} items from ${fileType} file`)
 
       return {
         success: true,
         data,
+        timestamps,
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
@@ -264,23 +284,24 @@ export class FileStorageProvider implements IStorageProvider {
 
   /**
    * 将内存数据保存到文件 - 增强版
-   * 包含备份创建和数据验证
+   * 包含备份创建、数据验证和时间戳持久化
    */
   private async saveToFile(): Promise<void> {
-    const data = Object.fromEntries(this.data)
-    const jsonString = JSON.stringify(data, null, 2)
+    const storageData: StorageFileData = {
+      version: 1,
+      data: Object.fromEntries(this.data),
+      timestamps: Object.fromEntries(this.timestamps),
+    }
+    const jsonString = JSON.stringify(storageData, null, 2)
 
-    // 验证数据完整性
     if (!this.validateJSON(jsonString)) {
       throw new StorageError('Generated JSON is invalid', 'write')
     }
 
-    // 如果主文件存在，先创建备份
     if (await this.fileExists(this.filePath)) {
       await this.createBackup()
     }
 
-    // 原子写入主文件
     await this.atomicWrite(jsonString)
 
     console.log(`[FileStorage] Saved ${this.data.size} items to storage`)
@@ -291,17 +312,19 @@ export class FileStorageProvider implements IStorageProvider {
    * 用于从备份恢复时，避免覆盖完好的备份文件
    */
   private async saveToFileWithoutBackup(): Promise<void> {
-    const data = Object.fromEntries(this.data)
-    const jsonString = JSON.stringify(data, null, 2)
+    const storageData: StorageFileData = {
+      version: 1,
+      data: Object.fromEntries(this.data),
+      timestamps: Object.fromEntries(this.timestamps),
+    }
+    const jsonString = JSON.stringify(storageData, null, 2)
 
-    // 验证数据完整性
     if (!this.validateJSON(jsonString)) {
       throw new StorageError('Generated JSON is invalid', 'write')
     }
 
     console.log('[FileStorage] Saving to main file without creating backup (recovery mode)')
 
-    // 直接原子写入主文件，不创建备份
     await this.atomicWrite(jsonString)
 
     console.log(`[FileStorage] Recovered and saved ${this.data.size} items to storage`)
