@@ -23,28 +23,24 @@ import {
   type TestColumnCount,
   type TestVariantConfig,
   type TestVariantLastRunFingerprint,
+  type TestResults,
+  type TestVariantResult,
+  type TestVariantResultsMap,
+  type WorkspaceLayoutConfig,
 } from './types/test-variant'
+import { coerceVariantResult, areTestResultsEqual } from './utils'
 
-export interface TestResults {
-  originalResult: string
-  originalReasoning: string
-  optimizedResult: string
-  optimizedReasoning: string
-}
+/** Layout config alias for backward compatibility */
+export type ProMultiLayoutConfig = WorkspaceLayoutConfig
 
-export interface ProMultiLayoutConfig {
-  /** 主布局左侧宽度（百分比，25..50） */
-  mainSplitLeftPct: number
-  /** 测试区列数（2..4） */
-  testColumnCount: TestColumnCount
-}
+/** Re-export TestResults for backward compatibility */
+export type { TestResults }
 
-export interface TestVariantResult {
-  result: string
-  reasoning: string
-}
+/** Re-export TestVariantResult for backward compatibility */
+export type { TestVariantResult }
 
-export type TestVariantResults = Record<TestVariantId, TestVariantResult>
+/** Type alias using shared TestVariantResultsMap */
+export type TestVariantResults = TestVariantResultsMap
 
 /**
  * Pro-MultiMessage 会话状态
@@ -286,21 +282,7 @@ export const useProMultiMessageSession = defineStore('proMultiMessageSession', (
    * 更新测试结果
    */
   const updateTestResults = (results: TestResults | null) => {
-    const prev = testResults.value
-
-    // 检查是否相同
-    const isSame =
-      prev === results ||
-      (!!prev &&
-        !!results &&
-        prev.originalResult === results.originalResult &&
-        prev.originalReasoning === results.originalReasoning &&
-        prev.optimizedResult === results.optimizedResult &&
-        prev.optimizedReasoning === results.optimizedReasoning)
-
-    if (isSame) return
-
-    // 直接赋值给 ref（现在是响应式的）
+    if (areTestResultsEqual(testResults.value, results)) return
     testResults.value = results
     lastActiveAt.value = Date.now()
   }

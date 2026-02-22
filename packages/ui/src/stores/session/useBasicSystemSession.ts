@@ -28,28 +28,24 @@ import {
   type TestColumnCount,
   type TestVariantConfig,
   type TestVariantLastRunFingerprint,
+  type TestResults,
+  type TestVariantResult,
+  type TestVariantResultsMap,
+  type WorkspaceLayoutConfig,
 } from './types/test-variant'
+import { coerceVariantResult, areTestResultsEqual } from './utils'
 
-export interface TestResults {
-  originalResult: string
-  originalReasoning: string
-  optimizedResult: string
-  optimizedReasoning: string
-}
+/** Layout config alias for backward compatibility */
+export type BasicSystemLayoutConfig = WorkspaceLayoutConfig
 
-export interface BasicSystemLayoutConfig {
-  /** 主布局左侧宽度（百分比，25..50） */
-  mainSplitLeftPct: number
-  /** 测试区列数（2..4） */
-  testColumnCount: TestColumnCount
-}
+/** Re-export TestResults for backward compatibility */
+export type { TestResults }
 
-export interface TestVariantResult {
-  result: string
-  reasoning: string
-}
+/** Re-export TestVariantResult for backward compatibility */
+export type { TestVariantResult }
 
-export type TestVariantResults = Record<TestVariantId, TestVariantResult>
+/** Type alias using shared TestVariantResultsMap */
+export type TestVariantResults = TestVariantResultsMap
 
 /**
  * Basic-System 会话状态
@@ -237,23 +233,9 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
    * 更新测试结果
    */
   const updateTestResults = (results: TestResults | null) => {
-    const prev = testResults.value
-
-    // 检查是否相同
-    const isSame =
-      prev === results ||
-      (!!prev &&
-        !!results &&
-        prev.originalResult === results.originalResult &&
-        prev.originalReasoning === results.originalReasoning &&
-        prev.optimizedResult === results.optimizedResult &&
-        prev.optimizedReasoning === results.optimizedReasoning)
-
-    if (isSame) {
+    if (areTestResultsEqual(testResults.value, results)) {
       return
     }
-
-    // 直接赋值给 ref（现在是响应式的）
     testResults.value = results
     lastActiveAt.value = Date.now()
   }
@@ -468,14 +450,6 @@ export const useBasicSystemSession = defineStore('basicSystemSession', () => {
         const nextVariantResults: TestVariantResults = { ...defaultState.testVariantResults }
         const nextFingerprint: TestVariantLastRunFingerprint = {
           ...defaultState.testVariantLastRunFingerprint,
-        }
-
-        const coerceVariantResult = (value: unknown): TestVariantResult | null => {
-          if (!value || typeof value !== 'object') return null
-          const v = value as { result?: unknown; reasoning?: unknown }
-          if (typeof v.result !== 'string') return null
-          if (typeof v.reasoning !== 'string') return null
-          return { result: v.result, reasoning: v.reasoning }
         }
 
         const ids: TestVariantId[] = ['a', 'b', 'c', 'd']
