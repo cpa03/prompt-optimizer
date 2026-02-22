@@ -1,4 +1,5 @@
 import type { ErrorParams } from '../constants/error-codes'
+import { TIMEOUTS } from '../config/timeouts'
 
 /**
  * Represents a record-like object with string keys and unknown values.
@@ -377,16 +378,17 @@ export function getSuggestedRetryDelay(error: unknown): number {
     return 0
   }
 
+  const { errorRetryDelay } = TIMEOUTS
   switch (classification.category) {
     case 'rate_limit':
-      return 60000 // 1 minute for rate limits
+      return errorRetryDelay.rateLimit
     case 'server':
-      return 5000 // 5 seconds for server errors
+      return errorRetryDelay.server
     case 'timeout':
-      return 2000 // 2 seconds for timeouts
+      return errorRetryDelay.timeout
     case 'network':
-      return 3000 // 3 seconds for network errors
+      return errorRetryDelay.network
     default:
-      return 1000 // 1 second default
+      return errorRetryDelay.default
   }
 }
