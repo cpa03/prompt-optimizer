@@ -37,16 +37,20 @@
               @click="handleCancel"
               @keydown.enter.stop="handleCancel"
               @keydown.space.stop="handleCancel"
+              class="modal-btn"
             >
-              {{ t('common.cancel') }}
+              <span>{{ t('common.cancel') }}</span>
+              <kbd class="kbd-hint kbd-hint--cancel" v-if="showKeyboardHints">Esc</kbd>
             </NButton>
             <NButton
               type="primary"
               @click="handleConfirm"
               @keydown.enter.stop="handleConfirm"
               @keydown.space.stop="handleConfirm"
+              class="modal-btn"
             >
-              {{ t('common.confirm') }}
+              <span>{{ t('common.confirm') }}</span>
+              <kbd class="kbd-hint kbd-hint--confirm" v-if="showKeyboardHints">Enter</kbd>
             </NButton>
           </div>
         </slot>
@@ -126,7 +130,25 @@ const handleKeyDown = (event: KeyboardEvent) => {
     event.stopPropagation()
     handleCancel()
   }
+  // Enter键确认（仅当没有焦点在输入框或按钮上时）
+  if (event.key === 'Enter' && isVisible.value && !event.defaultPrevented) {
+    const activeElement = document.activeElement
+    const isInputFocused =
+      activeElement instanceof HTMLInputElement ||
+      activeElement instanceof HTMLTextAreaElement ||
+      activeElement?.getAttribute('contenteditable') === 'true'
+    if (!isInputFocused) {
+      event.preventDefault()
+      handleConfirm()
+    }
+  }
 }
+
+// 在桌面端显示键盘提示（移动端隐藏）
+const showKeyboardHints = computed(() => {
+  if (typeof window === 'undefined') return false
+  return window.innerWidth >= 768
+})
 
 // 添加全局键盘监听
 onMounted(() => {
@@ -185,6 +207,51 @@ const handleAfterLeave = () => {
 .modal-footer {
   padding-top: 16px;
   border-top: 1px solid var(--n-divider-color);
+}
+
+/* Modal button styles */
+.modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Keyboard shortcut hints */
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 4px;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.kbd-hint--cancel {
+  color: var(--n-text-color-3, rgba(0, 0, 0, 0.6));
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.dark .kbd-hint--cancel {
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-btn:hover .kbd-hint {
+  opacity: 1;
+}
+
+.modal-btn:focus-visible .kbd-hint {
+  opacity: 1;
 }
 
 /* Screen reader only - visually hidden but accessible to screen readers */
@@ -248,6 +315,18 @@ const handleAfterLeave = () => {
     transition:
       transform 0s,
       opacity 0s !important;
+  }
+
+  /* 禁用键盘提示过渡 */
+  .kbd-hint {
+    transition: none;
+  }
+}
+
+/* Hide keyboard hints on mobile devices */
+@media (max-width: 767px) {
+  .kbd-hint {
+    display: none;
   }
 }
 </style>
