@@ -390,10 +390,12 @@ export class HistoryManager implements IHistoryManager {
 
     // Build results, filtering invalid chains
     const results: PromptRecordChain[] = []
+    const skippedChainIds: string[] = []
 
     for (const [chainId, data] of chainData) {
       // Skip chains without root record
       if (!data.rootRecord || !data.currentRecord) {
+        skippedChainIds.push(chainId)
         continue
       }
 
@@ -410,6 +412,13 @@ export class HistoryManager implements IHistoryManager {
 
     // Sort by timestamp (newest first)
     results.sort((a, b) => b.currentRecord.timestamp - a.currentRecord.timestamp)
+
+    // Log skipped chains for debugging data corruption issues
+    if (skippedChainIds.length > 0) {
+      console.warn(
+        `[HistoryManager] Skipped ${skippedChainIds.length} invalid chain(s) without root record: ${skippedChainIds.slice(0, 5).join(', ')}${skippedChainIds.length > 5 ? '...' : ''}`
+      )
+    }
 
     return results
   }
