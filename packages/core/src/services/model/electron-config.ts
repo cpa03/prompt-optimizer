@@ -2,7 +2,7 @@ import { TextModelConfig } from './types'
 import { getAllModels } from './defaults'
 import { ModelError } from './errors'
 import { MODEL_ERROR_CODES } from '../../constants/error-codes'
-import { createDebugLogger } from '../../utils/debug'
+import { createDebugLogger } from '../../utils'
 
 const logger = createDebugLogger('electron-config')
 
