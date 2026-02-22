@@ -17,9 +17,11 @@
             size="small"
             ghost
             @click="emitConfig()"
+            :aria-label="configText || t('model.select.configure')"
+            class="swc-config-btn"
           >
             <template #icon>
-              <span>⚙️</span>
+              <span aria-hidden="true">⚙️</span>
             </template>
             {{ configText || t('model.select.configure') }}
           </NButton>
@@ -30,9 +32,15 @@
     <template #action>
       <slot name="action">
         <div v-if="shouldShowConfigAction" style="padding: 8px 12px">
-          <NButton quaternary size="small" @click="emitConfig()">
+          <NButton
+            quaternary
+            size="small"
+            @click="emitConfig()"
+            :aria-label="configText || t('model.select.configure')"
+            class="swc-config-btn"
+          >
             <template #icon>
-              <span>⚙️</span>
+              <span aria-hidden="true">⚙️</span>
             </template>
             {{ configText || t('model.select.configure') }}
           </NButton>
@@ -219,6 +227,12 @@ const emitConfig = () => emit('config')
   opacity: 0.72;
   line-height: 1.3;
   white-space: normal;
+}
+
+/* 🎨 Palette: Config button focus-visible for keyboard navigation */
+.swc-config-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
 }
 </style>
 
