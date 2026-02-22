@@ -120,11 +120,11 @@ VITE_CUSTOM_API_MODEL_qwen3=qwen3:8b
 ```bash
 # Windows
 set VITE_CUSTOM_API_KEY_qwen3=your-qwen-key
-npm run desktop
+pnpm dev:desktop
 
 # macOS/Linux
 export VITE_CUSTOM_API_KEY_qwen3=your-qwen-key
-npm run desktop
+pnpm dev:desktop
 ```
 
 ### Docker 部署
