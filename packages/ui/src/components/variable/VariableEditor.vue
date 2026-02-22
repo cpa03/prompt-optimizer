@@ -76,7 +76,7 @@
                 :style="{ fontSize: FONT_SIZES.XS + 'px', transition: 'color 0.2s ease' }"
                 :class="['char-count', nameLengthStatus.class]"
               >
-                {{ formData.name.length }}/50
+                {{ formData.name.length }}/{{ VARIABLE_CONSTRAINTS.MAX_NAME_LENGTH }}
               </NText>
             </transition>
           </div>
@@ -187,7 +187,7 @@ import {
   type FormRules,
 } from 'naive-ui'
 import { Check, AlertCircle, Star, Copy } from '@vicons/tabler'
-import { UI_DIMENSIONS, FONT_SIZES } from '../../config/constants'
+import { UI_DIMENSIONS, FONT_SIZES, VARIABLE_CONSTRAINTS } from '../../config/constants'
 import { useToast } from '../../composables/ui/useToast'
 
 const { t } = useI18n()
@@ -266,34 +266,46 @@ const nameInputStatus = computed(() => {
 })
 
 const valueInputStatus = computed(() => {
-  if (formData.value.value.length > 5000) return 'error'
-  if (formData.value.value.length > 4500) return 'warning'
+  const maxLen = VARIABLE_CONSTRAINTS.MAX_DISPLAY_LENGTH
+  const warningLen = Math.floor((maxLen * VARIABLE_CONSTRAINTS.WARNING_THRESHOLD_PERCENT) / 100)
+  if (formData.value.value.length > maxLen) return 'error'
+  if (formData.value.value.length > warningLen) return 'warning'
   return undefined
 })
 
 const nameLengthStatus = computed(() => {
   const len = formData.value.name.length
-  if (len > 50) return { depth: 3 as const, class: 'exceeded' }
-  if (len > 40) return { depth: 2 as const, class: 'warning' }
+  const maxNameLen = VARIABLE_CONSTRAINTS.MAX_NAME_LENGTH
+  const nameWarningThreshold = Math.floor(maxNameLen * 0.8) // 80% of max
+  if (len > maxNameLen) return { depth: 3 as const, class: 'exceeded' }
+  if (len > nameWarningThreshold) return { depth: 2 as const, class: 'warning' }
   return { depth: 3 as const, class: 'normal' }
 })
 
-const isValueNearLimit = computed(() => formData.value.value.length > 4000)
-const isValueAtLimit = computed(() => formData.value.value.length >= 5000)
+const maxDisplayLen = VARIABLE_CONSTRAINTS.MAX_DISPLAY_LENGTH
+const nearLimitThreshold = Math.floor(
+  (maxDisplayLen * VARIABLE_CONSTRAINTS.NEAR_LIMIT_THRESHOLD_PERCENT) / 100
+)
+const warningThreshold = Math.floor(
+  (maxDisplayLen * VARIABLE_CONSTRAINTS.WARNING_THRESHOLD_PERCENT) / 100
+)
+
+const isValueNearLimit = computed(() => formData.value.value.length > nearLimitThreshold)
+const isValueAtLimit = computed(() => formData.value.value.length >= maxDisplayLen)
 const valueLengthPercentage = computed(() =>
-  Math.min((formData.value.value.length / 5000) * 100, 100)
+  Math.min((formData.value.value.length / maxDisplayLen) * 100, 100)
 )
 const valueProgressStatus = computed(() => {
-  if (formData.value.value.length >= 5000) return 'error'
-  if (formData.value.value.length > 4500) return 'warning'
+  if (formData.value.value.length >= maxDisplayLen) return 'error'
+  if (formData.value.value.length > warningThreshold) return 'warning'
   return 'success'
 })
 const formatValueLength = computed(() => {
   const len = formData.value.value.length
   if (len >= 1000) {
-    return `${(len / 1000).toFixed(1)}k / 5k`
+    return `${(len / 1000).toFixed(1)}k / ${(maxDisplayLen / 1000).toFixed(0)}k`
   }
-  return `${len} / 5000`
+  return `${len} / ${maxDisplayLen}`
 })
 
 const showPreview = computed(() => {
@@ -504,7 +516,7 @@ const formRules: FormRules = {
     },
     {
       validator: (_rule: unknown, value: string) => {
-        if (value && value.trim().length > 5000) {
+        if (value && value.trim().length > VARIABLE_CONSTRAINTS.MAX_DISPLAY_LENGTH) {
           return new Error(t('variables.editor.errors.valueTooLong'))
         }
       },
