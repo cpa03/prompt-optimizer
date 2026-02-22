@@ -2,9 +2,22 @@
 
 Track and manage user stories for the prompt-optimizer project.
 
-## Story Overview
+## Quick Reference
 
-### Story ID
+### Definition of Ready Checklist
+
+Before a story moves to development, verify:
+
+| Criterion                        | Status |
+| -------------------------------- | ------ |
+| Clear business value defined     | [ ]    |
+| Acceptance criteria are testable | [ ]    |
+| Technical approach understood    | [ ]    |
+| Dependencies identified          | [ ]    |
+| Estimated within 1-3 days        | [ ]    |
+| Dev notes have source references | [ ]    |
+
+### Story ID Format
 
 - **Format**: `{epic}.{story}` (e.g., `1.1`, `2.3`)
 - **Title**: Brief descriptive title
@@ -422,4 +435,45 @@ Track dependencies and related stories:
 
 ---
 
-**Last Updated**: 2026-02-20
+## Story Anti-Patterns to Avoid
+
+### Common Mistakes
+
+| Anti-Pattern                | Problem                                      | Better Approach                          |
+| --------------------------- | -------------------------------------------- | ---------------------------------------- |
+| Vague AC                    | "User can do X" without specifics            | Use Given/When/Then format               |
+| Missing source refs         | Technical details without architecture links | Add `[Source: docs/architecture/...]`    |
+| Overly large stories        | Story takes more than 3 days                 | Split into smaller, focused stories      |
+| No test plan                | No test scenarios defined                    | List specific test cases                 |
+| Placeholder text            | `[TBD]`, `TODO` remain                       | Complete all sections before approval    |
+| Missing dependencies        | Unknown blockers during implementation       | Document all prerequisites explicitly    |
+| Technology assumptions      | Implicit tech choices                        | Specify technologies with rationale      |
+| No error handling           | Happy path only                              | Include error scenarios in AC            |
+| Scope creep                 | Tasks unrelated to AC                        | Keep tasks focused on acceptance criteria|
+| No integration context      | Ignores existing system                      | Document integration points and impacts  |
+
+### Warning Signs
+
+A story likely needs revision if:
+
+1. **Too many acceptance criteria** (>7 ACs suggests story is too large)
+2. **Tasks don't map to ACs** (tasks should reference AC numbers)
+3. **Multiple file paths unclear** (each task should have clear file targets)
+4. **"And then..." phrasing** (suggests hidden complexity)
+5. **Vague terms** like "appropriate", "reasonable", "properly"
+6. **No edge cases mentioned** (every feature has edge cases)
+7. **Copy-paste from requirements** (ACs should be specific, not generic)
+
+### Quality Indicators
+
+Strong stories typically have:
+
+- 3-7 acceptance criteria (focused and specific)
+- 4-8 tasks that directly implement ACs
+- Clear source references for all technical details
+- Explicit error handling and edge cases
+- Test scenarios covering happy path + 2-3 edge cases
+
+---
+
+**Last Updated**: 2026-02-22

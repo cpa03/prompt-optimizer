@@ -2,6 +2,36 @@
 
 This checklist helps reviewers evaluate user stories before they move to implementation.
 
+## Quick Reference Card
+
+| Check                  | Pass Criteria                                    | Common Issues                      |
+| ---------------------- | ------------------------------------------------ | ---------------------------------- |
+| **Goal Clarity**       | WHAT and WHY are explicit                        | Vague purpose, missing context     |
+| **Acceptance Criteria**| 3-7 specific, testable criteria                  | Too many, unmeasurable, vague      |
+| **Tasks**              | All tasks reference AC numbers                   | Orphan tasks, missing tests        |
+| **Dev Notes**          | Source references included                       | No architecture links, assumptions |
+| **Testing**            | Test scenarios listed                            | No test plan, missing edge cases   |
+| **Dependencies**       | Prerequisites documented                         | Hidden blockers, unclear order     |
+
+## Story Quality Score
+
+Calculate story quality (max 100 points):
+
+| Category             | Points | Criteria                                 |
+| -------------------- | ------ | ---------------------------------------- |
+| Goal Clarity         | 20     | Clear purpose, business value, context   |
+| Acceptance Criteria  | 20     | Specific, measurable, testable (3-7 ACs) |
+| Tasks                | 15     | All map to ACs, include testing          |
+| Dev Notes            | 20     | Source refs, technical details complete  |
+| Testing Plan         | 15     | Scenarios defined, edge cases covered    |
+| Dependencies         | 10     | Prerequisites explicit, order clear      |
+
+**Score Interpretation:**
+- **85-100**: Excellent - Ready for development
+- **70-84**: Good - Minor improvements needed
+- **55-69**: Fair - Requires revision before approval
+- **<55**: Poor - Significant rework needed
+
 ## Pre-Implementation Review (Before Development)
 
 ### Definition of Ready
@@ -183,4 +213,4 @@ Focus on:
 
 ---
 
-**Last Updated**: 2026-02-20
+**Last Updated**: 2026-02-22

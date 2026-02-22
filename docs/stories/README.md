@@ -2,6 +2,21 @@
 
 This directory contains user story documents for the prompt-optimizer project.
 
+## Quick Start
+
+```
+1. Create story → 2. Validate → 3. Approve → 4. Implement → 5. Verify → 6. Close
+```
+
+| Step          | Who           | Command/Action                              |
+| ------------- | ------------- | ------------------------------------------- |
+| Create story  | Scrum Master  | `pnpm story:create 1 "Feature Name"`        |
+| Validate      | Scrum Master  | `pnpm story:validate docs/stories/1.x.md`   |
+| Approve       | Product Owner | Review checklist, set status to `Approved`  |
+| Implement     | Developer     | Execute tasks, update checkboxes            |
+| Verify        | QA Agent      | Run tests, populate QA Results section      |
+| Close         | All           | Set status to `Done` after verification     |
+
 ## Story Workflow
 
 ```
@@ -148,4 +163,4 @@ pnpm story:create 2.1 "Feature Name"
 
 ---
 
-**Last Updated**: 2026-02-20
+**Last Updated**: 2026-02-22
