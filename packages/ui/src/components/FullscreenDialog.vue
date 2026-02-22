@@ -58,7 +58,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NModal, NFlex } from 'naive-ui'
-import { TIME_CONSTANTS, SPACING } from '../config/constants'
+import { TIME_CONSTANTS, UI_CONSTANTS, SPACING } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -98,7 +98,7 @@ watch(localVisible, (newVal) => {
     isClosing.value = true
     setTimeout(() => {
       isClosing.value = false
-    }, TIME_CONSTANTS.ANIMATION_DURATION_MS)
+    }, UI_CONSTANTS.ANIMATION_DURATION_MS)
   }
 })
 
