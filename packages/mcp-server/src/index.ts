@@ -563,30 +563,25 @@ async function main() {
       })
       logger.info('HTTP server setup completed')
 
-      // Improved graceful shutdown for HTTP mode
       const gracefulShutdown = (signal: string) => {
-        console.log(`Received ${signal}, shutting down gracefully...`)
+        logger.info(`Received ${signal}, shutting down gracefully...`)
 
-        // Stop the rate limiter cleanup timer
         rateLimiter.stop()
 
-        // Stop accepting new connections
         httpServer.close(() => {
-          console.log('HTTP server closed')
+          logger.info('HTTP server closed')
           process.exit(0)
         })
 
-        // Force close after timeout (use unref to not prevent process exit)
         const forceExitTimer = setTimeout(() => {
-          console.warn('Forcing shutdown after timeout')
+          logger.warn('Forcing shutdown after timeout')
           process.exit(1)
         }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
         forceExitTimer.unref()
 
-        // Close all active sessions
         const sessionIds = Object.keys(transports)
         if (sessionIds.length > 0) {
-          console.log(`Closing ${sessionIds.length} active session(s)...`)
+          logger.info(`Closing ${sessionIds.length} active session(s)...`)
         }
       }
 
@@ -602,36 +597,31 @@ async function main() {
       logger.info('MCP Server running on stdio')
     }
   } catch (error) {
-    // 确保错误信息始终显示，即使没有启用 DEBUG
-    console.error('❌ MCP Server startup failed:')
-    console.error('   ', (error as Error).message)
-
-    // 同时使用 debug 库记录详细信息
-    logger.error('Failed to start MCP Server', error as Error)
-
+    logger.error('MCP Server startup failed:', error as Error)
     process.exit(1)
   }
 }
 
-// 处理未捕获的异常
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error)
+  logger.error('Uncaught Exception:', error)
   process.exit(1)
 })
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
+  logger.error(
+    `Unhandled Rejection at: ${String(promise)}`,
+    reason instanceof Error ? reason : new Error(String(reason))
+  )
   process.exit(1)
 })
 
-// 优雅关闭 (stdio mode fallback - HTTP mode registers its own handlers)
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully...')
+  logger.info('Received SIGINT, shutting down gracefully...')
   process.exit(0)
 })
 
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully...')
+  logger.info('Received SIGTERM, shutting down gracefully...')
   process.exit(0)
 })
 
