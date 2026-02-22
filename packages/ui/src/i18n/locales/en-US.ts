@@ -126,6 +126,7 @@ export default {
     basicMode: 'Basic',
     contextMode: 'Context',
     imageMode: 'Image',
+    github: 'View on GitHub',
   },
   contextMode: {
     optimizationMode: {

@@ -124,6 +124,7 @@ export default {
     basicMode: '基礎',
     contextMode: '情境',
     imageMode: '圖像',
+    github: '查看 GitHub',
   },
   contextMode: {
     optimizationMode: {
