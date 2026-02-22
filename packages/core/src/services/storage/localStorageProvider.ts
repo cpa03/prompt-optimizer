@@ -2,9 +2,30 @@ import { IStorageProvider, type DatabaseHealthStatus } from './types'
 import { StorageError, validateStorageKey, validateStorageValue } from './errors'
 import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
 
-/**
- * 简单的异步锁实现
- */
+const TIMESTAMP_KEY = '__storage_timestamps__'
+
+function loadTimestamps(): Map<string, number> {
+  try {
+    const data = localStorage.getItem(TIMESTAMP_KEY)
+    if (data) {
+      const parsed = JSON.parse(data) as Record<string, number>
+      return new Map(Object.entries(parsed))
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return new Map()
+}
+
+function saveTimestamps(timestamps: Map<string, number>): void {
+  try {
+    const obj = Object.fromEntries(timestamps)
+    localStorage.setItem(TIMESTAMP_KEY, JSON.stringify(obj))
+  } catch {
+    // Ignore save errors
+  }
+}
+
 class AsyncLock {
   private locks: Map<string, Promise<void>> = new Map()
 
@@ -56,6 +77,7 @@ class AsyncLock {
  */
 export class LocalStorageProvider implements IStorageProvider {
   private lock = new AsyncLock()
+  private timestamps: Map<string, number> = loadTimestamps()
 
   public async getItem(key: string): Promise<string | null> {
     const release = await this.lock.acquire(key)
@@ -114,6 +136,8 @@ export class LocalStorageProvider implements IStorageProvider {
       validateStorageKey(key)
       validateStorageValue(value)
       localStorage.setItem(key, value)
+      this.timestamps.set(key, Date.now())
+      saveTimestamps(this.timestamps)
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -129,6 +153,8 @@ export class LocalStorageProvider implements IStorageProvider {
     try {
       validateStorageKey(key)
       localStorage.removeItem(key)
+      this.timestamps.delete(key)
+      saveTimestamps(this.timestamps)
     } catch (error) {
       if (error instanceof StorageError) {
         throw error
@@ -143,6 +169,8 @@ export class LocalStorageProvider implements IStorageProvider {
     const release = await this.lock.acquire('__clear_all__')
     try {
       localStorage.clear()
+      this.timestamps.clear()
+      saveTimestamps(this.timestamps)
     } catch (error) {
       throw new StorageError('Failed to clear all storage items', 'clear')
     } finally {
@@ -180,6 +208,8 @@ export class LocalStorageProvider implements IStorageProvider {
 
       // 写入新值
       localStorage.setItem(key, JSON.stringify(newValue))
+      this.timestamps.set(key, Date.now())
+      saveTimestamps(this.timestamps)
     } catch (error) {
       // 如果已经是StorageError，直接抛出
       if (error instanceof StorageError) {
@@ -224,7 +254,7 @@ export class LocalStorageProvider implements IStorageProvider {
       const keys: string[] = []
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i)
-        if (key !== null) {
+        if (key !== null && key !== TIMESTAMP_KEY) {
           keys.push(key)
         }
       }
@@ -252,13 +282,17 @@ export class LocalStorageProvider implements IStorageProvider {
     const releases = await Promise.all(keys.map((key) => this.lock.acquire(key)))
 
     try {
+      const now = Date.now()
       for (const op of operations) {
         if (op.operation === 'set' && op.value !== undefined) {
           localStorage.setItem(op.key, op.value)
+          this.timestamps.set(op.key, now)
         } else if (op.operation === 'remove') {
           localStorage.removeItem(op.key)
+          this.timestamps.delete(op.key)
         }
       }
+      saveTimestamps(this.timestamps)
     } catch (error) {
       throw new StorageError('Failed to perform batch update', 'write')
     } finally {
@@ -288,11 +322,26 @@ export class LocalStorageProvider implements IStorageProvider {
       }
     }
 
+    let oldestTimestamp: number | null = null
+    let newestTimestamp: number | null = null
+
+    for (const key of keys) {
+      const ts = this.timestamps.get(key)
+      if (ts !== undefined) {
+        if (oldestTimestamp === null || ts < oldestTimestamp) {
+          oldestTimestamp = ts
+        }
+        if (newestTimestamp === null || ts > newestTimestamp) {
+          newestTimestamp = ts
+        }
+      }
+    }
+
     return {
       itemCount: keys.length,
       totalSize,
-      oldestRecord: null,
-      newestRecord: null,
+      oldestRecord: oldestTimestamp,
+      newestRecord: newestTimestamp,
       averageRecordSize: keys.length > 0 ? totalSize / keys.length : 0,
     }
   }

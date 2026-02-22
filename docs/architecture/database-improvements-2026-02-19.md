@@ -438,9 +438,60 @@ this.timestamps.delete(key)
 
 **Compatibility**: ✅ No breaking changes. Same API, enhanced statistics.
 
+### 9. LocalStorageProvider Timestamp Tracking (NEW - 2026-02-22)
+
+**Problem**: `LocalStorageProvider` did not track record timestamps, always returning `null` for `oldestRecord` and `newestRecord` in `getDatabaseStats()`.
+
+**Solution**: Added timestamp tracking to `LocalStorageProvider` using a separate localStorage key `__storage_timestamps__`.
+
+**Benefits**:
+
+- Consistent API behavior across all storage providers
+- Better observability for storage lifecycle management
+- Ability to identify old data for cleanup
+- Persistent timestamps across browser sessions
+
+**Implementation**:
+
+```typescript
+const TIMESTAMP_KEY = '__storage_timestamps__'
+
+function loadTimestamps(): Map<string, number> {
+  try {
+    const data = localStorage.getItem(TIMESTAMP_KEY)
+    if (data) {
+      const parsed = JSON.parse(data) as Record<string, number>
+      return new Map(Object.entries(parsed))
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return new Map()
+}
+
+function saveTimestamps(timestamps: Map<string, number>): void {
+  try {
+    const obj = Object.fromEntries(timestamps)
+    localStorage.setItem(TIMESTAMP_KEY, JSON.stringify(obj))
+  } catch {
+    // Ignore save errors
+  }
+}
+```
+
+**Key Changes**:
+
+- Uses separate localStorage key `__storage_timestamps__` for persistence
+- `keys()` method filters out internal timestamp key
+- All write operations (`setItem`, `updateData`, `batchUpdate`) track timestamps
+- All delete operations (`removeItem`, `clearAll`, `batchUpdate`) clean up timestamps
+- `getDatabaseStats()` now returns actual timestamps
+
+**Compatibility**: ✅ No breaking changes. Same API, enhanced statistics.
+
 ## Final Testing
 
-- ✅ All 1035 unit tests passing
+- ✅ All tests passing
 - ✅ No TypeScript compilation errors
 - ✅ No ESLint warnings
 - ✅ Build successful (CJS + ESM + DTS)
