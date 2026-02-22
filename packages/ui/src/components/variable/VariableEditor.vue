@@ -28,12 +28,12 @@
           <div class="validation-indicator" v-if="nameValidationState.show">
             <transition name="fade-scale" mode="out-in">
               <div v-if="nameValidationState.isValid" class="indicator-success" key="success">
-                <NIcon :size="18" color="#18a058">
+                <NIcon :size="18" :color="THEME_COLORS.SUCCESS">
                   <Check />
                 </NIcon>
               </div>
               <div v-else-if="nameValidationState.hasError" class="indicator-error" key="error">
-                <NIcon :size="18" color="#d03050">
+                <NIcon :size="18" :color="THEME_COLORS.ERROR">
                   <AlertCircle />
                 </NIcon>
               </div>
@@ -187,7 +187,12 @@ import {
   type FormRules,
 } from 'naive-ui'
 import { Check, AlertCircle, Star, Copy } from '@vicons/tabler'
-import { UI_DIMENSIONS, FONT_SIZES, VARIABLE_CONSTRAINTS } from '../../config/constants'
+import {
+  UI_DIMENSIONS,
+  FONT_SIZES,
+  VARIABLE_CONSTRAINTS,
+  THEME_COLORS,
+} from '../../config/constants'
 import { useToast } from '../../composables/ui/useToast'
 
 const { t } = useI18n()
@@ -705,11 +710,11 @@ watch(
 }
 
 .char-count.warning {
-  color: #f0a020;
+  color: v-bind('THEME_COLORS.WARNING');
 }
 
 .char-count.exceeded {
-  color: #d03050;
+  color: v-bind('THEME_COLORS.ERROR');
   font-weight: 500;
 }
 
@@ -738,12 +743,12 @@ watch(
 }
 
 .value-length-indicator.near-limit {
-  color: #f0a020;
+  color: v-bind('THEME_COLORS.WARNING');
   background: rgba(240, 160, 32, 0.1);
 }
 
 .value-length-indicator.at-limit {
-  color: #d03050;
+  color: v-bind('THEME_COLORS.ERROR');
   background: rgba(208, 48, 80, 0.1);
   font-weight: 500;
 }

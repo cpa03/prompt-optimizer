@@ -187,6 +187,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import { useToast } from '../composables/ui/useToast'
 import { useTagSuggestions } from '../composables/ui/useTagSuggestions'
+import { TIME_CONSTANTS } from '../config/constants'
 import OutputDisplayCore from './OutputDisplayCore.vue'
 import CategoryTreeSelect from './CategoryTreeSelect.vue'
 import type { AppServices } from '../types/services'
@@ -312,14 +313,12 @@ const handleFunctionModeChange = (mode: 'basic' | 'context' | 'image') => {
 
 // 标签管理函数 - 带删除动画
 const handleRemoveTag = (index: number) => {
-  // 🎨 Palette: Add visual feedback before removing tag
   removingTagIndex.value = index
 
-  // Wait for animation to complete before actually removing
   setTimeout(() => {
     formData.tags.splice(index, 1)
     removingTagIndex.value = null
-  }, 200)
+  }, TIME_CONSTANTS.ANIMATION_SHORT_DELAY)
 }
 
 const handleSelectTag = (value: string) => {
