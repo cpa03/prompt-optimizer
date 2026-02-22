@@ -24,8 +24,6 @@ const UI_SETTINGS_KEYS = [
   PREFERENCE_CONFIG.keys.selectedIterateTemplate, // 迭代模板
 ] as const
 
-type UISettingsKey = (typeof UI_SETTINGS_KEYS)[number]
-
 const UI_SETTINGS_KEYS_SET = new Set<string>(UI_SETTINGS_KEYS)
 
 // 旧版本键名映射表 - 用于兼容性处理
