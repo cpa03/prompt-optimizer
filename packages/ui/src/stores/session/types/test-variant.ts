@@ -59,3 +59,40 @@ export const getVariantLabel = (id: TestVariantId): string => {
   const labels: Record<TestVariantId, string> = { a: 'A', b: 'B', c: 'C', d: 'D' }
   return labels[id]
 }
+
+/**
+ * Test variant result structure (per column)
+ * Used by all session stores for A/B/C/D column results
+ */
+export interface TestVariantResult {
+  result: string
+  reasoning: string
+}
+
+/**
+ * Test variant results map (A/B/C/D -> TestVariantResult)
+ * Re-exports TestVariantResults with concrete TestVariantResult type
+ */
+export type TestVariantResultsMap = Record<TestVariantId, TestVariantResult>
+
+/**
+ * Legacy test results structure (original vs optimized comparison)
+ * Used by Basic mode sessions for simple 2-column comparison
+ */
+export interface TestResults {
+  originalResult: string
+  originalReasoning: string
+  optimizedResult: string
+  optimizedReasoning: string
+}
+
+/**
+ * Common workspace layout configuration
+ * Shared across all session types that have split panel + test columns
+ */
+export interface WorkspaceLayoutConfig {
+  /** Main split: left pane width percent (25..50) */
+  mainSplitLeftPct: number
+  /** Test area: visible result columns (2..4) */
+  testColumnCount: TestColumnCount
+}
