@@ -140,6 +140,7 @@ pnpm build
 
 ### Deployment Documentation
 
+- **[CI/CD Improvements](deployment/ci-cd-improvements.md)** - Recommended CI/CD enhancements
 - **[Docker MCP Integration](deployment/docker-mcp-integration.md)** - Docker setup with MCP
 
 ---
@@ -151,7 +152,7 @@ pnpm build
 - **[Project Status](project/project-status.md)** - Current project status
 - **[Project README](project/README.md)** - Project overview
 - **[PRD](project/prd.md)** - Product Requirements Document
-- **Version Sync** (project/version-sync.md) - Version management
+- **[Version Sync](project/version-sync.md)** - Version management
 
 ### User Story Management
 
@@ -267,7 +268,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-21  
+**Last Updated:** 2026-02-22  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
