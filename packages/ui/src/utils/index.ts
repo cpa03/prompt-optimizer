@@ -7,7 +7,15 @@
 export { formatDate, formatDateShort, formatTime, formatRelativeTime } from './date'
 
 // Text utilities
-export { truncateText, truncateMiddle, capitalize, camelToTitle, normalizeWhitespace } from './text'
+export {
+  truncateText,
+  truncateMiddle,
+  capitalize,
+  camelToTitle,
+  normalizeWhitespace,
+  escapeHtml,
+  unescapeHtml,
+} from './text'
 
 // Platform utilities
 export { type Platform, getPlatform, platform } from './platform'
