@@ -14,6 +14,8 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { URL_PATTERNS, OPENROUTER } from '../../../constants/api-endpoints'
 import { CONTENT_TYPES, HTTP_HEADERS, HTTP_METHODS } from '../../../constants/http-codes'
 import { MIME_TYPES } from '../../../config'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -80,6 +82,9 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
    */
   public async getModelsAsync(connectionConfig: Record<string, any>): Promise<ImageModel[]> {
     const apiKey = connectionConfig?.apiKey
+    const timeoutMs = TIMEOUTS.network.medium
+
+    const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
     try {
       const response = await fetch(`${PROVIDER_URLS.openrouter}/models`, {
@@ -88,6 +93,7 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
           [HTTP_HEADERS.CONTENT_TYPE]: CONTENT_TYPES.JSON,
           ...(apiKey ? { [HTTP_HEADERS.AUTHORIZATION]: `Bearer ${apiKey}` } : {}),
         },
+        signal: timeoutSignal,
       })
 
       if (!response.ok) {
@@ -127,6 +133,8 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     } catch (error) {
       console.warn('Failed to fetch OpenRouter models:', error)
       return this.getModels()
+    } finally {
+      cleanup()
     }
   }
 
@@ -250,17 +258,39 @@ export class OpenRouterImageAdapter extends AbstractImageProviderAdapter {
     options: Record<string, unknown>
   ) {
     const url = this.resolveEndpointUrl(config, endpoint)
-    const response = await fetch(url, options as RequestInit)
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
-    if (!response.ok) {
-      // 直接穿透错误，不做特殊处理
-      const errorText = await response.text()
-      throw new ImageError(
-        IMAGE_ERROR_CODES.GENERATION_FAILED,
-        `OpenRouter API error: ${response.status} ${response.statusText}${errorText ? ': ' + errorText : ''}`
-      )
-    }
+    return withRetry(
+      async (_signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
 
-    return await response.json()
+        try {
+          const combinedOptions = {
+            ...options,
+            signal: timeoutSignal,
+          }
+
+          const response = await fetch(url, combinedOptions as RequestInit)
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            const error = new ImageError(
+              IMAGE_ERROR_CODES.GENERATION_FAILED,
+              `OpenRouter API error: ${response.status} ${response.statusText}${errorText ? ': ' + errorText : ''}`
+            )
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
+        }
+      },
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
+      }
+    )
   }
 }

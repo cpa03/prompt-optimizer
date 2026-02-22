@@ -12,6 +12,8 @@ import { PROVIDER_URLS } from '../../../config/providers'
 import { IMAGE_SIZE_PRESETS, IMAGE_DEFAULTS } from '../../../config/defaults'
 import { IMAGE_ADAPTER_CONFIG } from '../../../config/core-config'
 import { MIME_TYPES, HTTP_HEADERS, HTTP_METHODS } from '../../../config'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -234,20 +236,45 @@ export class SeedreamImageAdapter extends AbstractImageProviderAdapter {
 
   private async apiCall(config: ImageModelConfig, endpoint: string, options: any) {
     const url = this.resolveEndpointUrl(config, endpoint)
-    const response = await fetch(url, options)
-    if (!response.ok) {
-      let errorMessage: string
-      try {
-        const errorData = await response.json()
-        errorMessage = errorData?.error?.message || errorData?.message || response.statusText
-      } catch {
-        errorMessage = response.statusText
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
+
+    return withRetry(
+      async (_signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
+        try {
+          const combinedOptions = {
+            ...options,
+            signal: timeoutSignal,
+          }
+
+          const response = await fetch(url, combinedOptions)
+
+          if (!response.ok) {
+            let errorMessage: string
+            try {
+              const errorData = await response.json()
+              errorMessage = errorData?.error?.message || errorData?.message || response.statusText
+            } catch {
+              errorMessage = response.statusText
+            }
+            const error = new ImageError(
+              IMAGE_ERROR_CODES.GENERATION_FAILED,
+              `Seedream API error: ${response.status} ${errorMessage}`
+            )
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          return await response.json()
+        } finally {
+          cleanup()
+        }
+      },
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
-      throw new ImageError(
-        IMAGE_ERROR_CODES.GENERATION_FAILED,
-        `Seedream API error: ${response.status} ${errorMessage}`
-      )
-    }
-    return await response.json()
+    )
   }
 }

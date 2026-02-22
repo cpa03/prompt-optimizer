@@ -10,6 +10,8 @@ import type {
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
 import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, HTTP_METHODS, MIME_TYPES } from '../../../config'
+import { withRetry, createTimeoutSignal, RETRY_PRESETS } from '../../../utils/retry'
+import { TIMEOUTS } from '../../../config/timeouts'
 
 export class OllamaImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {
@@ -81,8 +83,11 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
     }
 
+    const timeoutMs = TIMEOUTS.network.medium
+    const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
     try {
-      const response = await fetch(url, { method: HTTP_METHODS.GET, headers })
+      const response = await fetch(url, { method: HTTP_METHODS.GET, headers, signal: timeoutSignal })
       if (!response.ok) {
         return []
       }
@@ -98,6 +103,8 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
     } catch (error) {
       console.warn('[OllamaImageAdapter] Failed to fetch models:', error)
       return []
+    } finally {
+      cleanup()
     }
   }
 
@@ -171,27 +178,46 @@ export class OllamaImageAdapter extends AbstractImageProviderAdapter {
       headers.Authorization = `Bearer ${rawApiKey.trim()}`
     }
 
-    const response = await fetch(url, {
-      method: HTTP_METHODS.POST,
-      headers,
-      body: JSON.stringify(payload),
-    })
+    const timeoutMs = config.timeoutMs || TIMEOUTS.service.image
 
-    if (!response.ok) {
-      let errorMessage = `Ollama API error: ${response.status} ${response.statusText}`
-      try {
-        const errorData = await response.json()
-        if (typeof errorData?.error?.message === 'string') {
-          errorMessage = errorData.error.message
+    return withRetry(
+      async (_signal) => {
+        const { signal: timeoutSignal, cleanup } = createTimeoutSignal(timeoutMs)
+
+        try {
+          const response = await fetch(url, {
+            method: HTTP_METHODS.POST,
+            headers,
+            body: JSON.stringify(payload),
+            signal: timeoutSignal,
+          })
+
+          if (!response.ok) {
+            let errorMessage = `Ollama API error: ${response.status} ${response.statusText}`
+            try {
+              const errorData = await response.json()
+              if (typeof errorData?.error?.message === 'string') {
+                errorMessage = errorData.error.message
+              }
+            } catch {
+              // ignore JSON parse errors
+            }
+            const error = new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
+            ;(error as any).status = response.status
+            throw error
+          }
+
+          const json = await response.json()
+          return this.parseImageResponse(json, config)
+        } finally {
+          cleanup()
         }
-      } catch {
-        // ignore JSON parse errors
+      },
+      {
+        ...RETRY_PRESETS.standard,
+        retryableErrors: ['rate_limit', 'overloaded', 'timeout'],
       }
-      throw new ImageError(IMAGE_ERROR_CODES.GENERATION_FAILED, errorMessage)
-    }
-
-    const json = await response.json()
-    return this.parseImageResponse(json, config)
+    )
   }
 
   private parseImageResponse(response: any, config: ImageModelConfig): ImageResult {
