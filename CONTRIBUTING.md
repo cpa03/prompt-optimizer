@@ -44,6 +44,8 @@ Use descriptive branch names following these patterns:
 - `test/your-test-additions` - Test additions/improvements
 - `repository-manager` - Repository management improvements
 - `DX-engineer` - Developer experience improvements
+- `quality-assurance` - Quality assurance improvements
+- `technical-writer` - Documentation writing improvements
 
 ### Making Changes
 
@@ -463,6 +465,73 @@ gh pr create --label "DX-engineer" --title "docs: developer experience improveme
 - [ ] Documentation updated
 - [ ] No breaking changes
 - [ ] PR has DX-engineer label
+- [ ] Branch is up-to-date with develop
+
+## ✍️ Technical Writer
+
+### Technical Writer Workflow
+
+Technical writer improvements follow a structured workflow:
+
+```bash
+# 1. Create technical-writer branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b technical-writer
+
+# 2. Review documentation
+# - Check README files for accuracy
+# - Verify documentation links
+# - Fix typos and inconsistencies
+# - Update outdated information
+# - Add missing documentation
+
+# 3. Verify changes
+pnpm lint
+pnpm test:fast
+pnpm build
+
+# 4. Ensure branch is up-to-date before PR
+git fetch origin develop
+git rebase origin/develop
+
+# 5. Create/update PR with technical-writer label
+gh pr create --label "technical-writer" --title "docs: technical writing improvements"
+```
+
+### Technical Writer Focus Areas
+
+1. **Documentation Quality**
+   - Fix typos and grammatical errors
+   - Improve clarity and readability
+   - Ensure consistent terminology
+   - Update outdated information
+
+2. **Documentation Structure**
+   - Organize documentation logically
+   - Add missing section headers
+   - Create helpful navigation links
+   - Maintain consistent formatting
+
+3. **Cross-Language Consistency**
+   - Keep Chinese and English documentation in sync
+   - Translate new content appropriately
+   - Ensure consistent terminology across languages
+
+4. **Link Integrity**
+   - Fix broken links
+   - Update redirected URLs
+   - Add missing cross-references
+
+### Technical Writer Checklist
+
+- [ ] Lint passes with no warnings (`pnpm lint`)
+- [ ] Tests pass (`pnpm test:fast`)
+- [ ] Build succeeds (`pnpm build`)
+- [ ] Documentation is accurate and up-to-date
+- [ ] No broken links
+- [ ] Chinese and English docs are consistent (if applicable)
+- [ ] PR has technical-writer label
 - [ ] Branch is up-to-date with develop
 
 ## 🤝 Code of Conduct
