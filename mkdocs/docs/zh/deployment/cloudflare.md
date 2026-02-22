@@ -65,14 +65,17 @@ wrangler pages deploy packages/web/dist --project-name=prompt-optimizer
 
 在 Cloudflare Dashboard 中配置以下环境变量：
 
-| 变量名                     | 说明                | 必需 |
-| -------------------------- | ------------------- | ---- |
-| `ACCESS_PASSWORD`          | 访问密码保护        | 可选 |
-| `VITE_OPENAI_API_KEY`      | OpenAI API Key      | 可选 |
-| `VITE_GEMINI_API_KEY`      | Gemini API Key      | 可选 |
-| `VITE_DEEPSEEK_API_KEY`    | DeepSeek API Key    | 可选 |
-| `VITE_ZHIPU_API_KEY`       | 智谱 API Key        | 可选 |
-| `VITE_SILICONFLOW_API_KEY` | SiliconFlow API Key | 可选 |
+| 变量名                             | 说明                              | 必需 |
+| ---------------------------------- | --------------------------------- | ---- |
+| `ACCESS_PASSWORD`                  | 访问密码保护                       | 可选 |
+| `VITE_VERCEL_DEPLOYMENT`           | 设置为 `false`（Cloudflare 环境）  | 可选 |
+| `VITE_CLOUDFLARE_DEPLOYMENT`       | 设置为 `true` 启用 Cloudflare     | 可选 |
+| `VITE_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Cloudflare Web Analytics 令牌  | 可选 |
+| `VITE_OPENAI_API_KEY`              | OpenAI API Key                    | 可选 |
+| `VITE_GEMINI_API_KEY`              | Gemini API Key                    | 可选 |
+| `VITE_DEEPSEEK_API_KEY`            | DeepSeek API Key                  | 可选 |
+| `VITE_ZHIPU_API_KEY`               | 智谱 API Key                      | 可选 |
+| `VITE_SILICONFLOW_API_KEY`         | SiliconFlow API Key               | 可选 |
 
 ### 配置步骤
 

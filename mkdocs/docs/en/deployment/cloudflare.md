@@ -65,14 +65,17 @@ wrangler pages deploy packages/web/dist --project-name=prompt-optimizer
 
 Configure the following environment variables in Cloudflare Dashboard:
 
-| Variable Name              | Description                | Required |
-| -------------------------- | -------------------------- | -------- |
-| `ACCESS_PASSWORD`          | Access password protection | Optional |
-| `VITE_OPENAI_API_KEY`      | OpenAI API Key             | Optional |
-| `VITE_GEMINI_API_KEY`      | Gemini API Key             | Optional |
-| `VITE_DEEPSEEK_API_KEY`    | DeepSeek API Key           | Optional |
-| `VITE_ZHIPU_API_KEY`       | Zhipu AI Key               | Optional |
-| `VITE_SILICONFLOW_API_KEY` | SiliconFlow API Key        | Optional |
+| Variable Name                      | Description                         | Required |
+| ---------------------------------- | ----------------------------------- | -------- |
+| `ACCESS_PASSWORD`                  | Access password protection          | Optional |
+| `VITE_VERCEL_DEPLOYMENT`           | Set to `false` (for Cloudflare)     | Optional |
+| `VITE_CLOUDFLARE_DEPLOYMENT`       | Set to `true` for Cloudflare        | Optional |
+| `VITE_CLOUDFLARE_WEB_ANALYTICS_TOKEN` | Cloudflare Web Analytics token   | Optional |
+| `VITE_OPENAI_API_KEY`              | OpenAI API Key                      | Optional |
+| `VITE_GEMINI_API_KEY`              | Gemini API Key                      | Optional |
+| `VITE_DEEPSEEK_API_KEY`            | DeepSeek API Key                    | Optional |
+| `VITE_ZHIPU_API_KEY`               | Zhipu AI Key                        | Optional |
+| `VITE_SILICONFLOW_API_KEY`         | SiliconFlow API Key                 | Optional |
 
 ### Configuration Steps
 

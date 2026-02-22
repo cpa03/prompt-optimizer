@@ -42,10 +42,13 @@ void router.isReady().then(() => {
   app.mount('#app')
 })
 
-// 只在Vercel环境中加载Analytics
-// 当环境变量VITE_VERCEL_DEPLOYMENT为true时才尝试加载
+// Platform Analytics Loading
+// Vercel: Load Vercel Analytics when VITE_VERCEL_DEPLOYMENT is true
+// Cloudflare: Load Cloudflare Web Analytics when VITE_CLOUDFLARE_DEPLOYMENT is true
+// Note: Cloudflare also provides server-side analytics via Cloudflare Analytics in dashboard
+
 if (import.meta.env.VITE_VERCEL_DEPLOYMENT === 'true') {
-  // 使用完全运行时方式加载Vercel Analytics
+  // Vercel Analytics
   const loadAnalytics = () => {
     const script = document.createElement('script')
     script.src = '/_vercel/insights/script.js'
@@ -54,12 +57,26 @@ if (import.meta.env.VITE_VERCEL_DEPLOYMENT === 'true') {
     script.onerror = () => console.warn('Vercel Analytics 加载失败')
     document.head.appendChild(script)
   }
-
-  // 延迟执行以确保DOM已完全加载
   window.addEventListener('DOMContentLoaded', loadAnalytics)
+} else if (import.meta.env.VITE_CLOUDFLARE_DEPLOYMENT === 'true') {
+  // Cloudflare Web Analytics (client-side)
+  // Note: For server-side analytics, use Cloudflare Dashboard Analytics
+  // Set VITE_CLOUDFLARE_WEB_ANALYTICS_TOKEN in your environment to enable
+  const token = import.meta.env.VITE_CLOUDFLARE_WEB_ANALYTICS_TOKEN
+  if (token) {
+    const loadAnalytics = () => {
+      const script = document.createElement('script')
+      script.defer = true
+      script.src = 'https://static.cloudflareinsights.com/beacon.min.js'
+      script.dataset.cfBeacon = JSON.stringify({ token })
+      script.onload = () => console.log('Cloudflare Web Analytics 已加载')
+      script.onerror = () => console.warn('Cloudflare Web Analytics 加载失败')
+      document.head.appendChild(script)
+    }
+    window.addEventListener('DOMContentLoaded', loadAnalytics)
+  }
 } else if (import.meta.env.DEV) {
-  // 只在开发环境显示日志
-  console.log('Vercel Analytics 未加载')
+  console.log('Platform Analytics 未加载')
 }
 
 // 全局错误处理 - 捕获未处理的Promise拒绝和错误
