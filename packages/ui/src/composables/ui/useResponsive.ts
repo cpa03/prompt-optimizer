@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 import type { ResponsiveConfig } from '../../types/components'
-import { BREAKPOINTS, SPACING } from '../../config/constants'
+import { BREAKPOINTS, SPACING, TIME_CONSTANTS } from '../../config/constants'
 
 type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
@@ -77,8 +77,20 @@ export function useResponsive() {
     xl: BREAKPOINTS.LARGE,
   }
 
+  let resizeTimeoutId: number | null = null
+
   const updateWidth = () => {
     windowWidth.value = window.innerWidth
+  }
+
+  const debouncedUpdateWidth = () => {
+    if (resizeTimeoutId !== null) {
+      clearTimeout(resizeTimeoutId)
+    }
+    resizeTimeoutId = window.setTimeout(() => {
+      updateWidth()
+      resizeTimeoutId = null
+    }, TIME_CONSTANTS.DEFAULT_DEBOUNCE_MS)
   }
 
   const currentBreakpoint = computed((): Breakpoint => {
@@ -115,11 +127,14 @@ export function useResponsive() {
   const shouldUseCompactMode = computed(() => isMobile.value)
 
   onMounted(() => {
-    window.addEventListener('resize', updateWidth)
+    window.addEventListener('resize', debouncedUpdateWidth)
   })
 
   onUnmounted(() => {
-    window.removeEventListener('resize', updateWidth)
+    window.removeEventListener('resize', debouncedUpdateWidth)
+    if (resizeTimeoutId !== null) {
+      clearTimeout(resizeTimeoutId)
+    }
   })
 
   return {
