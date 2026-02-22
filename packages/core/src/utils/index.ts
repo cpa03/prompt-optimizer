@@ -87,8 +87,9 @@ export {
   redactSensitiveFields,
   safeStringify,
   safeStringifyOrFallback,
+  tryParseJson,
 } from './json'
-export type { SafeJsonParseOptions, SafeStringifyOptions } from './json'
+export type { SafeJsonParseOptions, SafeStringifyOptions, JsonParseResult } from './json'
 
 // Retry utilities
 export {

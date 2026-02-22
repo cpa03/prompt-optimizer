@@ -335,3 +335,24 @@ export function safeStringifyOrFallback<T>(
 ): string {
   return safeStringify(obj, options) ?? fallback
 }
+
+export interface JsonParseResult<T = unknown> {
+  success: boolean
+  data?: T
+  error?: Error
+}
+
+export function tryParseJson<T = unknown>(
+  text: string,
+  options?: SafeJsonParseOptions
+): JsonParseResult<T> {
+  try {
+    const data = safeJsonParse<T>(text, options)
+    return { success: true, data }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error : new Error(String(error))
+    }
+  }
+}
