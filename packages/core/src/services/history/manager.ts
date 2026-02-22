@@ -449,6 +449,7 @@ export class HistoryManager implements IHistoryManager {
 
   /**
    * 导入历史记录
+   * 性能优化：使用批量导入替代逐条添加，将存储操作从 O(n) 降低到 O(1)
    */
   async importData(data: any): Promise<void> {
     if (!(await this.validateData(data))) {
@@ -460,25 +461,29 @@ export class HistoryManager implements IHistoryManager {
 
     const records = data as PromptRecord[]
 
-    // 先清空所有现有历史记录（替换模式）
-    await this.clearHistory()
-
+    const validRecords: PromptRecord[] = []
     const failedRecords: { record: PromptRecord; error: Error }[] = []
 
-    // Import each record individually, capturing failures
     for (const record of records) {
       try {
-        // 保持原始ID，维护数据关联性（chainId、previousId等）
-        await this.addRecord(record)
+        this.validateRecord(record)
+        validRecords.push(record)
       } catch (error) {
-        console.warn('Failed to import history record:', error)
+        console.warn('Invalid history record:', error)
         failedRecords.push({ record, error: error as Error })
+      }
+    }
+
+    if (validRecords.length > 0) {
+      try {
+        await this.storage.setItem(this.storageKey, JSON.stringify(validRecords))
+      } catch (error) {
+        throw new HistoryStorageError('Failed to import history records', 'write')
       }
     }
 
     if (failedRecords.length > 0) {
       console.warn(`Failed to import ${failedRecords.length} history records`)
-      // 不抛出错误，允许部分导入成功
     }
   }
 

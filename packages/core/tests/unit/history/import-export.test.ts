@@ -212,7 +212,7 @@ describe('HistoryManager Import/Export', () => {
       expect(importedRecord?.previousId).toBeUndefined()
     })
 
-    it('should handle import errors gracefully', async () => {
+    it('should handle storage errors gracefully during import', async () => {
       const importData: PromptRecord[] = [
         {
           id: 'error-record',
@@ -227,15 +227,12 @@ describe('HistoryManager Import/Export', () => {
         },
       ]
 
-      // 模拟addRecord错误
-      vi.spyOn(historyManager, 'addRecord').mockRejectedValue(new Error('Add record error'))
+      vi.spyOn(historyManager['storage'], 'setItem').mockRejectedValue(new Error('Storage error'))
 
-      // 应该不抛出错误，只是记录失败
-      await expect(historyManager.importData(importData)).resolves.not.toThrow()
+      await expect(historyManager.importData(importData)).rejects.toThrow('Failed to import history records')
     })
 
-    it('should clear history before importing', async () => {
-      // 添加现有记录
+    it('should replace existing history when importing (replace mode)', async () => {
       const existingRecord: PromptRecord = {
         id: 'existing-record',
         originalPrompt: 'Existing prompt',
@@ -249,9 +246,6 @@ describe('HistoryManager Import/Export', () => {
       }
 
       await historyManager.addRecord(existingRecord)
-
-      // 验证clearHistory被调用
-      const clearHistorySpy = vi.spyOn(historyManager, 'clearHistory')
 
       const importData: PromptRecord[] = [
         {
@@ -269,7 +263,9 @@ describe('HistoryManager Import/Export', () => {
 
       await historyManager.importData(importData)
 
-      expect(clearHistorySpy).toHaveBeenCalledOnce()
+      const records = await historyManager.getRecords()
+      expect(records).toHaveLength(1)
+      expect(records[0].id).toBe('new-record')
     })
   })
 
