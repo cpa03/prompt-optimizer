@@ -123,6 +123,7 @@ export default {
     basicMode: '基础',
     contextMode: '上下文',
     imageMode: '图像',
+    github: '查看 GitHub',
   },
   contextMode: {
     optimizationMode: {
