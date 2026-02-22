@@ -120,6 +120,7 @@ export class MCPErrorHandler {
       return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `内部错误: ${errorMessage}`, {
         originalError: errorName,
         category: 'internal',
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -138,7 +139,7 @@ export class MCPErrorHandler {
       return new McpError(
         MCP_ERROR_CODES.PROMPT_OPTIMIZATION_FAILED,
         `提示词优化失败: ${errorMessage}`,
-        { originalError: errorName, category: 'optimization' }
+        { originalError: errorName, category: 'optimization', timestamp: new Date().toISOString() }
       )
     }
 
@@ -147,6 +148,7 @@ export class MCPErrorHandler {
       return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, errorMessage, {
         originalError: errorName,
         category: 'validation',
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -159,12 +161,14 @@ export class MCPErrorHandler {
       return new McpError(MCP_ERROR_CODES.CONFIGURATION_ERROR, `配置错误: ${errorMessage}`, {
         originalError: errorName,
         category: 'configuration',
+        timestamp: new Date().toISOString(),
       })
     }
 
     return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, `内部错误: ${errorMessage}`, {
       originalError: errorName,
       category: 'internal',
+      timestamp: new Date().toISOString(),
     })
   }
 
@@ -196,6 +200,7 @@ export class MCPErrorHandler {
             originalError: errorName,
             category: 'ai-rate-limit',
             retryable: true,
+            timestamp: new Date().toISOString(),
           }
         )
       }
@@ -208,6 +213,7 @@ export class MCPErrorHandler {
             originalError: errorName,
             category: 'ai-timeout',
             retryable: true,
+            timestamp: new Date().toISOString(),
           }
         )
       }
@@ -217,6 +223,7 @@ export class MCPErrorHandler {
           originalError: errorName,
           category: 'ai-overload',
           retryable: true,
+          timestamp: new Date().toISOString(),
         })
       }
     }
@@ -226,6 +233,7 @@ export class MCPErrorHandler {
         originalError: errorName,
         category: 'ai-rate-limit',
         retryable: true,
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -233,7 +241,11 @@ export class MCPErrorHandler {
       return new McpError(
         MCP_ERROR_CODES.AI_CONTEXT_LENGTH_EXCEEDED,
         `AI 上下文长度超限: ${errorMessage}`,
-        { originalError: errorName, category: 'ai-context-length' }
+        {
+          originalError: errorName,
+          category: 'ai-context-length',
+          timestamp: new Date().toISOString(),
+        }
       )
     }
 
@@ -242,6 +254,7 @@ export class MCPErrorHandler {
         originalError: errorName,
         category: 'ai-timeout',
         retryable: true,
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -249,7 +262,7 @@ export class MCPErrorHandler {
       return new McpError(
         MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED,
         `AI 服务认证失败: ${errorMessage}`,
-        { originalError: errorName, category: 'ai-auth' }
+        { originalError: errorName, category: 'ai-auth', timestamp: new Date().toISOString() }
       )
     }
 
@@ -257,6 +270,7 @@ export class MCPErrorHandler {
       return new McpError(MCP_ERROR_CODES.AI_MODEL_UNAVAILABLE, `AI 模型不可用: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-model',
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -265,6 +279,7 @@ export class MCPErrorHandler {
         originalError: errorName,
         category: 'ai-overload',
         retryable: true,
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -272,6 +287,7 @@ export class MCPErrorHandler {
       return new McpError(MCP_ERROR_CODES.AI_CONTENT_FILTERED, `AI 内容过滤: ${errorMessage}`, {
         originalError: errorName,
         category: 'ai-content-filter',
+        timestamp: new Date().toISOString(),
       })
     }
 
@@ -299,6 +315,7 @@ export class MCPErrorHandler {
   static createValidationError(message: string): McpError {
     return new McpError(MCP_ERROR_CODES.INVALID_PARAMS, `参数验证失败: ${message}`, {
       category: 'validation',
+      timestamp: new Date().toISOString(),
     })
   }
 
@@ -308,6 +325,7 @@ export class MCPErrorHandler {
   static createInternalError(message: string): McpError {
     return new McpError(MCP_ERROR_CODES.INTERNAL_ERROR, message, {
       category: 'internal',
+      timestamp: new Date().toISOString(),
     })
   }
 
@@ -321,7 +339,7 @@ export class MCPErrorHandler {
     return new McpError(
       MCP_ERROR_CODES.AI_RATE_LIMITED,
       message || 'AI 服务请求频率超限，请稍后重试',
-      { category: 'ai-rate-limit', retryable: true }
+      { category: 'ai-rate-limit', retryable: true, timestamp: new Date().toISOString() }
     )
   }
 
@@ -335,7 +353,7 @@ export class MCPErrorHandler {
     return new McpError(
       MCP_ERROR_CODES.SERVICE_UNAVAILABLE,
       message || '服务暂时不可用，请稍后重试',
-      { category: 'service-unavailable', retryable: true }
+      { category: 'service-unavailable', retryable: true, timestamp: new Date().toISOString() }
     )
   }
 
@@ -349,7 +367,7 @@ export class MCPErrorHandler {
     return new McpError(
       MCP_ERROR_CODES.AI_SERVICE_OVERLOADED,
       message || 'AI 服务过载，请稍后重试',
-      { category: 'ai-overload', retryable: true }
+      { category: 'ai-overload', retryable: true, timestamp: new Date().toISOString() }
     )
   }
 
@@ -363,7 +381,7 @@ export class MCPErrorHandler {
     return new McpError(
       MCP_ERROR_CODES.AI_CONTENT_FILTERED,
       message || 'AI 内容被过滤，请修改提示词后重试',
-      { category: 'ai-content-filter' }
+      { category: 'ai-content-filter', timestamp: new Date().toISOString() }
     )
   }
 
@@ -440,6 +458,7 @@ export class MCPErrorHandler {
       `[MCP Error] Code: ${error.code}`,
       `Message: ${error.message}`,
       `Category: ${data?.category || 'unknown'}`,
+      `Timestamp: ${data?.timestamp || new Date().toISOString()}`,
     ]
 
     if (data?.originalError) {
@@ -458,13 +477,14 @@ export class MCPErrorHandler {
    * This helps AI agents understand the error context without exposing sensitive details.
    *
    * @param error - The McpError to summarize
-   * @returns A structured error summary object
+   * @returns A structured error summary object with timestamp
    */
   static createErrorSummary(error: McpError): {
     code: number
     category: ErrorCategory
     message: string
     retryable: boolean
+    timestamp: string
   } {
     const data = error.data as MCPErrorData | undefined
     return {
@@ -472,6 +492,7 @@ export class MCPErrorHandler {
       category: data?.category || 'internal',
       message: error.message,
       retryable: data?.retryable || false,
+      timestamp: data?.timestamp || new Date().toISOString(),
     }
   }
 }
