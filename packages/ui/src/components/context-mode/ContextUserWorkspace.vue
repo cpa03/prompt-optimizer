@@ -570,6 +570,7 @@ import { useWorkspaceModelSelection } from '../../composables/workspaces/useWork
 import { useWorkspaceTemplateSelection } from '../../composables/workspaces/useWorkspaceTemplateSelection'
 import { OptionAccessors } from '../../utils/data-transformer'
 import { useElementSize } from '@vueuse/core'
+import { WORKSPACE_LAYOUT } from '../../config/constants'
 import {
   buildPromptExecutionContext,
   hashString,
@@ -1049,7 +1050,9 @@ const mergedTestVariables = computed<Record<string, string>>(() => ({
 
 // 测试区宽度：用于禁用 4 列（避免横向滚动）
 const { width: testPaneWidth } = useElementSize(testPaneRef)
-const canUseFourColumns = computed(() => testPaneWidth.value >= 1000)
+const canUseFourColumns = computed(
+  () => testPaneWidth.value >= WORKSPACE_LAYOUT.FOUR_COLUMN_MIN_WIDTH_PX
+)
 
 watch(
   canUseFourColumns,

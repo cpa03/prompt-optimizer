@@ -376,7 +376,12 @@ import { Copy, PlayerPlay, Eye, Edit, Trash, Check } from '@vicons/tabler'
 import { useI18n } from 'vue-i18n'
 import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core'
 import { useTooltipTheme } from '../composables/ui/useTooltipTheme'
-import { ANIMATION_CONSTANTS, CALCULATION_CONSTANTS } from '../config/constants'
+import {
+  ANIMATION_CONSTANTS,
+  CALCULATION_CONSTANTS,
+  TOOLTIP_LAYOUT,
+  WORKSPACE_LAYOUT,
+} from '../config/constants'
 
 const { MS_PER_MINUTE, MS_PER_HOUR, MS_PER_DAY } = CALCULATION_CONSTANTS
 
@@ -401,14 +406,14 @@ const emit = defineEmits<{
 
 type TooltipPlacement = 'bottom-start' | 'bottom-end' | 'bottom' | 'top-start' | 'top-end' | 'top'
 
-const VIEWPORT_MARGIN = 16
-const TOOLTIP_GUTTER = 12
+const VIEWPORT_MARGIN = TOOLTIP_LAYOUT.VIEWPORT_MARGIN_PX
+const TOOLTIP_GUTTER = TOOLTIP_LAYOUT.TOOLTIP_GUTTER_PX
 const TOTAL_MARGIN = VIEWPORT_MARGIN + TOOLTIP_GUTTER
-const MIN_TOOLTIP_HEIGHT = 160
-const CONTENT_TOOLTIP_WIDTH = 440
-const CONTENT_TOOLTIP_MIN_WIDTH = 240
-const DESCRIPTION_TOOLTIP_WIDTH = 360
-const DESCRIPTION_TOOLTIP_MIN_WIDTH = 200
+const MIN_TOOLTIP_HEIGHT = TOOLTIP_LAYOUT.MIN_TOOLTIP_HEIGHT_PX
+const CONTENT_TOOLTIP_WIDTH = TOOLTIP_LAYOUT.CONTENT_TOOLTIP_WIDTH_PX
+const CONTENT_TOOLTIP_MIN_WIDTH = TOOLTIP_LAYOUT.CONTENT_TOOLTIP_MIN_WIDTH_PX
+const DESCRIPTION_TOOLTIP_WIDTH = TOOLTIP_LAYOUT.DESCRIPTION_TOOLTIP_WIDTH_PX
+const DESCRIPTION_TOOLTIP_MIN_WIDTH = TOOLTIP_LAYOUT.DESCRIPTION_TOOLTIP_MIN_WIDTH_PX
 
 const { tooltipThemeOverrides, tooltipOverlayStyle, tooltipContentStyle } = useTooltipTheme({
   maxWidth: `calc(100vw - ${TOTAL_MARGIN * 2}px)`,
@@ -474,14 +479,14 @@ const getViewportWidth = () => {
   if (typeof window !== 'undefined') {
     return window.innerWidth
   }
-  return 1440
+  return WORKSPACE_LAYOUT.DEFAULT_VIEWPORT_WIDTH_PX
 }
 
 const getViewportHeight = () => {
   if (typeof window !== 'undefined') {
     return window.innerHeight
   }
-  return 900
+  return WORKSPACE_LAYOUT.DEFAULT_VIEWPORT_HEIGHT_PX
 }
 
 interface TooltipLayoutResult {

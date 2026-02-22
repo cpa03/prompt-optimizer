@@ -938,6 +938,7 @@ import { useProVariableSession } from '../stores/session/useProVariableSession'
 import { useImageText2ImageSession } from '../stores/session/useImageText2ImageSession'
 import { useImageImage2ImageSession } from '../stores/session/useImageImage2ImageSession'
 import { formatDate } from '../utils/date'
+import { TEMPLATE_MANAGER } from '../config/constants'
 
 const { t } = useI18n()
 
@@ -1317,8 +1318,8 @@ const initializeTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
   if (element._initialized) return
 
   try {
-    const minHeight = 80
-    const maxHeight = 280
+    const minHeight = TEMPLATE_MANAGER.TEXTAREA_MIN_HEIGHT_PX
+    const maxHeight = TEMPLATE_MANAGER.TEXTAREA_MAX_HEIGHT_PX
 
     // 设置为auto以获取内容实际高度
     // const originalHeight = textarea.style.height  // 保留用于可能的需要

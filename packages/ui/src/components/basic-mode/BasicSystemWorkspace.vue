@@ -490,7 +490,7 @@ import {
   type Template,
 } from '@prompt-optimizer/core'
 import { useElementSize } from '@vueuse/core'
-import { COMPONENT_CONSTANTS } from '../../config/constants'
+import { COMPONENT_CONSTANTS, WORKSPACE_LAYOUT } from '../../config/constants'
 
 const { t } = useI18n()
 const toast = useToast()
@@ -815,7 +815,9 @@ watch(
 
 // 测试区宽度：用于禁用 4 列（避免横向滚动）
 const { width: testPaneWidth } = useElementSize(testPaneRef)
-const canUseFourColumns = computed(() => testPaneWidth.value >= 1000)
+const canUseFourColumns = computed(
+  () => testPaneWidth.value >= WORKSPACE_LAYOUT.FOUR_COLUMN_MIN_WIDTH_PX
+)
 
 watch(
   canUseFourColumns,

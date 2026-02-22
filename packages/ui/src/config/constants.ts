@@ -510,3 +510,36 @@ export const COMPONENT_CONSTANTS = {
     BUTTON_MIN_WIDTH_PX: getViteEnvInt('VITE_LAYOUT_BUTTON_MIN_WIDTH', 48),
   },
 } as const
+
+// Tooltip layout constants - for consistent tooltip positioning
+export const TOOLTIP_LAYOUT = {
+  VIEWPORT_MARGIN_PX: 16,
+  TOOLTIP_GUTTER_PX: 12,
+  MIN_TOOLTIP_HEIGHT_PX: 160,
+  CONTENT_TOOLTIP_WIDTH_PX: 440,
+  CONTENT_TOOLTIP_MIN_WIDTH_PX: 240,
+  DESCRIPTION_TOOLTIP_WIDTH_PX: 360,
+  DESCRIPTION_TOOLTIP_MIN_WIDTH_PX: 200,
+} as const
+
+// Template manager constants - for template editing
+export const TEMPLATE_MANAGER = {
+  TEXTAREA_MIN_HEIGHT_PX: 80,
+  TEXTAREA_MAX_HEIGHT_PX: 280,
+} as const
+
+// Favorite manager constants - for favorite grid layout
+export const FAVORITE_MANAGER = {
+  GRID_GAP_PX: 20,
+  CONTENT_PADDING_PX: 32,
+  CONTAINER_HEIGHT_PX: 540,
+  ROWS_SINGLE_COLUMN: 4,
+  ROWS_MULTI_COLUMN: 2,
+} as const
+
+// Workspace constants - for responsive layout thresholds
+export const WORKSPACE_LAYOUT = {
+  FOUR_COLUMN_MIN_WIDTH_PX: 1000,
+  DEFAULT_VIEWPORT_WIDTH_PX: 1440,
+  DEFAULT_VIEWPORT_HEIGHT_PX: 900,
+} as const
