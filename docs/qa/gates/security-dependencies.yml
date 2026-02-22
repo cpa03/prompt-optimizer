@@ -1,0 +1,56 @@
+schema: 1
+story: 'security-dependencies'
+story_title: 'Security Dependency Updates'
+gate: PASS
+status_reason: 'Security vulnerabilities in minimatch and hono resolved via pnpm overrides. Remaining ajv@6.x risk is acceptable (dev-only).'
+reviewer: 'Quality Assurance Specialist'
+updated: '2026-02-22T16:50:00Z'
+
+top_issues: []
+
+waiver:
+  active: false
+
+quality_score: 95
+
+evidence:
+  vulnerabilities_before: 3
+  vulnerabilities_after: 1
+  vulnerabilities_remaining:
+    - package: ajv@6.x
+      severity: moderate
+      reason: 'Development-only dependency in electron-builder, not production'
+  tests_passed: 291
+  lint_status: 'pass'
+  build_status: 'success'
+
+nfr_validation:
+  security:
+    status: PASS
+    notes: 'minimatch (High) and hono (Low) vulnerabilities resolved. ajv@6.x remaining is acceptable dev-only risk.'
+  performance:
+    status: PASS
+    notes: 'No performance impact from dependency updates'
+  reliability:
+    status: PASS
+    notes: 'All tests pass (291 tests)'
+  maintainability:
+    status: PASS
+    notes: 'Clean pnpm overrides configuration added'
+
+recommendations:
+  immediate: []
+  future:
+    - action: 'Consider updating electron-builder to resolve ajv@6.x vulnerability'
+      refs: ['packages/desktop/package.json']
+
+changes_made:
+  - file: 'package.json'
+    change: 'Added pnpm overrides for minimatch, hono, and ajv@8.x'
+    reason: 'Fix security vulnerabilities'
+  - file: 'pnpm-lock.yaml'
+    change: 'Updated lockfile with new dependency versions'
+    reason: 'Reflect override changes'
+  - file: 'docs/qa/README.md'
+    change: 'Created QA documentation directory and README'
+    reason: 'Document QA process and security fix'
