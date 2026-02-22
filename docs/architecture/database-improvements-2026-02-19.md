@@ -353,9 +353,7 @@ await this.db.storage.each(async (record) => {
 // Performance tracking
 const duration = Date.now() - startTime
 if (duration > 1000) {
-  console.warn(
-    `[Database] Repair took ${duration}ms for ${result.repaired + result.failed} items`
-  )
+  console.warn(`[Database] Repair took ${duration}ms for ${result.repaired + result.failed} items`)
 }
 ```
 

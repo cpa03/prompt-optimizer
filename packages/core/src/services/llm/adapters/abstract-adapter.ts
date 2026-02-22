@@ -104,18 +104,15 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
     this.validateMessages(messages)
 
     // 2. 调用具体实现，带重试逻辑
-    return withRetry(
-      async () => this.doSendMessage(messages, config),
-      {
-        ...RETRY_PRESETS.standard,
-        retryableErrors: LLM_RETRYABLE_ERRORS,
-        onRetry: (attempt, error, delayMs) => {
-          logger.warn(
-            `[${this.getProvider().id}] Retry attempt ${attempt} after ${delayMs}ms: ${error.message}`
-          )
-        },
-      }
-    )
+    return withRetry(async () => this.doSendMessage(messages, config), {
+      ...RETRY_PRESETS.standard,
+      retryableErrors: LLM_RETRYABLE_ERRORS,
+      onRetry: (attempt, error, delayMs) => {
+        logger.warn(
+          `[${this.getProvider().id}] Retry attempt ${attempt} after ${delayMs}ms: ${error.message}`
+        )
+      },
+    })
   }
 
   /**

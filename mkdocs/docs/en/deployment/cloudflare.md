@@ -148,6 +148,7 @@ The built-in authentication rate limiting uses in-memory storage, which is per-i
 ### Early Hints (Automatic)
 
 Cloudflare automatically generates 103 Early Hints responses for critical resources:
+
 - Preloads CSS and JavaScript files referenced in HTML
 - Improves page load performance by ~20%
 - No configuration required
@@ -155,6 +156,7 @@ Cloudflare automatically generates 103 Early Hints responses for critical resour
 ### HTTP/3 and QUIC
 
 HTTP/3 and QUIC are automatically enabled for Cloudflare Pages:
+
 - Faster connection establishment
 - Better performance on unreliable networks
 - No configuration required
@@ -164,6 +166,7 @@ HTTP/3 and QUIC are automatically enabled for Cloudflare Pages:
 ### Cloudflare Analytics
 
 Access detailed analytics in Cloudflare Dashboard:
+
 - Request volume and error rates
 - Performance metrics (TTFB, total request time)
 - Geographic distribution of requests
@@ -172,6 +175,7 @@ Access detailed analytics in Cloudflare Dashboard:
 ### Web Analytics
 
 For client-side analytics, consider [Cloudflare Web Analytics](https://developers.cloudflare.com/analytics/):
+
 - Privacy-focused analytics
 - No cookie banner required in many jurisdictions
 - Easy integration with your site

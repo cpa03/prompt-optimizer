@@ -60,13 +60,8 @@
     "./packages/desktop",
     "./packages/mcp-server"
   ],
-  "vitest.include": [
-    "**/*.{test,spec}.{ts,tsx,js,jsx}"
-  ],
-  "vitest.exclude": [
-    "**/node_modules/**",
-    "**/dist/**"
-  ],
+  "vitest.include": ["**/*.{test,spec}.{ts,tsx,js,jsx}"],
+  "vitest.exclude": ["**/node_modules/**", "**/dist/**"],
   "vitest.enable": true,
   "typescript.inlayHints.parameterNames.enabled": "all",
   "typescript.inlayHints.parameterTypes.enabled": true,

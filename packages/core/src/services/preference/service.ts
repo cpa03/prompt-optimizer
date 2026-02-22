@@ -205,7 +205,10 @@ export class PreferenceService implements IPreferenceService {
 
       const prefKeys = allKeys.map((key) => this.getPrefKey(key))
 
-      if ('getItems' in this.storageProvider && typeof this.storageProvider.getItems === 'function') {
+      if (
+        'getItems' in this.storageProvider &&
+        typeof this.storageProvider.getItems === 'function'
+      ) {
         const batchResult = await this.storageProvider.getItems(prefKeys)
 
         const result: Record<string, string> = {}
@@ -217,7 +220,9 @@ export class PreferenceService implements IPreferenceService {
               const parsed = JSON.parse(storedValue)
               result[key] = String(parsed)
             } catch {
-              console.warn(`[PreferenceService] Failed to parse preference for key "${key}": invalid JSON`)
+              console.warn(
+                `[PreferenceService] Failed to parse preference for key "${key}": invalid JSON`
+              )
             }
           }
         }

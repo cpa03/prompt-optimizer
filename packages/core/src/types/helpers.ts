@@ -74,9 +74,7 @@ export type Branded<T, B> = T & { readonly __brand: B }
  * type RawId = Unbranded<UserId> // string
  * ```
  */
-export type Unbranded<T> = T extends infer U & { readonly __brand: infer _ }
-  ? U
-  : T
+export type Unbranded<T> = T extends infer U & { readonly __brand: infer _ } ? U : T
 
 /**
  * Create a branded value with type safety.
@@ -102,9 +100,7 @@ export function createBranded<T, B>(value: T): Branded<T, B> {
  * // { a?: { b?: string } }
  * ```
  */
-export type DeepPartial<T> = T extends object
-  ? { [P in keyof T]?: DeepPartial<T[P]> }
-  : T
+export type DeepPartial<T> = T extends object ? { [P in keyof T]?: DeepPartial<T[P]> } : T
 
 /**
  * Deep required type - makes all nested properties required.
@@ -116,9 +112,7 @@ export type DeepPartial<T> = T extends object
  * // { a: { b: string } }
  * ```
  */
-export type DeepRequired<T> = T extends object
-  ? { [P in keyof T]-?: DeepRequired<T[P]> }
-  : T
+export type DeepRequired<T> = T extends object ? { [P in keyof T]-?: DeepRequired<T[P]> } : T
 
 /**
  * Deep readonly type - makes all nested properties readonly.
@@ -130,9 +124,7 @@ export type DeepRequired<T> = T extends object
  * // { readonly a: { readonly b: readonly string[] } }
  * ```
  */
-export type DeepReadonly<T> = T extends object
-  ? { readonly [P in keyof T]: DeepReadonly<T[P]> }
-  : T
+export type DeepReadonly<T> = T extends object ? { readonly [P in keyof T]: DeepReadonly<T[P]> } : T
 
 /**
  * Extract function parameter types as a tuple.
@@ -144,8 +136,11 @@ export type DeepReadonly<T> = T extends object
  * type FooParams = Parameters<typeof foo> // [string, number]
  * ```
  */
-export type FunctionParameters<T extends (...args: any[]) => any> =
-  T extends (...args: infer P) => any ? P : never
+export type FunctionParameters<T extends (...args: any[]) => any> = T extends (
+  ...args: infer P
+) => any
+  ? P
+  : never
 
 /**
  * Extract function return type.
@@ -157,8 +152,11 @@ export type FunctionParameters<T extends (...args: any[]) => any> =
  * type FooReturn = FunctionReturnType<typeof foo> // string
  * ```
  */
-export type FunctionReturnType<T extends (...args: any[]) => any> =
-  T extends (...args: any[]) => infer R ? R : never
+export type FunctionReturnType<T extends (...args: any[]) => any> = T extends (
+  ...args: any[]
+) => infer R
+  ? R
+  : never
 
 /**
  * Type-safe Object.keys that returns typed keys.
@@ -214,10 +212,7 @@ export function fromEntries<K extends PropertyKey, V>(
  * const subset = pick(config, ['a', 'b']) // { a: 1; b: 2 }
  * ```
  */
-export function pick<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>
   for (const key of keys) {
     if (key in obj) {
@@ -237,10 +232,7 @@ export function pick<T extends object, K extends keyof T>(
  * const subset = omit(config, ['c']) // { a: 1; b: 2 }
  * ```
  */
-export function omit<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj }
   for (const key of keys) {
     delete result[key]

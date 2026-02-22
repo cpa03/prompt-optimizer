@@ -66,6 +66,7 @@ We take security vulnerabilities seriously. If you discover a security vulnerabi
 ### Docker Security Headers
 
 The Docker deployment includes the following security headers:
+
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
 - `X-Content-Type-Options: nosniff`
@@ -85,6 +86,7 @@ This project follows security best practices:
 ## Disclosure Policy
 
 When a security vulnerability is fixed:
+
 1. A security advisory will be published on GitHub
 2. The fix will be included in the next release
 3. Credits will be given to the reporter (if desired)
@@ -92,5 +94,6 @@ When a security vulnerability is fixed:
 ## Contact
 
 For security-related questions or concerns:
+
 - Open a GitHub Security Advisory
 - Reference this security policy in your communication

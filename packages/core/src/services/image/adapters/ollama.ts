@@ -9,7 +9,13 @@ import type {
   ImageParameterDefinition,
 } from '../types'
 import { IMAGE_ERROR_CODES } from '../../../constants/error-codes'
-import { OLLAMA_CONFIG, IMAGE_SIZE_PRESETS, HTTP_HEADERS, HTTP_METHODS, MIME_TYPES } from '../../../config'
+import {
+  OLLAMA_CONFIG,
+  IMAGE_SIZE_PRESETS,
+  HTTP_HEADERS,
+  HTTP_METHODS,
+  MIME_TYPES,
+} from '../../../config'
 
 export class OllamaImageAdapter extends AbstractImageProviderAdapter {
   protected normalizeBaseUrl(base: string): string {

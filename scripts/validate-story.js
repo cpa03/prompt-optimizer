@@ -97,7 +97,9 @@ function parseStoryFile(filePath) {
     text: m[2].trim(),
   }))
 
-  const taskMatches = content.matchAll(/^-\s*\[([ x])\]\s*Task\s*(\d+)(?::[^(\n]*)?(?:\s*\(AC:\s*([\d,\s]+)\))?/gm)
+  const taskMatches = content.matchAll(
+    /^-\s*\[([ x])\]\s*Task\s*(\d+)(?::[^(\n]*)?(?:\s*\(AC:\s*([\d,\s]+)\))?/gm
+  )
   result.tasks = Array.from(taskMatches).map((m) => ({
     number: parseInt(m[2]),
     completed: m[1] === 'x',
@@ -131,7 +133,9 @@ function validateFileName(fileName) {
   if (validNamePattern.test(fileName)) {
     passed.push('File name follows convention: {epic}.{story}.{title}.md')
   } else {
-    issues.push(`Invalid file name format: "${fileName}". Expected: {{epic}}.{{story}}.{{title}}.md`)
+    issues.push(
+      `Invalid file name format: "${fileName}". Expected: {{epic}}.{{story}}.{{title}}.md`
+    )
   }
 
   return { issues, passed }
@@ -152,7 +156,9 @@ function validateStory(parsed) {
     if (VALID_STATUSES.includes(parsed.status)) {
       passed.push(`Valid status: "${parsed.status}"`)
     } else {
-      issues.push(`Invalid status: "${parsed.status}". Must be one of: ${VALID_STATUSES.join(', ')}`)
+      issues.push(
+        `Invalid status: "${parsed.status}". Must be one of: ${VALID_STATUSES.join(', ')}`
+      )
     }
   } else {
     issues.push('No status defined')
@@ -175,7 +181,9 @@ function validateStory(parsed) {
     if (hasMeasurable) {
       passed.push('Acceptance criteria contain action verbs')
     } else {
-      warnings.push('Acceptance criteria should start with action verbs (can, should, displays, etc.)')
+      warnings.push(
+        'Acceptance criteria should start with action verbs (can, should, displays, etc.)'
+      )
     }
   } else {
     issues.push('No acceptance criteria defined')
@@ -242,7 +250,9 @@ function validateStory(parsed) {
 
     const devNotesLength = devNotes.trim().length
     if (devNotesLength < 200) {
-      warnings.push(`Dev Notes section seems sparse (${devNotesLength} chars). Consider adding more context.`)
+      warnings.push(
+        `Dev Notes section seems sparse (${devNotesLength} chars). Consider adding more context.`
+      )
     }
   }
 
@@ -285,8 +295,7 @@ function printReport(parsed, jsonOutput = false) {
       filePath: parsed.filePath,
       status: parsed.status,
       score,
-      assessment:
-        score >= 80 ? 'READY' : score >= 50 ? 'NEEDS_REVISION' : 'BLOCKED',
+      assessment: score >= 80 ? 'READY' : score >= 50 ? 'NEEDS_REVISION' : 'BLOCKED',
       passed: parsed.passed,
       warnings: parsed.warnings,
       issues: parsed.issues,
@@ -392,8 +401,7 @@ function validateAllStories(jsonOutput = false) {
       issues: parsed.issues.length,
       warnings: parsed.warnings.length,
       status: parsed.status,
-      assessment:
-        score >= 80 ? 'READY' : score >= 50 ? 'NEEDS_REVISION' : 'BLOCKED',
+      assessment: score >= 80 ? 'READY' : score >= 50 ? 'NEEDS_REVISION' : 'BLOCKED',
     })
   }
 
@@ -433,7 +441,10 @@ function validateAllStories(jsonOutput = false) {
   log(`\nAverage Score: ${avgScore}/100`, avgScore >= 80 ? 'green' : 'yellow')
 
   const readyCount = results.filter((r) => r.score >= 80).length
-  log(`Ready for Development: ${readyCount}/${storyFiles.length}`, readyCount > 0 ? 'green' : 'yellow')
+  log(
+    `Ready for Development: ${readyCount}/${storyFiles.length}`,
+    readyCount > 0 ? 'green' : 'yellow'
+  )
 
   return { avgScore, readyCount, total: storyFiles.length }
 }

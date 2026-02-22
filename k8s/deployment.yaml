@@ -112,9 +112,9 @@ spec:
       labels:
         app.kubernetes.io/name: prompt-optimizer
       annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "80"
-        prometheus.io/path: "/metrics"
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '80'
+        prometheus.io/path: '/metrics'
     spec:
       serviceAccountName: prompt-optimizer
       automountServiceAccountToken: false

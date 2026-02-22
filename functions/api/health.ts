@@ -44,16 +44,14 @@ export async function onRequest(context: { request: Request; env: Env }): Promis
         cfColo = cf.colo || cfColo
         cfTimezone = cf.timezone || cfTimezone
       }
-    } catch {
-    }
+    } catch {}
 
     let scheme = 'https'
     if (cfVisitor) {
       try {
         const visitor = JSON.parse(cfVisitor)
         scheme = visitor.scheme || scheme
-      } catch {
-      }
+      } catch {}
     }
 
     return new Response(

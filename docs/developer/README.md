@@ -31,6 +31,7 @@
 ## 🏗️ 架构文档
 
 架构相关文档位于 [docs/architecture/](../architecture/) 目录：
+
 - [Storage Key Architecture](../architecture/storage-key-architecture.md) - 存储系统设计
 - [Image Model Management](../architecture/image-model-management-architecture.md) - 图像生成架构
 - [Function Mode](../architecture/function-mode.md) - Function Calling实现
