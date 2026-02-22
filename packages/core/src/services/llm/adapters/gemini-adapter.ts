@@ -6,6 +6,12 @@ import { GEMINI_MODELS, getModelDisplayName } from '../../../constants/models'
 import { API_CONSTRAINTS } from '../../../constants/constraints'
 import { MESSAGE_ROLES } from '../../../constants/message-roles'
 import { PROVIDER_GEMINI } from '../../../constants'
+import {
+  MODEL_TOKEN_LIMITS,
+  MODEL_THINKING_BUDGET_LIMITS,
+  MODEL_SAMPLING_LIMITS,
+  MODEL_MAX_CONTEXT,
+} from '../../../constants/model-limits'
 import type {
   TextProvider,
   TextModel,
@@ -45,7 +51,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000,
+      maxContextLength: MODEL_MAX_CONTEXT.GEMINI_1M,
     },
   },
   {
@@ -55,7 +61,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000,
+      maxContextLength: MODEL_MAX_CONTEXT.GEMINI_1M,
     },
   },
   {
@@ -65,7 +71,7 @@ const GEMINI_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 1000000,
+      maxContextLength: MODEL_MAX_CONTEXT.GEMINI_1M,
     },
   },
 ]
@@ -205,13 +211,13 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.temperature.description',
         description: 'Sampling temperature (0-2)',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 2,
-        min: 0,
-        max: 2,
-        step: 0.1,
+        defaultValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.DEFAULT,
+        default: MODEL_SAMPLING_LIMITS.TEMPERATURE.DEFAULT,
+        minValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.MIN,
+        maxValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.MAX,
+        min: MODEL_SAMPLING_LIMITS.TEMPERATURE.MIN,
+        max: MODEL_SAMPLING_LIMITS.TEMPERATURE.MAX,
+        step: MODEL_SAMPLING_LIMITS.TEMPERATURE.STEP,
       },
       {
         name: 'topP',
@@ -221,11 +227,11 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         type: 'number',
         defaultValue: 0.95,
         default: 0.95,
-        minValue: 0,
-        maxValue: 1,
-        min: 0,
-        max: 1,
-        step: 0.01,
+        minValue: MODEL_SAMPLING_LIMITS.TOP_P.MIN,
+        maxValue: MODEL_SAMPLING_LIMITS.TOP_P.MAX,
+        min: MODEL_SAMPLING_LIMITS.TOP_P.MIN,
+        max: MODEL_SAMPLING_LIMITS.TOP_P.MAX,
+        step: MODEL_SAMPLING_LIMITS.TOP_P.STEP,
       },
       {
         name: 'topK',
@@ -233,11 +239,11 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.top_k.description',
         description: 'Top-k sampling parameter',
         type: 'integer',
-        defaultValue: 1,
-        default: 1,
-        minValue: 1,
-        min: 1,
-        step: 1,
+        defaultValue: MODEL_SAMPLING_LIMITS.TOP_K.DEFAULT,
+        default: MODEL_SAMPLING_LIMITS.TOP_K.DEFAULT,
+        minValue: MODEL_SAMPLING_LIMITS.TOP_K.MIN,
+        min: MODEL_SAMPLING_LIMITS.TOP_K.MIN,
+        step: MODEL_SAMPLING_LIMITS.TOP_K.STEP,
       },
       {
         name: 'maxOutputTokens',
@@ -245,8 +251,8 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         descriptionKey: 'params.maxOutputTokens.description',
         description: 'Maximum tokens to generate',
         type: 'integer',
-        defaultValue: 8192,
-        default: 8192,
+        defaultValue: MODEL_TOKEN_LIMITS.GEMINI_MAX,
+        default: MODEL_TOKEN_LIMITS.GEMINI_MAX,
         minValue: 1,
         min: 1,
         unitKey: 'params.tokens.unit',
@@ -284,9 +290,9 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
         defaultValue: 0,
         default: 0,
         minValue: 0,
-        maxValue: 8192,
+        maxValue: MODEL_THINKING_BUDGET_LIMITS.GEMINI_MAX,
         min: 0,
-        max: 8192,
+        max: MODEL_THINKING_BUDGET_LIMITS.GEMINI_MAX,
         unitKey: 'params.tokens.unit',
         step: 1,
       },

@@ -33,3 +33,6 @@ export * from './constraints'
 
 // Model registry - eliminates hardcoded model IDs
 export * from './models'
+
+// Model limits - eliminates magic numbers in adapter parameter definitions
+export * from './model-limits'

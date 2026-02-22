@@ -2,6 +2,13 @@ import type { TextModel, TextProvider, ParameterDefinition } from '../types'
 import { OpenAIAdapter } from './openai-adapter'
 import { PROVIDER_URLS } from '../../../config/providers'
 import { PROVIDER_DASHSCOPE } from '../../../constants'
+import {
+  MODEL_TOKEN_LIMITS,
+  MODEL_SEED_LIMITS,
+  MODEL_THINKING_BUDGET_LIMITS,
+  MODEL_SAMPLING_LIMITS,
+  MODEL_MAX_CONTEXT,
+} from '../../../constants/model-limits'
 
 interface ModelOverride {
   id: string
@@ -22,7 +29,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: true,
-      maxContextLength: 131072,
+      maxContextLength: MODEL_MAX_CONTEXT.QWEN_STANDARD,
     },
   },
   {
@@ -32,7 +39,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072,
+      maxContextLength: MODEL_MAX_CONTEXT.QWEN_STANDARD,
     },
   },
   {
@@ -42,7 +49,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 1000000,
+      maxContextLength: MODEL_MAX_CONTEXT.QWEN_TURBO,
     },
   },
   {
@@ -52,7 +59,7 @@ const DASHSCOPE_STATIC_MODELS: ModelOverride[] = [
     capabilities: {
       supportsTools: true,
       supportsReasoning: false,
-      maxContextLength: 131072,
+      maxContextLength: MODEL_MAX_CONTEXT.QWEN_STANDARD,
     },
   },
 ]
@@ -122,13 +129,13 @@ export class DashScopeAdapter extends OpenAIAdapter {
         descriptionKey: 'params.temperature.description',
         description: 'Sampling temperature (0-2). Higher values make output more random.',
         type: 'number',
-        defaultValue: 1,
-        default: 1,
-        minValue: 0,
-        maxValue: 2,
-        min: 0,
-        max: 2,
-        step: 0.1,
+        defaultValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.DEFAULT,
+        default: MODEL_SAMPLING_LIMITS.TEMPERATURE.DEFAULT,
+        minValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.MIN,
+        maxValue: MODEL_SAMPLING_LIMITS.TEMPERATURE.MAX,
+        min: MODEL_SAMPLING_LIMITS.TEMPERATURE.MIN,
+        max: MODEL_SAMPLING_LIMITS.TEMPERATURE.MAX,
+        step: MODEL_SAMPLING_LIMITS.TEMPERATURE.STEP,
       },
       {
         name: 'top_p',
@@ -138,11 +145,11 @@ export class DashScopeAdapter extends OpenAIAdapter {
         type: 'number',
         defaultValue: 0.8,
         default: 0.8,
-        minValue: 0,
-        maxValue: 1,
-        min: 0,
-        max: 1,
-        step: 0.01,
+        minValue: MODEL_SAMPLING_LIMITS.TOP_P.MIN,
+        maxValue: MODEL_SAMPLING_LIMITS.TOP_P.MAX,
+        min: MODEL_SAMPLING_LIMITS.TOP_P.MIN,
+        max: MODEL_SAMPLING_LIMITS.TOP_P.MAX,
+        step: MODEL_SAMPLING_LIMITS.TOP_P.STEP,
       },
       {
         name: 'max_tokens',
@@ -151,9 +158,9 @@ export class DashScopeAdapter extends OpenAIAdapter {
         description: 'Maximum tokens to generate',
         type: 'integer',
         minValue: 1,
-        maxValue: 16384,
+        maxValue: MODEL_TOKEN_LIMITS.DASHSCOPE_MAX,
         min: 1,
-        max: 16384,
+        max: MODEL_TOKEN_LIMITS.DASHSCOPE_MAX,
         step: 1,
         unitKey: 'params.tokens.unit',
       },
@@ -163,13 +170,13 @@ export class DashScopeAdapter extends OpenAIAdapter {
         descriptionKey: 'params.presence_penalty.description',
         description: 'Presence penalty (-2.0 to 2.0). Penalizes tokens based on presence.',
         type: 'number',
-        defaultValue: 0,
-        default: 0,
-        minValue: -2,
-        maxValue: 2,
-        min: -2,
-        max: 2,
-        step: 0.1,
+        defaultValue: MODEL_SAMPLING_LIMITS.PENALTY.DEFAULT,
+        default: MODEL_SAMPLING_LIMITS.PENALTY.DEFAULT,
+        minValue: MODEL_SAMPLING_LIMITS.PENALTY.MIN,
+        maxValue: MODEL_SAMPLING_LIMITS.PENALTY.MAX,
+        min: MODEL_SAMPLING_LIMITS.PENALTY.MIN,
+        max: MODEL_SAMPLING_LIMITS.PENALTY.MAX,
+        step: MODEL_SAMPLING_LIMITS.PENALTY.STEP,
       },
       {
         name: 'seed',
@@ -177,10 +184,10 @@ export class DashScopeAdapter extends OpenAIAdapter {
         descriptionKey: 'params.seed.description',
         description: 'Seed for deterministic sampling (integer)',
         type: 'integer',
-        minValue: 0,
-        maxValue: 2147483647,
-        min: 0,
-        max: 2147483647,
+        minValue: MODEL_SEED_LIMITS.MIN,
+        maxValue: MODEL_SEED_LIMITS.MAX,
+        min: MODEL_SEED_LIMITS.MIN,
+        max: MODEL_SEED_LIMITS.MAX,
         step: 1,
       },
       {
@@ -201,10 +208,10 @@ export class DashScopeAdapter extends OpenAIAdapter {
           'Maximum tokens for thinking process. Limits reasoning length (via extra_body)',
         type: 'integer',
         minValue: 0,
-        maxValue: 20000,
+        maxValue: MODEL_THINKING_BUDGET_LIMITS.DASHSCOPE_MAX,
         min: 0,
-        max: 20000,
-        step: 100,
+        max: MODEL_THINKING_BUDGET_LIMITS.DASHSCOPE_MAX,
+        step: MODEL_THINKING_BUDGET_LIMITS.STEP,
         unitKey: 'params.tokens.unit',
         tags: ['extra_body'],
       },
