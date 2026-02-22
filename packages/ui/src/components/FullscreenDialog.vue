@@ -15,7 +15,7 @@
     size="huge"
     :segmented="{ content: true }"
     class="fullscreen-dialog"
-    :class="{ 'is-closing': isClosing, 'is-loading': loading }"
+    :class="{ 'is-closing': isClosing, 'is-opening': isOpening, 'is-loading': loading }"
     style="width: 90vw; height: 90vh; max-width: 90vw; max-height: 90vh"
     :mask-closable="maskClosable"
     transform-origin="center"
@@ -92,9 +92,15 @@ const localVisible = computed({
 })
 
 const isClosing = ref(false)
+const isOpening = ref(false)
 
 watch(localVisible, (newVal) => {
-  if (!newVal) {
+  if (newVal) {
+    isOpening.value = true
+    setTimeout(() => {
+      isOpening.value = false
+    }, UI_CONSTANTS.ANIMATION_DURATION_MS)
+  } else {
     isClosing.value = true
     setTimeout(() => {
       isClosing.value = false
@@ -125,6 +131,21 @@ const handleAfterLeave = () => {
 
 .fullscreen-dialog.is-closing :deep(.n-card) {
   animation: dialog-close-scale 0.2s ease-out forwards;
+}
+
+.fullscreen-dialog.is-opening :deep(.n-card) {
+  animation: dialog-open-scale 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes dialog-open-scale {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes dialog-close-scale {
@@ -268,6 +289,10 @@ const handleAfterLeave = () => {
   }
 
   .fullscreen-dialog.is-closing :deep(.n-card) {
+    animation: none;
+  }
+
+  .fullscreen-dialog.is-opening :deep(.n-card) {
     animation: none;
   }
 
