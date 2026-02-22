@@ -146,23 +146,21 @@ export class EnhancedTemplateProcessor implements TemplateProcessor {
 
   /**
    * 替换变量为实际值
+   * 优化：单次遍历替换所有变量，避免为每个变量创建正则并遍历内容
    */
   replaceVariables(content: string, variables: Record<string, string>): string {
-    let result = content
+    const pattern = new RegExp(
+      VARIABLE_VALIDATION.VARIABLE_SCAN_PATTERN.source,
+      VARIABLE_VALIDATION.VARIABLE_SCAN_PATTERN.flags
+    )
 
-    // 支持多种变量格式
-    for (const [name, value] of Object.entries(variables)) {
-      // 标准格式 {{variableName}}
-      const standardPattern = new RegExp(`\\{\\{\\s*${this.escapeRegExp(name)}\\s*\\}\\}`, 'g')
-      result = result.replace(standardPattern, value)
-
-      // 条件格式（未来扩展）
-      // {% if variableName %} ... {% endif %}
-      // 循环格式（未来扩展）
-      // {% for item in variableName %} ... {% endfor %}
-    }
-
-    return result
+    return content.replace(pattern, (match, variableName) => {
+      const trimmedName = variableName.trim()
+      if (!isValidVariableName(trimmedName)) return match
+      return Object.prototype.hasOwnProperty.call(variables, trimmedName)
+        ? variables[trimmedName]
+        : match
+    })
   }
 
   /**
