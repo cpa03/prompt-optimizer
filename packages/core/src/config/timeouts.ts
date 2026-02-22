@@ -45,6 +45,15 @@ export const TIMEOUTS = {
     timeout: getEnvInt('VITE_CIRCUIT_BREAKER_TIMEOUT', 30000),
     resetTimeout: getEnvInt('VITE_CIRCUIT_BREAKER_RESET_TIMEOUT', 60000),
   },
+
+  // Error-specific retry delays (based on error classification)
+  errorRetryDelay: {
+    rateLimit: getEnvInt('VITE_ERROR_RETRY_DELAY_RATE_LIMIT', 60000), // 1 minute for rate limits
+    server: getEnvInt('VITE_ERROR_RETRY_DELAY_SERVER', 5000), // 5 seconds for server errors
+    timeout: getEnvInt('VITE_ERROR_RETRY_DELAY_TIMEOUT', 2000), // 2 seconds for timeouts
+    network: getEnvInt('VITE_ERROR_RETRY_DELAY_NETWORK', 3000), // 3 seconds for network errors
+    default: getEnvInt('VITE_ERROR_RETRY_DELAY_DEFAULT', 1000), // 1 second default
+  },
 } as const
 
 // Export commonly used timeout values for convenience
