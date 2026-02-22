@@ -8,6 +8,7 @@ Welcome to the Prompt Optimizer documentation. This index provides organized acc
 - [Architecture](#architecture) - System design and technical decisions
 - [Development Guides](#development-guides) - How-to guides for developers
 - [Testing](#testing) - Testing strategies and automation
+- [Quality Assurance](#quality-assurance) - QA processes and artifacts
 - [Deployment](#deployment) - Build, release, and deployment
 - [Project Management](#project-management) - PRDs, roadmaps, and planning
 - [Troubleshooting](#troubleshooting) - Common issues and solutions
@@ -139,6 +140,16 @@ pnpm build
 - **[Testing Redesign Findings](workspace/testing-redesign/findings.md)**
 - **[Testing Redesign Progress](workspace/testing-redesign/progress.md)**
 - **[Testing Redesign Task Plan](workspace/testing-redesign/task_plan.md)**
+
+---
+
+## Quality Assurance
+
+### QA Documentation
+
+- **[QA Overview](qa/README.md)** - Quality assurance artifacts and processes
+- **[Quality Gates](qa/gates/)** - Pass/fail decision files for stories
+- **[Assessment Reports](qa/assessments/)** - Test design, traceability, risk profiles, and NFR assessments
 
 ---
 
