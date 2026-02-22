@@ -7,18 +7,19 @@
  */
 
 import createDebug from 'debug'
+import { MCP_CONFIG } from '@prompt-optimizer/core'
 
-// 创建不同级别的调试器
+const LOGGING_CONFIG = MCP_CONFIG.logging
+
 const debugLogger = createDebug('mcp:debug')
 const infoLogger = createDebug('mcp:info')
 const warnLogger = createDebug('mcp:warn')
 const errorLogger = createDebug('mcp:error')
 
-// 为不同级别设置颜色
-debugLogger.color = '6' // cyan
-infoLogger.color = '2' // green
-warnLogger.color = '3' // yellow
-errorLogger.color = '1' // red
+debugLogger.color = LOGGING_CONFIG.colors.debug
+infoLogger.color = LOGGING_CONFIG.colors.info
+warnLogger.color = LOGGING_CONFIG.colors.warn
+errorLogger.color = LOGGING_CONFIG.colors.error
 
 /**
  * 设置日志级别（通过环境变量 DEBUG 控制）

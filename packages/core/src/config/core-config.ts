@@ -203,6 +203,18 @@ export const MCP_CONFIG = {
   logging: {
     defaultLevel: 'debug' as const,
     validLevels: ['debug', 'info', 'warn', 'error'] as const,
+    colors: {
+      debug: '6',
+      info: '2',
+      warn: '3',
+      error: '1',
+    },
+    colorNames: {
+      cyan: '6',
+      green: '2',
+      yellow: '3',
+      red: '1',
+    } as const,
   },
   defaults: {
     language: 'zh',
