@@ -489,6 +489,52 @@ function saveTimestamps(timestamps: Map<string, number>): void {
 
 **Compatibility**: ✅ No breaking changes. Same API, enhanced statistics.
 
+### 10. FileStorageProvider Timestamp Persistence (NEW - 2026-02-22)
+
+**Problem**: `FileStorageProvider` tracked timestamps in memory but did not persist them to disk. When the Electron app restarted, all timestamps were lost, causing `getDatabaseStats()` to return `null` for `oldestRecord` and `newestRecord` after restart.
+
+**Solution**: Updated `FileStorageProvider` to use a structured file format that includes version, data, and timestamps.
+
+**Benefits**:
+
+- Timestamps persist across application restarts in Electron environments
+- Consistent behavior with `LocalStorageProvider` and `DexieStorageProvider`
+- Better data lifecycle management for desktop applications
+- Backward compatible with old file format
+
+**Implementation**:
+
+New file structure:
+```typescript
+interface StorageFileData {
+  version: number
+  data: Record<string, string>
+  timestamps?: Record<string, number>
+}
+```
+
+File loading supports both formats:
+```typescript
+// New format (v1 with timestamps)
+{
+  "version": 1,
+  "data": { "key1": "value1", "key2": "value2" },
+  "timestamps": { "key1": 1708123456789, "key2": 1708123456790 }
+}
+
+// Legacy format (backward compatible)
+{ "key1": "value1", "key2": "value2" }
+```
+
+**Key Changes**:
+
+- File now stores version, data, and timestamps in structured format
+- Loading logic detects and handles both new and legacy formats
+- All write operations persist timestamps to disk
+- Backward compatible: old files without timestamps still load correctly
+
+**Compatibility**: ✅ No breaking changes. Old files load correctly, new files include timestamps.
+
 ## Final Testing
 
 - ✅ All tests passing
