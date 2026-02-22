@@ -71,7 +71,7 @@ Prompt Optimizer is a powerful AI prompt optimization tool that helps you write 
 - 🛠️ **Function Calling Support**: Function Calling integration with support for OpenAI and Gemini tool calling
 - 🎯 **Flexible Debugging**: Enhanced prompt testing and debugging capabilities
 
-For detailed usage instructions, please refer to the [Image Mode Documentation](docs/image-mode.md)
+For detailed usage instructions, please refer to the [Image Mode Documentation](docs/image-mode_en.md)
 
 ## Quick Start
 
