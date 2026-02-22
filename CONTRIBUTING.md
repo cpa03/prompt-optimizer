@@ -43,6 +43,7 @@ Use descriptive branch names following these patterns:
 - `docs/your-docs-update` - Documentation updates
 - `test/your-test-additions` - Test additions/improvements
 - `repository-manager` - Repository management improvements
+- `DX-engineer` - Developer experience improvements
 
 ### Making Changes
 
@@ -375,6 +376,78 @@ gh pr create --label "quality-assurance" --title "qa: quality improvements"
 - [ ] No TypeScript errors
 - [ ] Documentation updated (if applicable)
 - [ ] No security vulnerabilities (`pnpm audit`)
+
+## 🛠️ Developer Experience
+
+### DX-engineer Workflow
+
+Developer experience improvements follow a structured workflow:
+
+```bash
+# 1. Create DX-engineer branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b DX-engineer
+
+# 2. Run quality checks
+pnpm lint
+pnpm test:fast
+pnpm type-check
+
+# 3. Make improvements
+# - Improve documentation clarity
+# - Add missing documentation
+# - Fix documentation inconsistencies
+# - Improve code comments
+# - Update CONTRIBUTING.md
+# - Review open issues for DX improvements
+
+# 4. Verify no regressions
+pnpm lint
+pnpm test:fast
+pnpm build
+
+# 5. Ensure branch is up-to-date before PR
+git fetch origin develop
+git rebase origin/develop
+
+# 6. Create/update PR with DX-engineer label
+gh pr create --label "DX-engineer" --title "docs: developer experience improvements"
+```
+
+### DX-engineer Focus Areas
+
+1. **Documentation**
+   - Keep documentation up-to-date with code changes
+   - Fix broken links and outdated references
+   - Add missing documentation for new features
+   - Improve documentation clarity and organization
+
+2. **Developer Onboarding**
+   - Ensure clear setup instructions
+   - Document common pitfalls and solutions
+   - Update troubleshooting guides
+
+3. **Code Readability**
+   - Add or improve code comments
+   - Document complex algorithms and decisions
+   - Update inline documentation
+
+4. **Process Improvement**
+   - Improve workflow documentation
+   - Update contribution guidelines
+   - Document best practices
+
+### DX-engineer Checklist
+
+- [ ] Lint passes with no warnings (`pnpm lint`)
+- [ ] Tests pass (`pnpm test:fast`)
+- [ ] Build succeeds (`pnpm build`)
+- [ ] Type check passes (`pnpm type-check`)
+- [ ] Documentation updated
+- [ ] No breaking changes
+- [ ] PR has DX-engineer label
+- [ ] Branch is up-to-date with develop
 
 ## 🤝 Code of Conduct
 
