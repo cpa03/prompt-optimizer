@@ -20,7 +20,6 @@ COPY --from=deps /app/packages/core/node_modules /app/packages/core/node_modules
 COPY --from=deps /app/packages/ui/node_modules /app/packages/ui/node_modules
 COPY --from=deps /app/packages/web/node_modules /app/packages/web/node_modules
 COPY --from=deps /app/packages/mcp-server/node_modules /app/packages/mcp-server/node_modules
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 RUN pnpm mcp:build
 
