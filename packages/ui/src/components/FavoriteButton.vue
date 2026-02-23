@@ -28,6 +28,7 @@
       size="huge"
       role="dialog"
       aria-modal="true"
+      :aria-label="t('favorites.dialog.saveTitle')"
     >
       <n-form ref="formRef" :model="favoriteForm" :rules="formRules" label-placement="top">
         <n-form-item :label="t('favorites.dialog.titleLabel')" path="title">
