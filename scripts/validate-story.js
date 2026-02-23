@@ -63,6 +63,11 @@ const PLACEHOLDER_PATTERNS = [
   { pattern: /\[Scenario \d+/gi, description: 'Scenario placeholder' },
 ]
 
+const SECTIONS_WITH_EXPECTED_PLACEHOLDERS = [
+  'Dev Agent Record',
+  'QA Results',
+]
+
 function parseStoryFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8')
   const fileName = path.basename(filePath)
@@ -117,9 +122,15 @@ function parseStoryFile(filePath) {
   const sourceRefs = content.matchAll(/\[Source:\s*([^\]]+)\]/gi)
   result.sourceReferences = Array.from(sourceRefs).map((m) => m[1].trim())
 
+  let contentForPlaceholderCheck = content
+  for (const sectionName of SECTIONS_WITH_EXPECTED_PLACEHOLDERS) {
+    const sectionPattern = new RegExp(`##\\s*${sectionName.replace(/\s+/g, '\\s*')}\\n[\\s\\S]*?(?=\\n##\\s|$)`, 'gi')
+    contentForPlaceholderCheck = contentForPlaceholderCheck.replace(sectionPattern, '')
+  }
+
   const placeholders = []
   for (const { pattern, description } of PLACEHOLDER_PATTERNS) {
-    const matches = content.matchAll(pattern)
+    const matches = contentForPlaceholderCheck.matchAll(pattern)
     for (const match of matches) {
       placeholders.push({
         text: match[0],
