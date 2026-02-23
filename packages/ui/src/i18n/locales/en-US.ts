@@ -64,6 +64,7 @@ export default {
     context: 'Context',
     copySuccess: 'Copied to clipboard',
     copyFailed: 'Copy Failed',
+    copyCode: 'Copy code',
     addToFavorites: 'Add to Favorites',
     fullscreen: 'Fullscreen',
     appName: 'Prompt Optimizer',

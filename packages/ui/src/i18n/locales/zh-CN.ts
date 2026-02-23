@@ -63,6 +63,7 @@ export default {
     context: '上下文',
     copySuccess: '复制成功',
     copyFailed: '复制失败',
+    copyCode: '复制代码',
     appName: '提示词优化器',
     selectFile: '选择文件',
     exporting: '导出中...',
