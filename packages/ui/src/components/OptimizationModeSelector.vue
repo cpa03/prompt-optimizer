@@ -130,6 +130,12 @@ const updateOptimizationMode = (mode: SubMode) => {
   font-weight: 500;
 }
 
+/* 🎨 Palette: Hover glow effect for selected state */
+.optimization-mode-selector
+  :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.25);
+}
+
 /* Ripple effect on click */
 .optimization-mode-selector :deep(.n-radio-button::after) {
   content: '';
@@ -161,6 +167,17 @@ const updateOptimizationMode = (mode: SubMode) => {
   outline-offset: 2px;
 }
 
+/* 🎨 Palette: Dark mode adjustments */
+.dark .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark
+  .optimization-mode-selector
+  :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+  box-shadow: 0 2px 12px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.35);
+}
+
 /* 响应式设计 - 移动端全宽显示 */
 @media (max-width: 640px) {
   .optimization-mode-selector {
@@ -188,6 +205,11 @@ const updateOptimizationMode = (mode: SubMode) => {
 
   .optimization-mode-selector :deep(.n-radio-button:not(.n-radio-button--disabled):active) {
     transform: none;
+  }
+
+  .optimization-mode-selector
+    :deep(.n-radio-button.n-radio-button--checked:not(.n-radio-button--disabled):hover) {
+    box-shadow: none;
   }
 }
 </style>
