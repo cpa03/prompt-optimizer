@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { TypeMapper, type FunctionModeMapping } from '../../../src/services/favorite/type-mapper'
 import type { PromptRecordType } from '../../../src/services/history/types'
 

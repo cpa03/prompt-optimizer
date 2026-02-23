@@ -4,6 +4,19 @@ import { createMockStorage } from '../../mocks/mockStorage'
 import { PreferenceService } from '../../../src/services/preference/service'
 import { MemoryStorageProvider } from '../../../src/services/storage/memoryStorageProvider'
 
+// Ensure navigator mock exists for Node.js environment
+if (!global.navigator) {
+  Object.defineProperty(global, 'navigator', {
+    value: {
+      language: 'en-US',
+      userAgent: 'node.js',
+      platform: 'node',
+    },
+    writable: true,
+    configurable: true,
+  })
+}
+
 describe('TemplateLanguageService', () => {
   let service: TemplateLanguageService
   let mockStorage: ReturnType<typeof createMockStorage>
@@ -11,10 +24,7 @@ describe('TemplateLanguageService', () => {
 
   beforeEach(() => {
     // Mock navigator.language to English for consistent test environment
-    Object.defineProperty(navigator, 'language', {
-      value: 'en-US',
-      configurable: true,
-    })
+    global.navigator.language = 'en-US'
 
     mockStorage = createMockStorage()
     const memoryStorage = new MemoryStorageProvider()
@@ -118,10 +128,7 @@ describe('TemplateLanguageService', () => {
   describe('browser language detection', () => {
     it('should detect Chinese browser language', async () => {
       // Mock navigator.language
-      Object.defineProperty(navigator, 'language', {
-        value: 'zh-CN',
-        configurable: true,
-      })
+      global.navigator.language = 'zh-CN'
 
       const memoryStorage = new MemoryStorageProvider()
       const newPreferenceService = new PreferenceService(memoryStorage)
@@ -133,10 +140,7 @@ describe('TemplateLanguageService', () => {
 
     it('should detect English browser language', async () => {
       // Mock navigator.language
-      Object.defineProperty(navigator, 'language', {
-        value: 'en-US',
-        configurable: true,
-      })
+      global.navigator.language = 'en-US'
 
       const memoryStorage = new MemoryStorageProvider()
       const newPreferenceService = new PreferenceService(memoryStorage)
@@ -148,10 +152,7 @@ describe('TemplateLanguageService', () => {
 
     it('should default to English for unsupported browser languages', async () => {
       // Mock navigator.language
-      Object.defineProperty(navigator, 'language', {
-        value: 'fr-FR',
-        configurable: true,
-      })
+      global.navigator.language = 'fr-FR'
 
       const memoryStorage = new MemoryStorageProvider()
       const newPreferenceService = new PreferenceService(memoryStorage)
