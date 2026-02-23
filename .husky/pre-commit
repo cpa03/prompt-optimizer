@@ -20,6 +20,10 @@ if [ ! -f "pnpm-lock.yaml" ]; then
   echo "请确保使用pnpm install安装依赖。"
 fi 
 
+# Run lint-staged to auto-format staged files
+echo "Running lint-staged on staged files..."
+pnpm lint-staged
+
 # 测试门禁（可用 SKIP_TEST_GATE=1 跳过，仅用于紧急情况）
 if [ "$SKIP_TEST_GATE" = "1" ]; then
   echo "跳过测试门禁：检测到 SKIP_TEST_GATE=1"
