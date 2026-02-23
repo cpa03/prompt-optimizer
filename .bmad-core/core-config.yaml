@@ -3,10 +3,10 @@ markdownExploder: true
 qa:
   qaLocation: docs/qa
 prd:
-  prdFile: docs/prd.md
+  prdFile: docs/project/prd.md
   prdVersion: v4
-  prdSharded: true
-  prdShardedLocation: docs/prd
+  prdSharded: false
+  prdShardedLocation: null
   epicFilePattern: epic-{n}*.md
 architecture:
   architectureFile: docs/architecture.md

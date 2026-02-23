@@ -61,6 +61,10 @@ pnpm build
 
 ## Architecture
 
+### Architecture Index
+
+- **[Architecture Documentation Index](architecture/index.md)** - Complete overview of all architecture documents
+
 ### Core Architecture Documents
 
 - **[LLM Refactor](architecture/llm-refactor.md)** - LLM service Provider-Adapter-Registry architecture
