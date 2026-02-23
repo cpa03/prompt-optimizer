@@ -63,11 +63,26 @@ pnpm build
 
 ### Core Architecture Documents
 
-- **[Storage Key Architecture](architecture/storage-key-architecture.md)** - Storage system design
-- **[Image Model Management](architecture/image-model-management-architecture.md)** - Image generation architecture
-- **[Function Mode](architecture/function-mode.md)** - Function calling implementation
-- **[LLM Refactor](architecture/llm-refactor.md)** - LLM service architecture
+- **[LLM Refactor](architecture/llm-refactor.md)** - LLM service Provider-Adapter-Registry architecture
+- **[Storage Key Architecture](architecture/storage-key-architecture.md)** - Storage system design and key management
 - **[Storage Refactoring Summary](architecture/storage-refactoring-summary.md)** - Storage system evolution
+- **[Function Mode](architecture/function-mode.md)** - Function calling implementation
+
+### Data Management Architecture
+
+- **[Database Architecture Improvements](architecture/database-architecture-improvements.md)** - Schema versioning, integrity, and performance
+- **[Database Improvements 2026-02-19](architecture/database-improvements-2026-02-19.md)** - Recent database enhancements
+- **[Import/Export Interface Design](architecture/import-export-interface-design.md)** - Data import/export architecture
+
+### Model & UI Architecture
+
+- **[Image Model Management](architecture/image-model-management-architecture.md)** - Image generation architecture
+- **[Image Model Edit Unified Design](architecture/image-model-edit-unified-design.md)** - Unified model editing interface
+- **[Test Area Version Model Selection](architecture/test-area-version-model-selection.md)** - Model selection in test areas
+
+### Service Optimization
+
+- **[Preference Service Optimization](architecture/preference-service-optimization.md)** - PreferenceService architecture improvements
 
 ### Migration Guides
 
