@@ -143,16 +143,6 @@ pnpm build
 
 ---
 
-## Quality Assurance
-
-### QA Documentation
-
-- **[QA Overview](qa/README.md)** - Quality assurance artifacts and processes
-- **[Quality Gates](qa/gates/)** - Pass/fail decision files for stories
-- **[Assessment Reports](qa/assessments/)** - Test design, traceability, risk profiles, and NFR assessments
-
----
-
 ## Deployment
 
 ### Deployment Documentation
@@ -300,7 +290,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-22  
+**Last Updated:** 2026-02-23  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
