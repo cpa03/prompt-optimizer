@@ -17,7 +17,12 @@
         ]"
         :data-testid="`score-badge-${type}`"
         :data-eval-type="type"
+        :role="loading ? undefined : 'button'"
+        :tabindex="loading ? undefined : 0"
+        :aria-label="badgeAriaLabel"
         @click="handleClick"
+        @keydown.enter="handleClick"
+        @keydown.space.prevent="handleClick"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
       >
@@ -62,10 +67,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { NSpin, NPopover } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 import EvaluationHoverCard from './EvaluationHoverCard.vue'
 import { COMPONENT_CONSTANTS, TIME_CONSTANTS } from '../../config/constants'
 import type { EvaluationResponse, EvaluationType, PatchOperation } from '@prompt-optimizer/core'
 import type { ScoreLevel } from './types'
+
+const { t } = useI18n()
 
 // 🎨 Palette: Score animation state
 const displayScore = ref<number>(0)
@@ -209,6 +217,21 @@ const levelClass = computed(() => {
 // 加载图标尺寸
 const spinSize = computed(() => (props.size === 'small' ? 12 : 16))
 
+// Accessibility: aria-label for screen readers
+const badgeAriaLabel = computed(() => {
+  if (props.loading) return t('evaluation.loading')
+  if (props.score === null || props.score === undefined) {
+    return t('evaluation.noResult')
+  }
+  const typeLabel = props.type === 'original' 
+    ? t('evaluation.title.original') 
+    : t('evaluation.title.optimized')
+  const levelLabel = computedLevel.value 
+    ? t(`evaluation.level.${computedLevel.value === 'very-poor' ? 'veryPoor' : computedLevel.value}`)
+    : ''
+  return `${typeLabel}: ${props.score} - ${levelLabel}`
+})
+
 // 点击处理 - 显示/隐藏悬浮预览
 const handleClick = () => {
   if (!props.loading) {
@@ -310,6 +333,12 @@ const handleApplyPatch = (payload: { operation: PatchOperation }) => {
 .clickable:not(.loading):hover {
   opacity: 0.85;
   transform: scale(1.05);
+}
+
+/* Keyboard focus indicator for accessibility */
+.clickable:not(.loading):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.5);
 }
 
 /* 加载状态 */
