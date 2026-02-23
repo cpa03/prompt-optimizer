@@ -20,15 +20,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       compression({
-        algorithm: 'gzip',
-        exclude: [/\.(br)$/, /\.(gz)$/],
-        threshold: 1024,
-        compressionOptions: {
-          level: 9,
-        },
-      }),
-      compression({
-        algorithm: 'brotliCompress',
+        algorithms: ['gzip', 'brotliCompress'],
         exclude: [/\.(br)$/, /\.(gz)$/],
         threshold: 1024,
       }),
