@@ -451,11 +451,14 @@ export class PromptDataConverter implements DataConverter {
     }
   }
 
-  // 私有方法：替换变量
+  private escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+
   private replaceVariables(content: string, variables: Record<string, string>): string {
     let result = content
     for (const [name, value] of Object.entries(variables)) {
-      const pattern = new RegExp(`\\{\\{\\s*${name}\\s*\\}\\}`, 'g')
+      const pattern = new RegExp(`\\{\\{\\s*${this.escapeRegExp(name)}\\s*\\}\\}`, 'g')
       result = result.replace(pattern, value)
     }
     return result
