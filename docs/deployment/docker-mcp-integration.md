@@ -42,6 +42,8 @@ VITE_GEMINI_API_KEY=your-key
 MCP_HTTP_PORT=3000
 MCP_LOG_LEVEL=info
 MCP_ENABLE_CORS=true
+# CORS: Use specific origins for production (e.g., "https://yourdomain.com")
+# Default is localhost only. Use "*" for development/testing only.
 MCP_ALLOWED_ORIGINS=*
 
 # 模型配置（必需）

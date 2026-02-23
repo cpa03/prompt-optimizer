@@ -278,7 +278,7 @@ These variables are used in the core package and don't require a prefix.
 
 | Variable                       | Default | Description                                        |
 | ------------------------------ | ------- | -------------------------------------------------- |
-| `MCP_ALLOWED_ORIGINS`          | `*`     | Comma-separated list of allowed CORS origins       |
+| `MCP_ALLOWED_ORIGINS`          | localhost origins | Comma-separated list of allowed CORS origins. Default: `http://localhost,http://127.0.0.1,https://localhost,https://127.0.0.1`. Use `*` for development only. |
 | `MCP_DNS_REBINDING_PROTECTION` | `false` | Enable DNS rebinding protection for HTTP transport |
 
 ## Usage Examples

@@ -99,7 +99,19 @@ export function loadConfig(): MCPServerConfig {
       .map((origin) => origin.trim())
       .filter(Boolean)
   } else {
-    allowedOrigins = ['*']
+    allowedOrigins = [
+      'http://localhost',
+      'http://127.0.0.1',
+      'https://localhost',
+      'https://127.0.0.1',
+    ]
+  }
+
+  if (allowedOrigins.includes('*')) {
+    logger.warn(
+      '[MCP Security] CORS wildcard (*) detected. This allows any origin to access the MCP server. ' +
+        'For production, set MCP_ALLOWED_ORIGINS to specific origins (e.g., "https://yourapp.com,https://api.yourapp.com").'
+    )
   }
 
   return {
