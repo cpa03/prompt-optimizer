@@ -151,6 +151,11 @@ pnpm build
 - **[Quality Gates](qa/gates/)** - Pass/fail decision files for stories
 - **[Assessment Reports](qa/assessments/)** - Test design, traceability, risk profiles, and NFR assessments
 
+### QA Directory Structure
+
+- `qa/gates/` - Quality gate decision files for stories
+- `qa/assessments/` - QA assessment reports
+
 ---
 
 ## Deployment
@@ -246,21 +251,6 @@ Standard templates for consistent documentation:
 
 ---
 
-## Quality Assurance
-
-### QA Documentation
-
-- **[QA Documentation](qa/README.md)** - Quality assurance artifacts overview
-  - Quality gate decision files
-  - Assessment reports (test design, traceability, risk profiles, NFR assessments)
-
-### QA Directory Structure
-
-- `qa/gates/` - Quality gate decision files for stories
-- `qa/assessments/` - QA assessment reports
-
----
-
 ## Audit Reports
 
 All audit reports are consolidated in the `audit/` directory:
@@ -300,7 +290,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-22  
+**Last Updated:** 2026-02-23  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
