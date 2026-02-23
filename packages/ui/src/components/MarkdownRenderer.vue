@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { NScrollbar } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 
 import MarkdownIt from 'markdown-it'
 import DOMPurify from 'dompurify'
@@ -40,7 +41,8 @@ const props = withDefaults(defineProps<Props>(), {
 const markdownContainer = ref<HTMLElement | null>(null)
 const renderError = ref<string | null>(null)
 
-// Clipboard functionality for code blocks
+const { t } = useI18n()
+
 const { copyText } = useClipboard()
 const message = useToast()
 
@@ -77,7 +79,7 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
     updateCopyButtonVisualState(preWrapper, true)
 
     // Show toast notification
-    message.success('代码已复制')
+    message.success(t('common.copySuccess'))
 
     // Reset after 2 seconds
     setTimeout(() => {
@@ -85,7 +87,7 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
       updateCopyButtonVisualState(preWrapper, false)
     }, 2000)
   } catch {
-    message.error('复制失败，请手动复制')
+    message.error(t('common.copyFailed'))
   }
 }
 
@@ -160,8 +162,8 @@ const createCopyButton = (codeId: string): HTMLButtonElement => {
   const button = document.createElement('button')
   button.className = 'code-copy-button'
   button.setAttribute('data-code-id', codeId)
-  button.setAttribute('title', '复制代码')
-  button.setAttribute('aria-label', '复制代码')
+  button.setAttribute('title', t('common.copy'))
+  button.setAttribute('aria-label', t('common.copy'))
 
   // Default copy icon
   const copyIcon = document.createElement('span')
