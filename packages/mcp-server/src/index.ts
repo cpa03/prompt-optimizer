@@ -686,6 +686,19 @@ async function main() {
       const stdioTransport = new StdioServerTransport()
       await server.connect(stdioTransport)
       logger.info('MCP Server running on stdio')
+
+      // 优雅关闭 (stdio mode only - HTTP mode registers its own handlers above)
+      process.on('SIGINT', () => {
+        console.log('Received SIGINT, shutting down gracefully...')
+        stopStaleContextCleanup()
+        process.exit(0)
+      })
+
+      process.on('SIGTERM', () => {
+        console.log('Received SIGTERM, shutting down gracefully...')
+        stopStaleContextCleanup()
+        process.exit(0)
+      })
     }
   } catch (error) {
     // 确保错误信息始终显示，即使没有启用 DEBUG
@@ -708,19 +721,6 @@ process.on('uncaughtException', (error) => {
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason)
   process.exit(1)
-})
-
-// 优雅关闭 (stdio mode fallback - HTTP mode registers its own handlers)
-process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully...')
-  stopStaleContextCleanup()
-  process.exit(0)
-})
-
-process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully...')
-  stopStaleContextCleanup()
-  process.exit(0)
 })
 
 // 导出 main 函数供外部调用
