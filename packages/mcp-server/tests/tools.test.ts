@@ -308,6 +308,68 @@ describe('MCP Server Tools', () => {
       })
     })
 
+    describe('isServerError', () => {
+      it('应该正确识别服务器错误 - 内部错误', () => {
+        const mcpError = MCPErrorHandler.createInternalError('test error')
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI速率限制', () => {
+        const mcpError = MCPErrorHandler.createRateLimitError()
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - 服务不可用', () => {
+        const mcpError = MCPErrorHandler.createServiceUnavailableError()
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI认证失败', () => {
+        const error = new Error('Unauthorized: invalid API key')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - 配置错误', () => {
+        const error = new Error('API key is invalid')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI服务过载', () => {
+        const mcpError = MCPErrorHandler.createServiceOverloadedError()
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI内容过滤', () => {
+        const mcpError = MCPErrorHandler.createContentFilteredError()
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI超时', () => {
+        const error = new Error('Request timeout: ETIMEDOUT')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别服务器错误 - AI模型不可用', () => {
+        const error = new Error('Model not found')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(true)
+      })
+
+      it('应该正确识别非服务器错误 - 参数验证错误', () => {
+        const mcpError = MCPErrorHandler.createValidationError('invalid input')
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(false)
+      })
+
+      it('应该正确识别非服务器错误 - 空提示词错误', () => {
+        const error = new Error('提示词必须是非空字符串')
+        const mcpError = MCPErrorHandler.convertCoreError(error)
+        expect(MCPErrorHandler.isServerError(mcpError)).toBe(false)
+      })
+    })
+
     describe('createRateLimitError', () => {
       it('应该创建默认速率限制错误', () => {
         const mcpError = MCPErrorHandler.createRateLimitError()

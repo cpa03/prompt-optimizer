@@ -434,6 +434,31 @@ export class MCPErrorHandler {
   }
 
   /**
+   * Checks if an error is a server error (5xx equivalent).
+   * Server errors are caused by the service and may be retryable.
+   * AI agents should consider retry logic for these errors.
+   *
+   * @param error - The McpError to check
+   * @returns true if the error is a server error
+   */
+  static isServerError(error: McpError): boolean {
+    const serverErrorCodes = [
+      MCP_ERROR_CODES.INTERNAL_ERROR,
+      MCP_ERROR_CODES.PROMPT_OPTIMIZATION_FAILED,
+      MCP_ERROR_CODES.CONFIGURATION_ERROR,
+      MCP_ERROR_CODES.SERVICE_UNAVAILABLE,
+      MCP_ERROR_CODES.AI_RATE_LIMITED,
+      MCP_ERROR_CODES.AI_CONTEXT_LENGTH_EXCEEDED,
+      MCP_ERROR_CODES.AI_MODEL_UNAVAILABLE,
+      MCP_ERROR_CODES.AI_RESPONSE_TIMEOUT,
+      MCP_ERROR_CODES.AI_AUTHENTICATION_FAILED,
+      MCP_ERROR_CODES.AI_SERVICE_OVERLOADED,
+      MCP_ERROR_CODES.AI_CONTENT_FILTERED,
+    ]
+    return serverErrorCodes.includes(error.code as (typeof serverErrorCodes)[number])
+  }
+
+  /**
    * Extracts the error category from an McpError's data.
    * Useful for AI agents to classify errors for handling logic.
    *
