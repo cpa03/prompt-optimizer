@@ -39,7 +39,7 @@ import {
   isInitializeRequest,
 } from '@modelcontextprotocol/sdk/types.js'
 import { CoreServicesManager } from './adapters/core-services.js'
-import { loadConfig, MCPServerConfig } from './config/environment.js'
+import { loadConfig, MCPServerConfig, validateConfig } from './config/environment.js'
 import * as logger from './utils/logging.js'
 import { ParameterValidator } from './adapters/parameter-adapter.js'
 import { getTemplateOptions, getDefaultTemplateId } from './config/templates.js'
@@ -426,6 +426,7 @@ function validateSessionId(id: string | undefined): boolean {
 
 async function main() {
   const config = loadConfig()
+  validateConfig(config)
   logger.setLogLevel(config.logLevel)
 
   try {
