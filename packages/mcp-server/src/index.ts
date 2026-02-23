@@ -476,6 +476,7 @@ async function main() {
           uptime: process.uptime(),
           version: '0.1.0',
           activeRequests: requestContexts.size,
+          memoryUsage: process.memoryUsage(),
         }
         res.json(healthData)
       })
