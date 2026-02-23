@@ -7,6 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { createRateLimiter, getClientIdentifier, RateLimiter } from '../src/utils/rate-limiter.js'
+import { MCP_CONFIG } from '@prompt-optimizer/core'
 
 describe('RateLimiter', () => {
   let limiter: RateLimiter
@@ -114,6 +115,56 @@ describe('RateLimiter', () => {
       shortLimiter.stop()
 
       expect(() => shortLimiter.stop()).not.toThrow()
+    })
+
+    it('should perform force cleanup when entries exceed maxEntries', () => {
+      const maxEntriesSpy = vi.spyOn(MCP_CONFIG.rateLimit, 'maxEntries', 'get').mockReturnValue(10)
+      const targetEntriesSpy = vi
+        .spyOn(MCP_CONFIG.rateLimit, 'targetEntriesAfterCleanup', 'get')
+        .mockReturnValue(5)
+
+      const forceCleanupLimiter = createRateLimiter({
+        windowMs: 1000,
+        maxRequests: 5,
+        cleanupIntervalMs: 100,
+      })
+
+      for (let i = 0; i < 15; i++) {
+        forceCleanupLimiter.check(`client-${i}`)
+      }
+
+      expect(forceCleanupLimiter.getStats().totalClients).toBe(15)
+
+      vi.advanceTimersByTime(100)
+
+      expect(forceCleanupLimiter.getStats().totalClients).toBe(5)
+
+      forceCleanupLimiter.stop()
+      maxEntriesSpy.mockRestore()
+      targetEntriesSpy.mockRestore()
+    })
+
+    it('should not perform force cleanup when entries are below maxEntries', () => {
+      const maxEntriesSpy = vi.spyOn(MCP_CONFIG.rateLimit, 'maxEntries', 'get').mockReturnValue(100)
+
+      const normalLimiter = createRateLimiter({
+        windowMs: 1000,
+        maxRequests: 5,
+        cleanupIntervalMs: 100,
+      })
+
+      for (let i = 0; i < 10; i++) {
+        normalLimiter.check(`client-${i}`)
+      }
+
+      expect(normalLimiter.getStats().totalClients).toBe(10)
+
+      vi.advanceTimersByTime(100)
+
+      expect(normalLimiter.getStats().totalClients).toBe(10)
+
+      normalLimiter.stop()
+      maxEntriesSpy.mockRestore()
     })
   })
 
