@@ -69,3 +69,29 @@ export interface IVariableExtractionService {
    */
   extract(request: VariableExtractionRequest): Promise<VariableExtractionResponse>
 }
+
+// ==================== 内部类型（LLM 原始响应） ====================
+
+/**
+ * LLM 返回的原始变量数据（解析后、标准化前）
+ * @internal
+ */
+export interface RawExtractedVariable {
+  name: unknown
+  value: unknown
+  position: {
+    originalText: unknown
+    occurrence: unknown
+  }
+  reason: unknown
+  category?: unknown
+}
+
+/**
+ * LLM 返回的原始提取响应（解析后、标准化前）
+ * @internal
+ */
+export interface RawExtractionResponse {
+  variables: RawExtractedVariable[]
+  summary: unknown
+}

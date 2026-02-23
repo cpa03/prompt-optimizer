@@ -14,6 +14,8 @@ import {
   type VariableValueGenerationResponse,
   type GeneratedVariableValue,
   type VariableToGenerate,
+  type RawGenerationResponse,
+  type RawGeneratedVariableValue,
 } from './types'
 import {
   VariableValueGenerationError,
@@ -196,18 +198,20 @@ export class VariableValueGenerationService implements IVariableValueGenerationS
    * 🔧 修复：添加变量对齐校验，确保返回的变量与请求一致
    */
   private normalizeGenerationResponse(
-    data: any,
+    data: unknown,
     requestedVariables: VariableToGenerate[]
   ): VariableValueGenerationResponse {
     if (!data || typeof data !== 'object') {
       throw new VariableValueGenerationParseError('Generation result is not a valid object.')
     }
 
-    if (!Array.isArray(data.values)) {
+    const rawData = data as RawGenerationResponse
+
+    if (!Array.isArray(rawData.values)) {
       throw new VariableValueGenerationParseError('Generation result must have a "values" array.')
     }
 
-    if (typeof data.summary !== 'string') {
+    if (typeof rawData.summary !== 'string') {
       throw new VariableValueGenerationParseError('Generation result must have a "summary" string.')
     }
 
@@ -216,36 +220,38 @@ export class VariableValueGenerationService implements IVariableValueGenerationS
     const requestedNames = new Set(requestedVariables.map((v) => v.name.trim()))
 
     // 标准化每个生成的值
-    const rawValues: GeneratedVariableValue[] = data.values.map((item: any, index: number) => {
-      if (!item || typeof item !== 'object') {
-        throw new VariableValueGenerationParseError(`values[${index}] is not a valid object.`)
-      }
+    const rawValues: GeneratedVariableValue[] = rawData.values.map(
+      (item: RawGeneratedVariableValue, index: number) => {
+        if (!item || typeof item !== 'object') {
+          throw new VariableValueGenerationParseError(`values[${index}] is not a valid object.`)
+        }
 
-      if (typeof item.name !== 'string' || !item.name.trim()) {
-        throw new VariableValueGenerationParseError(
-          `values[${index}] is missing a valid "name" field.`
-        )
-      }
+        if (typeof item.name !== 'string' || !item.name.trim()) {
+          throw new VariableValueGenerationParseError(
+            `values[${index}] is missing a valid "name" field.`
+          )
+        }
 
-      if (typeof item.value !== 'string') {
-        throw new VariableValueGenerationParseError(
-          `values[${index}] is missing a valid "value" field.`
-        )
-      }
+        if (typeof item.value !== 'string') {
+          throw new VariableValueGenerationParseError(
+            `values[${index}] is missing a valid "value" field.`
+          )
+        }
 
-      if (typeof item.reason !== 'string') {
-        throw new VariableValueGenerationParseError(
-          `values[${index}] is missing a valid "reason" field.`
-        )
-      }
+        if (typeof item.reason !== 'string') {
+          throw new VariableValueGenerationParseError(
+            `values[${index}] is missing a valid "reason" field.`
+          )
+        }
 
-      return {
-        name: item.name.trim(),
-        value: item.value,
-        reason: item.reason,
-        confidence: typeof item.confidence === 'number' ? item.confidence : undefined,
+        return {
+          name: item.name.trim(),
+          value: item.value,
+          reason: item.reason,
+          confidence: typeof item.confidence === 'number' ? item.confidence : undefined,
+        }
       }
-    })
+    )
 
     // 🔧 对齐处理：过滤掉不在请求列表中的变量 + 建立Map用于快速查找
     const valueMap = new Map<string, GeneratedVariableValue>()
@@ -295,7 +301,7 @@ export class VariableValueGenerationService implements IVariableValueGenerationS
 
     return {
       values: alignedValues,
-      summary: data.summary.trim(),
+      summary: rawData.summary.trim(),
     }
   }
 }

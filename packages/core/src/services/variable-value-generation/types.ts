@@ -77,3 +77,25 @@ export interface IVariableValueGenerationService {
    */
   generate(request: VariableValueGenerationRequest): Promise<VariableValueGenerationResponse>
 }
+
+// ==================== 内部类型（LLM 原始响应） ====================
+
+/**
+ * LLM 返回的原始变量值数据（解析后、标准化前）
+ * @internal
+ */
+export interface RawGeneratedVariableValue {
+  name: unknown
+  value: unknown
+  reason: unknown
+  confidence?: unknown
+}
+
+/**
+ * LLM 返回的原始生成响应（解析后、标准化前）
+ * @internal
+ */
+export interface RawGenerationResponse {
+  values: RawGeneratedVariableValue[]
+  summary: unknown
+}

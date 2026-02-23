@@ -13,6 +13,8 @@ import {
   type VariableExtractionRequest,
   type VariableExtractionResponse,
   type ExtractedVariable,
+  type RawExtractionResponse,
+  type RawExtractedVariable,
 } from './types'
 import {
   VariableExtractionValidationError,
@@ -195,79 +197,83 @@ export class VariableExtractionService implements IVariableExtractionService {
   /**
    * 标准化提取响应（统一结构）
    */
-  private normalizeExtractionResponse(data: any): VariableExtractionResponse {
+  private normalizeExtractionResponse(data: unknown): VariableExtractionResponse {
     if (!data || typeof data !== 'object') {
       throw new VariableExtractionParseError('Extraction result is not a valid object.')
     }
 
+    const rawData = data as RawExtractionResponse
+
     // 验证 variables 字段
-    if (!Array.isArray(data.variables)) {
+    if (!Array.isArray(rawData.variables)) {
       throw new VariableExtractionParseError('Extraction result must have a "variables" array.')
     }
 
     // 验证 summary 字段
-    if (typeof data.summary !== 'string') {
+    if (typeof rawData.summary !== 'string') {
       throw new VariableExtractionParseError('Extraction result must have a "summary" string.')
     }
 
     // 标准化每个变量
-    const variables: ExtractedVariable[] = data.variables.map((variable: any, index: number) => {
-      // 验证必需字段
-      if (!variable || typeof variable !== 'object') {
-        throw new VariableExtractionParseError(`variables[${index}] is not a valid object.`)
-      }
+    const variables: ExtractedVariable[] = rawData.variables.map(
+      (variable: RawExtractedVariable, index: number) => {
+        // 验证必需字段
+        if (!variable || typeof variable !== 'object') {
+          throw new VariableExtractionParseError(`variables[${index}] is not a valid object.`)
+        }
 
-      if (typeof variable.name !== 'string' || !variable.name.trim()) {
-        throw new VariableExtractionParseError(
-          `variables[${index}] is missing a valid "name" field.`
-        )
-      }
+        if (typeof variable.name !== 'string' || !variable.name.trim()) {
+          throw new VariableExtractionParseError(
+            `variables[${index}] is missing a valid "name" field.`
+          )
+        }
 
-      if (typeof variable.value !== 'string') {
-        throw new VariableExtractionParseError(
-          `variables[${index}] is missing a valid "value" field.`
-        )
-      }
+        if (typeof variable.value !== 'string') {
+          throw new VariableExtractionParseError(
+            `variables[${index}] is missing a valid "value" field.`
+          )
+        }
 
-      if (!variable.position || typeof variable.position !== 'object') {
-        throw new VariableExtractionParseError(
-          `variables[${index}] is missing a valid "position" object.`
-        )
-      }
+        if (!variable.position || typeof variable.position !== 'object') {
+          throw new VariableExtractionParseError(
+            `variables[${index}] is missing a valid "position" object.`
+          )
+        }
 
-      if (typeof variable.position.originalText !== 'string') {
-        throw new VariableExtractionParseError(
-          `variables[${index}].position is missing a valid "originalText" field.`
-        )
-      }
+        if (typeof variable.position.originalText !== 'string') {
+          throw new VariableExtractionParseError(
+            `variables[${index}].position is missing a valid "originalText" field.`
+          )
+        }
 
-      if (typeof variable.position.occurrence !== 'number') {
-        throw new VariableExtractionParseError(
-          `variables[${index}].position is missing a valid "occurrence" number.`
-        )
-      }
+        if (typeof variable.position.occurrence !== 'number') {
+          throw new VariableExtractionParseError(
+            `variables[${index}].position is missing a valid "occurrence" number.`
+          )
+        }
 
-      if (typeof variable.reason !== 'string') {
-        throw new VariableExtractionParseError(
-          `variables[${index}] is missing a valid "reason" field.`
-        )
-      }
+        if (typeof variable.reason !== 'string') {
+          throw new VariableExtractionParseError(
+            `variables[${index}] is missing a valid "reason" field.`
+          )
+        }
 
-      return {
-        name: variable.name.trim(),
-        value: variable.value,
-        position: {
-          originalText: variable.position.originalText,
-          occurrence: variable.position.occurrence,
-        },
-        reason: variable.reason,
-        category: variable.category ? String(variable.category) : undefined,
+        return {
+          name: variable.name.trim(),
+          value: variable.value,
+          position: {
+            originalText: variable.position.originalText,
+            occurrence: variable.position.occurrence,
+          },
+          reason: variable.reason,
+          category: variable.category ? String(variable.category) : undefined,
+        }
       }
-    })
+    )
 
     return {
       variables,
-      summary: data.summary.trim(),
+      summary: rawData.summary.trim(),
     }
   }
 }
