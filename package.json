@@ -76,7 +76,8 @@
     "brocula:health": "node scripts/brocula-health-check.js",
     "story:validate": "node scripts/validate-story.js",
     "story:validate:all": "node scripts/validate-story.js --all",
-    "story:create": "node scripts/create-story.js"
+    "story:create": "node scripts/create-story.js",
+    "test:skipped": "node scripts/detect-skipped-tests.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260228.0",
