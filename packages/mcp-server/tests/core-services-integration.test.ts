@@ -6,7 +6,7 @@
  * actual API keys for initialization.
  */
 
-import { describe, it, expect, beforeAll } from 'vitest'
+import { describe, it, expect, beforeAll, afterEach } from 'vitest'
 import { CoreServicesManager } from '../src/adapters/core-services.js'
 
 describe('CoreServicesManager Integration', () => {
@@ -14,6 +14,10 @@ describe('CoreServicesManager Integration', () => {
 
   beforeAll(() => {
     coreServices = CoreServicesManager.getInstance()
+  })
+
+  afterEach(() => {
+    coreServices.reset()
   })
 
   describe('Singleton Pattern', () => {
@@ -67,6 +71,47 @@ describe('CoreServicesManager Integration', () => {
       expect(typeof coreServices.getTemplateManager).toBe('function')
       expect(typeof coreServices.isInitialized).toBe('function')
       expect(typeof coreServices.getHealthStatus).toBe('function')
+      expect(typeof coreServices.reset).toBe('function')
+    })
+  })
+
+  describe('Reset Functionality', () => {
+    it('should reset initialized state to false', () => {
+      coreServices.reset()
+      expect(coreServices.isInitialized()).toBe(false)
+    })
+
+    it('should reset all services to null', async () => {
+      coreServices.reset()
+      const healthStatus = await coreServices.getHealthStatus()
+      expect(healthStatus.initialized).toBe(false)
+      expect(healthStatus.services.modelManager).toBe(false)
+      expect(healthStatus.services.llmService).toBe(false)
+      expect(healthStatus.services.languageService).toBe(false)
+      expect(healthStatus.services.templateManager).toBe(false)
+      expect(healthStatus.services.historyManager).toBe(false)
+      expect(healthStatus.services.promptService).toBe(false)
+    })
+
+    it('should allow re-initialization after reset', () => {
+      coreServices.reset()
+      expect(coreServices.isInitialized()).toBe(false)
+      const sameInstance = CoreServicesManager.getInstance()
+      expect(sameInstance).toBe(coreServices)
+      expect(sameInstance.isInitialized()).toBe(false)
+    })
+
+    it('should throw errors when accessing services after reset', () => {
+      coreServices.reset()
+      expect(() => coreServices.getPromptService()).toThrow(
+        'CoreServicesManager not initialized or PromptService not available'
+      )
+      expect(() => coreServices.getModelManager()).toThrow(
+        'CoreServicesManager not initialized or ModelManager not available'
+      )
+      expect(() => coreServices.getTemplateManager()).toThrow(
+        'CoreServicesManager not initialized or TemplateManager not available'
+      )
     })
   })
 })
