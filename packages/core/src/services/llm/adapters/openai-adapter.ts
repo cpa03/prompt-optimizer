@@ -581,8 +581,8 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
           }
 
           // 记录完成原因
-          if (chunk.choices?.[0]?.finish_reason && chunk.choices[0].finish_reason !== '') {
-            finishReason = chunk.choices[0].finish_reason
+          if (chunk.choices?.[0]?.finish_reason && chunk.choices?.[0]?.finish_reason !== '') {
+            finishReason = chunk.choices?.[0]?.finish_reason
           }
         } catch (e) {
           // 忽略无法解析的 chunk
@@ -685,7 +685,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       // 记录完成原因
       if (chunk.choices?.[0]?.finish_reason) {
-        finishReason = chunk.choices[0].finish_reason
+        finishReason = chunk.choices?.[0]?.finish_reason
       }
     }
 
@@ -752,7 +752,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       for await (const chunk of stream as any) {
         // 处理推理内容（SiliconFlow 等提供商在 delta 中提供 reasoning_content）
-        const reasoningContent = chunk.choices[0]?.delta?.reasoning_content || ''
+        const reasoningContent = chunk.choices?.[0]?.delta?.reasoning_content || ''
         if (reasoningContent) {
           accumulatedReasoning += reasoningContent
 
@@ -763,7 +763,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         }
 
         // 处理主要内容
-        const content = chunk.choices[0]?.delta?.content || ''
+        const content = chunk.choices?.[0]?.delta?.content || ''
         if (content) {
           accumulatedContent += content
 
@@ -841,7 +841,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
       for await (const chunk of stream as any) {
         // 处理推理内容
-        const reasoningContent = chunk.choices[0]?.delta?.reasoning_content || ''
+        const reasoningContent = chunk.choices?.[0]?.delta?.reasoning_content || ''
         if (reasoningContent) {
           accumulatedReasoning += reasoningContent
           if (callbacks.onReasoningToken) {
@@ -850,7 +850,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         }
 
         // 处理工具调用
-        const toolCallDeltas = chunk.choices[0]?.delta?.tool_calls
+        const toolCallDeltas = chunk.choices?.[0]?.delta?.tool_calls
         if (toolCallDeltas) {
           for (const toolCallDelta of toolCallDeltas) {
             if (toolCallDelta.index !== undefined) {
@@ -894,7 +894,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
         }
 
         // 处理主要内容
-        const content = chunk.choices[0]?.delta?.content || ''
+        const content = chunk.choices?.[0]?.delta?.content || ''
         if (content) {
           accumulatedContent += content
           this.processStreamContentWithThinkTags(content, callbacks, thinkState)

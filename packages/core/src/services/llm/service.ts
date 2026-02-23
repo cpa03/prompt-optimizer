@@ -99,11 +99,11 @@ export class LLMService implements ILLMService {
 
       // 使用 Adapter 发送消息
       return await adapter.sendMessage(messages, runtimeConfig)
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof RequestConfigError || error instanceof APIError) {
         throw error
       }
-      throw new APIError(`Failed to send message: ${error.message}`)
+      throw new APIError(`Failed to send message: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
@@ -215,11 +215,11 @@ export class LLMService implements ILLMService {
       const adapter = this.registry.getAdapter(modelConfig.providerMeta.id)
       const runtimeConfig = this.prepareRuntimeConfig(modelConfig)
       await adapter.sendMessage(testMessages, runtimeConfig)
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error instanceof RequestConfigError || error instanceof APIError) {
         throw error
       }
-      throw new APIError(`Connection test failed: ${error.message}`)
+      throw new APIError(`Connection test failed: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
@@ -261,12 +261,12 @@ export class LLMService implements ILLMService {
         value: model.id,
         label: model.name,
       }))
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch model list:', error)
       if (error instanceof RequestConfigError || error instanceof APIError) {
         throw error
       }
-      throw new APIError(`Failed to fetch model list: ${error.message}`)
+      throw new APIError(`Failed to fetch model list: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
 
