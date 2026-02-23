@@ -6,7 +6,6 @@
   "framework": "vite",
   "cleanUrls": true,
   "trailingSlash": false,
-  "skewProtection": true,
   "support": {
     "source": "https://github.com/cpa03/prompt-optimizer/issues"
   },
