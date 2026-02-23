@@ -6,7 +6,7 @@ import {
   PromptRecordChain,
   PromptRecordType,
 } from '../../../src/services/history/types'
-import { RecordValidationError, StorageError } from '../../../src/services/history/errors'
+import { RecordValidationError } from '../../../src/services/history/errors'
 import { v4 as uuidv4 } from 'uuid'
 import { createHistoryManager, MemoryStorageProvider } from '../../../src'
 import * as ModelManagerModule from '../../../src/services/model/manager'
@@ -57,7 +57,7 @@ describe('HistoryManager', () => {
 
   beforeEach(() => {
     mockStorage = new MemoryStorageProvider()
-    historyManager = createHistoryManager(mockStorage)
+    historyManager = createHistoryManager(mockStorage, mockModelManager as any)
     ;(uuidv4 as any).mockClear()
     mockModelManager.getModel.mockClear()
 
@@ -79,19 +79,19 @@ describe('HistoryManager', () => {
       expect(JSON.parse(records!)).toEqual([record])
     })
 
-    it.skip('should add a record and fetch modelName if not provided and modelKey exists', async () => {
+    it('should add a record and fetch modelName if not provided and modelKey exists', async () => {
       const recordWithoutModelName = mockPromptRecord('id1', 'chain1', 1)
       delete recordWithoutModelName.modelName
 
       mockModelManager.getModel.mockReturnValue({
-        defaultModel: 'Fetched Model Name',
+        name: 'Fetched Model Name',
+        defaultModel: 'fetched-model-variant',
       })
 
-      // This test requires modelManager to be injected, which is currently not the case.
-      // await historyManager.addRecord(recordWithoutModelName);
-      // expect(mockModelManager.getModel).toHaveBeenCalledWith('test-model-key');
-      // const storedRecords = JSON.parse(await mockStorage.getItem('prompt_history') ?? '[]');
-      // expect(storedRecords[0].modelName).toBe('Fetched Model Name');
+      await historyManager.addRecord(recordWithoutModelName)
+      expect(mockModelManager.getModel).toHaveBeenCalledWith('test-model-key')
+      const storedRecords = JSON.parse((await mockStorage.getItem('prompt_history')) ?? '[]')
+      expect(storedRecords[0].modelName).toBe('Fetched Model Name')
     })
 
     it('should not fetch modelName if modelKey does not exist and modelManager is not provided', async () => {
