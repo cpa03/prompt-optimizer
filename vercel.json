@@ -6,9 +6,6 @@
   "framework": "vite",
   "cleanUrls": true,
   "trailingSlash": false,
-  "support": {
-    "source": "https://github.com/cpa03/prompt-optimizer/issues"
-  },
   "images": {
     "remotePatterns": [
       {
@@ -16,7 +13,7 @@
         "hostname": "**"
       }
     ],
-    "unoptimized": true
+    "sizes": [640, 750, 828, 1080, 1200, 1920, 2048, 3840]
   },
   "rewrites": [
     {
