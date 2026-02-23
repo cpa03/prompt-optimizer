@@ -13,8 +13,6 @@
   },
   "dependencies": {
     "@prompt-optimizer/ui": "workspace:*",
-    "element-plus": "^2.12.0",
-    "uuid": "^11.0.5",
     "vue": "^3.5.13"
   },
   "devDependencies": {
@@ -22,13 +20,10 @@
     "@tailwindcss/typography": "^0.5.16",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "^20.11.0",
-    "@types/uuid": "^10.0.0",
     "@vitejs/plugin-basic-ssl": "^2.1.0",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.5.1",
     "autoprefixer": "^10.4.20",
-    "dotenv": "^16.4.7",
-    "js-yaml": "^4.1.0",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.3.3",

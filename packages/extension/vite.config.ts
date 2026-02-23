@@ -66,12 +66,8 @@ export default defineConfig({
             if (id.includes('naive-ui')) {
               return 'vendor-ui-naive'
             }
-            // Element Plus
-            if (id.includes('element-plus') || id.includes('@element-plus')) {
-              return 'vendor-ui-element'
-            }
             // Icons
-            if (id.includes('@element-plus/icons') || id.includes('@vicons')) {
+            if (id.includes('@vicons')) {
               return 'vendor-icons'
             }
             // CodeMirror - large editor library

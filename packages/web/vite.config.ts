@@ -110,12 +110,8 @@ export default defineConfig(({ mode }) => {
               if (id.includes('naive-ui')) {
                 return 'vendor-ui-naive'
               }
-              // Element Plus
-              if (id.includes('element-plus') || id.includes('@element-plus')) {
-                return 'vendor-ui-element'
-              }
               // Icons - split from main UI bundle
-              if (id.includes('@element-plus/icons') || id.includes('@vicons')) {
+              if (id.includes('@vicons')) {
                 return 'vendor-icons'
               }
               // CodeMirror - large editor library
@@ -214,10 +210,6 @@ export default defineConfig(({ mode }) => {
         '@prompt-optimizer/web': path.resolve(__dirname, '../web'),
         '@prompt-optimizer/extension': path.resolve(__dirname, '../extension'),
       },
-    },
-    optimizeDeps: {
-      // 预构建依赖
-      include: ['element-plus'],
     },
     define: {
       'process.env': {

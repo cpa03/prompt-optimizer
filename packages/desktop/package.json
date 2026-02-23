@@ -18,15 +18,13 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "electron": "^39.2.6",
-    "electron-builder": "^26.0.12",
-    "electron-builder-squirrel-windows": "^26.0.12"
+    "electron-builder": "^26.0.12"
   },
   "dependencies": {
     "@prompt-optimizer/core": "workspace:*",
     "dotenv": "^16.4.7",
     "electron-log": "^5.4.1",
     "electron-updater": "6.6.2",
-    "node-fetch": "^2.7.0",
     "undici": "^6.19.8"
   },
   "build": {
