@@ -8,11 +8,11 @@ This directory contains user story documents for the prompt-optimizer project.
 1. Create story → 2. Validate → 3. Approve → 4. Implement → 5. Verify → 6. Close
 ```
 
-| Step          | Who           | Command/Action                              |
-| ------------- | ------------- | ------------------------------------------- |
-| Create story  | Scrum Master  | `pnpm story:create 1 "Feature Name"`        |
-| Validate      | Scrum Master  | `pnpm story:validate docs/stories/1.x.md`   |
-| Approve       | Product Owner | Review checklist, set status to `Approved`  |
+| Step          | Who           | Command/Action                                       |
+| ------------- | ------------- | ---------------------------------------------------- |
+| Create story  | Scrum Master  | `node scripts/create-story.js 1.1 "Feature Name"`   |
+| Validate      | Scrum Master  | `node scripts/validate-story.js docs/stories/1.x.md`|
+| Approve       | Product Owner | Review checklist, set status to `Approved`           |
 | Implement     | Developer     | Execute tasks, update checkboxes            |
 | Verify        | QA Agent      | Run tests, populate QA Results section      |
 | Close         | All           | Set status to `Done` after verification     |
@@ -47,11 +47,11 @@ Examples:
 1. **Identify Story** - Scrum Master identifies next story from epic
 2. **Draft Story** - Create story file using template
    ```bash
-   # Create a new story (auto-assign story number)
-   pnpm story:create 1 "User Authentication"
+   # Create a new story with specific number
+   node scripts/create-story.js 1.1 "User Authentication"
    
-   # Create a story with specific number
-   pnpm story:create 1.4 "User Authentication"
+   # Create a story in a different epic
+   node scripts/create-story.js 2.3 "Template Management"
    ```
 3. **Populate Context** - Add technical details from architecture docs
    - Extract data models from architecture documents
@@ -117,10 +117,10 @@ Validate stories before implementation:
 
 ```bash
 # Validate all stories
-pnpm story:validate:all
+node scripts/validate-story.js --all
 
 # Validate a specific story
-pnpm story:validate docs/stories/1.1.prompt-optimization-core.md
+node scripts/validate-story.js docs/stories/1.1.prompt-optimization-core.md
 
 # JSON output for CI integration
 node scripts/validate-story.js --all --json
@@ -131,11 +131,11 @@ node scripts/validate-story.js --all --json
 Create new stories quickly:
 
 ```bash
-# Create a story with auto-assigned number
-pnpm story:create 1 "Feature Name"
-
 # Create a story with specific number
-pnpm story:create 2.1 "Feature Name"
+node scripts/create-story.js 1.4 "Feature Name"
+
+# Create a story in a different epic
+node scripts/create-story.js 2.1 "Feature Name"
 ```
 
 ### Story Sections
