@@ -89,6 +89,26 @@ function cleanupRequestContext(requestId: string): void {
   }
 }
 
+function getMemoryUsage(): {
+  rss: number
+  heapTotal: number
+  heapUsed: number
+  external: number
+} {
+  const usage = process.memoryUsage()
+  return {
+    rss: Math.round(usage.rss / 1024 / 1024),
+    heapTotal: Math.round(usage.heapTotal / 1024 / 1024),
+    heapUsed: Math.round(usage.heapUsed / 1024 / 1024),
+    external: Math.round(usage.external / 1024 / 1024),
+  }
+}
+
+function getCpuUsage(): number {
+  const cpuUsage = process.cpuUsage()
+  return Math.round((cpuUsage.user + cpuUsage.system) / 1000000)
+}
+
 function startStaleContextCleanup(): void {
   if (staleContextCleanupTimer) return
 
@@ -470,12 +490,15 @@ async function main() {
       })
 
       app.get('/health', (_req, res) => {
+        const memory = getMemoryUsage()
         const healthData = {
           status: 'healthy',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
           version: '0.1.0',
           activeRequests: requestContexts.size,
+          memory,
+          cpu: getCpuUsage(),
         }
         res.json(healthData)
       })
@@ -521,6 +544,7 @@ async function main() {
 
       app.get('/stats', (_req, res) => {
         const stats = rateLimiter.getStats()
+        const memory = getMemoryUsage()
         const statsData = {
           timestamp: new Date().toISOString(),
           rateLimiter: {
@@ -531,6 +555,8 @@ async function main() {
             activeRequests: requestContexts.size,
             activeSessions: Object.keys(transports).length,
             uptime: process.uptime(),
+            memory,
+            cpu: getCpuUsage(),
           },
         }
         res.json(statsData)
