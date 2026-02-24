@@ -705,6 +705,14 @@ onUnmounted(cleanupEventListeners)
   transform: translateY(0);
 }
 
+/* Show button on keyboard focus for accessibility */
+.code-copy-button:focus-visible {
+  opacity: 1;
+  transform: translateY(0);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(var(--n-primary-color-rgb, 24, 160, 88), 0.3);
+}
+
 /* Always show button on touch devices */
 @media (hover: none) {
   .code-copy-button {
