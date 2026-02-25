@@ -62,10 +62,16 @@ export const useSessionManager = defineStore('sessionManager', () => {
   const saveInFlight = ref(false)
 
   /**
-   * 全量 hydrate 标志（防止“未恢复的默认空 state”在 saveAllSessions 时覆盖持久化内容）
+   * 全量 hydrate 标志（防止"未恢复的默认空 state"在 saveAllSessions 时覆盖持久化内容）
    */
   const hasRestoredAllSessions = ref(false)
   const restoreAllInFlight = ref<Promise<void> | null>(null)
+
+  /**
+   * 会话恢复/保存的取消控制器
+   * 用于在组件卸载或会话切换时取消进行中的操作
+   */
+  const sessionAbortController = ref<AbortController | null>(null)
 
   /**
    * 子模式读取器（从外部注入，避免双真源）
@@ -282,8 +288,10 @@ export const useSessionManager = defineStore('sessionManager', () => {
    *
    * 目的：避免只恢复当前子模式时，其它子模式仍保持默认空值，
    * 在 pagehide/onBeforeUnmount 的 saveAllSessions 中被写回持久化，从而覆盖历史数据。
+   *
+   * 支持取消操作（通过 sessionAbortController）以避免竞态条件
    */
-  const restoreAllSessions = async () => {
+  const restoreAllSessions = async (signal?: AbortSignal) => {
     if (hasRestoredAllSessions.value) {
       return
     }
@@ -297,6 +305,11 @@ export const useSessionManager = defineStore('sessionManager', () => {
       await restoreAllInFlight.value
       return
     }
+
+    // 创建新的 AbortController 或使用提供的 signal
+    const abortController = signal ? null : new AbortController()
+    sessionAbortController.value = abortController
+    const effectiveSignal = signal ?? abortController?.signal
 
     const task = (async () => {
       // IMPORTANT:
@@ -314,9 +327,17 @@ export const useSessionManager = defineStore('sessionManager', () => {
       ]
 
       for (const key of keys) {
+        // 检查是否已取消
+        if (effectiveSignal?.aborted) {
+          return
+        }
         await restoreSubModeSession(key)
         // Yield to the event loop to keep the UI responsive and reduce long-task pressure.
-        await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS))
+        // 同时检查取消状态
+        await new Promise((resolve) => {
+          const timeoutId = setTimeout(resolve, TIME_CONSTANTS.SESSION_INIT_DELAY_MS)
+          effectiveSignal?.addEventListener('abort', () => clearTimeout(timeoutId))
+        })
       }
       hasRestoredAllSessions.value = true
     })()
@@ -326,6 +347,20 @@ export const useSessionManager = defineStore('sessionManager', () => {
       await task
     } finally {
       restoreAllInFlight.value = null
+      if (abortController) {
+        sessionAbortController.value = null
+      }
+    }
+  }
+
+  /**
+   * 取消当前进行中的会话恢复/保存操作
+   * 用于在组件卸载或会话切换时避免竞态条件
+   */
+  const cancelSessionOperations = () => {
+    if (sessionAbortController.value) {
+      sessionAbortController.value.abort()
+      sessionAbortController.value = null
     }
   }
 
@@ -392,6 +427,7 @@ export const useSessionManager = defineStore('sessionManager', () => {
     restoreSubModeSession,
     restoreAllSessions,
     saveAllSessions,
+    cancelSessionOperations,
   }
 })
 
