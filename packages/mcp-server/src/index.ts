@@ -470,12 +470,18 @@ async function main() {
       })
 
       app.get('/health', (_req, res) => {
+        const stats = rateLimiter.getStats()
         const healthData = {
           status: 'healthy',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
           version: '0.1.0',
           activeRequests: requestContexts.size,
+          rateLimit: {
+            activeClients: stats.totalClients,
+            limit: stats.config.maxRequests,
+            windowMs: stats.config.windowMs,
+          },
         }
         res.json(healthData)
       })
