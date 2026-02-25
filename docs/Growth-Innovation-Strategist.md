@@ -32,10 +32,28 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 - ✅ Add template suggestion API endpoint
 - ✅ Implement pattern analysis in core
 - ✅ API deployment configuration
+- ✅ Add analytics for feature usage
 
 **Remaining:**
 - Add UI for template recommendations
-- Add analytics for feature usage
+
+### Phase 1.1: Analytics Tracking
+**Date**: 2026-02-25
+
+**Files Added:**
+- `packages/core/src/services/analytics/template-analytics.ts` - Analytics tracking service
+- `packages/core/src/services/analytics/index.ts` - Module exports
+- `packages/core/tests/unit/analytics/template-analytics.test.ts` - Unit tests
+
+**Files Modified:**
+- `api/template-suggestion.js` - Added analytics tracking integration
+
+**Functionality:**
+- In-memory analytics tracking for template suggestions
+- Track by detected type, language, and complexity
+- Daily usage counts
+- Summary endpoint at GET /analytics
+- Storage provider integration for persistence
 
 ## Future Roadmap
 
@@ -43,9 +61,9 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 - Add template suggestion UI component
 - Integrate with existing template selection flow
 
-### Phase 3: Analytics
+### Phase 3: Analytics (In Progress)
+- ✅ Track feature usage metrics (basic)
 - Track suggestion acceptance rate
-- Track feature usage metrics
 - A/B testing infrastructure
 
 ### Phase 4: LLM Enhancement

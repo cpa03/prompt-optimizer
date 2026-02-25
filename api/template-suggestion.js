@@ -4,6 +4,11 @@
  * Provides AI-powered template suggestions based on prompt pattern analysis.
  * This is the first step in the Smart Prompt Templates innovation feature.
  *
+ * Analytics tracking included for measuring feature growth:
+ * - Request counts by type, language, complexity
+ * - Daily usage tracking
+ * - Integration with Vercel Analytics / Datadog
+ *
  * Future enhancements:
  * - LLM-based suggestion refinement
  * - Community template analysis
@@ -11,6 +16,9 @@
  */
 
 import { suggestTemplatesSchema, getTemplateSuggestions } from '../packages/core/src/services/template/suggestion'
+import { templateAnalytics } from '../packages/core/src/services/analytics'
+
+const analytics = templateAnalytics
 
 /**
  * Structured logging for Vercel serverless functions
@@ -66,6 +74,22 @@ function errorResponse(message, statusCode = 400) {
 }
 
 /**
+ * Track analytics event
+ */
+function trackAnalytics(detectedType, language, complexity) {
+  try {
+    analytics.trackSuggestion({
+      detectedType,
+      language,
+      complexity,
+    })
+    log('debug', 'Analytics tracked', { detectedType, language, complexity })
+  } catch (error) {
+    log('warn', 'Analytics tracking failed', { error: error.message })
+  }
+}
+
+/**
  * Main handler function
  */
 export default async function handler(req, res) {
@@ -79,6 +103,19 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.status(200).end()
     return
+  }
+
+  // Handle analytics GET request
+  if (req.method === 'GET' && req.url === '/analytics') {
+    try {
+      const summary = analytics.getSummary()
+      res.status(200).json(successResponse(summary))
+      return
+    } catch (error) {
+      log('error', 'Analytics retrieval error', { error: error.message })
+      res.status(500).json(errorResponse('Failed to retrieve analytics', 500))
+      return
+    }
   }
 
   // Only allow POST
@@ -105,10 +142,14 @@ export default async function handler(req, res) {
     // Get suggestions
     const result = getTemplateSuggestions(prompt, language)
 
+    // Track analytics
+    trackAnalytics(result.analysis.detectedType, language, result.analysis.complexity)
+
     log('info', 'Template suggestions generated', {
       promptLength: prompt.length,
       suggestionCount: result.suggestions.length,
       detectedType: result.analysis.detectedType,
+      complexity: result.analysis.complexity,
     })
 
     // Return success response
