@@ -16,6 +16,17 @@ This document serves as the long-time memory for the Quality Assurance agent.
   - Added test:gate:coverage script
 - **Notes**: Workflow file changes require manual application due to GitHub App permissions
 
+### PR #639 - fix(ci): add pnpm security audit to CI pipeline
+- **Date**: 2026-02-25
+- **Status**: OPEN
+- **Label**: quality-assurance
+- **Linked Issue**: #603
+- **Changes**: 
+  - Added pnpm audit step to .github/workflows/test.yml
+  - Runs with --audit-level=critical to block only critical vulnerabilities
+  - Reports high/moderate/low but doesn't fail the build (known issues)
+- **Notes**: Starting with critical-only to avoid blocking CI on known vulnerabilities
+
 ### PR #599 - test(core): add comprehensive tests for CompareService
 - **Date**: 2026-02-24
 - **Status**: APPROVED
@@ -34,9 +45,11 @@ This document serves as the long-time memory for the Quality Assurance agent.
   - CI workflow update requires manual application (GitHub App permissions)
 
 ### Issue #603 - Add pnpm security audit to CI pipeline
-- **Status**: Identified solution, unable to push due to GitHub App permissions
-- **Solution**: Add pnpm audit step to .github/workflows/test.yml after dependency installation
-- **Workaround needed**: Manual push or token with workflow permissions required
+- **Status**: PR #639 created
+- **Solution**: 
+  - Added pnpm audit step to .github/workflows/test.yml
+  - Uses --audit-level=critical to block only critical vulnerabilities
+  - Known high/moderate/low vulnerabilities are reported but don't block CI
 
 ## Repository Quality Metrics
 - Test command: `pnpm -F @prompt-optimizer/core test --run`
