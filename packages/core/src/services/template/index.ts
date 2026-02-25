@@ -30,3 +30,6 @@ export { ElectronTemplateLanguageServiceProxy } from './electron-language-proxy'
 
 // 导出最小化版本
 export * from './minimal'
+
+// 导出模板建议服务
+export * from './suggestion'

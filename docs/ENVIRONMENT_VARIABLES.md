@@ -6,7 +6,7 @@ This document lists all the environment variables that can be used to customize 
 
 **Configuration Philosophy**: All hardcoded values have been eliminated in favor of environment-configurable options. This allows for easy customization, A/B testing, and deployment-specific configurations without code changes.
 
-## UI Configuration (VITE\_ prefixed)
+## UI Configuration (VITE_ prefixed)
 
 These variables are used in the UI package and should be prefixed with `VITE_` when using in `.env` files for Vite-based builds.
 

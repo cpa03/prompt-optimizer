@@ -17,6 +17,7 @@
 
 import { createApp } from 'vue'
 import {
+  installErrorHandler,
   installI18nOnly,
   installPinia,
   i18n,
@@ -27,6 +28,16 @@ import '@prompt-optimizer/ui/dist/style.css'
 import App from './App.vue'
 
 const app = createApp(App)
+
+// 安装错误处理器
+installErrorHandler(app, {
+  verbose: import.meta.env.DEV,
+  onError: (error, instance, info) => {
+    // 可以在这里添加外部错误追踪服务，如 Sentry
+    console.error('Error caught:', error.message, info)
+  },
+})
+
 // 只安装i18n插件，语言初始化将在App.vue中服务准备好后进行
 installI18nOnly(app)
 installPinia(app)

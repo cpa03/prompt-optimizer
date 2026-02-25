@@ -99,6 +99,34 @@ MCP_ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
 - This could expose your API keys and prompt data to malicious websites
 - Always restrict origins in production environments
 
+## Known Vulnerabilities
+
+### ESLint ajv ReDoS Vulnerability (GHSA-2g4f-4pwh-qvx6)
+
+| Attribute | Value |
+|-----------|-------|
+| Severity | Moderate |
+| CWE | CWE-1333 (Regular Expression Denial of Service) |
+| Affected | ESLint 8.x (transitive dependency ajv) |
+| Impact | Developer machine only (dev dependency) |
+
+**Description:**
+ESLint 8.x depends on ajv ~6.x which contains a ReDoS vulnerability in JSON schema validation. This affects the linting process.
+
+**Risk Assessment:**
+- **Impact**: Low - This is a dev-only dependency, not shipped to production
+- **Exploitability**: Low - Requires malicious JSON schema input during linting
+- **Attack Vector**: Local - Must have local code execution
+
+**Mitigation:**
+- **Short-term**: Acceptable risk for dev-only use; ensure lint runs in isolated CI environment
+- **Long-term**: Migrate to ESLint 9.x which uses a patched version of ajv
+
+**Remediation Timeline:**
+- ESLint 9.x migration scheduled for future update
+
+---
+
 ## Security Audit
 
 This project follows security best practices:

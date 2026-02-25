@@ -30,6 +30,7 @@
           @click="handleClear"
           size="small"
           quaternary
+          :aria-label="t('common.clear')"
         >
           {{ t('common.clear') }}
         </NButton>
@@ -103,7 +104,7 @@
                   size="small"
                   type="error"
                   quaternary
-                  :title="$t('common.delete')"
+                  :aria-label="t('common.delete')"
                 >
                   {{ $t('common.delete') }}
                 </NButton>

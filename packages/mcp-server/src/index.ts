@@ -470,14 +470,50 @@ async function main() {
       })
 
       app.get('/health', (_req, res) => {
+        const memUsage = process.memoryUsage()
         const healthData = {
           status: 'healthy',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
           version: '0.1.0',
           activeRequests: requestContexts.size,
+          memory: {
+            heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+            heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+            rss: Math.round(memUsage.rss / 1024 / 1024),
+            external: Math.round(memUsage.external / 1024 / 1024),
+          },
+          rateLimiter: rateLimiter.getStats(),
         }
         res.json(healthData)
+      })
+
+      app.get('/health/ready', (_req, res) => {
+        const checks: { name: string; status: string; details?: unknown }[] = []
+
+        const memUsage = process.memoryUsage()
+        const heapUsedPercent = (memUsage.heapUsed / memUsage.heapTotal) * 100
+        checks.push({
+          name: 'memory',
+          status: heapUsedPercent < 90 ? 'ok' : 'warning',
+          details: { heapUsedPercent: Math.round(heapUsedPercent) },
+        })
+
+        const rateLimiterStats = rateLimiter.getStats()
+        checks.push({
+          name: 'rateLimiter',
+          status: 'ok',
+          details: { totalClients: rateLimiterStats.totalClients },
+        })
+
+        const allOk = checks.every((c) => c.status === 'ok')
+        const readiness = allOk ? 'ready' : 'not_ready'
+
+        res.status(allOk ? 200 : 503).json({
+          status: readiness,
+          timestamp: new Date().toISOString(),
+          checks,
+        })
       })
 
       logger.info('Express app configured')

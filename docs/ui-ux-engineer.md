@@ -31,6 +31,12 @@ The codebase already has extensive accessibility support:
 
 ### Improvements Made
 
+#### 2026-02-25
+**HistoryDrawer.vue** - Added aria-labels to clear and delete buttons
+- Issue: Clear and delete buttons had no explicit aria-label for screen readers
+- Fix: Added aria-label attributes using existing translation keys (common.clear, common.delete)
+- This improves screen reader support for keyboard-only users
+
 #### 2026-02-24
 **MarkdownRenderer.vue** - Added focus-visible styling for code block copy button
 - Issue: Copy button only visible on hover, not keyboard accessible

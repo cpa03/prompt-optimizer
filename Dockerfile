@@ -36,8 +36,12 @@ LABEL org.opencontainers.image.maintainer="Prompt Optimizer Team"
 ARG VERSION="unknown"
 LABEL org.opencontainers.image.version="${VERSION}"
 
-RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs npm gettext curl && \
-    npm install -g pnpm
+RUN apk add --no-cache apache2-utils dos2unix supervisor nodejs gettext curl && \
+    curl -fsSL https://get.pnpm.io/install.sh | sh - && \
+    ln -s /root/.local/share/pnpm/pnpm /usr/local/bin/pnpm
+
+ENV PNPM_HOME="/root/.local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 

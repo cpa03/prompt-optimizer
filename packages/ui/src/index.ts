@@ -32,6 +32,15 @@ export {
 
 export { pinia, installPinia, setPiniaServices } from './plugins/pinia'
 
+export {
+  installErrorHandler,
+  globalErrorList,
+  hasGlobalError,
+  clearGlobalErrors,
+  type ErrorHandlerOptions,
+  type ErrorInfo,
+} from './plugins/error-handler'
+
 // 导出Naive UI配置
 export {
   currentNaiveTheme as naiveTheme,
@@ -62,6 +71,7 @@ export { useNaiveTheme } from './composables/ui/useNaiveTheme'
  */
 // Components
 export { default as ToastUI } from './components/Toast.vue'
+export { default as ErrorBoundary } from './components/ErrorBoundary.vue'
 export { default as ModelManagerUI } from './components/ModelManager.vue'
 export { default as PromptPanelUI } from './components/PromptPanel.vue'
 export { default as OutputDisplay } from './components/OutputDisplay.vue'
