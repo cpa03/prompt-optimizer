@@ -24,7 +24,8 @@
       <p>{{ t('log.info.initializing') }}</p>
     </div>
     <template v-else>
-      <MainLayoutUI>
+      <ErrorBoundaryUI>
+        <MainLayoutUI>
         <!-- Title Slot -->
         <template #title>
           {{ t('promptOptimizer.title') }}
@@ -64,6 +65,7 @@
           </RouterView>
         </template>
       </MainLayoutUI>
+      </ErrorBoundaryUI>
 
       <!-- Modals and Drawers that are conditionally rendered -->
       <ModelManagerUI
@@ -234,6 +236,7 @@ import ContextEditor from '../context-mode/ContextEditor.vue'
 import PromptPreviewPanel from '../PromptPreviewPanel.vue'
 import AppHeaderActions from './AppHeaderActions.vue'
 import AppCoreNav from './AppCoreNav.vue'
+import ErrorBoundaryUI from '../ErrorBoundary.vue'
 
 // Composables - 使用 barrel exports
 import {
