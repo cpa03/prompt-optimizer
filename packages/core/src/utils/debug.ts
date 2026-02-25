@@ -1,0 +1,114 @@
+/**
+ * Debug Logging Utility
+ * Provides development-only logging with namespace support
+ * Eliminates console noise in production while maintaining debuggability in development
+ */
+
+import { isDevelopment } from './environment'
+
+type LogLevel = 'debug' | 'log' | 'warn' | 'error'
+
+export interface DebugLogger {
+  debug: (...args: unknown[]) => void
+  log: (...args: unknown[]) => void
+  warn: (...args: unknown[]) => void
+  error: (...args: unknown[]) => void
+  enabled: boolean
+}
+
+const enabledNamespaces = new Set<string>()
+let globalDebugEnabled = false
+
+export function isDebugLoggingEnabled(): boolean {
+  if (globalDebugEnabled) return true
+  if (isDevelopment()) return true
+  const debugEnv = getDebugEnvVar()
+  if (debugEnv === 'true' || debugEnv === '1') return true
+  if (debugEnv && debugEnv !== 'false' && debugEnv !== '0') {
+    const namespaces = debugEnv.split(',').map((n) => n.trim())
+    return namespaces.length > 0
+  }
+  return false
+}
+
+function getDebugEnvVar(): string | undefined {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env.DEBUG_CORE || process.env.DEBUG
+    }
+  } catch {
+    // process not available
+  }
+  try {
+    if (typeof window !== 'undefined') {
+      const runtimeConfig = (window as any).runtime_config
+      if (runtimeConfig?.DEBUG_CORE || runtimeConfig?.DEBUG) {
+        return runtimeConfig.DEBUG_CORE || runtimeConfig.DEBUG
+      }
+    }
+  } catch {
+    // window not available
+  }
+  return undefined
+}
+
+function shouldLog(namespace: string): boolean {
+  if (!isDebugLoggingEnabled()) return false
+  if (enabledNamespaces.has(namespace)) return true
+  if (enabledNamespaces.has('*')) return true
+  const debugEnv = getDebugEnvVar()
+  if (
+    debugEnv &&
+    debugEnv !== 'true' &&
+    debugEnv !== '1' &&
+    debugEnv !== 'false' &&
+    debugEnv !== '0'
+  ) {
+    const namespaces = debugEnv.split(',').map((n) => n.trim())
+    return namespaces.some((pattern) => {
+      if (pattern === '*') return true
+      if (pattern.endsWith('*')) {
+        return namespace.startsWith(pattern.slice(0, -1))
+      }
+      return pattern === namespace
+    })
+  }
+  return true
+}
+
+function createLogFunction(level: LogLevel, namespace: string): (...args: unknown[]) => void {
+  return (...args: unknown[]) => {
+    if (!shouldLog(namespace)) return
+    const prefix = `[${namespace}]`
+    const consoleFn = console[level] as (...args: unknown[]) => void
+    consoleFn(prefix, ...args)
+  }
+}
+
+export function createDebugLogger(namespace: string): DebugLogger {
+  return {
+    debug: createLogFunction('debug', namespace),
+    log: createLogFunction('log', namespace),
+    warn: createLogFunction('warn', namespace),
+    error: createLogFunction('error', namespace),
+    get enabled() {
+      return shouldLog(namespace)
+    },
+  }
+}
+
+export function enableDebugNamespace(namespace: string): void {
+  enabledNamespaces.add(namespace)
+}
+
+export function disableDebugNamespace(namespace: string): void {
+  enabledNamespaces.delete(namespace)
+}
+
+export function enableGlobalDebug(): void {
+  globalDebugEnabled = true
+}
+
+export function disableGlobalDebug(): void {
+  globalDebugEnabled = false
+}

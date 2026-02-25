@@ -1,0 +1,68 @@
+# Cloudflare Pages Headers Configuration
+# https://developers.cloudflare.com/pages/platform/headers/
+#
+# Routing optimization: See _routes.json for static asset exclusions from Functions
+# This improves performance by avoiding unnecessary function invocations
+
+/*
+  # Security Headers
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  
+  # Cross-Origin Headers - Defense against Spectre and side-channel attacks
+  # CORP prevents resources from being loaded cross-origin without permission
+  Cross-Origin-Resource-Policy: same-origin
+  # COOP ensures top-level documents cannot be opened by cross-origin documents
+  Cross-Origin-Opener-Policy: same-origin
+  
+  # Content Security Policy - Adjust based on your needs
+  # object-src 'none' prevents plugins like Flash from loading
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https: wss:; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests
+  
+  # CORS headers are not needed for same-origin requests
+  # The browser's default same-origin policy applies automatically
+  # For cross-origin API access, see /api/* section below
+  # 
+  # Note: Access-Control-Allow-Origin does NOT accept "same-origin" as a value
+  # Valid values are: "*", "https://example.com", or null
+  # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
+
+# Cache static assets aggressively (1 year)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML files - no cache to ensure users get latest version
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# Index page - no cache for SPA
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+# JavaScript and CSS with hash - long cache
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Config and robots - short cache
+/config.js
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=86400
+
+# API routes - no cache for dynamic responses
+# Security: Prevent search engine indexing of API endpoints
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow, nosnippet, noarchive
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization
+  Vary: Origin

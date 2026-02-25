@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Custom Properties for consistent theming */
+:root {
+  --scrollbar-thumb-color: rgba(128, 128, 128, 0.3);
+  --scrollbar-thumb-hover: rgba(128, 128, 128, 0.5);
+  --focus-ring-color: rgba(32, 128, 240, 0.4);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  --scrollbar-thumb-color: rgba(180, 180, 180, 0.25);
+  --scrollbar-thumb-hover: rgba(180, 180, 180, 0.4);
+  --focus-ring-color: rgba(100, 180, 255, 0.4);
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 隐藏水平滚动条 */
+::-webkit-scrollbar-horizontal {
+  display: none;
+}
+
+/* 自定义select样式 */
+.custom-select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+}
+
+.custom-select::-ms-expand {
+  display: none;
+}
+
+/* UX Enhancement: Focus glow animation for inputs */
+.n-input.n-input--focus {
+  animation: input-focus-glow 0.3s ease-out;
+}
+
+@keyframes input-focus-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--focus-ring-color);
+  }
+  70% {
+    box-shadow: 0 0 0 4px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* UX Enhancement: Smooth card hover lift effect - only for interactive cards */
+.n-card.hoverable {
+  transition:
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.n-card.hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* UX Enhancement: Button press effect */
+.n-button:not(:disabled):active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease-out;
+}
+
+/* UX Enhancement: Smooth fade-in for modal content */
+.n-modal-content {
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+@keyframes modal-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

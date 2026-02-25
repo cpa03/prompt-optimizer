@@ -1,0 +1,9 @@
+dist/
+node_modules/
+*.min.js
+*.min.css
+pnpm-lock.yaml
+*.log
+.git/
+.bmad-core/
+.eslintrc.json

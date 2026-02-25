@@ -1,0 +1,14 @@
+{
+  "extends": ["../../tsconfig.base.json", "@vue/tsconfig/tsconfig.json"],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@prompt-optimizer/ui": ["../ui/src/index.ts"],
+      "@prompt-optimizer/ui/*": ["../ui/src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

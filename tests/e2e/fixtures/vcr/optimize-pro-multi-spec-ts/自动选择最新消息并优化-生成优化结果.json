@@ -1,0 +1,24 @@
+{
+  "testName": "optimize\\pro-multi.spec.ts",
+  "testCase": "自动选择最新消息并优化，生成优化结果",
+  "interactions": [
+    {
+      "provider": "deepseek",
+      "url": "https://api.deepseek.com/v1/chat/completions",
+      "method": "POST",
+      "requestBody": {
+        "model": "deepseek-chat",
+        "stream": true,
+        "messages": []
+      },
+      "requestHash": "78f46bb70b89f9e561bfcc68b089025aec68955096e8cf9495d993a009fac322",
+      "rawBody": "data: {\"id\":\"vcr_0\",\"object\":\"chat.completion.chunk\",\"created\":0,\"model\":\"deepseek-chat\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"优化后的消息：请帮我写一份项目周报，包含进度、风险和下周计划。\"},\"finish_reason\":null}]}\n\ndata: [DONE]\n\n",
+      "responseHeaders": {
+        "content-type": "text/event-stream"
+      },
+      "responseBody": null,
+      "duration": 1,
+      "status": 200
+    }
+  ]
+}

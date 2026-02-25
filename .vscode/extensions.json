@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    "Vue.volar",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "vitest.explorer",
+    "ms-playwright.playwright",
+    "ms-vscode.vscode-typescript-next",
+    "yzhang.markdown-all-in-one",
+    "eamodio.gitlens",
+    "GitHub.copilot",
+    "GitHub.vscode-pull-request-github",
+    "streetsidesoftware.code-spell-checker",
+    "oderwat.indent-rainbow",
+    "naumovs.color-highlight",
+    "antfu.iconify"
+  ]
+}

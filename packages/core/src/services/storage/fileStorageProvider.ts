@@ -1,0 +1,849 @@
+import { IStorageProvider, type DatabaseHealthStatus } from './types'
+import { StorageError, validateStorageKey, validateStorageValue } from './errors'
+import { STORAGE_CONFIG } from '../../config/core-config'
+import { STORAGE_CONSTRAINTS } from '../../constants/constraints'
+
+// Dynamic imports for Node.js modules (only loaded in Electron environment)
+let fs: typeof import('fs/promises') | null = null
+let path: typeof import('path') | null = null
+
+// Lazy load Node.js modules
+async function loadNodeModules() {
+  if (!fs || !path) {
+    try {
+      fs = await import('fs/promises')
+      path = await import('path')
+    } catch (error) {
+      throw new StorageError(
+        'FileStorageProvider requires Node.js environment (fs/path modules not available)',
+        'read'
+      )
+    }
+  }
+  return { fs, path }
+}
+
+/**
+ * 存储文件数据结构（包含数据和时间戳）
+ */
+interface StorageFileData {
+  version: number
+  data: Record<string, string>
+  timestamps?: Record<string, number>
+}
+
+/**
+ * 基于文件的存储提供器 - 增强版
+ * 专为Electron桌面环境设计，使用JSON文件持久化存储数据
+ *
+ * 特性：
+ * - 延迟写入优化性能，减少I/O操作
+ * - 内存缓存提供快速读取
+ * - 原子写入确保数据完整性
+ * - 数据备份和智能恢复机制
+ * - 原子性updateData操作
+ * - 严格的初始化控制
+ * - 时间戳跟踪用于统计（持久化到磁盘）
+ */
+export class FileStorageProvider implements IStorageProvider {
+  private filePath: string
+  private backupPath: string
+  private data: Map<string, string> = new Map()
+  private timestamps: Map<string, number> = new Map()
+  private writeTimeout: ReturnType<typeof setTimeout> | null = null
+  private isDirty: boolean = false
+  private writeLock: Promise<void> = Promise.resolve()
+  private updateLock: Promise<void> = Promise.resolve()
+  private initialized: boolean = false
+  private initializationPromise: Promise<void> | null = null
+
+  // 配置常量
+  private readonly WRITE_DELAY = STORAGE_CONFIG.timeouts.writeDelayMs // 延迟写入
+  private readonly TEMP_FILE_SUFFIX = STORAGE_CONFIG.fileSuffixes.temp
+  private readonly BACKUP_FILE_SUFFIX = STORAGE_CONFIG.fileSuffixes.backup
+  private readonly MAX_FLUSH_TIME = STORAGE_CONFIG.timeouts.maxFlushTimeMs // 最大flush时间
+  private flushAttempts = 0 // flush尝试次数
+  private readonly MAX_FLUSH_ATTEMPTS = STORAGE_CONFIG.timeouts.maxFlushAttempts // 最大flush尝试次数
+
+  private userDataPath: string
+
+  constructor(userDataPath: string) {
+    if (!userDataPath) {
+      throw new StorageError('FileStorageProvider requires userDataPath parameter', 'read')
+    }
+
+    this.userDataPath = userDataPath
+    // Initialize with placeholder paths - will be resolved when Node modules are loaded
+    this.filePath = `${userDataPath}/prompt-optimizer-data.json`
+    this.backupPath = `${userDataPath}/prompt-optimizer-data.json${this.BACKUP_FILE_SUFFIX}`
+  }
+
+  /**
+   * Resolve file paths using Node.js path module
+   */
+  private async resolvePaths(): Promise<void> {
+    if (this.userDataPath) {
+      const { path } = await loadNodeModules()
+      this.filePath = path.join(this.userDataPath, 'prompt-optimizer-data.json')
+      this.backupPath = path.join(
+        this.userDataPath,
+        `prompt-optimizer-data.json${this.BACKUP_FILE_SUFFIX}`
+      )
+    }
+  }
+
+  /**
+   * 确保存储已初始化 - 增强版
+   * 使用单例模式确保初始化只执行一次
+   */
+  private async ensureInitialized(): Promise<void> {
+    if (this.initialized) {
+      return
+    }
+
+    if (this.initializationPromise) {
+      await this.initializationPromise
+      return
+    }
+
+    this.initializationPromise = this.initialize()
+    await this.initializationPromise
+  }
+
+  /**
+   * 初始化存储，加载现有数据 - 增强版
+   * 包含智能恢复机制
+   */
+  private async initialize(): Promise<void> {
+    try {
+      console.log('[FileStorage] Initializing storage...')
+      // First resolve proper file paths using Node.js path module
+      await this.resolvePaths()
+      await this.loadFromFileWithRecovery()
+      this.initialized = true
+      console.log('[FileStorage] Storage initialized successfully')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error('[FileStorage] Failed to initialize:', errorMessage)
+      throw new StorageError(`Failed to initialize file storage: ${errorMessage}`, 'read')
+    }
+  }
+
+  /**
+   * 从文件加载数据到内存 - 增强版，包含智能恢复机制
+   */
+  private async loadFromFileWithRecovery(): Promise<void> {
+    const mainFileResult = await this.tryLoadFromFile(this.filePath, 'main')
+    if (mainFileResult.success) {
+      this.data = mainFileResult.data!
+      this.timestamps = mainFileResult.timestamps || new Map()
+      await this.createBackup()
+      return
+    }
+
+    console.warn('[FileStorage] Main file failed, trying backup...')
+
+    const backupFileResult = await this.tryLoadFromFile(this.backupPath, 'backup')
+    if (backupFileResult.success) {
+      this.data = backupFileResult.data!
+      this.timestamps = backupFileResult.timestamps || new Map()
+      console.log('[FileStorage] Successfully recovered from backup')
+
+      await this.saveToFileWithoutBackup()
+
+      try {
+        await this.createBackup()
+        console.log('[FileStorage] Backup refreshed after recovery')
+      } catch (error) {
+        console.warn('[FileStorage] Failed to refresh backup after recovery:', error)
+      }
+
+      return
+    }
+
+    console.warn('[FileStorage] Both main and backup files failed, checking if files exist...')
+
+    const mainExists = await this.fileExists(this.filePath)
+    const backupExists = await this.fileExists(this.backupPath)
+
+    if (!mainExists && !backupExists) {
+      console.log('[FileStorage] First run detected, creating new storage')
+      this.data = new Map()
+      this.timestamps = new Map()
+      await this.saveToFile()
+      return
+    }
+
+    console.error('[FileStorage] CRITICAL: Both storage files exist but are corrupted!')
+    console.error('[FileStorage] Main file error:', mainFileResult.error)
+    console.error('[FileStorage] Backup file error:', backupFileResult.error)
+
+    throw new StorageError(
+      `Storage corruption detected. Main: ${mainFileResult.error}, Backup: ${backupFileResult.error}`,
+      'read'
+    )
+  }
+
+  /**
+   * 尝试从指定文件加载数据
+   * 支持新格式（包含版本和时间戳）和旧格式（仅有数据）
+   */
+  private async tryLoadFromFile(
+    filePath: string,
+    fileType: string
+  ): Promise<{
+    success: boolean
+    data?: Map<string, string>
+    timestamps?: Map<string, number>
+    error?: string
+  }> {
+    const { fs } = await loadNodeModules()
+    try {
+      await fs.access(filePath)
+
+      const content = await fs.readFile(filePath, 'utf8')
+
+      if (!this.validateJSON(content)) {
+        return {
+          success: false,
+          error: `Invalid JSON format in ${fileType} file`,
+        }
+      }
+
+      const parsed = JSON.parse(content)
+      const data = new Map<string, string>()
+      const timestamps = new Map<string, number>()
+
+      if (parsed && typeof parsed === 'object') {
+        if ('version' in parsed && 'data' in parsed) {
+          for (const [key, value] of Object.entries(parsed.data || {})) {
+            data.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+          }
+          if (parsed.timestamps && typeof parsed.timestamps === 'object') {
+            for (const [key, value] of Object.entries(parsed.timestamps)) {
+              if (typeof value === 'number') {
+                timestamps.set(key, value)
+              }
+            }
+          }
+          console.log(
+            `[FileStorage] Loaded ${data.size} items and ${timestamps.size} timestamps from ${fileType} file (v${parsed.version})`
+          )
+        } else {
+          for (const [key, value] of Object.entries(parsed)) {
+            data.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+          }
+          console.log(
+            `[FileStorage] Loaded ${data.size} items from ${fileType} file (legacy format)`
+          )
+        }
+      }
+
+      return {
+        success: true,
+        data,
+        timestamps,
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      return {
+        success: false,
+        error: `Failed to load ${fileType} file: ${errorMessage}`,
+      }
+    }
+  }
+
+  /**
+   * 检查文件是否存在
+   */
+  private async fileExists(filePath: string): Promise<boolean> {
+    const { fs } = await loadNodeModules()
+    try {
+      await fs.access(filePath)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 创建备份文件
+   */
+  private async createBackup(): Promise<void> {
+    const { fs } = await loadNodeModules()
+    try {
+      if (await this.fileExists(this.filePath)) {
+        await fs.copyFile(this.filePath, this.backupPath)
+        console.log('[FileStorage] Backup created successfully')
+      }
+    } catch (error) {
+      console.warn('[FileStorage] Failed to create backup:', error)
+      // 备份失败不应该影响主要功能
+    }
+  }
+
+  /**
+   * 将内存数据保存到文件 - 增强版
+   * 包含备份创建、数据验证和时间戳持久化
+   */
+  private async saveToFile(): Promise<void> {
+    const storageData: StorageFileData = {
+      version: 1,
+      data: Object.fromEntries(this.data),
+      timestamps: Object.fromEntries(this.timestamps),
+    }
+    const jsonString = JSON.stringify(storageData, null, 2)
+
+    if (!this.validateJSON(jsonString)) {
+      throw new StorageError('Generated JSON is invalid', 'write')
+    }
+
+    if (await this.fileExists(this.filePath)) {
+      await this.createBackup()
+    }
+
+    await this.atomicWrite(jsonString)
+
+    console.log(`[FileStorage] Saved ${this.data.size} items to storage`)
+  }
+
+  /**
+   * 将内存数据保存到文件 - 不创建备份版本
+   * 用于从备份恢复时，避免覆盖完好的备份文件
+   */
+  private async saveToFileWithoutBackup(): Promise<void> {
+    const storageData: StorageFileData = {
+      version: 1,
+      data: Object.fromEntries(this.data),
+      timestamps: Object.fromEntries(this.timestamps),
+    }
+    const jsonString = JSON.stringify(storageData, null, 2)
+
+    if (!this.validateJSON(jsonString)) {
+      throw new StorageError('Generated JSON is invalid', 'write')
+    }
+
+    console.log('[FileStorage] Saving to main file without creating backup (recovery mode)')
+
+    await this.atomicWrite(jsonString)
+
+    console.log(`[FileStorage] Recovered and saved ${this.data.size} items to storage`)
+  }
+
+  /**
+   * 原子写入文件
+   */
+  private async atomicWrite(data: string): Promise<void> {
+    const { fs, path } = await loadNodeModules()
+    const tempPath = this.filePath + this.TEMP_FILE_SUFFIX
+
+    try {
+      // 确保目录存在
+      const dir = path.dirname(this.filePath)
+      await fs.mkdir(dir, { recursive: true })
+
+      // 1. 写入临时文件
+      await fs.writeFile(tempPath, data, 'utf8')
+
+      // 2. 验证文件格式
+      if (!this.validateJSON(data)) {
+        throw new StorageError('Invalid JSON format', 'write')
+      }
+
+      // 3. 原子性重命名
+      await fs.rename(tempPath, this.filePath)
+    } catch (error) {
+      // 清理临时文件
+      try {
+        await fs.unlink(tempPath)
+      } catch (cleanupError) {
+        // 清理失败不阻断主错误传播，但记录日志
+        console.warn('[FileStorage] Failed to cleanup temp file:', tempPath, cleanupError)
+      }
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw new StorageError(`Atomic write failed: ${errorMessage}`, 'write')
+    }
+  }
+
+  /**
+   * 验证JSON格式
+   */
+  private validateJSON(data: string): boolean {
+    try {
+      JSON.parse(data)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 调度延迟写入
+   */
+  private scheduleWrite(): void {
+    this.isDirty = true
+
+    // 如果已有待写入任务，重置计时器
+    if (this.writeTimeout) {
+      clearTimeout(this.writeTimeout)
+    }
+
+    this.writeTimeout = setTimeout(async () => {
+      if (this.isDirty) {
+        try {
+          await this.acquireWriteLock(async () => {
+            await this.saveToFile()
+            this.isDirty = false
+          })
+        } catch (error) {
+          console.error('[FileStorage] Scheduled write failed:', error)
+          // 重置isDirty标志以避免无限重试
+          this.isDirty = false
+        }
+      }
+      this.writeTimeout = null
+    }, this.WRITE_DELAY)
+  }
+
+  /**
+   * 立即写入（关键时刻使用）
+   * 带有超时保护和重试限制，确保不会无限循环
+   */
+  async flush(): Promise<void> {
+    if (this.writeTimeout) {
+      clearTimeout(this.writeTimeout)
+      this.writeTimeout = null
+    }
+
+    if (!this.isDirty) {
+      return // 没有脏数据，直接返回
+    }
+
+    // 检查重试次数限制
+    if (this.flushAttempts >= this.MAX_FLUSH_ATTEMPTS) {
+      console.error('[FileStorage] Max flush attempts reached, forcing isDirty to false')
+      this.isDirty = false
+      this.flushAttempts = 0
+      throw new StorageError('Max flush attempts exceeded', 'write')
+    }
+
+    this.flushAttempts++
+
+    try {
+      // 使用Promise.race实现超时保护
+      await Promise.race([
+        this.acquireWriteLock(async () => {
+          await this.saveToFile()
+          this.isDirty = false
+          this.flushAttempts = 0 // 成功后重置计数器
+          console.log('[FileStorage] Data saved successfully')
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new StorageError('Flush timeout', 'write')), this.MAX_FLUSH_TIME)
+        ),
+      ])
+    } catch (error) {
+      console.error('[FileStorage] Failed to save data during flush:', error)
+
+      // 如果达到最大重试次数或者是超时错误，强制重置状态
+      if (
+        this.flushAttempts >= this.MAX_FLUSH_ATTEMPTS ||
+        (error instanceof StorageError &&
+          error.operation === 'write' &&
+          error.params?.details === 'Flush timeout')
+      ) {
+        console.warn('[FileStorage] Forcing isDirty to false to prevent infinite loop')
+        this.isDirty = false
+        this.flushAttempts = 0
+      }
+
+      throw error // 重新抛出错误以便上层处理
+    }
+  }
+
+  /**
+   * 获取写入锁，确保写入操作串行执行
+   */
+  private async acquireWriteLock<T>(operation: () => Promise<T>): Promise<T> {
+    const currentLock = this.writeLock
+    let resolveLock: () => void
+
+    this.writeLock = new Promise<void>((resolve) => {
+      resolveLock = resolve
+    })
+
+    try {
+      await currentLock
+      const result = await operation()
+      return result
+    } finally {
+      resolveLock!()
+    }
+  }
+
+  // IStorageProvider接口实现
+
+  async getItem(key: string): Promise<string | null> {
+    await this.ensureInitialized()
+    try {
+      validateStorageKey(key)
+      return this.data.get(key) || null
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to get storage item: ${key}`, 'read')
+    }
+  }
+
+  async setItem(key: string, value: string): Promise<void> {
+    await this.ensureInitialized()
+    try {
+      validateStorageKey(key)
+      validateStorageValue(value)
+      this.data.set(key, value)
+      this.timestamps.set(key, Date.now())
+      this.scheduleWrite()
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to set storage item: ${key}`, 'write')
+    }
+  }
+
+  async removeItem(key: string): Promise<void> {
+    await this.ensureInitialized()
+    try {
+      validateStorageKey(key)
+      this.data.delete(key)
+      this.timestamps.delete(key)
+      this.scheduleWrite()
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError(`Failed to remove storage item: ${key}`, 'delete')
+    }
+  }
+
+  async clearAll(): Promise<void> {
+    await this.ensureInitialized()
+    this.data.clear()
+    this.timestamps.clear()
+    // 强制写入，即使没有脏数据
+    await this.acquireWriteLock(async () => {
+      await this.saveToFile()
+    })
+  }
+
+  /**
+   * 获取所有存储键
+   */
+  async keys(): Promise<string[]> {
+    await this.ensureInitialized()
+    return Array.from(this.data.keys())
+  }
+
+  /**
+   * 批量获取存储项
+   * @param keys 要获取的键数组
+   * @returns 键值映射对象，不存在的键对应 null
+   */
+  async getItems(keys: string[]): Promise<Record<string, string | null>> {
+    await this.ensureInitialized()
+
+    if (!Array.isArray(keys)) {
+      throw new StorageError('Keys must be an array', 'validation')
+    }
+
+    if (keys.length === 0) {
+      return {}
+    }
+
+    try {
+      keys.forEach((key) => validateStorageKey(key))
+
+      const result: Record<string, string | null> = {}
+      for (const key of keys) {
+        const value = this.data.get(key)
+        result[key] = value !== undefined ? value : null
+      }
+
+      return result
+    } catch (error) {
+      if (error instanceof StorageError) {
+        throw error
+      }
+      throw new StorageError('Failed to get items batch', 'read')
+    }
+  }
+
+  /**
+   * 原子性数据更新 - 增强版
+   * 确保读-修改-写操作的原子性，防止并发问题
+   */
+  async updateData<T>(key: string, modifier: (currentValue: T | null) => T): Promise<void> {
+    await this.ensureInitialized()
+
+    // 使用更新锁确保原子性
+    const currentLock = this.updateLock
+    let resolveLock: () => void
+
+    this.updateLock = new Promise<void>((resolve) => {
+      resolveLock = resolve
+    })
+
+    try {
+      await currentLock
+
+      // 在锁保护下执行原子操作
+      await this.performAtomicUpdate(key, modifier)
+    } catch (error) {
+      // 业务逻辑错误直接透传，保持错误类型
+      if (
+        error instanceof Error &&
+        (error.name.includes('Error') ||
+          error.constructor.name !== 'Error' ||
+          error.message.includes('模型') ||
+          error.message.includes('不存在'))
+      ) {
+        throw error
+      }
+      // 只有真正的存储错误才包装为StorageError
+      throw new StorageError(`Data update failed: ${key}`, 'write')
+    } finally {
+      resolveLock!()
+    }
+  }
+
+  /**
+   * 执行原子更新操作
+   */
+  private async performAtomicUpdate<T>(
+    key: string,
+    modifier: (currentValue: T | null) => T
+  ): Promise<void> {
+    // 重新从存储读取最新数据，确保数据一致性
+    const latestData = await this.getLatestData<T>(key)
+
+    // 应用修改
+    const newValue = modifier(latestData)
+
+    // 验证新值
+    this.validateValue(newValue)
+
+    // 写入新值
+    const serializedValue = JSON.stringify(newValue)
+    this.data.set(key, serializedValue)
+    this.timestamps.set(key, Date.now())
+    this.scheduleWrite() // 延迟写入
+
+    console.log(`[FileStorage] Atomic update completed for key: ${key}`)
+  }
+
+  /**
+   * 获取最新数据，确保数据一致性
+   */
+  private async getLatestData<T>(key: string): Promise<T | null> {
+    // 如果有待写入的数据，先刷新到文件
+    if (this.isDirty) {
+      console.log('[FileStorage] Flushing pending changes before read...')
+      await this.flush()
+    }
+
+    // 从内存缓存读取
+    const currentData = this.data.get(key)
+    if (!currentData) {
+      return null
+    }
+
+    try {
+      return JSON.parse(currentData) as T
+    } catch (error) {
+      console.error(`[FileStorage] Failed to parse data for key ${key}:`, error)
+      return null
+    }
+  }
+
+  /**
+   * 验证值的有效性
+   */
+  private validateValue<T>(value: T): void {
+    try {
+      JSON.stringify(value)
+    } catch (error) {
+      throw new StorageError('Value is not serializable', 'write')
+    }
+  }
+
+  async batchUpdate(
+    operations: Array<{
+      key: string
+      operation: 'set' | 'remove'
+      value?: string
+    }>
+  ): Promise<void> {
+    await this.ensureInitialized()
+
+    try {
+      const now = Date.now()
+      for (const op of operations) {
+        if (op.operation === 'set' && op.value !== undefined) {
+          this.data.set(op.key, op.value)
+          this.timestamps.set(op.key, now)
+        } else if (op.operation === 'remove') {
+          this.data.delete(op.key)
+          this.timestamps.delete(op.key)
+        }
+      }
+
+      await this.flush() // 批量操作后立即写入
+    } catch (error) {
+      throw new StorageError('Batch update failed', 'write')
+    }
+  }
+
+  getCapabilities() {
+    return {
+      supportsAtomic: true,
+      supportsBatch: true,
+      maxStorageSize: undefined,
+    }
+  }
+
+  /**
+   * 获取存储统计信息
+   * 返回存储项数量、总大小等统计信息
+   */
+  async getDatabaseStats(): Promise<{
+    itemCount: number
+    totalSize: number
+    oldestRecord: number | null
+    newestRecord: number | null
+    averageRecordSize: number
+  }> {
+    await this.ensureInitialized()
+
+    const items = Array.from(this.data.entries())
+    const itemCount = items.length
+    const totalSize = items.reduce((sum, [, value]) => sum + value.length, 0)
+
+    let oldestTimestamp: number | null = null
+    let newestTimestamp: number | null = null
+
+    for (const [key] of items) {
+      const ts = this.timestamps.get(key)
+      if (ts !== undefined) {
+        if (oldestTimestamp === null || ts < oldestTimestamp) {
+          oldestTimestamp = ts
+        }
+        if (newestTimestamp === null || ts > newestTimestamp) {
+          newestTimestamp = ts
+        }
+      }
+    }
+
+    return {
+      itemCount,
+      totalSize,
+      oldestRecord: oldestTimestamp,
+      newestRecord: newestTimestamp,
+      averageRecordSize: itemCount > 0 ? totalSize / itemCount : 0,
+    }
+  }
+
+  /**
+   * 存储健康检查
+   * 检查存储的读写删能力，返回详细的健康状态
+   */
+  async healthCheck(): Promise<DatabaseHealthStatus> {
+    const result: DatabaseHealthStatus = {
+      healthy: true,
+      canRead: false,
+      canWrite: false,
+      canDelete: false,
+      latency: 0,
+      errors: [],
+      timestamp: Date.now(),
+    }
+
+    const testKey = STORAGE_CONSTRAINTS.HEALTH_CHECK_TEST_KEY
+    const testValue = `health_check_${Date.now()}`
+    const startTime = Date.now()
+
+    try {
+      await this.ensureInitialized()
+
+      // 检查写入能力
+      try {
+        this.data.set(testKey, testValue)
+        this.timestamps.set(testKey, Date.now())
+        await this.flush()
+        result.canWrite = true
+      } catch (writeError) {
+        result.healthy = false
+        result.errors.push(
+          `Write failed: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`
+        )
+      }
+
+      // 检查读取能力
+      if (result.canWrite) {
+        try {
+          const readValue = this.data.get(testKey)
+          if (readValue === testValue) {
+            result.canRead = true
+          } else {
+            result.healthy = false
+            result.errors.push('Read verification failed: value mismatch')
+          }
+        } catch (readError) {
+          result.healthy = false
+          result.errors.push(
+            `Read failed: ${readError instanceof Error ? readError.message : 'Unknown error'}`
+          )
+        }
+      }
+
+      // 检查删除能力
+      if (result.canWrite) {
+        try {
+          this.data.delete(testKey)
+          this.timestamps.delete(testKey)
+          await this.flush()
+          const verifyDeleted = this.data.get(testKey)
+          if (verifyDeleted === undefined) {
+            result.canDelete = true
+          } else {
+            result.healthy = false
+            result.errors.push('Delete verification failed: key still exists')
+          }
+        } catch (deleteError) {
+          result.healthy = false
+          result.errors.push(
+            `Delete failed: ${deleteError instanceof Error ? deleteError.message : 'Unknown error'}`
+          )
+        }
+      }
+
+      result.latency = Date.now() - startTime
+
+      // 检查超时
+      if (result.latency > STORAGE_CONSTRAINTS.HEALTH_CHECK_TIMEOUT_MS) {
+        result.healthy = false
+        result.errors.push(
+          `Health check timeout: ${result.latency}ms > ${STORAGE_CONSTRAINTS.HEALTH_CHECK_TIMEOUT_MS}ms`
+        )
+      }
+    } catch (error) {
+      result.healthy = false
+      result.errors.push(
+        `Health check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+
+    return result
+  }
+}

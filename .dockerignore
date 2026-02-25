@@ -1,0 +1,125 @@
+# ============================================
+# Docker Build Context Exclusions
+# Optimized for smaller context and faster builds
+# ============================================
+
+# Dependencies (will be installed in container)
+node_modules
+**/node_modules
+.pnpm-store
+.pnpm-debug.log
+
+# Build outputs (will be built in container)
+dist
+**/dist
+build
+**/build
+.output
+.nuxt
+.next
+.cache
+
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# IDE and Editor
+.idea
+.vscode
+*.sublime-*
+*.swp
+*.swo
+*~
+
+# Environment files (use runtime config instead)
+.env
+.env.*
+!.env.example
+.env.local
+.env.*.local
+
+# Logs and debugging
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+logs/
+
+# Test artifacts
+coverage
+**/coverage
+.nyc_output
+test-results
+playwright-report
+playwright/.cache
+**/__tests__
+**/*.test.*
+**/*.spec.*
+**/*.e2e.*
+tests/
+
+# Documentation
+*.md
+!README.md
+docs/
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
+
+# BMAD methodology files
+.bmad-core
+
+# Development tools config
+.eslintrc*
+.eslintignore
+.prettierrc*
+.prettierignore
+tsconfig*.json
+vitest.config.*
+playwright.config.*
+jest.config.*
+babel.config.*
+.editorconfig
+
+# Temporary and cache files
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.bak
+*.swp
+*.pid
+*.seed
+*.pid.lock
+
+# Build artifacts
+*.tsbuildinfo
+*.tgz
+
+# Electron
+packages/desktop/dist
+packages/desktop/release
+
+# Extension build artifacts
+packages/extension/dist
+
+# Vercel
+.vercel
+api/
+
+# Docker (avoid recursive copy)
+Dockerfile*
+docker-compose*.yml
+.docker
+
+# Kubernetes
+k8s/
+
+# Scripts (not needed in image)
+scripts/
+
+# CI/CD workflows
+.github/workflows/

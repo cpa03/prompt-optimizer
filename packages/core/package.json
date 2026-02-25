@@ -1,0 +1,61 @@
+{
+  "name": "@prompt-optimizer/core",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./electron": {
+      "types": "./dist/electron.d.ts",
+      "import": "./dist/electron.js",
+      "require": "./dist/electron.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/electron.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts src/electron.ts --format cjs,esm --dts --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:gate": "vitest run tests/unit/utils/vcr.spec.ts tests/unit/utils/llm-mock-service.spec.ts",
+    "test:gate:coverage": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.branches=60 --coverage.thresholds.functions=65 --coverage.thresholds.statements=70",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:perf": "vitest run tests/performance",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "msw": "^2.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.15"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.65.0",
+    "@google/genai": "^1.32.0",
+    "@types/mustache": "^4.2.5",
+    "dexie": "^4.0.11",
+    "diff": "^8.0.2",
+    "jsonrepair": "^3.13.1",
+    "mustache": "^4.2.0",
+    "openai": "^4.83.0",
+    "uuid": "^11.0.5",
+    "zod": "^3.22.4"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@prompt-optimizer/ui": ["../ui/src"],
+      "@/*": ["./src/*", "../ui/src/*"]
+    },
+    "types": ["vite/client", "vue"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tsconfig.node.json",
+    "../ui/src/types/**/*.d.ts",
+    "../ui/env.d.ts"
+  ]
+}

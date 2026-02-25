@@ -1,0 +1,56 @@
+/**
+ * Scrollbar Styles
+ * Custom scrollbar styling for better cross-browser consistency
+ */
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.4) transparent;
+}
+
+/* Dark mode Firefox scrollbar */
+.dark * {
+  scrollbar-color: rgba(180, 180, 180, 0.3) transparent;
+}
+
+/* WebKit scrollbar styling (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(128, 128, 128, 0.6);
+}
+
+/* Dark mode WebKit scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(180, 180, 180, 0.25);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 180, 180, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:active {
+  background: rgba(180, 180, 180, 0.5);
+}
+
+/* Corner styling for both scrollbars */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

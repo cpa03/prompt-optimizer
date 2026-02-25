@@ -1,0 +1,140 @@
+{
+  "name": "Prompt Optimizer Dev",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20",
+      "pnpmVersion": "10.6.1"
+    }
+  },
+  "forwardPorts": [5173, 5174, 3000],
+  "portsAttributes": {
+    "5173": {
+      "label": "Web Dev Server",
+      "onAutoForward": "notify"
+    },
+    "5174": {
+      "label": "Extension Dev Server",
+      "onAutoForward": "notify"
+    },
+    "3000": {
+      "label": "MCP Server",
+      "onAutoForward": "notify"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "editorconfig.editorconfig",
+        "vitest.explorer",
+        "ms-playwright.playwright",
+        "ms-vscode.vscode-typescript-next",
+        "yzhang.markdown-all-in-one",
+        "eamodio.gitlens",
+        "GitHub.copilot",
+        "GitHub.vscode-pull-request-github",
+        "streetsidesoftware.code-spell-checker",
+        "oderwat.indent-rainbow",
+        "naumovs.color-highlight",
+        "antfu.iconify"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.autoIndent": "advanced",
+        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.bracketPairs": true,
+        "editor.inlayHints.enabled": "on",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        },
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000,
+        "files.trimTrailingWhitespace": true,
+        "files.insertFinalNewline": true,
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "volar.completion.preferredTagNameCase": "kebab",
+        "files.associations": {
+          "*.css": "css",
+          "*.vue": "vue"
+        },
+        "files.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/.vite": true
+        },
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/dist": true,
+          "**/.vite": true,
+          "**/coverage": true
+        },
+        "eslint.workingDirectories": [
+          "./packages/core",
+          "./packages/ui",
+          "./packages/web",
+          "./packages/extension",
+          "./packages/desktop",
+          "./packages/mcp-server"
+        ],
+        "vitest.include": [
+          "**/*.{test,spec}.{ts,tsx,js,jsx}"
+        ],
+        "vitest.exclude": [
+          "**/node_modules/**",
+          "**/dist/**"
+        ],
+        "vitest.enable": true,
+        "typescript.inlayHints.parameterNames.enabled": "all",
+        "typescript.inlayHints.parameterTypes.enabled": true,
+        "typescript.inlayHints.variableTypes.enabled": true,
+        "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+        "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+        "typescript.inlayHints.enumMemberValues.enabled": true,
+        "git.autofetch": true,
+        "git.confirmSync": false,
+        "git.enableSmartCommit": true,
+        "git.openRepositoryInParentFolders": "always",
+        "files.watcherExclude": {
+          "**/node_modules/**": true,
+          "**/dist/**": true,
+          "**/.vite/**": true,
+          "**/coverage/**": true
+        },
+        "search.followSymlinks": false,
+        "telemetry.telemetryLevel": "off"
+      }
+    }
+  },
+  "postCreateCommand": "pnpm install",
+  "postStartCommand": "pnpm build:core",
+  "remoteUser": "node",
+  "mounts": [
+    "source=prompt-optimizer-node_modules,target=${containerWorkspaceFolder}/node_modules,type=volume",
+    "source=prompt-optimizer-pnpm-store,target=/home/node/.local/share/pnpm/store,type=volume"
+  ]
+}

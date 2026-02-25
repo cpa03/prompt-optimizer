@@ -1,0 +1,110 @@
+# Cloudflare Workers/Pages Configuration
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+#
+# This configuration supports deployment to Cloudflare Pages with:
+# - Edge authentication middleware
+# - Rate-limited auth API endpoint
+# - Health endpoint with Cloudflare-specific metadata
+# - Smart placement for optimal latency
+# - Built-in observability
+#
+# Branch Configuration:
+# - Production: Set up custom domain in Cloudflare Dashboard
+# - Preview: Automatic for all branches when connected via GitHub
+# - The default branch (develop) will be deployed automatically when connected
+
+name = "prompt-optimizer"
+compatibility_date = "2025-02-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Pages configuration
+# Functions are automatically served from /functions directory
+# See: https://developers.cloudflare.com/pages/functions/
+pages_build_output_dir = "packages/web/dist"
+
+# TypeScript configuration for functions
+# Ensures proper compilation of .ts files in /functions
+[[rules]]
+type = "ESModule"
+globs = ["**/*.ts"]
+fallthrough = true
+
+# Smart Placement - Routes requests to the nearest available location
+# https://developers.cloudflare.com/workers/configuration/smart-placement/
+[placement]
+mode = "smart"
+
+# Observability (Cloudflare best practice)
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
+# Logs configuration for better debugging
+[logs]
+level = "info"
+
+# Development configuration
+[dev]
+port = 8788
+local_protocol = "http"
+ip = "localhost"
+
+# Limits configuration (Cloudflare best practice)
+# https://developers.cloudflare.com/workers/platform/limits/
+[limits]
+cpu_ms = 50000
+
+# Performance optimization: Enable HTTP/3
+# https://developers.cloudflare.com/network/http3/
+# Note: This is configured at the Cloudflare dashboard level for Pages projects
+
+# Asset caching rules are configured via _headers file in packages/web/public/
+# This follows Cloudflare best practices for Pages projects
+# 
+# Routing optimization is configured via _routes.json in packages/web/public/
+# This file excludes static assets from function invocations, improving performance
+# See: https://developers.cloudflare.com/pages/functions/routing/#functions-invocation-routes
+
+# Browser Rendering (optional - for advanced use cases)
+# https://developers.cloudflare.com/browser-rendering/
+# [browser]
+# binding = "BROWSER"
+
+# Environment variables (set via Cloudflare dashboard or wrangler secret)
+# [vars]
+# ACCESS_PASSWORD = ""
+
+# Production environment (optional override)
+# [env.production]
+# name = "prompt-optimizer-prod"
+# routes = [
+#   { pattern = "prompt-optimizer.example.com/*", custom_domain = true }
+# ]
+
+# KV namespace for distributed rate limiting (recommended for production)
+# Without KV, rate limiting is per-isolate and won't work across edge locations
+# To enable: 
+# 1. Create KV namespace: wrangler kv:namespace create SESSIONS
+# 2. Uncomment below and add the returned namespace ID
+# [[kv_namespaces]]
+# binding = "SESSIONS"
+# id = "your-kv-namespace-id"
+
+# D1 database for persistent storage (optional)
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "prompt-optimizer-db"
+# database_id = "your-d1-database-id"
+
+# Analytics Engine for usage tracking (optional)
+# [[analytics_engine_datasets]]
+# binding = "ANALYTICS"
+
+# Durable Objects for stateful applications (optional)
+# [durable_objects]
+# bindings = [{ name = "COUNTER", class_name = "Counter" }]
+
+# Migrations for Durable Objects
+# [[migrations]]
+# tag = "v1"
+# new_classes = ["Counter"]

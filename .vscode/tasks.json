@@ -1,0 +1,125 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev: Web",
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [],
+      "detail": "Start web development server (builds core/ui, runs web)"
+    },
+    {
+      "label": "Dev: Desktop",
+      "type": "npm",
+      "script": "dev:desktop",
+      "problemMatcher": [],
+      "detail": "Start desktop development server"
+    },
+    {
+      "label": "Dev: Extension",
+      "type": "npm",
+      "script": "dev:ext",
+      "problemMatcher": [],
+      "detail": "Start browser extension development server"
+    },
+    {
+      "label": "Build: All",
+      "type": "npm",
+      "script": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Build all packages"
+    },
+    {
+      "label": "Test: Fast",
+      "type": "npm",
+      "script": "test:fast",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Run fast unit tests"
+    },
+    {
+      "label": "Test: All",
+      "type": "npm",
+      "script": "test",
+      "problemMatcher": [],
+      "detail": "Run all tests including E2E"
+    },
+    {
+      "label": "Lint: Check",
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": ["$eslint-compact"],
+      "detail": "Check code style with ESLint"
+    },
+    {
+      "label": "Lint: Fix",
+      "type": "npm",
+      "script": "lint:fix",
+      "problemMatcher": [],
+      "detail": "Fix code style issues with ESLint"
+    },
+    {
+      "label": "Type Check: All",
+      "type": "npm",
+      "script": "type-check",
+      "problemMatcher": ["$tsc"],
+      "detail": "Run TypeScript type checking on all packages"
+    },
+    {
+      "label": "Format: Check",
+      "type": "npm",
+      "script": "format:check",
+      "problemMatcher": [],
+      "detail": "Check code formatting with Prettier"
+    },
+    {
+      "label": "Format: Fix",
+      "type": "npm",
+      "script": "format",
+      "problemMatcher": [],
+      "detail": "Format code with Prettier"
+    },
+    {
+      "label": "Clean: All",
+      "type": "npm",
+      "script": "clean",
+      "problemMatcher": [],
+      "detail": "Clean all build artifacts"
+    },
+    {
+      "label": "MCP: Dev",
+      "type": "npm",
+      "script": "mcp:dev",
+      "problemMatcher": [],
+      "detail": "Start MCP server in development mode"
+    },
+    {
+      "label": "MCP: Test",
+      "type": "npm",
+      "script": "mcp:test",
+      "problemMatcher": [],
+      "detail": "Run MCP server tests"
+    },
+    {
+      "label": "Quality: All Checks",
+      "dependsOn": ["Lint: Check", "Type Check: All", "Test: Fast"],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "detail": "Run all quality checks (lint, type-check, tests) in sequence"
+    },
+    {
+      "label": "Dev: Fresh Start",
+      "type": "npm",
+      "script": "dev:fresh",
+      "problemMatcher": [],
+      "detail": "Clean and restart development environment"
+    }
+  ]
+}
