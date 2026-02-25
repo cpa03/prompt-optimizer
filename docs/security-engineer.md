@@ -11,6 +11,15 @@
   - [x] Create tracking issue for ESLint 9.x migration (documented in SECURITY.md)
   - [x] Add pnpm audit to CI pipeline
 
+### DNS Rebinding Protection (2026-02-25)
+- **Status**: Completed
+- **Priority**: High
+- **Type**: Security hardening - enable DNS rebinding protection by default
+- **Changes**:
+  - [x] Enable DNS rebinding protection by default in MCP server (environment.ts)
+  - [x] Add documentation in SECURITY.md
+  - [x] Add environment variable to env.local.example
+
 ## Recent Security Improvements
 
 1. **CI Security Audit** (2026-02-25)
@@ -18,6 +27,12 @@
    - Runs on every push/PR to detect new vulnerabilities
    - Uses `--audit-level=high` to catch high severity issues
    - Currently monitors known vulnerabilities (minimatch, ajv)
+
+2. **MCP Server DNS Rebinding Protection** (2026-02-25)
+   - Enabled by default (previously disabled by default)
+   - Protects against DNS rebinding attacks
+   - Configurable via `MCP_DNS_REBINDING_PROTECTION=false` to disable
+   - Documented in SECURITY.md
 
 ## Security Best Practices Implemented
 

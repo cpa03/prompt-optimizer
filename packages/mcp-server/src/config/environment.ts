@@ -110,7 +110,7 @@ export function loadConfig(): MCPServerConfig {
     defaultLanguage: process.env.MCP_DEFAULT_LANGUAGE || MCP_CONFIG.defaults.language,
     preferredModelProvider: process.env.MCP_DEFAULT_MODEL_PROVIDER,
     allowedOrigins,
-    enableDnsRebindingProtection: process.env.MCP_DNS_REBINDING_PROTECTION === 'true',
+    enableDnsRebindingProtection: process.env.MCP_DNS_REBINDING_PROTECTION !== 'false',
   }
 }
 
