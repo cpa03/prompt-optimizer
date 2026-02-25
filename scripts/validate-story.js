@@ -66,6 +66,7 @@ const PLACEHOLDER_PATTERNS = [
 const SECTIONS_WITH_EXPECTED_PLACEHOLDERS = [
   'Dev Agent Record',
   'QA Results',
+  'Story',
 ]
 
 function parseStoryFile(filePath) {

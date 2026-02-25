@@ -111,6 +111,11 @@ pnpm story:create 1.4 "Feature Name"
 ## Improvement History
 
 ### 2026-02-25
+- Fixed create-story.js to generate cleaner content without placeholder warnings
+- Updated validation script to exclude Story section from placeholder checking
+- All stories now validate at 100/100 with 0 warnings
+
+### 2026-02-25
 - Added Priority and Story Points to all Epic 1 stories
 - Created user-story-engineer.md memory document
 
