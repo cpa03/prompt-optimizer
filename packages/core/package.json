@@ -26,6 +26,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:gate": "vitest run tests/unit/utils/vcr.spec.ts tests/unit/utils/llm-mock-service.spec.ts",
+    "test:gate:coverage": "vitest run --coverage --coverage.thresholds.lines=70 --coverage.thresholds.branches=60 --coverage.thresholds.functions=65 --coverage.thresholds.statements=70",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:perf": "vitest run tests/performance",

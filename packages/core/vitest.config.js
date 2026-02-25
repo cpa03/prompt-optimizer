@@ -23,5 +23,24 @@ export default defineConfig(({ mode }) => {
       // Exclude performance tests from regular runs
       exclude: ['**/tests/performance/**', '**/node_modules/**', '**/dist/**'],
     },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      reportsDirectory: './coverage',
+      // Coverage thresholds to enforce
+      lines: 70,
+      functions: 65,
+      branches: 60,
+      statements: 70,
+      // Per-file thresholds for core modules
+      perFile: true,
+      ignoreEmptyLines: true,
+      thresholds: {
+        lines: 70,
+        functions: 65,
+        branches: 60,
+        statements: 70,
+      },
+    },
   }
 })
