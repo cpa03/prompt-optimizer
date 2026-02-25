@@ -53,6 +53,61 @@ export function isRecord(value: unknown): value is RecordLike {
 }
 
 /**
+ * Type guard to check if a value is an Error object.
+ * Safely handles errors that may come from various sources (IPC, external APIs, etc.)
+ *
+ * @param value - The value to check
+ * @returns True if the value is an Error instance
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await someOperation()
+ * } catch (err) {
+ *   if (isError(err)) {
+ *     console.error(err.message)
+ *   } else {
+ *     console.error('Unknown error:', err)
+ *   }
+ * }
+ * ```
+ */
+export function isError(value: unknown): value is Error {
+  return value instanceof Error
+}
+
+/**
+ * Safely extracts the error message from an unknown value.
+ * Useful for error handling where the caught error type is unknown.
+ *
+ * @param value - The value to extract message from
+ * @returns The error message string, or empty string if not extractable
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await riskyOperation()
+ * } catch (err) {
+ *   // Instead of: error.message (unsafe with any)
+ *   const message = getErrorMessage(err) // Safe with unknown
+ *   throw new Error(`Operation failed: ${message}`)
+ * }
+ * ```
+ */
+export function getErrorMessage(value: unknown): string {
+  if (isError(value)) {
+    return value.message
+  }
+  if (isRecord(value) && typeof value.message === 'string') {
+    return value.message
+  }
+  if (typeof value === 'string') {
+    return value
+  }
+  return String(value)
+}
+
+/**
  * Type guard to check if a value matches the StructuredErrorLike interface.
  * Used to identify errors that already have structured error information.
  *
