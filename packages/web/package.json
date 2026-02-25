@@ -13,7 +13,8 @@
     "test:coverage": "vitest run --coverage",
     "test:unit": "vitest run tests/unit",
     "lint": "eslint src --ext .ts,.vue",
-    "lint:fix": "eslint src --ext .ts,.vue --fix"
+    "lint:fix": "eslint src --ext .ts,.vue --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@prompt-optimizer/ui": "workspace:*",
