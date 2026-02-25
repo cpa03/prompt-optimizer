@@ -42,5 +42,5 @@ export default defineConfig(({ mode }) => {
         statements: 70,
       },
     },
-  },
+  }
 })
