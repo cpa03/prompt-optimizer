@@ -469,6 +469,11 @@ async function main() {
         next()
       })
 
+      const rateLimiter = createRateLimiter({
+        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
+        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
+      })
+
       app.get('/health', (_req, res) => {
         const memUsage = process.memoryUsage()
         const healthData = {
@@ -514,11 +519,6 @@ async function main() {
           timestamp: new Date().toISOString(),
           checks,
         })
-      })
-
-      const rateLimiter = createRateLimiter({
-        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
-        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       const rateLimitMiddleware = (
