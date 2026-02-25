@@ -46,6 +46,20 @@ export interface ExtractedVariable {
 }
 
 /**
+ * 原始提取的变量信息（LLM 返回的未验证数据）
+ */
+export interface RawExtractedVariable {
+  name?: unknown
+  value?: unknown
+  position?: {
+    originalText?: unknown
+    occurrence?: unknown
+  }
+  reason?: unknown
+  category?: unknown
+}
+
+/**
  * 变量提取响应
  */
 export interface VariableExtractionResponse {
@@ -54,6 +68,14 @@ export interface VariableExtractionResponse {
 
   /** 一句话总结 */
   summary: string
+}
+
+/**
+ * 原始变量提取响应（LLM 返回的未验证数据）
+ */
+export interface RawExtractionResponse {
+  variables?: unknown
+  summary?: unknown
 }
 
 // ==================== 服务接口 ====================
