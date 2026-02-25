@@ -7,7 +7,7 @@
 - Build: Vite
 
 ## Scan Date
-2026-02-24
+2026-02-25
 
 ## Key Findings
 
@@ -16,8 +16,17 @@
 - Build succeeds for UI package
 - Components properly clean up event listeners (checked ThemeToggleUI, InputWithSelect, FavoriteManager, etc.)
 
+### Memory Leak Fix (2026-02-25)
+- Fixed memory leak in PromptOptimizerApp.vue (#635)
+- Added cleanup for 'prompt-optimizer:history-refresh' event listener in onBeforeUnmount
+- All event listeners now properly cleaned up:
+  - pagehide ✓
+  - visibilitychange ✓
+  - unhandledrejection ✓
+  - prompt-optimizer:history-refresh ✓ (FIXED)
+
 ### Bundle Size
-- UI package main bundle: ~2.6MB uncompressed (813KB gzipped)
+- UI package main bundle: ~2.7MB uncompressed (820KB gzipped)
 - This is large and could benefit from code splitting optimization in the future
 
 ### Missing Features Identified
@@ -28,7 +37,7 @@
 
 ### Components with Event Listeners (50+ files)
 - Most components properly clean up in onUnmounted
-- No obvious memory leak issues found
+- Fixed memory leak in PromptOptimizerApp.vue
 
 ## Action Items
 - Implement Vue error boundaries in UI package for graceful error handling
