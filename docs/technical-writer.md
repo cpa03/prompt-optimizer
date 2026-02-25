@@ -29,6 +29,12 @@ This document serves as the long-term memory for the technical-writer agent, doc
 
 ## History
 
+### 2026-02-25
+- **PR #648**: Fixed broken links in `docs/archives/124-navigation-optimization/README.md`
+  - Removed 4 broken references to deleted workspace files
+  - Files removed: navigation-optimization-record.md, component-usage-guide.md, language-extension-guide.md, README.md
+  - Resolution: Rebased onto latest develop, clean atomic diff
+
 ### 2026-02-24
 - **PR #600**: Fixed escaped underscore in `docs/ENVIRONMENT_VARIABLES.md` heading
   - Changed: `VITE\_ prefixed` → `VITE_ prefixed`
