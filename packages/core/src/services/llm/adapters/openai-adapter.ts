@@ -469,7 +469,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
 
     // 从paramOverrides提取参数，排除特殊字段
     const {
-      timeout, // 已在createOpenAIInstance中处理
+      timeout: _timeout, // 已在createOpenAIInstance中处理
       model: _paramModel, // 避免覆盖主model
       messages: _paramMessages, // 避免覆盖主messages
       ...restParams
@@ -726,7 +726,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       }))
 
       const {
-        timeout, // 已在createOpenAIInstance中处理
+        timeout: _timeout, // 已在createOpenAIInstance中处理
         model: _paramModel, // 避免覆盖主model
         messages: _paramMessages, // 避免覆盖主messages
         stream: _paramStream, // 避免覆盖stream标志
@@ -815,7 +815,7 @@ export class OpenAIAdapter extends AbstractTextProviderAdapter {
       }))
 
       const {
-        timeout,
+        timeout: _timeout,
         model: _paramModel,
         messages: _paramMessages,
         stream: _paramStream,

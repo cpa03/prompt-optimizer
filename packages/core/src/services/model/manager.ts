@@ -513,7 +513,7 @@ export class ModelManager implements IModelManager {
       if (!models[key]) {
         throw new ModelConfigError(`Model ${key} does not exist`)
       }
-      const { [key]: removed, ...remaining } = models
+      const { [key]: _removed, ...remaining } = models
       return remaining
     })
   }

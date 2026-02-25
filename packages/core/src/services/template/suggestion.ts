@@ -60,7 +60,7 @@ const TEMPLATE_RECOMMENDATIONS = {
  * @param prompt Prompt text to analyze
  * @param language Language for analysis
  */
-export function analyzePromptPattern(prompt: string, language: 'zh' | 'en'): {
+export function analyzePromptPattern(prompt: string, _language: 'zh' | 'en'): {
   detectedType: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'general'
   complexity: 'simple' | 'moderate' | 'complex'
   hasContext: boolean

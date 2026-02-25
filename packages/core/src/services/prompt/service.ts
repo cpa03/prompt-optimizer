@@ -7,10 +7,9 @@ import {
   ToolDefinition,
 } from './types'
 import { Message, StreamHandlers, ILLMService } from '../llm/types'
-import { PromptRecord } from '../history/types'
+import { PromptRecord, IHistoryManager } from '../history/types'
 import { IModelManager } from '../model/types'
 import { ITemplateManager } from '../template/types'
-import { IHistoryManager } from '../history/types'
 import { OptimizationError, IterationError, TestError, ServiceDependencyError } from './errors'
 import { TemplateProcessor, TemplateContext } from '../template/processor'
 import { PROMPT_CONSTRAINTS } from '../../constants/constraints'

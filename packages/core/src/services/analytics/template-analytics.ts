@@ -35,7 +35,7 @@ export class TemplateAnalytics {
   private analytics: TemplateSuggestionAnalytics
   private storage: IStorageProvider | null = null
 
-  constructor(storage?: IStorageProvider) {
+  constructor(_storage?: IStorageProvider) {
     this.analytics = {
       totalRequests: 0,
       byType: {},

@@ -100,7 +100,7 @@ export class FavoriteManager implements IFavoriteManager {
               migrated = true
 
               // 移除已废弃的 isPublic 字段
-              const { isPublic, originalContent, ...rest } = favorite
+              const { isPublic: _isPublic, originalContent, ...rest } = favorite
 
               // 添加新的必需字段
               return {

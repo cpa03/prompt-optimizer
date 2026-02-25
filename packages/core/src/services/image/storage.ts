@@ -45,11 +45,15 @@ class ImageDB extends Dexie {
         let lastId: string | undefined
         const CHUNK_SIZE = IMAGE_CONSTRAINTS.STORAGE_MIGRATION_CHUNK_SIZE
 
-        while (true) {
+        let shouldContinue = true
+        while (shouldContinue) {
           const chunk: ImageRecordV1[] = lastId
             ? await oldImages.where('id').above(lastId).limit(CHUNK_SIZE).toArray()
             : await oldImages.orderBy('id').limit(CHUNK_SIZE).toArray()
-          if (chunk.length === 0) break
+          if (chunk.length === 0) {
+            shouldContinue = false
+            break
+          }
 
           await newMetadata.bulkPut(
             chunk.map((record: ImageRecordV1) => ({

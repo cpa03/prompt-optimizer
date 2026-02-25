@@ -179,7 +179,7 @@ export class ImageModelManager implements IImageModelManager {
       }
 
       // 配置存在，正常删除
-      const { [id]: removed, ...rest } = data
+      const { [id]: _removed, ...rest } = data
       console.log(`[ImageModelManager] Successfully deleted config: ${id}`)
       return rest
     })

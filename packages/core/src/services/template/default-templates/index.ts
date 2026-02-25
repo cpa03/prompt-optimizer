@@ -115,12 +115,10 @@ import { template as evaluation_image_image2image_prompt_only } from './evaluati
 import { template as evaluation_image_image2image_prompt_only_en } from './evaluation/image/image2image/evaluation-prompt-only_en'
 
 // 变量提取模板
-import { variableExtractionTemplate } from './variable-extraction'
-import { variableExtractionTemplateEn } from './variable-extraction'
+import { variableExtractionTemplate, variableExtractionTemplateEn } from './variable-extraction'
 
 // 变量值生成模板
-import { variableValueGenerationTemplate } from './variable-value-generation'
-import { variableValueGenerationTemplateEn } from './variable-value-generation'
+import { variableValueGenerationTemplate, variableValueGenerationTemplateEn } from './variable-value-generation'
 
 // 简单的模板集合 - 模板自身已包含完整信息（id、name、language、type等）
 export const ALL_TEMPLATES = {

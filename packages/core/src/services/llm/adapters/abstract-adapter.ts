@@ -225,7 +225,6 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
     // 将新内容添加到缓冲区
     thinkState.buffer += content
     let remaining = thinkState.buffer
-    let processed = ''
 
     while (remaining.length > 0) {
       if (!thinkState.isInThinkMode) {
@@ -238,9 +237,6 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
           if (thinkStartIndex > 0) {
             const beforeThink = remaining.slice(0, thinkStartIndex)
             callbacks.onToken(beforeThink)
-            processed += beforeThink + '<think>'
-          } else {
-            processed += '<think>'
           }
 
           // 进入think模式
@@ -263,7 +259,6 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
           } else {
             // 确定没有标签，发送所有内容到主要流
             callbacks.onToken(remaining)
-            processed += remaining
             remaining = ''
           }
         }
@@ -277,9 +272,6 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
           if (thinkEndIndex > 0) {
             const reasoningContent = remaining.slice(0, thinkEndIndex)
             callbacks.onReasoningToken!(reasoningContent)
-            processed += reasoningContent + '</think>'
-          } else {
-            processed += '</think>'
           }
 
           // 退出think模式
@@ -303,7 +295,6 @@ export abstract class AbstractTextProviderAdapter implements ITextProviderAdapte
           } else {
             // 确定没有结束标签，发送所有内容到推理流
             callbacks.onReasoningToken!(remaining)
-            processed += remaining
             remaining = ''
           }
         }
