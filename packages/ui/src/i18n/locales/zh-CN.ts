@@ -105,6 +105,11 @@ export default {
     scrollToTop: '回到顶部',
     skipToMain: '跳转到主要内容',
   },
+  errorBoundary: {
+    title: '出现了一些问题',
+    retry: '重试',
+    reset: '重置组件',
+  },
   actions: {
     copy: '复制',
     fullscreen: '全屏',

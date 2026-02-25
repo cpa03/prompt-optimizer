@@ -106,6 +106,11 @@ export default {
     scrollToTop: '回到頂部',
     skipToMain: '跳轉到主要內容',
   },
+  errorBoundary: {
+    title: '出現了一些問題',
+    retry: '重試',
+    reset: '重置組件',
+  },
   actions: {
     copy: '複製',
     fullscreen: '全螢幕',
