@@ -224,11 +224,6 @@ export function usePromptOptimizer(
 
     // 至少需要有消息或prompt其中之一
     if ((!hasMessages && !hasPrompt) || state.isOptimizing) {
-      console.log('[usePromptOptimizer] Skipping optimization:', {
-        hasMessages,
-        hasPrompt,
-        isOptimizing: state.isOptimizing,
-      })
       return
     }
 
@@ -280,11 +275,6 @@ export function usePromptOptimizer(
           tools: advancedContext.tools, // 🆕 添加工具传递
         },
       }
-
-      console.log(
-        '[usePromptOptimizer] Starting optimization with advanced context:',
-        request.advancedContext
-      )
 
       // 使用重构后的优化API
       await promptService.value!.optimizePromptStream(request, {

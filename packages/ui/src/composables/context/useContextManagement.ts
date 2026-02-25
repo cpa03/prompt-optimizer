@@ -80,7 +80,6 @@ export function useContextManagement(options: ContextManagementOptions) {
     (newMode) => {
       if (newMode !== undefined) {
         contextMode.value = newMode
-        console.log('[useContextManagement] contextMode changed:', newMode)
       }
     },
     { immediate: true }
@@ -110,10 +109,6 @@ export function useContextManagement(options: ContextManagementOptions) {
             variables: context.variables || {},
             tools: [...(context.tools || [])],
           }
-          console.log(
-            '[useContextManagement] Initialized context variables from persistence:',
-            Object.keys(context.variables || {})
-          )
         }
       }
     } catch (error) {
@@ -141,7 +136,6 @@ export function useContextManagement(options: ContextManagementOptions) {
     persistContextUpdateTimer = setTimeout(async () => {
       try {
         await contextRepo.value!.update(currentContextId.value!, patch)
-        console.log('[useContextManagement] Context persisted to storage')
       } catch (error) {
         console.warn('[useContextManagement] Failed to persist context update:', error)
       }
@@ -244,8 +238,6 @@ export function useContextManagement(options: ContextManagementOptions) {
       // variables 不持久化
       tools: state.tools,
     })
-
-    console.log('[useContextManagement] Context editor state synchronized')
   }
 
   // ==================== 上下文模式切换 ====================
@@ -260,7 +252,6 @@ export function useContextManagement(options: ContextManagementOptions) {
       // 更新本地 contextMode (会通过 watch 同步到 App.vue)
       if (contextMode.value !== mode) {
         contextMode.value = mode
-        console.log('[useContextManagement] Context mode changed to:', mode)
       }
 
       // 更新 services 中的 contextMode (需要判断类型，因为可能已经是字符串)

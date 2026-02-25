@@ -251,7 +251,6 @@ export function useConversationOptimization(
           if (messageId) {
             restoredMap.set(messageId, value)
             hasMigrated = true
-            console.log(`[ConversationOptimization] 迁移旧格式 key: ${key} → ${messageId}`)
           }
         } else {
           // 新格式 key，直接使用
@@ -263,7 +262,6 @@ export function useConversationOptimization(
 
       // 🔧 如果发生了迁移，立即同步到 session store 以保存新格式
       if (hasMigrated) {
-        console.log('[ConversationOptimization] 检测到旧格式 key，已自动迁移并保存')
         syncMessageChainMapToSession()
       }
     }
@@ -763,9 +761,6 @@ export function useConversationOptimization(
     if (!messageId) return
 
     const removed = removeMessageMapping(messageId)
-    if (removed) {
-      console.log('[ConversationOptimization] 已清理消息映射:', messageId)
-    }
 
     if (selectedMessageId.value === messageId) {
       if (options?.keepSelection) {
@@ -781,7 +776,6 @@ export function useConversationOptimization(
         optimizedPrompt.value = ''
         optimizedReasoning.value = ''
         currentRecordId.value = ''
-        console.log('[ConversationOptimization] 已清空当前选中状态')
       }
     }
   }
