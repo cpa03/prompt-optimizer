@@ -99,6 +99,18 @@ MCP_ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
 - This could expose your API keys and prompt data to malicious websites
 - Always restrict origins in production environments
 
+### MCP Server DNS Rebinding Protection
+
+The MCP server includes DNS rebinding attack protection, which is **enabled by default**. This protection helps prevent attackers from using DNS rebinding techniques to bypass security measures.
+
+**Configuration:**
+- Default: Enabled (`true`)
+- To disable: Set `MCP_DNS_REBINDING_PROTECTION=false`
+- Note: Disabling this protection is not recommended for production environments
+
+**What is DNS Rebinding?**
+DNS rebinding attacks exploit the difference between DNS names and IP addresses to bypass security measures, potentially allowing attackers to access internal services or API keys.
+
 ## Known Vulnerabilities
 
 ### ESLint ajv ReDoS Vulnerability (GHSA-2g4f-4pwh-qvx6)
