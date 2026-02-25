@@ -15,6 +15,7 @@ import { isRunningInElectron } from '../../utils/environment'
 import { ElectronLLMProxy } from './electron-proxy'
 import { TextAdapterRegistry } from './adapters/registry'
 import { mergeOverrides, splitOverridesBySchema } from '../model/parameter-utils'
+import { isError, getErrorMessage } from '../../utils/error'
 
 /**
  * LLM服务实现 - 基于 Adapter 架构
@@ -99,11 +100,11 @@ export class LLMService implements ILLMService {
 
       // 使用 Adapter 发送消息
       return await adapter.sendMessage(messages, runtimeConfig)
-    } catch (error: any) {
-      if (error instanceof RequestConfigError || error instanceof APIError) {
+    } catch (error) {
+      if (isError(error) && (error instanceof RequestConfigError || error instanceof APIError)) {
         throw error
       }
-      throw new APIError(`Failed to send message: ${error.message}`)
+      throw new APIError(`Failed to send message: ${getErrorMessage(error)}`)
     }
   }
 
@@ -215,11 +216,11 @@ export class LLMService implements ILLMService {
       const adapter = this.registry.getAdapter(modelConfig.providerMeta.id)
       const runtimeConfig = this.prepareRuntimeConfig(modelConfig)
       await adapter.sendMessage(testMessages, runtimeConfig)
-    } catch (error: any) {
-      if (error instanceof RequestConfigError || error instanceof APIError) {
+    } catch (error) {
+      if (isError(error) && (error instanceof RequestConfigError || error instanceof APIError)) {
         throw error
       }
-      throw new APIError(`Connection test failed: ${error.message}`)
+      throw new APIError(`Connection test failed: ${getErrorMessage(error)}`)
     }
   }
 
@@ -261,12 +262,12 @@ export class LLMService implements ILLMService {
         value: model.id,
         label: model.name,
       }))
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to fetch model list:', error)
-      if (error instanceof RequestConfigError || error instanceof APIError) {
+      if (isError(error) && (error instanceof RequestConfigError || error instanceof APIError)) {
         throw error
       }
-      throw new APIError(`Failed to fetch model list: ${error.message}`)
+      throw new APIError(`Failed to fetch model list: ${getErrorMessage(error)}`)
     }
   }
 

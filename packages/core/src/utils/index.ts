@@ -69,6 +69,8 @@ export {
   toErrorWithCode,
   isStructuredErrorLike,
   isRecord,
+  isError,
+  getErrorMessage,
   setErrorCause,
   BaseError,
   classifyError,
