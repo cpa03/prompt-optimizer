@@ -26,45 +26,45 @@
     <template v-else>
       <ErrorBoundaryUI>
         <MainLayoutUI>
-        <!-- Title Slot -->
-        <template #title>
-          {{ t('promptOptimizer.title') }}
-        </template>
+          <!-- Title Slot -->
+          <template #title>
+            {{ t('promptOptimizer.title') }}
+          </template>
 
-        <!-- Core Navigation Slot -->
-        <template #core-nav>
-          <AppCoreNav />
-        </template>
+          <!-- Core Navigation Slot -->
+          <template #core-nav>
+            <AppCoreNav />
+          </template>
 
-        <!-- Actions Slot -->
-        <template #actions>
-          <AppHeaderActions
-            @open-templates="openTemplateManager"
-            @open-history="historyManager.showHistory = true"
-            @open-model-manager="modelManager.showConfig = true"
-            @open-favorites="showFavoriteManager = true"
-            @open-data-manager="showDataManager = true"
-            @open-variables="handleOpenVariableManager()"
-            @open-github="openGithubRepo"
-          />
-        </template>
-        <template #main>
-          <!-- 🔧 路由架构：使用 RouterView 自动渲染对应的工作区容器 -->
-          <!-- - /basic/system → BasicSystemWorkspace -->
-          <!-- - /basic/user → BasicUserWorkspace -->
-          <!-- - /pro/multi → ContextSystemWorkspace -->
-          <!-- - /pro/variable → ContextUserWorkspace -->
-          <!-- - /image/text2image → ImageText2ImageWorkspace -->
-          <!-- - /image/image2image → ImageImage2ImageWorkspace -->
-          <RouterView v-slot="{ Component, route: viewRoute }">
-            <component
-              :is="Component"
-              :key="viewRoute.fullPath"
-              :ref="(instance: unknown) => setWorkspaceRef(instance, viewRoute.name)"
+          <!-- Actions Slot -->
+          <template #actions>
+            <AppHeaderActions
+              @open-templates="openTemplateManager"
+              @open-history="historyManager.showHistory = true"
+              @open-model-manager="modelManager.showConfig = true"
+              @open-favorites="showFavoriteManager = true"
+              @open-data-manager="showDataManager = true"
+              @open-variables="handleOpenVariableManager()"
+              @open-github="openGithubRepo"
             />
-          </RouterView>
-        </template>
-      </MainLayoutUI>
+          </template>
+          <template #main>
+            <!-- 🔧 路由架构：使用 RouterView 自动渲染对应的工作区容器 -->
+            <!-- - /basic/system → BasicSystemWorkspace -->
+            <!-- - /basic/user → BasicUserWorkspace -->
+            <!-- - /pro/multi → ContextSystemWorkspace -->
+            <!-- - /pro/variable → ContextUserWorkspace -->
+            <!-- - /image/text2image → ImageText2ImageWorkspace -->
+            <!-- - /image/image2image → ImageImage2ImageWorkspace -->
+            <RouterView v-slot="{ Component, route: viewRoute }">
+              <component
+                :is="Component"
+                :key="viewRoute.fullPath"
+                :ref="(instance: unknown) => setWorkspaceRef(instance, viewRoute.name)"
+              />
+            </RouterView>
+          </template>
+        </MainLayoutUI>
       </ErrorBoundaryUI>
 
       <!-- Modals and Drawers that are conditionally rendered -->
