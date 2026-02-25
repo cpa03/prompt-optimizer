@@ -1147,6 +1147,7 @@ export default {
     languageChanged: '內建範本語言已切換為 {language}',
     languageChangeError: '切換內建範本語言失敗',
     languageInitError: '初始化內建範本語言失敗',
+    smartSuggestion: '智慧推薦',
     type: {
       optimize: '優化',
       iterate: '迭代',
