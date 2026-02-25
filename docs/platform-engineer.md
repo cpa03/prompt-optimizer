@@ -1,59 +1,72 @@
-# Platform Engineer Long-term Memory
+# Platform Engineer - Long-term Memory
 
-## Active Platform Work
+## Domain Focus
 
-### CI/CD Improvements for develop Branch
-- **Status**: Blocked by GitHub App permissions
-- **Priority**: High
-- **Type**: Infrastructure/DevOps
-- **Changes Needed**:
-  - test.yml: Add `develop` branch to push/PR triggers, update pnpm to 10.6.1
-  - docker.yml: Add `develop` branch to build triggers
-  - parallel.yml: Add `develop` branch to push triggers
-- **Blocker**: GitHub App lacks "workflows" permission to push workflow file changes
+Platform Engineering - delivering small, safe, measurable improvements to CI/CD pipelines, developer tooling, and infrastructure.
 
-## Recent Platform Improvements
+## Recent Work
 
-1. **CI/CD Branch Coverage** (2026-02-25)
-   - Documented needed changes in docs/development/ci-cd-improvements.md
-   - Changes require manual application or App permission upgrade
+### Issue #649: CI/CD develop branch coverage
+- **Status**: Partially complete (workflow changes blocked by GitHub App permissions)
+- **Changes needed**: test.yml, docker.yml, parallel.yml need develop branch
+- **Blocker**: GitHub App lacks "workflows" permission
+- **Workaround**: Manual application required
 
-2. **Tooling Consistency** (2026-02-25)
-   - Standardized pnpm version across all workflows (needs manual apply)
-   - All workflows should use pnpm@10.6.1
+### PR #656: Platform Engineer Memory
+- Created docs/platform-engineer.md
+- Documented platform issues
 
-## Platform Engineering Scope
+## CI/CD Workflow Patterns
 
-1. **CI/CD Pipeline**
-   - GitHub Actions workflows (test, release, docker, parallel)
-   - Build and deployment automation
-   - Branch protection and triggers
+### GitHub Actions Permissions
+- **Important**: GitHub Apps cannot push workflow file changes without explicit "workflows" permission
+- **Workaround**: Use non-workflow changes first, or request permission upgrade, or manual apply
+- **Files**: `.github/workflows/*.yml`
 
-2. **Developer Tooling**
-   - Package management (pnpm)
-   - TypeScript configurations
-   - Build tools (tsup, Vite, webpack)
+### Key Workflow Files
 
-3. **Infrastructure**
-   - Docker configurations
-   - Docker Compose setups
-   - Kubernetes manifests (k8s/)
+- `.github/workflows/test.yml` - Main CI pipeline
+- `.github/workflows/release.yml` - Release automation
+- `.github/workflows/docker.yml` - Docker builds
+- `.github/workflows/parallel.yml` - Automated agent tasks
 
-4. **Development Environment**
-   - Devcontainer configuration
-   - Environment variables management
+### Common Issues to Look For
 
-## Known Platform Issues
+1. **Branch triggers**: Ensure default branch (develop) is included in triggers
+2. **pnpm version**: Match package.json version across all workflows
+3. **Action versions**: Use pinned versions for security
+4. **Concurrency**: Set to prevent duplicate runs
 
-| Issue | Severity | Status | Notes |
-|-------|----------|--------|-------|
-| Missing develop in workflows | High | Documented | Needs manual apply |
+## Developer Tooling
+
+### Package Management
+- Use pnpm (version in package.json)
+- Lock file: `pnpm-lock.yaml`
+
+### Build Commands
+- Install: `pnpm install`
+- Build: `pnpm build`
+- Test: `pnpm test`
+- Lint: `pnpm lint`
+- Test gate: `pnpm test:gate`
+
+## Infrastructure
+
+- **Docker**: `Dockerfile`, `docker-compose*.yml`
+- **Kubernetes**: `k8s/` directory
+- **Devcontainer**: `.devcontainer/`
+
+## Known Issues
+
+| Issue | Severity | Status | Solution |
+|-------|----------|--------|----------|
+| Missing develop in workflows | High | Documented | Manual apply needed |
 | pnpm version mismatch | Medium | Documented | Standardize to 10.6.1 |
 
 ## Action Items
 
-1. Request GitHub App "workflows" permission to push workflow changes
-2. Or manually apply CI/CD changes from docs/development/ci-cd-improvements.md
+1. Request GitHub App "workflows" permission
+2. Apply workflow changes from docs/development/ci-cd-improvements.md
 3. Add develop branch protection rules
 
 ## Last Updated
