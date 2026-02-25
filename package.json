@@ -35,6 +35,7 @@
     "test:gate:ui": "pnpm -F @prompt-optimizer/core build && pnpm -F @prompt-optimizer/ui test",
     "test:gate:e2e": "playwright test tests/e2e/regression.spec.ts tests/e2e/workflows/p0-route-smoke.spec.ts",
     "test:gate": "npm-run-all -s test:gate:core test:gate:ui",
+    "test:gate:coverage": "pnpm -F @prompt-optimizer/core test:gate:coverage",
     "test:gate:full": "npm-run-all -s test:gate test:gate:e2e",
     "test:fast": "pnpm -F @prompt-optimizer/core build && pnpm -r test --run --passWithNoTests",
     "test:e2e:ui": "playwright test --ui",

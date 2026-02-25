@@ -32,6 +32,11 @@ export default defineConfig({
         '**/\x00*',
         'cypress/**',
       ],
+      // Coverage thresholds
+      lines: 50,
+      functions: 45,
+      branches: 40,
+      statements: 50,
     },
   },
 })
