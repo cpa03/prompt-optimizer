@@ -115,10 +115,12 @@
 
 ### 项目文档引用
 
-- **Naive UI重构父项目**: [docs/workspace/README.md](../../workspace/README.md)
-- **原始工作记录**: [docs/workspace/navigation-optimization-record.md](../../workspace/navigation-optimization-record.md)
-- **组件使用指南**: [docs/workspace/component-usage-guide.md](../../workspace/component-usage-guide.md)
-- **多语言扩展**: [docs/workspace/language-extension-guide.md](../../workspace/language-extension-guide.md)
+> 注意: 以下文档已迁移或归档，部分链接可能不可用
+
+- ~~docs/workspace/README.md~~ (已删除)
+- ~~docs/workspace/navigation-optimization-record.md~~ (已删除)
+- ~~docs/workspace/component-usage-guide.md~~ (已删除)
+- ~~docs/workspace/language-extension-guide.md~~ (已删除)
 
 ### 技术参考
 
