@@ -30,6 +30,13 @@ This document serves as the long-term memory for the technical-writer agent, doc
 ## History
 
 ### 2026-02-25
+- **PR #XXX**: Fixed broken link placeholders in documentation
+  - Fixed `docs/user/README.md`: Replaced broken link to FAQ with placeholder note
+  - Fixed `docs/project/README.md`: Replaced broken link to feature-requirements.md with placeholder note
+  - Issue: Links with "（待创建）" appeared as broken links to non-existent files
+  - Resolution: Rebased onto latest develop, clean atomic diff
+
+### 2026-02-25
 - **PR #648**: Fixed broken links in `docs/archives/124-navigation-optimization/README.md`
   - Removed 4 broken references to deleted workspace files
   - Files removed: navigation-optimization-record.md, component-usage-guide.md, language-extension-guide.md, README.md
