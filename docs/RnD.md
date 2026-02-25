@@ -2,8 +2,15 @@
 
 ## Active Work
 
+### PR #651: Type-safe error handling with isError type guard
+- **Status**: Open
+- **Branch**: rnd/add-iserror-type-guard
+- **Priority**: Medium
+- **Domain**: Type Safety / Code Quality
+- **Summary**: Added isError type guard and getErrorMessage utility to replace unsafe `any` usage in error handling
+
 ### PR #643: Type safety improvements for variable extraction and value generation services
-- **Status**: Open (Ready for Review)
+- **Status**: Merged
 - **Branch**: rnd/type-safety-raw-response-types
 - **Priority**: Medium
 - **Domain**: Type Safety / Code Quality
@@ -16,6 +23,12 @@
 - **Domain**: DX/Security
 
 ## Implemented Changes
+
+### 2026-02-25
+- PR #651: Added `isError` type guard and `getErrorMessage` utility to `packages/core/src/utils/error.ts`
+- PR #651: Exported new utilities from `packages/core/src/utils/index.ts`
+- PR #651: Updated LLMService to use type-safe error handling (3 instances of `any` removed)
+- All tests pass (1114 passed), lint passes with 0 new errors
 
 ### 2026-02-25
 - PR #643: Added RawExtractionResponse, RawExtractedVariable types to variable-extraction/types.ts
