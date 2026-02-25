@@ -178,7 +178,6 @@ export function useConversationTester(
             ...streamHandler,
             onToolCall: (toolCall: ToolCall) => {
               if (!hasTools) return
-              console.log(`[useConversationTester] ${type} test tool call received:`, toolCall)
               const toolCallResult: ToolCallResult = {
                 toolCall,
                 status: 'success',

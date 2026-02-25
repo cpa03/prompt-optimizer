@@ -223,7 +223,6 @@ export function useAppHistoryRestore(options: AppHistoryRestoreOptions): AppHist
         const conversationSnapshotRaw: unknown = record.metadata?.conversationSnapshot
         if (conversationSnapshotRaw && Array.isArray(conversationSnapshotRaw)) {
           conversationSnapshot = conversationSnapshotRaw as ConversationSnapshotMessage[]
-          console.log('[App] 从历史记录恢复会话快照，消息数:', conversationSnapshot.length)
 
           // 🆕 精确版本恢复：为每条消息加载其指定的版本
           const restoredMessages = await Promise.all(
@@ -328,7 +327,6 @@ export function useAppHistoryRestore(options: AppHistoryRestoreOptions): AppHist
           }
         } else if (messageId) {
           if (targetMessage) {
-            console.log('[App] 历史记录无会话快照，尝试在当前会话中查找消息（旧版本数据）')
             toast.warning(t('toast.warning.restoredFromLegacyHistory'))
           } else {
             console.warn('[App] 旧版本历史记录中未找到消息 ID:', messageId)
