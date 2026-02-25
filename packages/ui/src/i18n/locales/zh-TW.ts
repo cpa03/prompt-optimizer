@@ -110,6 +110,13 @@ export default {
     title: '出現了一些問題',
     retry: '重試',
     reset: '重置組件',
+    typeError: '類型錯誤',
+    referenceError: '引用錯誤',
+    syntaxError: '語法錯誤',
+    rangeError: '範圍錯誤',
+    domError: 'DOM 錯誤',
+    networkError: '網絡錯誤',
+    timeoutError: '超時錯誤',
   },
   actions: {
     copy: '複製',

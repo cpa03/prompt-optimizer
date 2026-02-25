@@ -112,6 +112,13 @@ export default {
     title: 'Something went wrong',
     retry: 'Retry',
     reset: 'Reset component',
+    typeError: 'Type Error',
+    referenceError: 'Reference Error',
+    syntaxError: 'Syntax Error',
+    rangeError: 'Range Error',
+    domError: 'DOM Error',
+    networkError: 'Network Error',
+    timeoutError: 'Timeout Error',
   },
   actions: {
     copy: 'Copy',
