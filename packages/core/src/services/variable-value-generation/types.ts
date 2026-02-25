@@ -41,6 +41,35 @@ export interface GeneratedVariableValue {
 }
 
 /**
+ * 原始生成的变量值（LLM 返回的未验证数据）
+ */
+export interface RawGeneratedValue {
+  name?: unknown
+  value?: unknown
+  reason?: unknown
+  confidence?: unknown
+}
+
+/**
+ * 变量值生成响应
+ */
+export interface VariableValueGenerationResponse {
+  /** 生成的变量值列表 */
+  values: GeneratedVariableValue[]
+
+  /** 一句话总结 */
+  summary: string
+}
+
+/**
+ * 原始变量值生成响应（LLM 返回的未验证数据）
+ */
+export interface RawGenerationResponse {
+  values?: unknown
+  summary?: unknown
+}
+
+/**
  * 变量值生成请求
  */
 export interface VariableValueGenerationRequest {
