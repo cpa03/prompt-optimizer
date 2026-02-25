@@ -2256,6 +2256,8 @@ onBeforeUnmount(async () => {
     window.removeEventListener('pagehide', handlePagehide)
     document.removeEventListener('visibilitychange', handleVisibilityChange)
     window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+    // ⚠️ 移除 prompt-optimizer:history-refresh 监听器，避免内存泄漏
+    window.removeEventListener('prompt-optimizer:history-refresh', handleGlobalHistoryRefresh)
   }
 
   removeRouterErrorHandler?.()
