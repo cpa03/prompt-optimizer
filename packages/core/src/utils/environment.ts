@@ -6,6 +6,7 @@ import { TIMEOUTS } from '../config/timeouts'
 import { ENV_CONFIG } from '../config/core-config'
 import { VALIDATION_CONSTRAINTS, SESSION_CONSTRAINTS } from '../constants/constraints'
 import { createDebugLogger } from './debug'
+import '../config/env'
 
 const logger = createDebugLogger('environment')
 
@@ -252,9 +253,7 @@ export const getEnvVar = (key: string): string => {
 
   // 3. 然后尝试 import.meta.env（Vite 环境）
   try {
-    // @ts-ignore - 在构建时忽略此错误
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore - 在构建时忽略此错误
       const value = import.meta.env[key]
       if (value) return value
     }
@@ -286,9 +285,7 @@ export function scanCustomModelEnvVars(
 
   // 优先级1（最低）: import.meta.env（Vite开发环境）
   try {
-    // @ts-ignore
     if (typeof import.meta !== 'undefined' && import.meta.env) {
-      // @ts-ignore
       Object.entries(import.meta.env).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           mergedEnv[key] = String(value)
