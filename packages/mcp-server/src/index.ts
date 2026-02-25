@@ -456,6 +456,9 @@ async function main() {
         res.setHeader('X-Frame-Options', 'DENY')
         res.setHeader('X-XSS-Protection', '1; mode=block')
         res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+        res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
         res.setHeader(
           'Permissions-Policy',
           'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
