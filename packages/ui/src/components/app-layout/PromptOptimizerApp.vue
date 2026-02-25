@@ -379,6 +379,10 @@ const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
   void promptRefreshForNewDeploy(event.reason)
 }
 
+const handleGlobalHistoryRefresh = () => {
+  promptHistory.initHistory()
+}
+
 // 2. 初始化应用服务
 const { services, isInitializing } = useAppInitializer()
 
@@ -1778,11 +1782,6 @@ watch(services, async (newServices) => {
   } else if (routeFunctionMode.value === 'image') {
     await imageSubModeApi.ensureInitialized()
   }
-
-  const handleGlobalHistoryRefresh = () => {
-    promptHistory.initHistory()
-  }
-  window.addEventListener('prompt-optimizer:history-refresh', handleGlobalHistoryRefresh)
 })
 
 // 8. 处理数据导入成功后的刷新
@@ -2155,6 +2154,7 @@ onMounted(() => {
   // Prompt user to refresh instead of auto-reloading.
   if (typeof window !== 'undefined') {
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
+    window.addEventListener('prompt-optimizer:history-refresh', handleGlobalHistoryRefresh)
   }
   removeRouterErrorHandler = routerInstance.onError((error) => {
     if (!isChunkLoadFailure(error)) return
