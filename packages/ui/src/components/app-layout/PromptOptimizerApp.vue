@@ -57,11 +57,13 @@
             <!-- - /image/text2image → ImageText2ImageWorkspace -->
             <!-- - /image/image2image → ImageImage2ImageWorkspace -->
             <RouterView v-slot="{ Component, route: viewRoute }">
-              <component
-                :is="Component"
-                :key="viewRoute.fullPath"
-                :ref="(instance: unknown) => setWorkspaceRef(instance, viewRoute.name)"
-              />
+              <ErrorBoundaryUI :show-reset="true" @retry="handleRouteErrorRetry(viewRoute)">
+                <component
+                  :is="Component"
+                  :key="viewRoute.fullPath"
+                  :ref="(instance: unknown) => setWorkspaceRef(instance, viewRoute.name)"
+                />
+              </ErrorBoundaryUI>
             </RouterView>
           </template>
         </MainLayoutUI>
@@ -784,6 +786,16 @@ const handleExtractVariables = async (promptContent: string, extractionModelKey:
 const handleToolManagerConfirm = (tools?: ToolDefinition[]) => {
   optimizationContextTools.value = tools ?? []
   showToolManager.value = false
+}
+
+// 路由错误边界重试处理函数
+const handleRouteErrorRetry = (_route: unknown) => {
+  // 强制重新渲染当前路由组件
+  const currentPath = router.currentRoute.value.fullPath
+  router.replace('/')
+  setTimeout(() => {
+    router.replace(currentPath)
+  }, 50)
 }
 
 // 6. 在顶层调用所有 Composables

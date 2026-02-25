@@ -108,6 +108,11 @@ export default {
     scrollToTop: 'Scroll to top',
     skipToMain: 'Skip to main content',
   },
+  errorBoundary: {
+    title: 'Something went wrong',
+    retry: 'Retry',
+    reset: 'Reset component',
+  },
   actions: {
     copy: 'Copy',
     fullscreen: 'Fullscreen',

@@ -56,3 +56,18 @@ The codebase already has extensive accessibility support:
 - Uses Naive UI component library
 - Follows 2-space indentation
 - Uses TypeScript
+
+## Iteration Log
+
+### 2026-02-25 (Current)
+**ErrorBoundary Improvements** (PR #655)
+- Added ErrorBoundary around RouterView for granular route error handling
+- This ensures when a workspace component fails, only that part shows error UI
+- Added console error logging for debugging and monitoring
+- Added i18n support (zh-CN, zh-TW, en-US) for error boundary text
+- Added route error retry handler to refresh failed routes
+
+Key files modified:
+- `packages/ui/src/components/ErrorBoundary.vue` - Added i18n and logging
+- `packages/ui/src/components/app-layout/PromptOptimizerApp.vue` - Added RouterView wrapper
+- `packages/ui/src/i18n/locales/{zh-CN,zh-TW,en-US}.ts` - Added translations

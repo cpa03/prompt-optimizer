@@ -1,11 +1,11 @@
 <template>
   <slot v-if="!hasError" />
   <div v-else class="error-boundary">
-    <n-result status="error" title="出现了一些问题" :description="errorMessage">
+    <n-result status="error" :title="t('errorBoundary.title')" :description="errorMessage">
       <template #footer>
         <n-space justify="center">
-          <n-button @click="handleRetry">重试</n-button>
-          <n-button v-if="showReset" @click="handleReset">重置组件</n-button>
+          <n-button @click="handleRetry">{{ t('errorBoundary.retry') }}</n-button>
+          <n-button v-if="showReset" @click="handleReset">{{ t('errorBoundary.reset') }}</n-button>
         </n-space>
       </template>
     </n-result>
@@ -14,7 +14,10 @@
 
 <script setup lang="ts">
 import { ref, onErrorCaptured } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { NResult, NButton, NSpace } from 'naive-ui'
+
+const { t } = useI18n()
 
 export interface ErrorBoundaryProps {
   /**
@@ -45,7 +48,8 @@ onErrorCaptured((err: Error, _instance: unknown, _info: string) => {
   hasError.value = true
   errorMessage.value = err.message || '未知错误'
 
-  // 触发自定义错误回调
+  // Log error for debugging and monitoring
+  console.error('[ErrorBoundary] Caught error:', err)
   if (props.onError) {
     props.onError(err)
   }
