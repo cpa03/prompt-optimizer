@@ -263,6 +263,66 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 /**
+ * Check if a value is a number (not NaN or Infinity).
+ * Useful for validating numeric inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isNumber(value)) {
+ *   // value is number and not NaN/Infinity
+ * }
+ * ```
+ */
+export function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && !isNaN(value) && isFinite(value)
+}
+
+/**
+ * Check if a value is an integer.
+ * Useful for validating counts, indices, and other integer values.
+ *
+ * @example
+ * ```typescript
+ * if (isInteger(value)) {
+ *   // value is integer
+ * }
+ * ```
+ */
+export function isInteger(value: unknown): value is number {
+  return isNumber(value) && Number.isInteger(value)
+}
+
+/**
+ * Check if a value is a positive number (> 0).
+ * Useful for validating quantities, prices, etc.
+ *
+ * @example
+ * ```typescript
+ * if (isPositiveNumber(value)) {
+ *   // value is positive
+ * }
+ * ```
+ */
+export function isPositiveNumber(value: unknown): value is number {
+  return isNumber(value) && value > 0
+}
+
+/**
+ * Check if a value is a non-negative number (>= 0).
+ * Useful for validating counts, percentages, etc.
+ *
+ * @example
+ * ```typescript
+ * if (isNonNegativeNumber(value)) {
+ *   // value is >= 0
+ * }
+ * ```
+ */
+export function isNonNegativeNumber(value: unknown): value is number {
+  return isNumber(value) && value >= 0
+}
+
+/**
  * Check if a value is a non-empty string.
  * Useful for validating required string inputs.
  *
