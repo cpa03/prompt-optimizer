@@ -1216,6 +1216,33 @@ export default {
       importFailed: 'Failed to import template',
       readFailed: 'Failed to read file',
     },
+    suggestion: {
+      title: 'Smart Template Suggestions',
+      getSuggestions: 'Get Suggestions',
+      applying: 'Getting suggestions...',
+      noSuggestions: 'No suggestions available',
+      applySuggestion: 'Apply This Template',
+      confidence: 'Confidence',
+      detectedType: 'Detected Type',
+      complexity: 'Complexity',
+      types: {
+        question: 'Question',
+        task: 'Task',
+        creative: 'Creative',
+        analysis: 'Analysis',
+        code: 'Code',
+        general: 'General',
+      },
+      complexityLevels: {
+        simple: 'Simple',
+        moderate: 'Moderate',
+        complex: 'Complex',
+      },
+      error: {
+        failed: 'Failed to get suggestions',
+        promptRequired: 'Please enter a prompt first',
+      },
+    },
   },
   prompt: {
     optimized: 'Optimization Workspace',
