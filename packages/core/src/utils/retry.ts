@@ -23,6 +23,33 @@
 
 import { TIMEOUTS } from '../config/timeouts'
 
+/**
+ * Error with additional properties that may be present from various sources
+ * (Node.js errors, fetch errors, HTTP errors, etc.)
+ */
+interface ErrorWithStatus {
+  code?: string
+  status?: number
+  statusCode?: number
+}
+
+/**
+ * Type guard to check if an error has status properties
+ * @param error - The error to check
+ * @returns True if the error has status-related properties
+ */
+function hasStatusProperties(error: unknown): error is ErrorWithStatus {
+  if (typeof error !== 'object' || error === null) {
+    return false
+  }
+  const err = error as Record<string, unknown>
+  return (
+    typeof err.code === 'string' ||
+    typeof err.status === 'number' ||
+    typeof err.statusCode === 'number'
+  )
+}
+
 export interface RetryOptions {
   maxAttempts?: number
   baseDelayMs?: number
@@ -90,10 +117,10 @@ function isRetryableError(error: unknown, customRetryableErrors: string[]): bool
     return false
   }
 
-  const errorCode = (error as any).code
+  const errorCode = hasStatusProperties(error) ? error.code : undefined
   const errorName = error.name
   const errorMessage = error.message.toLowerCase()
-  const status = (error as any).status || (error as any).statusCode
+  const status = hasStatusProperties(error) ? (error.status ?? error.statusCode) : undefined
 
   if (DEFAULT_RETRYABLE_STATUS_CODES.includes(status)) {
     return true
