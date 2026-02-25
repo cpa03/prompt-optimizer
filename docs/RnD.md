@@ -2,27 +2,27 @@
 
 ## Active Work
 
-### PR #651: Type-safe error handling with isError type guard
+### PR #674: Type-safe error handling in retry.ts
 - **Status**: Open
+- **Branch**: rnd/retry-ts-type-safety
+- **Priority**: Medium
+- **Domain**: Type Safety / Code Quality
+- **Summary**: Added ErrorWithStatus interface and hasStatusProperties type guard to replace unsafe `as any` casts for error properties (code, status, statusCode)
+- **Related**: Issue #618
+
+### PR #651: Type-safe error handling with isError type guard
+- **Status**: Merged
 - **Branch**: rnd/add-iserror-type-guard
 - **Priority**: Medium
 - **Domain**: Type Safety / Code Quality
 - **Summary**: Added isError type guard and getErrorMessage utility to replace unsafe `any` usage in error handling
 
-### PR #643: Type safety improvements for variable extraction and value generation services
-- **Status**: Merged
-- **Branch**: rnd/type-safety-raw-response-types
-- **Priority**: Medium
-- **Domain**: Type Safety / Code Quality
-- **Summary**: Added Raw* types to improve type safety when parsing LLM responses, replacing `any` with `unknown` + type guards
-
-### Issue #603: Add pnpm security audit to CI pipeline
-- **Status**: PR In Progress
-- **Branch**: rndi-603-pnpm-audit
-- **Priority**: High
-- **Domain**: DX/Security
-
 ## Implemented Changes
+
+### 2026-02-25
+- PR #674: Added ErrorWithStatus interface and hasStatusProperties type guard to packages/core/src/utils/retry.ts
+- PR #674: Replaced 2 instances of `as any` with type-safe code in isRetryableError function
+- PR #674: All tests pass (1123 passed), lint passes with 0 new errors
 
 ### 2026-02-25
 - PR #651: Added `isError` type guard and `getErrorMessage` utility to `packages/core/src/utils/error.ts`
