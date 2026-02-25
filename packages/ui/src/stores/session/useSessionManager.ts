@@ -365,20 +365,19 @@ export const useSessionManager = defineStore('sessionManager', () => {
   }
 
   const saveAllSessions = async () => {
-    // ⚠️ 等待当前保存完成（最多等待 5 秒）
-    const startTime = Date.now()
-    const MAX_WAIT = TIME_CONSTANTS.SESSION_TIMEOUT_MS // 5 秒超时
+    // 使用与 restoreAllSessions 相同的模式：检查并等待 in-flight 而不是轮询
+    // 这避免了 setTimeout 轮询带来的潜在竞态条件
+    if (saveInFlight.value) {
+      await saveInFlight.value
+      return
+    }
 
     await restoreAllSessions()
 
-    while (saveInFlight.value) {
-      if (Date.now() - startTime > MAX_WAIT) {
-        // ⚠️ 超时时直接返回，不要强制执行（避免误解锁）
-        console.warn('[SessionManager] 等待保存完成超时，放弃本次保存')
-        return
-      }
-      // 等待 50ms 后重试
-      await new Promise((resolve) => setTimeout(resolve, TIME_CONSTANTS.SESSION_RETRY_DELAY_MS))
+    // 第二次检查：restoreAllSessions 完成后，可能有其他调用者开始了新的保存
+    if (saveInFlight.value) {
+      await saveInFlight.value
+      return
     }
 
     // ⚠️ 记录是否是我获得的锁（防御性编程）

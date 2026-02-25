@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #653: Fix race condition in session initialization (fixes #627)
+- **Issue**: Session initialization used setTimeout polling in `saveAllSessions` which could lead to race conditions when multiple components initialize simultaneously.
+- **Fix**: Replaced setTimeout polling loop with async/await lock pattern, same as `restoreAllSessions`. Added second check after `restoreAllSessions()` to handle concurrent saves.
+- **Files Changed**: `packages/ui/src/stores/session/useSessionManager.ts`
+- **Testing**: Build passes, Lint passes, 309/309 tests pass
+
 ### PR #646: Fix rateLimiter initialization order
 - **Issue**: The `rateLimiter` was being used in `/health` and `/health/ready` endpoints before it was created, causing a `ReferenceError` in HTTP transport mode.
 - **Fix**: Moved the `rateLimiter` creation to occur before the health endpoint definitions in `packages/mcp-server/src/index.ts`
@@ -17,6 +23,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 1. **Variable hoisting issues**: JavaScript function-scope variables (`var`) can be hoisted, but `const`/`let` are block-scoped and will throw `ReferenceError` if accessed before declaration.
 2. **Async initialization**: Ensure async dependencies are properly awaited before use.
 3. **Module-level state**: Watch for race conditions in module initialization.
+4. **Polling vs Locks**: Prefer async/await with in-flight checks over setTimeout polling loops for concurrency control.
 
 ## MCP Server Architecture Patterns
 
@@ -32,6 +39,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 - `packages/mcp-server/src/adapters/error-handler.ts` - Error handling with AI-specific codes
 - `packages/mcp-server/src/utils/rate-limiter.ts` - Rate limiting implementation
 - `packages/mcp-server/src/utils/logging.ts` - Logging utilities
+- `packages/ui/src/stores/session/useSessionManager.ts` - Session management with race condition protection
 
 ## Testing Approach
 
