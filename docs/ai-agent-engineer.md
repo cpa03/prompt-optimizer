@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #654: Improve rateLimiter initialization order for code clarity
+- **Issue**: The `rateLimiter` was created after the health endpoint definitions, which, while working at runtime (since route handlers are executed later), was confusing for code readability and maintenance.
+- **Fix**: Moved the `rateLimiter` creation to occur before the health endpoint definitions in `packages/mcp-server/src/index.ts`
+- **Files Changed**: `packages/mcp-server/src/index.ts`
+- **Benefit**: Improved code clarity and maintainability - variables are now declared before use
+
 ### PR #653: Fix race condition in session initialization (fixes #627)
 - **Issue**: Session initialization used setTimeout polling in `saveAllSessions` which could lead to race conditions when multiple components initialize simultaneously.
 - **Fix**: Replaced setTimeout polling loop with async/await lock pattern, same as `restoreAllSessions`. Added second check after `restoreAllSessions()` to handle concurrent saves.

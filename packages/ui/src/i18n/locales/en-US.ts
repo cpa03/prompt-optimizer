@@ -1179,6 +1179,7 @@ export default {
     languageChanged: 'Built-in template language switched to {language}',
     languageChangeError: 'Failed to switch built-in template language',
     languageInitError: 'Failed to initialize built-in template language',
+    smartSuggestion: 'Smart',
     type: {
       optimize: 'Optimize',
       iterate: 'Iterate',

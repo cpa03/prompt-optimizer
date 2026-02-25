@@ -14,7 +14,14 @@
 ### Code Quality
 - Lint passes with no errors
 - Build succeeds for UI package
+- Typecheck passes (309 tests)
 - Components properly clean up event listeners (checked ThemeToggleUI, InputWithSelect, FavoriteManager, etc.)
+
+### TypeScript Fixes (2026-02-25)
+- Fixed undefined `router` variable in PromptOptimizerApp.vue
+  - Changed `router` to `routerInstance` in handleRouteErrorRetry function
+- Fixed unused variable in useConversationOptimization.ts
+  - Removed unused `removed` variable assignment
 
 ### Memory Leak Fix (2026-02-25)
 - Fixed memory leak in PromptOptimizerApp.vue (#635)

@@ -456,6 +456,9 @@ async function main() {
         res.setHeader('X-Frame-Options', 'DENY')
         res.setHeader('X-XSS-Protection', '1; mode=block')
         res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+        res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
         res.setHeader(
           'Permissions-Policy',
           'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
@@ -467,6 +470,11 @@ async function main() {
         res.setHeader('Cache-Control', 'no-store')
         res.removeHeader('X-Powered-By')
         next()
+      })
+
+      const rateLimiter = createRateLimiter({
+        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
+        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       app.get('/health', (_req, res) => {
@@ -514,11 +522,6 @@ async function main() {
           timestamp: new Date().toISOString(),
           checks,
         })
-      })
-
-      const rateLimiter = createRateLimiter({
-        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
-        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       const rateLimitMiddleware = (

@@ -1152,6 +1152,7 @@ export default {
     languageChanged: '内置模板语言已切换为 {language}',
     languageChangeError: '切换内置模板语言失败',
     languageInitError: '初始化内置模板语言失败',
+    smartSuggestion: '智能推荐',
     type: {
       optimize: '优化',
       iterate: '迭代',

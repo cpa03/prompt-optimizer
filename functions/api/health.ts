@@ -64,6 +64,7 @@ export async function onRequest(context: {
         const visitor = JSON.parse(cfVisitor)
         scheme = visitor.scheme || scheme
       } catch {
+        console.error(`[${requestId}] Failed to parse CF-Visitor header:`, cfVisitor)
       }
     }
 
