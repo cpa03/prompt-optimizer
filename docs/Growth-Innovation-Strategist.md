@@ -10,13 +10,16 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 
 ### Phase 1: Template Suggestion Service
 **Date**: 2026-02-24
-**PR**: (to be created)
+**PR**: #640
 
 **Files Added:**
 - `packages/core/src/services/template/suggestion.ts` - Core pattern analysis service
 - `packages/core/tests/unit/template/suggestion.test.ts` - Unit tests
 - `api/template-suggestion.js` - API endpoint for template suggestions
 - `packages/core/src/services/template/index.ts` - Export updates
+
+**Files Modified:**
+- `vercel.json` - Added template-suggestion.js to functions config for proper deployment
 
 **Functionality:**
 - Pattern analysis for prompts (question, task, creative, analysis, code)
@@ -28,6 +31,7 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 **Acceptance Criteria Addressed:**
 - ✅ Add template suggestion API endpoint
 - ✅ Implement pattern analysis in core
+- ✅ API deployment configuration
 
 **Remaining:**
 - Add UI for template recommendations
