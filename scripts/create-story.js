@@ -95,18 +95,18 @@ function generateStoryContent(epic, story, title) {
 
 ## Acceptance Criteria
 
-1. [Criterion 1 - specific, measurable outcome]
-2. [Criterion 2 - specific, measurable outcome]
-3. [Criterion 3 - specific, measurable outcome]
+1. User can [perform action]
+2. System [displays/returns/handles] [expected behavior]
+3. User receives [appropriate feedback/outcome]
 
 ## Tasks / Subtasks
 
-- [ ] Task 1 (AC: #)
+- [ ] Task 1 (AC: 1)
   - [ ] Subtask 1.1
   - [ ] Subtask 1.2
-- [ ] Task 2 (AC: #)
+- [ ] Task 2 (AC: 2)
   - [ ] Subtask 2.1
-- [ ] Task 3 (AC: #)
+- [ ] Task 3 (AC: 3)
   - [ ] Subtask 3.1
 
 ## Dev Notes
@@ -125,19 +125,19 @@ packages/web/src/
 
 ### Key Information
 
-- **Data Models**: 
+- **Data Models**:
   - [Model]: [description]
   - [Source: docs/architecture/...]
-  
+
 - **API Contracts**:
   - [Endpoint]: [description]
   - [Source: packages/core/src/services/...]
 
-- **Components**: 
+- **Components**:
   - [Component]: [description]
   - [Source: ...]
 
-- **Dependencies**: 
+- **Dependencies**:
   - [Dependency]: [reason]
 
 - **Constraints**:
@@ -153,37 +153,26 @@ packages/web/src/
 
 ## Dependencies
 
-### Prerequisites
-
-| Story ID | Type     | Description                    | Status |
-| -------- | -------- | ------------------------------ | ------ |
-| [To be identified] | Required/Optional | [Description] | [Status] |
-
-### Blocked By
-
-| Story ID | Description                    |
-| -------- | ------------------------------ |
-| [To be identified] | [Reason for blocking] |
-
-### Blocks
-
-| Story ID | Description                    |
-| -------- | ------------------------------ |
-| [To be identified] | [What is blocked by this story] |
+No dependencies identified yet.
 
 ## Testing
 
 ### Test Scenarios
 
-1. **[Feature] Tests**
-   - [Scenario 1]
-   - [Scenario 2]
+1. **Happy Path Tests**
+   - Verify [expected behavior] works as expected
+
+2. **Edge Case Tests**
+   - Handle [error condition] gracefully
+
+3. **Integration Tests**
+   - Verify integration with [related component/service]
 
 ## File List
 
 | File | Action | Description |
 | ---- | ------ | ----------- |
-| [To be filled during implementation] | | |
+| | | |
 
 ## Change Log
 
@@ -210,7 +199,7 @@ packages/web/src/
 
 | File | Action | Description |
 | ---- | ------ | ----------- |
-| [To be filled during implementation] | | |
+| | | |
 
 ## QA Results
 
@@ -229,7 +218,7 @@ packages/web/src/
 
 | ID  | Severity | Description | Resolution |
 | --- | -------- | ----------- | ---------- |
-| [To be filled during review] | | | |
+| | | | |
 
 ### Final Status
 
