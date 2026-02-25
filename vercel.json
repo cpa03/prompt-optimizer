@@ -145,6 +145,11 @@
       "maxDuration": 10,
       "memory": 512,
       "includeFiles": "scripts/config/constants.js"
+    },
+    "api/template-suggestion.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 10,
+      "memory": 256
     }
   },
   "github": {
