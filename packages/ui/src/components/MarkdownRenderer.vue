@@ -17,6 +17,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { NScrollbar } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 
 import MarkdownIt from 'markdown-it'
 import DOMPurify from 'dompurify'
@@ -39,6 +40,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const markdownContainer = ref<HTMLElement | null>(null)
 const renderError = ref<string | null>(null)
+
+const { t } = useI18n()
 
 // Clipboard functionality for code blocks
 const { copyText } = useClipboard()
@@ -77,7 +80,7 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
     updateCopyButtonVisualState(preWrapper, true)
 
     // Show toast notification
-    message.success('代码已复制')
+    message.success(t('common.copied'))
 
     // Reset after 2 seconds
     setTimeout(() => {
@@ -85,7 +88,7 @@ const copyCodeBlock = async (codeElement: HTMLElement | null, preWrapper: HTMLEl
       updateCopyButtonVisualState(preWrapper, false)
     }, 2000)
   } catch {
-    message.error('复制失败，请手动复制')
+    message.error(t('common.copyFailed'))
   }
 }
 
