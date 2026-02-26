@@ -15,10 +15,15 @@ DX-engineer focuses on small, safe, measurable improvements to developer experie
 ## Issues Addressed
 
 ### #636 - Debug logs in production composables
-- **Status**: In Progress
+- **Status**: Completed
 - **Approach**: Enable ESLint no-console rule to prevent future issues
 - **Changes**: Changed `no-console` from `"off"` to `"warn"` in packages/ui/.eslintrc.json
 - **Impact**: Future console.log statements will show warnings, preventing accidental debug logs in production
+
+### #691 - TypeScript unused variable in web/main.ts
+- **Status**: Completed
+- **Changes**: Prefixed unused `instance` parameter with `_` to satisfy TypeScript/no-unused-vars rule
+- **Impact**: TypeScript typecheck passes without errors
 
 ## Patterns & Lessons Learned
 
