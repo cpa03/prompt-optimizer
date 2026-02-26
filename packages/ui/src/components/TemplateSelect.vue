@@ -12,6 +12,18 @@
       :aria-label="t('template.select')"
       :aria-busy="!isReady"
     >
+      <template #header>
+        <NFlex v-if="hasSuggestions && suggestions" align="center" :size="4" class="px-2 py-1">
+          <NTag type="info" size="small" :bordered="false">
+            <template #icon>✨</template>
+            {{ t('template.smartSuggestion') || 'Smart' }}
+          </NTag>
+          <NText depth="3" class="text-xs">
+            {{ suggestions.analysis.detectedType }} · {{ suggestions.analysis.complexity }}
+          </NText>
+        </NFlex>
+      </template>
+
       <template #empty>
         <NSpace vertical align="center" class="py-4">
           <NText class="text-center text-gray-500">{{ t('template.noAvailableTemplates') }}</NText>
@@ -37,12 +49,13 @@
 import { ref, computed, watch, inject, type Ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import { NSelect, NButton, NSpace, NText } from 'naive-ui'
+import { NSelect, NButton, NSpace, NText, NTag, NFlex } from 'naive-ui'
 import type { OptimizationMode, Template, TemplateMetadata } from '@prompt-optimizer/core'
 import type { AppServices } from '../types/services'
 import { UI_CONSTANTS } from '../config/constants'
+import { useTemplateSuggestion } from '../composables/prompt/useTemplateSuggestion'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 type TemplateType = TemplateMetadata['templateType']
 
@@ -73,7 +86,10 @@ const props = defineProps({
     type: String as () => OptimizationMode,
     required: true,
   },
-  // 移除services prop，统一使用inject
+  prompt: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits<{
@@ -110,30 +126,68 @@ const templateManager = computed(() => {
   return manager
 })
 
+// Template suggestion composable for smart recommendations
+const { suggestions, hasSuggestions, analyzePrompt, clearSuggestions } = useTemplateSuggestion()
+
+// Analyze prompt when it changes
+watch(
+  () => props.prompt,
+  (newPrompt) => {
+    if (newPrompt && newPrompt.trim().length > 0) {
+      analyzePrompt(newPrompt, locale.value as 'zh-CN' | 'zh-TW' | 'en-US')
+    } else {
+      clearSuggestions()
+    }
+  },
+  { immediate: true }
+)
+
 // 选择框选项
 const selectOptions = computed(() => {
+  const options: Array<{
+    label: string
+    value: string
+    type: 'template' | 'config' | 'suggestion'
+    template?: Template
+    description?: string
+    isBuiltin?: boolean
+  }> = []
+
+  // 添加智能建议chips（如果有）
+  if (hasSuggestions.value && suggestions.value) {
+    const suggestionOptions = suggestions.value.suggestions.map((s) => ({
+      label: `✨ ${s.templateName}`,
+      value: `__suggestion_${s.templateId}__`,
+      type: 'suggestion' as const,
+      templateId: s.templateId,
+      description: s.reason,
+      confidence: s.confidence,
+    }))
+    options.push(...suggestionOptions)
+  }
+
   const templateOptions = templates.value.map((template) => ({
     label: template.name,
     value: template.id,
     template: template,
     isBuiltin: template.isBuiltin,
     description: template.metadata.description || t('template.noDescription'),
-    type: 'template',
+    type: 'template' as const,
   }))
 
   // 如果没有模板，返回空数组让placeholder显示
   if (templateOptions.length === 0) {
-    return []
+    return options.length > 0 ? options : []
   }
 
   // 添加配置按钮选项
   const configOption = {
     label: '📝' + t('template.configure'),
     value: '__config__',
-    type: 'config',
+    type: 'config' as const,
   }
 
-  return [...templateOptions, configOption]
+  return [...options, ...templateOptions, configOption]
 })
 
 // 跟踪最近选择的模板以提供视觉反馈
@@ -145,6 +199,25 @@ const handleTemplateSelect = (value: string | null) => {
   // 如果选择的是配置选项，不更新值，直接触发配置事件
   if (value === '__config__') {
     emit('manage', props.type)
+    return
+  }
+
+  // 如果选择的是建议选项，提取templateId并查找对应模板
+  if (value && value.startsWith('__suggestion_') && value.endsWith('__')) {
+    const templateId = value.replace('__suggestion_', '').replace('__', '')
+    const template = templates.value.find((t) => t.id === templateId) || null
+    if (template && template.id !== props.modelValue?.id) {
+      recentlySelected.value = template.id
+      if (recentlySelectedTimeout.value) {
+        clearTimeout(recentlySelectedTimeout.value)
+      }
+      recentlySelectedTimeout.value = setTimeout(() => {
+        recentlySelected.value = null
+      }, UI_CONSTANTS.FEEDBACK_DURATION_MS)
+
+      emit('update:modelValue', template)
+      emit('select', template, true)
+    }
     return
   }
 
@@ -355,6 +428,15 @@ defineExpose({
 
 .template-select-wrapper.just-selected {
   animation: success-pulse 1s ease;
+}
+
+.suggestion-chip {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestion-chip:hover {
+  transform: scale(1.02);
 }
 
 @keyframes success-pulse {

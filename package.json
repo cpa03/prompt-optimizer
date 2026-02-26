@@ -85,6 +85,7 @@
     "brocula:health": "node scripts/brocula-health-check.js",
     "story:validate": "node scripts/validate-story.js",
     "story:validate:all": "node scripts/validate-story.js --all",
+    "story:validate:fix": "node scripts/validate-story.js --fix --all",
     "story:create": "node scripts/create-story.js"
   },
   "devDependencies": {

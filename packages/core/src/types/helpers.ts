@@ -263,6 +263,22 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 /**
+/**
+ * Check if a value is a string.
+ * Useful for validating string inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isString(value)) {
+ *   // value is string
+ * }
+ * ```
+ */
+export function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+/**
  * Check if a value is a number (not NaN or Infinity).
  * Useful for validating numeric inputs.
  *

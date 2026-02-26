@@ -22,12 +22,17 @@
           </div>
           <div class="item-actions">
             <n-button-group size="small">
-              <n-button quaternary @click="$emit('copy', favorite)" title="复制">
+              <n-button quaternary @click="$emit('copy', favorite)" :aria-label="t('common.copy')">
                 <template #icon>
                   <n-icon><Copy /></n-icon>
                 </template>
               </n-button>
-              <n-button quaternary @click="$emit('use', favorite)" title="使用" type="primary">
+              <n-button
+                quaternary
+                @click="$emit('use', favorite)"
+                :aria-label="t('common.use')"
+                type="primary"
+              >
                 <template #icon>
                   <n-icon><PlayerPlay /></n-icon>
                 </template>
@@ -76,7 +81,7 @@
                 {{ favorite.useCount }}
               </n-text>
               <n-dropdown :options="actionMenuOptions" @select="handleActionSelect">
-                <n-button quaternary size="small">
+                <n-button quaternary size="small" :aria-label="t('common.actions')">
                   <template #icon>
                     <n-icon><DotsVertical /></n-icon>
                   </template>
@@ -92,6 +97,7 @@
 
 <script setup lang="ts">
 import { h } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import {
   NListItem,
@@ -108,6 +114,8 @@ import {
 import { Copy, PlayerPlay, Eye, DotsVertical, Edit, Trash, Share, Tag } from '@vicons/tabler'
 import type { FavoritePrompt, FavoriteCategory } from '@prompt-optimizer/core'
 import { formatRelativeTime } from '../utils/date'
+
+const { t } = useI18n()
 
 interface Props {
   favorite: FavoritePrompt

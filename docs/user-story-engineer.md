@@ -63,6 +63,12 @@ node scripts/validate-story.js docs/stories/1.1.example.md
 
 # JSON output for CI
 node scripts/validate-story.js --all --json
+
+# Auto-fix common issues
+node scripts/validate-story.js --fix --all
+
+# Auto-fix specific story
+node scripts/validate-story.js --fix docs/stories/1.1.example.md
 ```
 
 ### Creation Command
@@ -72,6 +78,15 @@ pnpm story:create 1 "Feature Name"
 
 # Specific story number
 pnpm story:create 1.4 "Feature Name"
+```
+
+### Fix Command
+```bash
+# Auto-fix all stories
+pnpm story:validate:fix
+
+# Or using node directly
+node scripts/validate-story.js --fix --all
 ```
 
 ## Best Practices
@@ -110,7 +125,11 @@ pnpm story:create 1.4 "Feature Name"
 
 ## Improvement History
 
-### 2026-02-25
+### 2026-02-26
+- Added `--fix` option to validate-story.js for auto-fixing common issues
+- Added `pnpm story:validate:fix` script
+- Can auto-fix missing Priority (defaults to P2-Medium) and Story Points (defaults to 3)
+- All stories still validate at 100/100 with 0 warnings
 - Fixed create-story.js to generate cleaner content without placeholder warnings
 - Updated validation script to exclude Story section from placeholder checking
 - All stories now validate at 100/100 with 0 warnings
