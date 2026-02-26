@@ -9,8 +9,8 @@
 - **Domain**: Type Safety / Code Quality
 - **Summary**: Added type-safe error handling with ErrorWithStatus interface and hasStatusProperty type guard
 
-### PR #620: Fix error cause type safety
-- **Status**: In Progress
+### PR #698: Fix error cause type safety
+- **Status**: Open
 - **Branch**: rnd/fix-error-cause-type-safety
 - **Priority**: Medium  
 - **Domain**: Type Safety / Code Quality
