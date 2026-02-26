@@ -20,6 +20,20 @@ import { templateAnalytics } from '../packages/core/src/services/analytics'
 
 const analytics = templateAnalytics
 
+const SECURITY_HEADERS = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+}
+
+function generateRequestId() {
+  return `tpl_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
+}
+
 /**
  * Structured logging for Vercel serverless functions
  */
@@ -93,11 +107,32 @@ function trackAnalytics(detectedType, language, complexity) {
  * Main handler function
  */
 export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  const requestId = generateRequestId()
+  const startTime = Date.now()
+  const isProduction = process.env.NODE_ENV === 'production'
+
+  const corsOrigin = isProduction ? req.headers.origin || '*' : '*'
+
+  const baseHeaders = {
+    ...SECURITY_HEADERS,
+    'Access-Control-Allow-Origin': corsOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Credentials': 'true',
+    Vary: 'Origin',
+    'X-Request-ID': requestId,
+  }
+
+  Object.entries(baseHeaders).forEach(([key, value]) => {
+    res.setHeader(key, value)
+  })
+
+  const originalJson = res.json.bind(res)
+  res.json = function (data) {
+    const responseTime = Date.now() - startTime
+    res.setHeader('X-Response-Time', `${responseTime}ms`)
+    return originalJson(data)
+  }
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
