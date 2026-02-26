@@ -192,7 +192,8 @@ export class CoreServicesManager {
         })
         logger.error('   Please check if your API keys are valid.')
       }
-    } catch {
+    } catch (err) {
+      logger.error('Error checking API keys:', err instanceof Error ? err : undefined)
       logger.error('💡 Please ensure you have set valid API keys.')
     }
   }
