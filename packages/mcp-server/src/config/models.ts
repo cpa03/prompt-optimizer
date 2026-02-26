@@ -58,7 +58,10 @@ export async function setupDefaultModel(
   try {
     await modelManager.updateModel(mcpModelKey, finalConfig)
   } catch (err) {
-    logError(`Failed to update model ${mcpModelKey}, attempting to add`, err instanceof Error ? err : undefined)
+    logError(
+      `Failed to update model ${mcpModelKey}, attempting to add`,
+      err instanceof Error ? err : undefined
+    )
     await modelManager.addModel(mcpModelKey, finalConfig)
   }
 }
