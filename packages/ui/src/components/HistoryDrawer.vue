@@ -22,7 +22,7 @@
           clearable
         >
           <template #prefix>
-            <span style="font-size: 14px">🔍</span>
+            <n-icon :size="16"><Search /></n-icon>
           </template>
         </NInput>
         <NButton
@@ -264,7 +264,9 @@ import {
   NCollapseItem,
   NEmpty,
   NInput,
+  NIcon,
 } from 'naive-ui'
+import { Search } from '@vicons/tabler'
 import type { PromptRecord, PromptRecordChain } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { formatDate } from '../utils/date'
