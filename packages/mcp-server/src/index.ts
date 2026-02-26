@@ -40,6 +40,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js'
 import { CoreServicesManager } from './adapters/core-services.js'
 import { loadConfig, MCPServerConfig } from './config/environment.js'
+import { SERVER_VERSION } from './config/version.js'
 import * as logger from './utils/logging.js'
 import { ParameterValidator } from './adapters/parameter-adapter.js'
 import { getTemplateOptions, getDefaultTemplateId } from './config/templates.js'
@@ -152,7 +153,7 @@ async function createServerInstance(config: MCPServerConfig) {
   const server = new Server(
     {
       name: 'prompt-optimizer-mcp-server',
-      version: '0.1.0',
+      version: SERVER_VERSION,
     },
     {
       capabilities: {
@@ -483,7 +484,7 @@ async function main() {
           status: 'healthy',
           timestamp: new Date().toISOString(),
           uptime: process.uptime(),
-          version: '0.1.0',
+          version: SERVER_VERSION,
           activeRequests: requestContexts.size,
           memory: {
             heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
