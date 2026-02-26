@@ -7,9 +7,10 @@ Platform Engineering - delivering small, safe, measurable improvements to CI/CD 
 ## Recent Work
 
 ### Issue #649: CI/CD develop branch coverage
-- **Status**: In Progress (PR to be created)
-- **Changes**: test.yml, docker.yml, parallel.yml updated with develop branch
-- **pnpm version**: Updated to 10.6.1
+- **Status**: Pending - GitHub App permission issue
+- **Problem**: GitHub Apps cannot push workflow file changes without explicit "workflows" permission
+- **Solution**: Need manual workflow file application or permission upgrade
+- **Alternative**: User must manually apply workflow changes or use personal access token
 
 ### PR #656: Platform Engineer Memory
 - Created docs/platform-engineer.md
