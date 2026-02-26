@@ -713,7 +713,7 @@ async function main() {
       logger.info('HTTP server setup completed')
 
       // Improved graceful shutdown for HTTP mode
-      const gracefulShutdown = (signal: string) => {
+      const gracefulShutdown = async (signal: string) => {
         console.log(`Received ${signal}, shutting down gracefully...`)
 
         stopStaleContextCleanup()
@@ -738,6 +738,19 @@ async function main() {
         const sessionIds = Object.keys(transports)
         if (sessionIds.length > 0) {
           console.log(`Closing ${sessionIds.length} active session(s)...`)
+          await Promise.all(
+            sessionIds.map(async (sessionId) => {
+              const transport = transports[sessionId]
+              if (transport) {
+                try {
+                  await transport.close()
+                  console.log(`Closed session: ${sessionId}`)
+                } catch (error) {
+                  console.warn(`Error closing session ${sessionId}:`, error)
+                }
+              }
+            })
+          )
         }
       }
 

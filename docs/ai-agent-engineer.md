@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #697: Fix graceful shutdown to properly close active sessions
+- **Issue**: The graceful shutdown function was logging that it would close active sessions but never actually calling `close()` on them, leaving sessions in an inconsistent state.
+- **Fix**: Made `gracefulShutdown` async and added actual session close logic using `Promise.all` to close each transport with proper error handling.
+- **Files Changed**: `packages/mcp-server/src/index.ts`
+- **Testing**: Type-check passes, 88 tests pass
+
 ### PR #686: Add error handling to HTTP route handlers
 - **Issue**: HTTP route handlers for `/mcp` (POST, GET, DELETE) were missing try-catch blocks around `httpTransport.handleRequest` calls, which could cause unhandled exceptions to crash the server.
 - **Fix**: Added try-catch blocks with proper error logging and JSON-RPC error responses in `packages/mcp-server/src/index.ts`
@@ -34,9 +40,10 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 1. **Missing error handling in async route handlers**: Always wrap async route handler calls in try-catch to prevent unhandled exceptions from crashing the server.
 2. **Variable hoisting issues**: JavaScript function-scope variables (`var`) can be hoisted, but `const`/`let` are block-scoped and will throw `ReferenceError` if accessed before declaration.
-2. **Async initialization**: Ensure async dependencies are properly awaited before use.
-3. **Module-level state**: Watch for race conditions in module initialization.
-4. **Polling vs Locks**: Prefer async/await with in-flight checks over setTimeout polling loops for concurrency control.
+3. **Async initialization**: Ensure async dependencies are properly awaited before use.
+4. **Module-level state**: Watch for race conditions in module initialization.
+5. **Polling vs Locks**: Prefer async/await with in-flight checks over setTimeout polling loops for concurrency control.
+6. **Incomplete shutdown logic**: When logging cleanup actions, ensure the actual cleanup code is implemented (not just the log statements).
 
 ## MCP Server Architecture Patterns
 
@@ -44,7 +51,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 - **HTTP route error handling**: Always wrap async handlers in try-catch, log errors, return proper JSON-RPC error responses
 - **Rate limiting**: Use `RateLimiter` class with sliding window algorithm
 - **Health checks**: `/health` and `/health/ready` endpoints should include rate limiter stats
-- **Graceful shutdown**: Use `unref()` on timers to allow process exit
+- **Graceful shutdown**: Use `unref()` on timers to allow process exit, and ensure all resources (like sessions) are properly cleaned up
 
 ## Key Files
 
