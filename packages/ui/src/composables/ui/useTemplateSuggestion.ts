@@ -12,6 +12,7 @@ export interface UseTemplateSuggestionReturn {
   loading: boolean
   error: string | null
   getSuggestions: (prompt: string, language?: 'zh' | 'en') => Promise<void>
+  trackAcceptance: (templateId: string, detectedType?: string, language?: string) => Promise<void>
   reset: () => void
 }
 
@@ -76,12 +77,43 @@ export function useTemplateSuggestion(
     error.value = null
   }
 
+  const trackAcceptance = async (
+    templateId: string,
+    detectedType?: string,
+    language?: string
+  ): Promise<void> => {
+    try {
+      const response = await fetch(`${apiUrl}/accept`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          suggestedTemplateId: templateId,
+          detectedType,
+          language,
+        }),
+      })
+
+      if (!response.ok) {
+        console.warn('[useTemplateSuggestion] Failed to track acceptance:', response.status)
+        return
+      }
+
+      const result = await response.json()
+      console.debug('[useTemplateSuggestion] Acceptance tracked:', result)
+    } catch (e) {
+      console.warn('[useTemplateSuggestion] Error tracking acceptance:', e)
+    }
+  }
+
   return {
     suggestions,
     analysis,
     loading,
     error,
     getSuggestions,
+    trackAcceptance,
     reset,
   }
 }

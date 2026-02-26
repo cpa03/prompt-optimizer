@@ -133,7 +133,7 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 
 ### Phase 3: Analytics
 - ✅ Track feature usage metrics (basic)
-- Track suggestion acceptance rate
+- ✅ Track suggestion acceptance rate (NEW)
 - A/B testing infrastructure
 
 ### Phase 4: LLM Enhancement
@@ -235,3 +235,26 @@ Based on detected type:
 - ✅ Create extraction service using pattern matching (foundation for AI-powered)
 - ✅ Add API endpoint for variable extraction
 - ✅ Ready for UI integration in VariableEditor
+
+### Template Suggestion Acceptance Tracking
+**Date**: 2026-02-26
+
+**Files Modified:**
+- `packages/core/src/services/analytics/template-analytics.ts` - Add acceptance tracking
+- `packages/core/src/services/analytics/template-analytics.ts` - Add new metrics
+- `api/template-suggestion.js` - Add /accept endpoint
+- `packages/ui/src/composables/ui/useTemplateSuggestion.ts` - Add trackAcceptance
+- `packages/ui/src/components/TemplateSelect.vue` - Integrate tracking
+
+**Functionality:**
+- Track when users accept (select) suggested templates
+- Track total acceptances vs total requests for acceptance rate
+- Track acceptances by suggested template ID
+- Track daily acceptances
+- Calculate acceptance rate percentage in analytics summary
+- UI integration: When user clicks a suggestion chip, track acceptance with detectedType and language
+
+**Acceptance Criteria Addressed:**
+- ✅ Track suggestion acceptance rate (Phase 3 Analytics complete)
+- ✅ API endpoint for acceptance tracking (/accept)
+- ✅ UI integration for tracking user selections

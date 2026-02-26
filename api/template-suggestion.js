@@ -153,6 +153,33 @@ export default async function handler(req, res) {
     }
   }
 
+  // Handle acceptance tracking POST request
+  if (req.method === 'POST' && req.url === '/accept') {
+    try {
+      const body = req.body || {}
+      const { suggestedTemplateId, detectedType, language } = body
+
+      analytics.trackAcceptance({
+        suggestedTemplateId,
+        detectedType,
+        language,
+      })
+
+      log('info', 'Template acceptance tracked', {
+        suggestedTemplateId,
+        detectedType,
+        language,
+      })
+
+      res.status(200).json(successResponse({ accepted: true }))
+      return
+    } catch (error) {
+      log('error', 'Acceptance tracking error', { error: error.message })
+      res.status(500).json(errorResponse('Failed to track acceptance', 500))
+      return
+    }
+  }
+
   // Only allow POST
   if (req.method !== 'POST') {
     res.status(405).json(errorResponse('Method not allowed', 405))

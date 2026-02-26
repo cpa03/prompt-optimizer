@@ -127,7 +127,13 @@ const templateManager = computed(() => {
 })
 
 // Template suggestion composable for smart recommendations
-const { suggestions, hasSuggestions, analyzePrompt, clearSuggestions } = useTemplateSuggestion()
+const {
+  suggestions,
+  hasSuggestions,
+  analyzePrompt,
+  clearSuggestions,
+  trackAcceptance,
+} = useTemplateSuggestion()
 
 // Analyze prompt when it changes
 watch(
@@ -214,6 +220,11 @@ const handleTemplateSelect = (value: string | null) => {
       recentlySelectedTimeout.value = setTimeout(() => {
         recentlySelected.value = null
       }, UI_CONSTANTS.FEEDBACK_DURATION_MS)
+
+      // Track suggestion acceptance for analytics
+      const detectedType = suggestions.value?.analysis?.detectedType
+      const language = locale.value === 'zh-CN' || locale.value === 'zh-TW' ? 'zh' : 'en'
+      trackAcceptance(templateId, detectedType, language)
 
       emit('update:modelValue', template)
       emit('select', template, true)
