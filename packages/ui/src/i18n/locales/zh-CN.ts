@@ -1190,6 +1190,33 @@ export default {
       importFailed: '导入提示词失败',
       readFailed: '读取文件失败',
     },
+    suggestion: {
+      title: '智能模板推荐',
+      getSuggestions: '获取推荐',
+      applying: '正在获取推荐...',
+      noSuggestions: '暂无推荐',
+      applySuggestion: '使用此模板',
+      confidence: '置信度',
+      detectedType: '检测类型',
+      complexity: '复杂度',
+      types: {
+        question: '问题',
+        task: '任务',
+        creative: '创意',
+        analysis: '分析',
+        code: '代码',
+        general: '通用',
+      },
+      complexityLevels: {
+        simple: '简单',
+        moderate: '中等',
+        complex: '复杂',
+      },
+      error: {
+        failed: '获取推荐失败',
+        promptRequired: '请先输入提示词',
+      },
+    },
   },
   prompt: {
     optimized: '优化工作区',
