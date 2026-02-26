@@ -44,9 +44,17 @@ Before a story moves to development, verify:
 ## Story Format
 
 ```markdown
-**As a** [user role],
-**I want** [action/capability],
-**so that** [benefit/value].
+**Status**: [Draft|Approved|InProgress|Review|Done]
+
+**Priority**: [P0-Critical|P1-High|P2-Medium|P3-Low]
+
+**Story Points**: [1|2|3|5|8|13|21]
+
+**Story**:
+
+> **As a** [user role],
+> **I want** [action/capability],
+> **so that** [benefit/value].
 ```
 
 ---
@@ -238,6 +246,10 @@ Track quality assurance review results (populated after review):
 ### Story 1.1: Add User Authentication
 
 **Status**: Done
+
+**Priority**: P1-High
+
+**Story Points**: 5
 
 **Story**:
 
