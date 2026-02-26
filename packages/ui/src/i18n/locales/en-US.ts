@@ -406,7 +406,7 @@ export default {
       parentCategoryPlaceholder: 'Select parent category (leave empty for root)',
       categoryColor: 'Category Color',
       confirmDelete: 'Confirm Delete',
-      deleteWarning: 'Are you sure you want to delete category <strong>{name}</strong>?',
+      deleteWarning: 'Are you sure you want to delete category "{name}"?',
       deleteChildrenWarning:
         'Warning: This category has {count} subcategories that will also be deleted!',
       deleteUsageWarning:
