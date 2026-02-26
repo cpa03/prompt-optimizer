@@ -44,7 +44,7 @@ export class TemplateAnalytics {
       dailyCounts: {},
       lastUpdated: Date.now(),
     }
-    this.storage = null || undefined
+    this.storage = storage ?? null
   }
 
   setStorageProvider(storage: IStorageProvider): void {
