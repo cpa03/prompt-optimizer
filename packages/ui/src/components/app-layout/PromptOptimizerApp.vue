@@ -791,10 +791,10 @@ const handleToolManagerConfirm = (tools?: ToolDefinition[]) => {
 // 路由错误边界重试处理函数
 const handleRouteErrorRetry = (_route: unknown) => {
   // 强制重新渲染当前路由组件
-  const currentPath = router.currentRoute.value.fullPath
-  router.replace('/')
+  const currentPath = routerInstance.currentRoute.value.fullPath
+  routerInstance.replace('/')
   setTimeout(() => {
-    router.replace(currentPath)
+    routerInstance.replace(currentPath)
   }, 50)
 }
 

@@ -32,7 +32,7 @@ const app = createApp(App)
 // 安装错误处理器
 installErrorHandler(app, {
   verbose: import.meta.env.DEV,
-  onError: (error, instance, info) => {
+  onError: (error, _instance, info) => {
     // 可以在这里添加外部错误追踪服务，如 Sentry
     console.error('Error caught:', error.message, info)
   },
