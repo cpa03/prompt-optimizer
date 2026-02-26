@@ -29,6 +29,12 @@ This document serves as the long-term memory for the technical-writer agent, doc
 
 ## History
 
+### 2026-02-26
+- **PR #XXX**: Added missing Electron API Best Practices reference to docs/index.md
+  - Added reference to `docs/guides/electron-api-best-practices.md` in Developer Documentation section
+  - Issue: Guide file existed but was not linked from documentation index
+  - Resolution: Added link with description, updated date stamp
+
 ### 2026-02-25
 - **PR #XXX**: Fixed broken link placeholders in documentation
   - Fixed `docs/user/README.md`: Replaced broken link to FAQ with placeholder note

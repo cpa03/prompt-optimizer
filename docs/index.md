@@ -100,6 +100,7 @@ pnpm build
 - **[Project Structure](developer/project-structure.md)** - Repository organization
 - **[Desktop Developer Guide](developer/desktop-developer-guide.md)** - Electron development
 - **[Electron IPC Best Practices](developer/electron-ipc-best-practices.md)** - IPC patterns
+- **[Electron API Best Practices](guides/electron-api-best-practices.md)** - API patterns and type definitions
 - **[LLM Params Guide](developer/llm-params-guide.md)** - LLM parameter configuration
 - **[Prompt Garden Integration](developer/prompt-garden-integration.md)** - Integration patterns
 
@@ -305,7 +306,7 @@ This project is licensed under [AGPL-3.0-only](../LICENSE).
 
 ## Document Maintenance
 
-**Last Updated:** 2026-02-25  
+**Last Updated:** 2026-02-26  
 **Maintained by:** Project Team  
 **Questions?** Refer to [Troubleshooting](developer/troubleshooting/) or create a discussion in the repository.
 
