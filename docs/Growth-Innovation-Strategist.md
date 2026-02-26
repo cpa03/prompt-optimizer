@@ -183,3 +183,19 @@ Based on detected type:
 **Acceptance Criteria Addressed:**
 - ✅ Enhanced pattern detection for more prompt types
 - ✅ Bilingual support for new pattern types
+
+### Fix: Sentence Count Edge Case
+**Date**: 2026-02-26
+
+**Files Modified:**
+- `packages/core/src/services/template/suggestion.ts` - Fix sentenceCount calculation
+- `packages/core/tests/unit/template/suggestion.test.ts` - Add edge case tests
+
+**Functionality:**
+- Fixed edge case where prompts without punctuation were incorrectly classified as "moderate" complexity
+- Added `.filter(Boolean)` to handle empty strings in split results
+- Added test cases for prompts without punctuation
+
+**Acceptance Criteria Addressed:**
+- ✅ Improved complexity detection accuracy
+- ✅ Better handling of edge cases
