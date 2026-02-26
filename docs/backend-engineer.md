@@ -59,3 +59,21 @@ This document serves as long-term memory for the backend-engineer agent, documen
 - Most catch blocks in the backend already have proper error handling (logging or fallback)
 - The health.ts file was an edge case where JSON parse failure was intentionally swallowed
 - For Cloudflare Pages functions, use `console.error` for logging (no external logging library)
+
+## Issue: Hardcoded version in MCP Server
+**Status**: Completed (PR: #711)
+
+**Problem**: Version number '0.1.0' was hardcoded in multiple places in index.ts, leading to potential version mismatch.
+
+**Solution Implemented**:
+- Created `packages/mcp-server/src/config/version.ts` that imports version from package.json
+- Updated `packages/mcp-server/src/index.ts` to use `SERVER_VERSION` constant instead of hardcoded strings
+
+**Files Modified**:
+- `packages/mcp-server/src/config/version.ts` (new file)
+- `packages/mcp-server/src/index.ts`
+
+**Key Learnings**:
+- Use dynamic version import from package.json instead of hardcoding
+- Pattern: `import packageJson from '../../package.json' assert { type: 'json' }`
+- Export version as `SERVER_VERSION` for centralized version management
