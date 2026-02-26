@@ -2,6 +2,13 @@
 
 ## Active Work
 
+### PR #708: Type-safe error handling in retry.ts
+- **Status**: Open
+- **Branch**: rnd/retry-ts-type-safety-v2
+- **Priority**: Medium
+- **Domain**: Type Safety / Code Quality
+- **Summary**: Added ErrorWithStatus interface, hasStatusProperty and hasErrorCode type guards to replace unsafe `any` casts in retry.ts
+
 ### PR #651: Type-safe error handling with isError type guard
 - **Status**: Open
 - **Branch**: rnd/add-iserror-type-guard
