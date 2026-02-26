@@ -40,6 +40,17 @@ jobs:
       - name: 运行门禁（不含 E2E）
         run: pnpm test:gate
 
+      - name: 运行覆盖率门禁
+        run: pnpm test:gate:coverage
+
+      - name: 上传覆盖率报告
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: packages/core/coverage
+          retention-days: 30
+
       - name: 安装 Playwright 浏览器
         run: pnpm exec playwright install --with-deps chromium
 
