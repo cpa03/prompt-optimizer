@@ -601,63 +601,49 @@ async function main() {
 
       // 处理 POST 请求（客户端到服务器通信）
       app.post('/mcp', contentTypeMiddleware, rateLimitMiddleware, async (req, res) => {
-        try {
-          // 检查现有会话ID
-          const sessionId = req.headers['mcp-session-id'] as string | undefined
-          let httpTransport: StreamableHTTPServerTransport
+        // 检查现有会话ID
+        const sessionId = req.headers['mcp-session-id'] as string | undefined
+        let httpTransport: StreamableHTTPServerTransport
 
-          if (sessionId && transports[sessionId]) {
-            // 重用现有传输
-            httpTransport = transports[sessionId]
-          } else if (!sessionId && isInitializeRequest(req.body)) {
-            httpTransport = new StreamableHTTPServerTransport({
-              sessionIdGenerator: () => randomUUID(),
-              onsessioninitialized: (sessionId) => {
-                transports[sessionId] = httpTransport
-              },
-              allowedOrigins: config.allowedOrigins,
-              enableDnsRebindingProtection: config.enableDnsRebindingProtection,
-            })
+        if (sessionId && transports[sessionId]) {
+          // 重用现有传输
+          httpTransport = transports[sessionId]
+        } else if (!sessionId && isInitializeRequest(req.body)) {
+          httpTransport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: () => randomUUID(),
+            onsessioninitialized: (sessionId) => {
+              transports[sessionId] = httpTransport
+            },
+            allowedOrigins: config.allowedOrigins,
+            enableDnsRebindingProtection: config.enableDnsRebindingProtection,
+          })
 
-            // 清理传输实例
-            httpTransport.onclose = () => {
-              if (httpTransport.sessionId) {
-                delete transports[httpTransport.sessionId]
-              }
+          // 清理传输实例
+          httpTransport.onclose = () => {
+            if (httpTransport.sessionId) {
+              delete transports[httpTransport.sessionId]
             }
-
-            // 为每个会话创建独立的服务器实例
-            const { server } = await createServerInstance(config)
-            await setupServerHandlers(server, coreServices)
-
-            // 连接到 MCP 服务器
-            await server.connect(httpTransport)
-          } else {
-            // 无效请求
-            res.status(400).json({
-              jsonrpc: '2.0',
-              error: {
-                code: -32000,
-                message: 'Bad Request: No valid session ID provided',
-              },
-              id: null,
-            })
-            return
           }
 
-          // 处理请求
-          await httpTransport.handleRequest(req, res, req.body)
-        } catch (error) {
-          logger.error('[MCP POST] Request handling error:', error as Error)
-          res.status(500).json({
+          // 为每个会话创建独立的服务器实例
+          const { server } = await createServerInstance(config)
+          await setupServerHandlers(server, coreServices)
+
+          // 连接到 MCP 服务器
+          await server.connect(httpTransport)
+        } else {
+          // 无效请求
+          res.status(400).json({
             jsonrpc: '2.0',
             error: {
               code: -32000,
-              message: `Internal error: ${(error as Error).message}`,
+              message: 'Bad Request: No valid session ID provided',
             },
             id: null,
           })
+          return
         }
+
         // 处理请求
         try {
           await httpTransport.handleRequest(req, res, req.body)
@@ -677,12 +663,11 @@ async function main() {
       })
 
       app.get('/mcp', async (req, res) => {
-        try {
-          const sessionId = req.headers['mcp-session-id'] as string | undefined
-          if (!validateSessionId(sessionId) || !transports[sessionId!]) {
-            res.status(400).send('Invalid or missing session ID')
-            return
-          }
+        const sessionId = req.headers['mcp-session-id'] as string | undefined
+        if (!validateSessionId(sessionId) || !transports[sessionId!]) {
+          res.status(400).send('Invalid or missing session ID')
+          return
+        }
 
         const httpTransport = transports[sessionId!]
         try {
@@ -693,16 +678,14 @@ async function main() {
             res.status(500).send('Internal server error')
           }
         }
-        }
       })
 
       app.delete('/mcp', async (req, res) => {
-        try {
-          const sessionId = req.headers['mcp-session-id'] as string | undefined
-          if (!validateSessionId(sessionId) || !transports[sessionId!]) {
-            res.status(400).send('Invalid or missing session ID')
-            return
-          }
+        const sessionId = req.headers['mcp-session-id'] as string | undefined
+        if (!validateSessionId(sessionId) || !transports[sessionId!]) {
+          res.status(400).send('Invalid or missing session ID')
+          return
+        }
 
         const httpTransport = transports[sessionId!]
         try {
@@ -712,7 +695,6 @@ async function main() {
           if (!res.headersSent) {
             res.status(500).send('Internal server error')
           }
-        }
         }
       })
 
