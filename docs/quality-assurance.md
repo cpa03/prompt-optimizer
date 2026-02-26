@@ -60,3 +60,31 @@ This document serves as the long-time memory for the Quality Assurance agent.
 - Vercel deployment failures appear to be unrelated to test changes
 - When updating old PR branches, use merge with --allow-unrelated-histories if histories are diverged
 - GitHub App (github-actions[bot]) lacks workflow permissions - need personal access token for workflow changes
+
+## Proposed Changes (Pending Manual Application)
+
+### Issue #649 - Add develop branch to CI/CD workflows
+- **Status**: Changes prepared but need manual push due to GitHub App permissions
+- **Linked Issue**: #649
+- **Solution**:
+  - **test.yml**: Add `develop` branch to push/PR triggers
+    ```yaml
+    on:
+      push:
+        branches: [ main, master, develop ]
+      pull_request:
+        branches: [ main, master, develop ]
+    ```
+  - **docker.yml**: Add `develop` branch to build condition
+    ```yaml
+    if: ${{ ... || github.event.workflow_run.head_branch == 'develop' }}
+    ```
+  - **parallel.yml**: Add `develop` branch to push triggers
+    ```yaml
+    on:
+      push:
+        branches:
+          - main
+          - develop
+    ```
+- **Impact**: CI will run on develop branch pushes/PRs, improving pre-production quality checks
