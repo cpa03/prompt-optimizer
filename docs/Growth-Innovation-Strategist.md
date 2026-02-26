@@ -163,3 +163,23 @@ Based on detected type:
 - 20% increase in template usage (target)
 - 30% reduction in optimization iterations per user (target)
 - Feature flag controlled for easy rollback
+
+## Latest Enhancement
+
+### Translation & Summarization Pattern Detection
+**Date**: 2026-02-26
+**PR**: #699
+
+**Files Modified:**
+- `packages/core/src/services/template/suggestion.ts` - Add translation and summarization patterns
+- `packages/core/tests/unit/template/suggestion.test.ts` - Add tests for new patterns
+
+**Functionality:**
+- New pattern types: translation and summarization
+- Keywords for detecting translation prompts (translate, translation, convert, language, 翻译, 转成, etc.)
+- Keywords for detecting summarization prompts (summarize, summary, brief, extract, 概括, 总结, 摘要, etc.)
+- Improved pattern detection with ordered type matching to avoid substring conflicts
+
+**Acceptance Criteria Addressed:**
+- ✅ Enhanced pattern detection for more prompt types
+- ✅ Bilingual support for new pattern types

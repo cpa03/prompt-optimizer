@@ -18,7 +18,7 @@ export interface SuggestTemplatesRequest {
 export interface SuggestTemplatesResponse {
   suggestions: TemplateSuggestion[]
   analysis: {
-    detectedType?: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'general'
+    detectedType?: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'translation' | 'summarization' | 'general'
     complexity?: 'simple' | 'moderate' | 'complex'
     hasContext?: boolean
   }
@@ -41,6 +41,8 @@ const PATTERN_KEYWORDS = {
   creative: ['story', 'poem', 'song', 'art', 'design', 'creative', 'fiction', '故事', '诗歌', '创意', '设计'],
   analysis: ['analyze', 'compare', 'evaluate', 'review', 'explain', '分析', '比较', '评估', '解释'],
   code: ['code', 'function', 'class', 'debug', 'refactor', 'algorithm', '代码', '函数', '调试', '算法'],
+  translation: ['translate', 'translation', 'convert', 'into', 'language', '翻译', '转成', '转为', '语言'],
+  summarization: ['summarize', 'summary', 'brief', 'extract', 'key points', '概括', '总结', '摘要', '提取要点'],
 }
 
 /**
@@ -52,6 +54,8 @@ const TEMPLATE_RECOMMENDATIONS = {
   creative: ['user-prompt-professional', 'general-optimize'],
   analysis: ['user-prompt-professional', 'general-optimize'],
   code: ['user-prompt-basic', 'general-optimize'],
+  translation: ['general-optimize', 'user-prompt-basic'],
+  summarization: ['general-optimize', 'user-prompt-basic'],
   general: ['general-optimize', 'user-prompt-basic'],
 }
 
@@ -61,16 +65,28 @@ const TEMPLATE_RECOMMENDATIONS = {
  * @param language Language for analysis
  */
 export function analyzePromptPattern(prompt: string, _language: 'zh' | 'en'): {
-  detectedType: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'general'
+  detectedType: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'translation' | 'summarization' | 'general'
   complexity: 'simple' | 'moderate' | 'complex'
   hasContext: boolean
 } {
   const lowerPrompt = prompt.toLowerCase()
 
-  // Detect type based on keywords
-  let detectedType: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'general' = 'general'
+  // Detect type based on keywords with word boundary matching
+  let detectedType: 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'translation' | 'summarization' | 'general' = 'general'
 
-  for (const [type, keywords] of Object.entries(PATTERN_KEYWORDS)) {
+  // Order matters: check more specific patterns first
+  type DetectedType = 'question' | 'task' | 'creative' | 'analysis' | 'code' | 'translation' | 'summarization' | 'general'
+  const typeOrder: Array<{ type: DetectedType; keywords: string[] }> = [
+    { type: 'question', keywords: PATTERN_KEYWORDS.question },
+    { type: 'task', keywords: PATTERN_KEYWORDS.task },
+    { type: 'analysis', keywords: PATTERN_KEYWORDS.analysis },
+    { type: 'code', keywords: PATTERN_KEYWORDS.code },
+    { type: 'translation', keywords: PATTERN_KEYWORDS.translation },
+    { type: 'summarization', keywords: PATTERN_KEYWORDS.summarization },
+    { type: 'creative', keywords: PATTERN_KEYWORDS.creative },
+  ]
+
+  for (const { type, keywords } of typeOrder) {
     if (keywords.some((keyword) => lowerPrompt.includes(keyword))) {
       detectedType = type as typeof detectedType
       break
@@ -138,6 +154,16 @@ export function getTemplateSuggestions(
         reason = language === 'zh'
           ? '检测到代码相关请求，建议使用基础优化模板'
           : 'Code-related request detected, basic optimization template recommended'
+        break
+      case 'translation':
+        reason = language === 'zh'
+          ? '检测到翻译请求，建议使用通用优化模板'
+          : 'Translation request detected, general optimization template recommended'
+        break
+      case 'summarization':
+        reason = language === 'zh'
+          ? '检测到摘要请求，建议使用通用优化模板'
+          : 'Summarization request detected, general optimization template recommended'
         break
       default:
         reason = language === 'zh'

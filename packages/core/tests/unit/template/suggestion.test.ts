@@ -40,6 +40,26 @@ describe('Template Suggestion Service', () => {
       const result = analyzePromptPattern('请帮我写一段代码', 'zh')
       expect(result.detectedType).toBe('task')
     })
+
+    it('should detect translation patterns', () => {
+      const result = analyzePromptPattern('Translate this into French', 'en')
+      expect(result.detectedType).toBe('translation')
+    })
+
+    it('should detect summarization patterns', () => {
+      const result = analyzePromptPattern('Summarize the key points of this article', 'en')
+      expect(result.detectedType).toBe('summarization')
+    })
+
+    it('should detect Chinese translation patterns', () => {
+      const result = analyzePromptPattern('请把这段话翻译成英文', 'zh')
+      expect(result.detectedType).toBe('translation')
+    })
+
+    it('should detect Chinese summarization patterns', () => {
+      const result = analyzePromptPattern('请概括这篇文章的主要内容', 'zh')
+      expect(result.detectedType).toBe('summarization')
+    })
   })
 
   describe('getTemplateSuggestions', () => {
@@ -75,6 +95,24 @@ describe('Template Suggestion Service', () => {
       const result = getTemplateSuggestions('请帮我优化这段提示词', 'zh')
       expect(result.suggestions.length).toBeGreaterThan(0)
       expect(result.suggestions[0].templateName).toContain('优化')
+    })
+
+    it('should return suggestions for translation prompts', () => {
+      const result = getTemplateSuggestions('Translate this email into Spanish', 'en')
+      expect(result.suggestions.length).toBeGreaterThan(0)
+      expect(result.analysis.detectedType).toBe('translation')
+    })
+
+    it('should return suggestions for summarization prompts', () => {
+      const result = getTemplateSuggestions('Summarize this document', 'en')
+      expect(result.suggestions.length).toBeGreaterThan(0)
+      expect(result.analysis.detectedType).toBe('summarization')
+    })
+
+    it('should work with Chinese translation prompts', () => {
+      const result = getTemplateSuggestions('把这段中文翻译成日文', 'zh')
+      expect(result.suggestions.length).toBeGreaterThan(0)
+      expect(result.analysis.detectedType).toBe('translation')
     })
   })
 })
