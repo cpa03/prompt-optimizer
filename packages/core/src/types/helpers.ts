@@ -398,6 +398,66 @@ export function isFunction(value: unknown): value is (...args: unknown[]) => unk
 }
 
 /**
+ * Check if a value is a boolean.
+ * Useful for validating boolean inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isBoolean(value)) {
+ *   // value is boolean
+ * }
+ * ```
+ */
+export function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean'
+}
+
+/**
+ * Check if a value is a symbol.
+ * Useful for validating symbol inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isSymbol(value)) {
+ *   // value is symbol
+ * }
+ * ```
+ */
+export function isSymbol(value: unknown): value is symbol {
+  return typeof value === 'symbol'
+}
+
+/**
+ * Check if a value is a bigint.
+ * Useful for validating bigint inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isBigInt(value)) {
+ *   // value is bigint
+ * }
+ * ```
+ */
+export function isBigInt(value: unknown): value is bigint {
+  return typeof value === 'bigint'
+}
+
+/**
+ * Check if a value is a Promise.
+ * Useful for validating async values and promises.
+ *
+ * @example
+ * ```typescript
+ * if (isPromise(value)) {
+ *   // value is Promise<unknown>
+ * }
+ * ```
+ */
+export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
+  return value instanceof Promise
+}
+
+/**
  * Assert a condition and throw an error if false.
  * Useful for runtime type assertions with helpful error messages.
  *
