@@ -5,6 +5,18 @@ This document serves as the long-time memory for the Quality Assurance agent.
 
 ## PR Reviews Completed
 
+### PR #703 - [QA] Add integration test coverage for cross-package workflows
+- **Date**: 2026-02-26
+- **Status**: OPEN
+- **Label**: quality-assurance
+- **Linked Issue**: #703
+- **Changes**: 
+  - Created integration test utilities at `tests/integration/helpers/`
+  - Added mock utilities for cross-package testing (mocks.ts, test-utils.ts)
+  - Integration tests exist in packages/core/tests/integration/ (124 tests)
+  - Added cross-package test directory structure for future expansion
+- **Notes**: Integration tests in core package pass (124 passed, 105 skipped due to missing API keys)
+
 ### PR #638 - feat(ci): add code coverage gate to CI pipeline
 - **Date**: 2026-02-25
 - **Status**: MERGEABLE
