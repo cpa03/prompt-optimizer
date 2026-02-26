@@ -32,7 +32,8 @@ describe('Template Suggestion Service', () => {
       const noPunctuation = analyzePromptPattern('Write a function', 'en')
       expect(noPunctuation.complexity).toBe('simple')
 
-      const longNoPunctuation = analyzePromptPattern('Write a function that does something important and useful for the user', 'en')
+      // Need > 30 words to trigger moderate complexity
+      const longNoPunctuation = analyzePromptPattern('Write a function that does something important and useful for the user to accomplish their daily tasks efficiently and effectively while maintaining code quality and following best practices and ensuring proper error handling and documentation', 'en')
       expect(longNoPunctuation.complexity).toBe('moderate')
     })
 
