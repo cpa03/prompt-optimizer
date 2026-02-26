@@ -141,6 +141,13 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 - Community template analysis
 - User pattern learning
 
+### Phase 5: Variable Extraction (New)
+- ✅ Pattern-based variable extraction service (PR #726)
+- ✅ API endpoint for extraction
+- UI integration in VariableEditor
+- Track acceptance rate
+- LLM-powered variable inference (future)
+
 ## Technical Notes
 
 ### Pattern Detection Keywords
@@ -199,3 +206,32 @@ Based on detected type:
 **Acceptance Criteria Addressed:**
 - ✅ Improved complexity detection accuracy
 - ✅ Better handling of edge cases
+
+### Variable Extraction Service
+**Date**: 2026-02-26
+**PR**: #726
+
+**Files Added:**
+- `packages/core/src/services/template/variable-extraction.ts` - Core extraction service
+- `packages/core/tests/unit/template/variable-extraction.test.ts` - Unit tests
+- `api/variable-extraction.js` - API endpoint for variable extraction
+
+**Files Modified:**
+- `packages/core/src/services/template/index.ts` - Export new service
+- `vercel.json` - Add function configuration for deployment
+
+**Functionality:**
+- Pattern-based variable extraction from prompt text
+- Supports English and Chinese prompts
+- Detects recipient/target patterns (to, for, about)
+- Detects topic/subject patterns
+- Detects tool/method patterns (using, with, via)
+- Detects name identifiers (called, named)
+- Returns confidence scores for each detected variable
+- Limits results to maximum 10 variables per prompt
+- Filters out common words and short names
+
+**Acceptance Criteria Addressed:**
+- ✅ Create extraction service using pattern matching (foundation for AI-powered)
+- ✅ Add API endpoint for variable extraction
+- ✅ Ready for UI integration in VariableEditor
