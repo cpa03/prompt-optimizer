@@ -383,6 +383,21 @@ export function isArray<T>(value: unknown): value is T[] {
 }
 
 /**
+ * Check if a value is a function.
+ * Useful for validating callback inputs and enabling type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isFunction(value)) {
+ *   // value is (...args: any[]) => any
+ * }
+ * ```
+ */
+export function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
+  return typeof value === 'function'
+}
+
+/**
  * Assert a condition and throw an error if false.
  * Useful for runtime type assertions with helpful error messages.
  *
