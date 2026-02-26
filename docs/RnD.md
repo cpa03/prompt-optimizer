@@ -2,15 +2,22 @@
 
 ## Active Work
 
+### PR #722: Add unit tests for VariableExtractionService
+- **Status**: Open
+- **Branch**: rnd/704-variable-extraction-unit-tests
+- **Priority**: Medium
+- **Domain**: Innovation / Testing
+- **Summary**: Added 17 unit tests for VariableExtractionService covering extraction, validation, parsing, performance, and error handling
+
 ### PR #674: Type-safe error handling in retry.ts
-- **Status**: Open (waiting for Vercel rate limit reset)
+- **Status**: Closed (merged)
 - **Branch**: rnd/retry-ts-type-safety
 - **Priority**: Medium
 - **Domain**: Type Safety / Code Quality
 - **Summary**: Added type-safe error handling with ErrorWithStatus interface and hasStatusProperty type guard
 
 ### PR #698: Fix error cause type safety
-- **Status**: Open
+- **Status**: Merged
 - **Branch**: rnd/fix-error-cause-type-safety
 - **Priority**: Medium  
 - **Domain**: Type Safety / Code Quality
@@ -30,6 +37,11 @@
 - **Domain**: DX/Security
 
 ## Implemented Changes
+
+### 2026-02-26
+- PR #722: Added 17 unit tests for VariableExtractionService in `packages/core/tests/unit/services/variable-extraction-service.test.ts`
+- Tests cover: extraction, validation, model errors, template handling, JSON parsing, performance (< 2s), and LLM errors
+- All tests pass (1185 passed), lint passes with 0 new errors
 
 ### 2026-02-25
 - PR #651: Added `isError` type guard and `getErrorMessage` utility to `packages/core/src/utils/error.ts`
