@@ -3,13 +3,14 @@ import { ref, computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useToast } from '../ui/useToast'
 import { getI18nErrorMessage } from '../../utils/error'
-import type {
+import {
   ImageProvider,
   ImageModel,
   ImageModelConfig,
   IImageAdapterRegistry,
   IImageModelManager,
   IImageService,
+  generateSecureRandomString,
 } from '@prompt-optimizer/core'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
 import { computeConnectionConfig, normalizeProviderChangeOptions } from './useConnectionConfig'
@@ -714,7 +715,7 @@ export function useImageModelManager() {
 
   // 生成配置ID
   const generateConfigId = () => {
-    return `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `config_${Date.now()}_${generateSecureRandomString(9)}`
   }
 
   // 初始化

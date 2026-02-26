@@ -9,6 +9,7 @@ import {
   type TextProvider,
   getBuiltinModelIds,
   CONSTRAINTS,
+  generateSecureRandomString,
 } from '@prompt-optimizer/core'
 import { getI18nErrorMessage } from '../../utils/error'
 import { useModelAdvancedParameters } from './useModelAdvancedParameters'
@@ -42,7 +43,7 @@ interface SetProviderOptions {
 
 const generateTextModelId = (providerId: string, nonce?: number) => {
   const normalizedProvider = (providerId || 'custom').toLowerCase().replace(/[^a-z0-9_-]/g, '_')
-  const rand = Math.random().toString(36).slice(2, 10)
+  const rand = generateSecureRandomString(8)
   // Include a nonce so retries remain unique even if Date.now/Math.random are mocked/stubbed.
   const noncePart = typeof nonce === 'number' ? `_${nonce}` : ''
   return `text_${normalizedProvider}_${Date.now()}_${rand}${noncePart}`

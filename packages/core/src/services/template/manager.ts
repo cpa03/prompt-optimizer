@@ -8,6 +8,7 @@ import { CORE_SERVICE_KEYS } from '../../constants/storage-keys'
 import { ImportExportError } from '../../interfaces/import-export'
 import { IMPORT_EXPORT_ERROR_CODES, TEMPLATE_ERROR_CODES } from '../../constants/error-codes'
 import { TEMPLATE_CONFIG } from '../../config/core-config'
+import { generateSecureRandomString } from '../../utils/id'
 
 /**
  * 提示词管理器实现
@@ -389,7 +390,7 @@ export class TemplateManager implements ITemplateManager {
         if (builtinTemplate) {
           // 为冲突的模板生成新的ID和名称
           const timestamp = Date.now()
-          const random = Math.random().toString(36).substr(2, TEMPLATE_CONFIG.randomSuffixLength)
+          const random = generateSecureRandomString(TEMPLATE_CONFIG.randomSuffixLength)
           finalTemplateId = `user-${template.id}-${timestamp}-${random}`
           finalTemplateName = `${template.name} (导入副本)`
           console.warn(

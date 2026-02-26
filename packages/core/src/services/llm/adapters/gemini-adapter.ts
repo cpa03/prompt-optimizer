@@ -23,6 +23,7 @@ import type {
   ToolDefinition,
   ToolCall,
 } from '../types'
+import { generateSecureRandomString } from '../../../utils'
 
 // 定义新版 SDK 需要的类型（SDK 可能通过主导出提供）
 type Content = any
@@ -447,7 +448,7 @@ export class GeminiAdapter extends AbstractTextProviderAdapter {
     }
 
     return functionCalls.map((fc) => ({
-      id: fc.id || `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: fc.id || `call_${Date.now()}_${generateSecureRandomString(9)}`,
       type: 'function' as const,
       function: {
         name: fc.name || '',
