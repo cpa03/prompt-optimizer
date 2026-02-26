@@ -130,6 +130,11 @@ node scripts/validate-story.js --fix --all
 - All stories validate at 100/100 with 0 warnings
 
 ### 2026-02-26
+- Fixed Priority format inconsistency in epic-1-index.md
+  - Changed P0 → P0-Critical, P1 → P1-High to match story file format
+  - All stories still validate at 100/100 with 0 warnings
+
+### 2026-02-26
 - Added `--fix` option to validate-story.js for auto-fixing common issues
 - Added `pnpm story:validate:fix` script
 - Can auto-fix missing Priority (defaults to P2-Medium) and Story Points (defaults to 3)

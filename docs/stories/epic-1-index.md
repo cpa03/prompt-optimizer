@@ -13,16 +13,16 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 
 | Story ID | Title                                  | Status | Priority | Est. Points | Assigned | Last Updated |
 | -------- | -------------------------------------- | ------ | -------- | ----------- | -------- | ------------ |
-| 1.1      | Prompt Optimization Core Functionality | Draft  | P0       | 8           | -        | 2026-02-19   |
-| 1.2      | Model Management Configuration         | Draft  | P0       | 5           | -        | 2026-02-19   |
-| 1.3      | History Record Management              | Draft  | P1       | 8           | -        | 2026-02-20   |
+| 1.1      | Prompt Optimization Core Functionality | Draft  | P0-Critical | 8           | -        | 2026-02-19   |
+| 1.2      | Model Management Configuration         | Draft  | P0-Critical | 5           | -        | 2026-02-19   |
+| 1.3      | History Record Management            | Draft  | P1-High     | 8           | -        | 2026-02-20   |
 
 ## Story Details
 
 ### Story 1.1: Prompt Optimization Core Functionality
 
 **Status**: Draft  
-**Priority**: P0 (Critical)  
+**Priority**: P0-Critical  
 **Est. Points**: 8
 
 **Summary**: Implement the core prompt optimization feature with input handling, model selection, optimization flow, and result display.
@@ -47,7 +47,7 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 ### Story 1.2: Model Management Configuration
 
 **Status**: Draft  
-**Priority**: P0 (Critical)  
+**Priority**: P0-Critical  
 **Est. Points**: 5
 
 **Summary**: Enable users to configure, manage, and test multiple LLM models with secure API key storage.
@@ -72,7 +72,7 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 ### Story 1.3: History Record Management
 
 **Status**: Draft  
-**Priority**: P1 (High)  
+**Priority**: P1-High  
 **Est. Points**: 8
 
 **Summary**: Implement comprehensive history tracking with search, filter, reuse, import, and export capabilities.
