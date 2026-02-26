@@ -41,3 +41,21 @@ This document serves as long-term memory for the backend-engineer agent, documen
 - `pnpm lint` - Run linting
 - `pnpm test` - Run tests
 - `pnpm -F @prompt-optimizer/ui typecheck` - Typecheck UI package
+
+## Issue #620: Empty catch blocks silently swallow errors
+**Status**: Completed (PR: #671)
+
+**Problem**: Empty catch blocks in backend code silently swallow errors, making debugging difficult.
+
+**Solution Implemented**:
+- Fixed empty catch block in `functions/api/health.ts` line 66
+- Added console.error logging when CF-Visitor header parsing fails
+
+**Files Modified**:
+- `functions/api/health.ts`
+
+**Key Learnings**:
+- Backend files in this project include: `packages/mcp-server/`, `api/`, `functions/`
+- Most catch blocks in the backend already have proper error handling (logging or fallback)
+- The health.ts file was an edge case where JSON parse failure was intentionally swallowed
+- For Cloudflare Pages functions, use `console.error` for logging (no external logging library)

@@ -189,3 +189,46 @@ pnpm test
 - [测试概览](./README.md)
 - [VCR 使用说明](./vcr-usage-guide.md)
 - [选择器策略](./e2e-selector-strategy.md)
+
+## 🔄 VCR 回放 vs Live 模式
+
+### 模式说明
+
+| 模式 | 用途 | API 调用 | 速度 | 适用场景 |
+|------|------|----------|------|----------|
+| VCR 回放 | 默认 CI 模式 | ❌ 无 | 快 | PR 检查、日常验证 |
+| Live | 真实 API 测试 | ✅ 是 | 慢 | 周期性验证、问题排查 |
+
+### 使用场景
+
+**使用 VCR 回放模式（默认）**：
+- ✅ 日常开发快速验证
+- ✅ PR 自动检查门禁
+- ✅ 不消耗 API 配额
+- ✅ 测试结果稳定可重复
+
+**使用 Live 模式**：
+- ✅ 周期性 CI 检查（检测 API 变更）
+- ✅ 问题排查（验证是否是 VCR 缓存问题）
+- ✅ 新功能发布前验证
+- ✅ API 提供商变更后确认兼容性
+
+### 运行 Live 模式
+
+```bash
+# 本地运行 Live 模式
+E2E_VCR_MODE=live pnpm test:e2e
+
+# 触发 CI Live 测试
+# 1. 手动触发：GitHub Actions → test-e2e-live → Run workflow
+# 2. 每周自动：周日 03:00 UTC
+```
+
+### CI 工作流
+
+- **test.yml**：VCR 回放模式（默认门禁）
+- **test-e2e-live.yml**：Live 模式（周期/手动触发）
+
+详细触发方式：
+- 周期触发：每周日 03:00 UTC
+- 手动触发：GitHub → Actions → test-e2e-live → "Run workflow"

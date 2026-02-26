@@ -38,6 +38,14 @@ export { ElectronTemplateManagerProxy } from './services/template/electron-proxy
 export { ElectronTemplateLanguageServiceProxy } from './services/template/electron-language-proxy'
 export { ALL_TEMPLATES } from './services/template/default-templates'
 
+// 🆕 导出模板建议相关
+export { getTemplateSuggestions } from './services/template/suggestion'
+export type {
+  TemplateSuggestion,
+  SuggestTemplatesRequest,
+  SuggestTemplatesResponse,
+} from './services/template/suggestion'
+
 // 导出历史记录相关
 export { HistoryManager, createHistoryManager } from './services/history/manager'
 export * from './services/history/types'

@@ -1179,6 +1179,7 @@ export default {
     languageChanged: 'Built-in template language switched to {language}',
     languageChangeError: 'Failed to switch built-in template language',
     languageInitError: 'Failed to initialize built-in template language',
+    smartSuggestion: 'Smart',
     type: {
       optimize: 'Optimize',
       iterate: 'Iterate',
@@ -1215,6 +1216,33 @@ export default {
       exportFailed: 'Failed to export template',
       importFailed: 'Failed to import template',
       readFailed: 'Failed to read file',
+    },
+    suggestion: {
+      title: 'Smart Template Suggestions',
+      getSuggestions: 'Get Suggestions',
+      applying: 'Getting suggestions...',
+      noSuggestions: 'No suggestions available',
+      applySuggestion: 'Apply This Template',
+      confidence: 'Confidence',
+      detectedType: 'Detected Type',
+      complexity: 'Complexity',
+      types: {
+        question: 'Question',
+        task: 'Task',
+        creative: 'Creative',
+        analysis: 'Analysis',
+        code: 'Code',
+        general: 'General',
+      },
+      complexityLevels: {
+        simple: 'Simple',
+        moderate: 'Moderate',
+        complex: 'Complex',
+      },
+      error: {
+        failed: 'Failed to get suggestions',
+        promptRequired: 'Please enter a prompt first',
+      },
     },
   },
   prompt: {

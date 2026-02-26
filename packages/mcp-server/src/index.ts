@@ -456,6 +456,9 @@ async function main() {
         res.setHeader('X-Frame-Options', 'DENY')
         res.setHeader('X-XSS-Protection', '1; mode=block')
         res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+        res.setHeader('Cross-Origin-Resource-Policy', 'same-origin')
         res.setHeader(
           'Permissions-Policy',
           'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
@@ -467,6 +470,11 @@ async function main() {
         res.setHeader('Cache-Control', 'no-store')
         res.removeHeader('X-Powered-By')
         next()
+      })
+
+      const rateLimiter = createRateLimiter({
+        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
+        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       app.get('/health', (_req, res) => {
@@ -514,11 +522,6 @@ async function main() {
           timestamp: new Date().toISOString(),
           checks,
         })
-      })
-
-      const rateLimiter = createRateLimiter({
-        windowMs: MCP_CONFIG.rateLimit.defaultWindowMs,
-        maxRequests: MCP_CONFIG.rateLimit.defaultMaxRequests,
       })
 
       const rateLimitMiddleware = (
@@ -655,6 +658,22 @@ async function main() {
             id: null,
           })
         }
+        // 处理请求
+        try {
+          await httpTransport.handleRequest(req, res, req.body)
+        } catch (error) {
+          logger.error('[HTTP] Error handling POST /mcp request:', error as Error)
+          if (!res.headersSent) {
+            res.status(500).json({
+              jsonrpc: '2.0',
+              error: {
+                code: -32000,
+                message: 'Internal server error',
+              },
+              id: null,
+            })
+          }
+        }
       })
 
       app.get('/mcp', async (req, res) => {
@@ -665,18 +684,15 @@ async function main() {
             return
           }
 
-          const httpTransport = transports[sessionId!]
+        const httpTransport = transports[sessionId!]
+        try {
           await httpTransport.handleRequest(req, res)
         } catch (error) {
-          logger.error('[MCP GET] Request handling error:', error as Error)
-          res.status(500).json({
-            jsonrpc: '2.0',
-            error: {
-              code: -32000,
-              message: `Internal error: ${(error as Error).message}`,
-            },
-            id: null,
-          })
+          logger.error('[HTTP] Error handling GET /mcp request:', error as Error)
+          if (!res.headersSent) {
+            res.status(500).send('Internal server error')
+          }
+        }
         }
       })
 
@@ -688,18 +704,15 @@ async function main() {
             return
           }
 
-          const httpTransport = transports[sessionId!]
+        const httpTransport = transports[sessionId!]
+        try {
           await httpTransport.handleRequest(req, res)
         } catch (error) {
-          logger.error('[MCP DELETE] Request handling error:', error as Error)
-          res.status(500).json({
-            jsonrpc: '2.0',
-            error: {
-              code: -32000,
-              message: `Internal error: ${(error as Error).message}`,
-            },
-            id: null,
-          })
+          logger.error('[HTTP] Error handling DELETE /mcp request:', error as Error)
+          if (!res.headersSent) {
+            res.status(500).send('Internal server error')
+          }
+        }
         }
       })
 

@@ -392,6 +392,37 @@ function printReport(parsed, jsonOutput = false) {
   return output
 }
 
+function fixStoryIssues(filePath) {
+  const content = fs.readFileSync(filePath, 'utf8')
+  let fixed = false
+  let newContent = content
+
+  if (!/\*\*Priority\*\*:?\s*P\d/.test(newContent)) {
+    newContent = newContent.replace(
+      /(\*\*Status\*\*:?\s*\w+\n)/,
+      '$1**Priority**: P2-Medium\n'
+    )
+    fixed = true
+    log('  ✓ Added default Priority: P2-Medium', 'green')
+  }
+
+  if (!/\*\*Story Points\*\*:?\s*\d+/.test(newContent)) {
+    newContent = newContent.replace(
+      /(\*\*Priority\*\*:?\s*P\d[^\n]*\n)/,
+      '$1**Story Points**: 3\n'
+    )
+    fixed = true
+    log('  ✓ Added default Story Points: 3', 'green')
+  }
+
+  if (fixed) {
+    fs.writeFileSync(filePath, newContent, 'utf8')
+    log(`  ✓ Fixed: ${filePath}`, 'green')
+  }
+
+  return fixed
+}
+
 function validateAllStories(jsonOutput = false) {
   if (!fs.existsSync(STORIES_DIR)) {
     if (jsonOutput) {
@@ -486,6 +517,7 @@ function main() {
   const args = process.argv.slice(2)
   const jsonOutput = args.includes('--json')
   const allMode = args.includes('--all')
+  const fixMode = args.includes('--fix')
   const showHelp = args.includes('--help') || args.includes('-h')
 
   if (!jsonOutput) {
@@ -497,19 +529,63 @@ function main() {
     log('  node scripts/validate-story.js <story-file>     Validate a specific story')
     log('  node scripts/validate-story.js --all            Validate all stories')
     log('  node scripts/validate-story.js --all --json     JSON output for CI')
+    log('  node scripts/validate-story.js --fix <file>    Auto-fix common issues in a story')
+    log('  node scripts/validate-story.js --fix --all     Auto-fix all stories')
     log('')
     log('NPM Scripts:', 'cyan')
     log('  pnpm story:validate <file>                      Validate a story')
     log('  pnpm story:validate:all                        Validate all stories')
+    log('  pnpm story:validate:fix                        Auto-fix all stories')
     log('')
     log('Examples:', 'cyan')
     log('  node scripts/validate-story.js docs/stories/1.1.prompt-optimization-core.md')
     log('  node scripts/validate-story.js --all')
     log('  node scripts/validate-story.js --all --json > validation-report.json')
+    log('  node scripts/validate-story.js --fix docs/stories/1.1.prompt-optimization-core.md')
     log('')
     log('Exit Codes:', 'cyan')
     log('  0 - Validation passed (score >= 80 for --all, or >= 50 for single file)')
     log('  1 - Validation failed or errors occurred')
+    process.exit(0)
+  }
+
+  if (fixMode) {
+    if (!fs.existsSync(STORIES_DIR)) {
+      log(`Stories directory not found: ${STORIES_DIR}`, 'red')
+      process.exit(1)
+    }
+
+    const files = fs.readdirSync(STORIES_DIR)
+    const storyFiles = files.filter((f) => f.match(/^\d+\.\d+\..+\.md$/))
+
+    if (allMode) {
+      log(`\n🔧 Auto-fixing ${storyFiles.length} story files...\n`, 'bright')
+      let fixedCount = 0
+      for (const file of storyFiles) {
+        const filePath = path.join(STORIES_DIR, file)
+        if (fixStoryIssues(filePath)) {
+          fixedCount++
+        }
+      }
+      log(`\n✓ Fixed ${fixedCount} of ${storyFiles.length} stories\n`, 'green')
+      process.exit(0)
+    }
+
+    const storyPath = args.find((a) => !a.startsWith('--'))
+    if (!storyPath) {
+      log('Error: Please specify a story file to fix', 'red')
+      log('Usage: node scripts/validate-story.js --fix <story-file>', 'yellow')
+      process.exit(1)
+    }
+
+    if (!fs.existsSync(storyPath)) {
+      log(`Error: Story file not found: ${storyPath}`, 'red')
+      process.exit(1)
+    }
+
+    log(`\n🔧 Auto-fixing: ${storyPath}\n`, 'bright')
+    fixStoryIssues(storyPath)
+    log('', 'reset')
     process.exit(0)
   }
 

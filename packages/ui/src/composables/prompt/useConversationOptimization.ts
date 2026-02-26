@@ -760,7 +760,7 @@ export function useConversationOptimization(
   ) => {
     if (!messageId) return
 
-    const removed = removeMessageMapping(messageId)
+    removeMessageMapping(messageId)
 
     if (selectedMessageId.value === messageId) {
       if (options?.keepSelection) {

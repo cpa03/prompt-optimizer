@@ -1147,6 +1147,7 @@ export default {
     languageChanged: '內建範本語言已切換為 {language}',
     languageChangeError: '切換內建範本語言失敗',
     languageInitError: '初始化內建範本語言失敗',
+    smartSuggestion: '智慧推薦',
     type: {
       optimize: '優化',
       iterate: '迭代',
@@ -1183,6 +1184,33 @@ export default {
       exportFailed: '匯出提示詞失敗',
       importFailed: '匯入提示詞失敗',
       readFailed: '讀取檔案失敗',
+    },
+    suggestion: {
+      title: '智慧範本推薦',
+      getSuggestions: '取得推薦',
+      applying: '正在取得推薦...',
+      noSuggestions: '暫無推薦',
+      applySuggestion: '使用此範本',
+      confidence: '置信度',
+      detectedType: '偵測類型',
+      complexity: '複雜度',
+      types: {
+        question: '問題',
+        task: '任務',
+        creative: '創意',
+        analysis: '分析',
+        code: '程式碼',
+        general: '一般',
+      },
+      complexityLevels: {
+        simple: '簡單',
+        moderate: '中等',
+        complex: '複雜',
+      },
+      error: {
+        failed: '取得推薦失敗',
+        promptRequired: '請先輸入提示詞',
+      },
     },
   },
   prompt: {
