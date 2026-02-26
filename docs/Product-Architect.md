@@ -45,8 +45,14 @@ Deliver small, safe, measurable improvements strictly inside the Product-Archite
 ## History
 
 ### 2026-02-26
+- Added 5 new type guards to packages/core/src/types/helpers.ts:
+  - `isNull<T>` - explicitly check for null values
+  - `isUndefined<T>` - explicitly check for undefined values
+  - `isDate` - validate Date objects
+  - `isError` - validate Error objects for error handling
+  - `isObject` - validate objects (not null, not array)
+- Added comprehensive unit tests for all new type guards in tests/unit/utils/helpers.test.ts
 - Added `isFunction<T>` type guard to packages/core/src/types/helpers.ts for checking if a value is a callable function
-- Added comprehensive unit tests for helpers.ts type guards in tests/unit/utils/helpers.test.ts
 
 ### 2026-02-25
 - Added `isArray<T>` type guard to packages/core/src/types/helpers.ts for better type narrowing of array values
