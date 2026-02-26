@@ -45,9 +45,13 @@ Deliver small, safe, measurable improvements strictly inside the Product-Archite
 ## History
 
 ### 2026-02-26
+- Added `isFunction<T>` type guard to packages/core/src/types/helpers.ts for checking if a value is a callable function
+- Added comprehensive unit tests for helpers.ts type guards in tests/unit/utils/helpers.test.ts
+
+### 2026-02-25
 - Added `isArray<T>` type guard to packages/core/src/types/helpers.ts for better type narrowing of array values
 - Fixed duplicate JSDoc comment in helpers.ts
 
-### -25
+### 2026-02-25
 2026-02- Initial domain documentation
 - First improvement: Enable @typescript-eslint/no-explicit-any warning in core package (was "off", now "warn" to match web package pattern)
