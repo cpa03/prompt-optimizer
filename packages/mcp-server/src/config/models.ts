@@ -4,6 +4,7 @@
  */
 
 import { ModelManager, type TextModelConfig } from '@prompt-optimizer/core'
+import { error as logError } from '../utils/logging.js'
 
 /**
  * 为 MCP 服务器设置默认模型
@@ -56,7 +57,8 @@ export async function setupDefaultModel(
 
   try {
     await modelManager.updateModel(mcpModelKey, finalConfig)
-  } catch {
+  } catch (err) {
+    logError(`Failed to update model ${mcpModelKey}, attempting to add`, err instanceof Error ? err : undefined)
     await modelManager.addModel(mcpModelKey, finalConfig)
   }
 }
