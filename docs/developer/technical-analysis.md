@@ -1093,7 +1093,7 @@ const cleanupOldData = () => {
    # 结果：No matches found ❌
    ```
 
-详细分析见：`docs/workspace/why-data-accumulates.md`
+详细分析见：（文档待整理）
 
 ## 📊 下一步行动
 

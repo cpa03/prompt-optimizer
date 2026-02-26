@@ -189,7 +189,7 @@ const showTestInput = computed(() => optimizationMode.value === 'system')
 ### 创建的文档
 
 1. **`docs/migration/test-area-refactor-migration.md`** - 迁移指南
-2. **`docs/workspace/test-area-refactor-test-summary.md`** - 测试总结
+2. **（测试总结待整理）** - 测试总结
 3. **本文档** - 项目完成总结
 
 ### 文档质量
