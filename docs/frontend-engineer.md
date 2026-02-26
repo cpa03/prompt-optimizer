@@ -32,20 +32,25 @@
   - unhandledrejection ✓
   - prompt-optimizer:history-refresh ✓ (FIXED)
 
+### ErrorBoundary Enhancement (2026-02-25)
+- Enhanced ErrorBoundary.vue with error type detection and custom fallback UI
+- Error types supported:
+  - Error, TypeError, ReferenceError, SyntaxError, RangeError, DOMException
+  - NetworkError, FetchError, TimeoutError
+- Added onLogError prop for external logging integration
+- Enhanced console.error logging with timestamp and stack trace
+- Added i18n translations for all error types (en-US, zh-CN, zh-TW)
+- All route components already protected via RouterView wrapper in PromptOptimizerApp.vue
+
 ### Bundle Size
 - UI package main bundle: ~2.7MB uncompressed (820KB gzipped)
 - This is large and could benefit from code splitting optimization in the future
-
-### Missing Features Identified
-1. **Vue Error Boundaries** - Issue #606 exists but labeled as "Backend" with owner "backend-engineer"
-   - web/main.ts has global window error handlers
-   - But NO Vue-specific errorHandler or errorCaptured hooks
-   - UI package index.ts lacks error handling setup
 
 ### Components with Event Listeners (50+ files)
 - Most components properly clean up in onUnmounted
 - Fixed memory leak in PromptOptimizerApp.vue
 
 ## Action Items
-- Implement Vue error boundaries in UI package for graceful error handling
+- Monitor ErrorBoundary improvements and gather user feedback
+- Consider adding error reporting service integration (e.g., Sentry)
 - Consider this as a frontend-specific improvement (not backend)

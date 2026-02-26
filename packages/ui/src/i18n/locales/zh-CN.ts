@@ -109,6 +109,13 @@ export default {
     title: '出现了一些问题',
     retry: '重试',
     reset: '重置组件',
+    typeError: '类型错误',
+    referenceError: '引用错误',
+    syntaxError: '语法错误',
+    rangeError: '范围错误',
+    domError: 'DOM 错误',
+    networkError: '网络错误',
+    timeoutError: '超时错误',
   },
   actions: {
     copy: '复制',
