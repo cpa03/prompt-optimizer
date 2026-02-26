@@ -9,16 +9,17 @@
  */
 
 import type { IStorageProvider } from '../storage/types'
-import type {
-  ContextPackage,
-  ContextStoreDoc,
-  ContextListItem,
-  ContextBundle,
-  ContextRepo,
-  ImportMode,
-  ImportResult,
+import {
+  type ContextPackage,
+  type ContextStoreDoc,
+  type ContextListItem,
+  type ContextBundle,
+  type ContextRepo,
+  type ImportMode,
+  type ImportResult,
+  ContextError,
+  CONTEXT_ERROR_CODES,
 } from './types'
-import { ContextError, CONTEXT_ERROR_CODES } from './types'
 import {
   CONTEXT_STORE_KEY,
   PREDEFINED_VARIABLES,
