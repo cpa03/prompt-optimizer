@@ -224,6 +224,7 @@
           @update:modelValue="$emit('update:selectedIterateTemplate', $event)"
           :type="templateType"
           :optimization-mode="optimizationMode"
+          :prompt="iterateInput"
           @manage="$emit('openTemplateManager', templateType)"
         />
       </div>

@@ -144,28 +144,50 @@ watch(
 
 // 选择框选项
 const selectOptions = computed(() => {
+  const options: Array<{
+    label: string
+    value: string
+    type: 'template' | 'config' | 'suggestion'
+    template?: Template
+    description?: string
+    isBuiltin?: boolean
+  }> = []
+
+  // 添加智能建议chips（如果有）
+  if (hasSuggestions.value && suggestions.value) {
+    const suggestionOptions = suggestions.value.suggestions.map((s) => ({
+      label: `✨ ${s.templateName}`,
+      value: `__suggestion_${s.templateId}__`,
+      type: 'suggestion' as const,
+      templateId: s.templateId,
+      description: s.reason,
+      confidence: s.confidence,
+    }))
+    options.push(...suggestionOptions)
+  }
+
   const templateOptions = templates.value.map((template) => ({
     label: template.name,
     value: template.id,
     template: template,
     isBuiltin: template.isBuiltin,
     description: template.metadata.description || t('template.noDescription'),
-    type: 'template',
+    type: 'template' as const,
   }))
 
   // 如果没有模板，返回空数组让placeholder显示
   if (templateOptions.length === 0) {
-    return []
+    return options.length > 0 ? options : []
   }
 
   // 添加配置按钮选项
   const configOption = {
     label: '📝' + t('template.configure'),
     value: '__config__',
-    type: 'config',
+    type: 'config' as const,
   }
 
-  return [...templateOptions, configOption]
+  return [...options, ...templateOptions, configOption]
 })
 
 // 跟踪最近选择的模板以提供视觉反馈
@@ -177,6 +199,25 @@ const handleTemplateSelect = (value: string | null) => {
   // 如果选择的是配置选项，不更新值，直接触发配置事件
   if (value === '__config__') {
     emit('manage', props.type)
+    return
+  }
+
+  // 如果选择的是建议选项，提取templateId并查找对应模板
+  if (value && value.startsWith('__suggestion_') && value.endsWith('__')) {
+    const templateId = value.replace('__suggestion_', '').replace('__', '')
+    const template = templates.value.find((t) => t.id === templateId) || null
+    if (template && template.id !== props.modelValue?.id) {
+      recentlySelected.value = template.id
+      if (recentlySelectedTimeout.value) {
+        clearTimeout(recentlySelectedTimeout.value)
+      }
+      recentlySelectedTimeout.value = setTimeout(() => {
+        recentlySelected.value = null
+      }, UI_CONSTANTS.FEEDBACK_DURATION_MS)
+
+      emit('update:modelValue', template)
+      emit('select', template, true)
+    }
     return
   }
 
