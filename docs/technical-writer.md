@@ -30,6 +30,12 @@ This document serves as the long-term memory for the technical-writer agent, doc
 ## History
 
 ### 2026-02-26
+- **PR #707**: Fixed date inconsistency in docs/README.md
+  - Changed: `2026-02-22` → `2026-02-25`
+  - Issue: "最后一次更新" (Last Updated) date was inconsistent with docs/index.md
+  - Resolution: Updated to match docs/index.md date for consistency
+
+### 2026-02-26
 - **PR #706**: Removed duplicate file with typo in filename
   - Deleted: `docs/Product-Arhitect.md` (66 lines)
   - Issue: Filename had typo "Arhitect" instead of "Architect"
