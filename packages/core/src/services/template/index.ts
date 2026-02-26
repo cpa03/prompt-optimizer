@@ -33,3 +33,6 @@ export * from './minimal'
 
 // 导出模板建议服务
 export * from './suggestion'
+
+// 导出变量提取服务
+export * from './variable-extraction'
