@@ -695,28 +695,22 @@ function resolveMessageApi(): ReturnType<typeof useMessage> {
       destroy: () => {},
     })
     return {
-      create: (...args: unknown[]) => {
-        console.info('[Message]', ...args)
+      create: (..._args: unknown[]) => {
         return stub()
       },
-      info: (...args: unknown[]) => {
-        console.info(...args)
+      info: (..._args: unknown[]) => {
         return stub()
       },
-      success: (...args: unknown[]) => {
-        console.log(...args)
+      success: (..._args: unknown[]) => {
         return stub()
       },
-      warning: (...args: unknown[]) => {
-        console.warn(...args)
+      warning: (..._args: unknown[]) => {
         return stub()
       },
-      error: (...args: unknown[]) => {
-        console.error(...args)
+      error: (..._args: unknown[]) => {
         return stub()
       },
-      loading: (...args: unknown[]) => {
-        console.log(...args)
+      loading: (..._args: unknown[]) => {
         return stub()
       },
       destroyAll: () => {},
