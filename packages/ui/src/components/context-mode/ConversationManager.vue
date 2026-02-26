@@ -174,6 +174,11 @@
                     :type="message.id === selectedMessageId ? 'primary' : 'default'"
                     quaternary
                     circle
+                    :aria-label="
+                      message.id === selectedMessageId
+                        ? t('conversation.selected')
+                        : t('conversation.selectForOptimization')
+                    "
                     :title="
                       message.id === selectedMessageId
                         ? t('conversation.selected')
@@ -207,6 +212,7 @@
                     :size="buttonSize"
                     quaternary
                     circle
+                    :aria-label="t('common.moveUp')"
                     :title="t('common.moveUp')"
                   >
                     <template #icon>
@@ -233,6 +239,7 @@
                     :size="buttonSize"
                     quaternary
                     circle
+                    :aria-label="t('common.moveDown')"
                     :title="t('common.moveDown')"
                   >
                     <template #icon>
@@ -259,6 +266,7 @@
                     quaternary
                     circle
                     type="error"
+                    :aria-label="t('common.delete')"
                     :title="t('common.delete')"
                   >
                     <template #icon>
