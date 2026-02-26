@@ -28,6 +28,14 @@ describe('Template Suggestion Service', () => {
       expect(complex.complexity).toBe('complex')
     })
 
+    it('should handle prompts without punctuation correctly', () => {
+      const noPunctuation = analyzePromptPattern('Write a function', 'en')
+      expect(noPunctuation.complexity).toBe('simple')
+
+      const longNoPunctuation = analyzePromptPattern('Write a function that does something important and useful for the user', 'en')
+      expect(longNoPunctuation.complexity).toBe('moderate')
+    })
+
     it('should detect context indicators', () => {
       const withContext = analyzePromptPattern('Write a function because I need it', 'en')
       expect(withContext.hasContext).toBe(true)

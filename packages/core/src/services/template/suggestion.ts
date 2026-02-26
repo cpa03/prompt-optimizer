@@ -96,7 +96,7 @@ export function analyzePromptPattern(prompt: string, _language: 'zh' | 'en'): {
   // Detect complexity based on length and structure
   let complexity: 'simple' | 'moderate' | 'complex' = 'simple'
   const wordCount = prompt.split(/\s+/).length
-  const sentenceCount = prompt.split(/[.!?。！？]/).length
+  const sentenceCount = prompt.split(/[.!?。！？]/).filter(Boolean).length
 
   if (wordCount > 100 || sentenceCount > 5) {
     complexity = 'complex'
