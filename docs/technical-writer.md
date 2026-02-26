@@ -29,6 +29,12 @@ This document serves as the long-term memory for the technical-writer agent, doc
 
 ## History
 
+### 2026-02-26
+- **PR #706**: Removed duplicate file with typo in filename
+  - Deleted: `docs/Product-Arhitect.md` (66 lines)
+  - Issue: Filename had typo "Arhitect" instead of "Architect"
+  - Resolution: Removed duplicate; correct file `docs/Product-Arhitect.md` already exists
+
 ### 2026-02-25
 - **PR #679**: Fixed broken workspace doc links
   - Fixed `docs/developer/technical-analysis.md`: why-data-accumulates.md
