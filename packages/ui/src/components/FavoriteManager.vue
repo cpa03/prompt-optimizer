@@ -55,7 +55,11 @@
           <!-- 右侧：操作按钮 -->
           <NSpace :size="8" align="center" :wrap="false">
             <NDropdown :options="actionMenuOptions" @select="handleActionMenuSelect">
-              <NButton secondary data-testid="favorites-manager-actions">
+              <NButton
+                secondary
+                data-testid="favorites-manager-actions"
+                :aria-label="t('common.actions')"
+              >
                 <template #icon>
                   <NIcon><DotsVertical /></NIcon>
                 </template>
