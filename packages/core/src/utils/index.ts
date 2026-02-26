@@ -122,3 +122,6 @@ export type {
   CircuitBreakerStats,
   CircuitBreakerRegistryOptions,
 } from './circuit-breaker'
+
+// Secure ID generation utilities
+export { generateSecureRandomString, generateSecureId } from './id'

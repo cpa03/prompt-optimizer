@@ -8,6 +8,8 @@
  * - 当前选中消息的优化结果
  */
 
+/* eslint-disable no-console */
+
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getPiniaServices } from '../../plugins/pinia'

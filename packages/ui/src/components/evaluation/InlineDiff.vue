@@ -163,4 +163,16 @@ const getFragmentClass = (type: ChangeType): string => {
   transition: all 0.15s ease;
   box-shadow: 0 0 0 2px currentColor;
 }
+
+/* Accessibility: Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .diff-fragment {
+    animation: none;
+  }
+
+  .diff-added:hover,
+  .diff-removed:hover {
+    transition: none;
+  }
+}
 </style>

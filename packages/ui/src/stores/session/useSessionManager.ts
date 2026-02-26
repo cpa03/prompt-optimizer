@@ -13,6 +13,8 @@
  * - 使用 isSwitching 锁防止切换期间的竞态
  */
 
+/* eslint-disable no-console */
+
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { BasicSubMode, ProSubMode, ImageSubMode } from '@prompt-optimizer/core'

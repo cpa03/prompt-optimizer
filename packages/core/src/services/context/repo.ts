@@ -27,12 +27,13 @@ import {
   CONTEXT_UI_LABELS,
   DEFAULT_CONTEXT_MODE,
 } from './constants'
+import { generateSecureId } from '../../utils/id'
 
 /**
  * 生成唯一ID
  */
 function generateId(): string {
-  return `ctx-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  return generateSecureId({ prefix: 'ctx' })
 }
 
 /**

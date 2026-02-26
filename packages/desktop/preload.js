@@ -1,4 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron')
+const crypto = require('crypto')
 
 // IPC事件名称常量 - 直接内联避免沙箱环境的模块加载问题
 const IPC_EVENTS = {
@@ -37,7 +38,8 @@ const withTimeout = (promise, timeoutMs = 30000) => {
 
 // 生成唯一的流式请求ID
 function generateStreamId() {
-  return `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const randomBytes = crypto.randomBytes(9).toString('hex')
+  return `stream_${Date.now()}_${randomBytes}`
 }
 
 function createIpcError(payload) {

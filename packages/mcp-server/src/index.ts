@@ -722,20 +722,8 @@ async function main() {
         // Stop the rate limiter cleanup timer
         rateLimiter.stop()
 
-        // Stop accepting new connections
-        httpServer.close(() => {
-          console.log('HTTP server closed')
-          process.exit(0)
-        })
-
-        // Force close after timeout (use unref to not prevent process exit)
-        const forceExitTimer = setTimeout(() => {
-          console.warn('Forcing shutdown after timeout')
-          process.exit(1)
-        }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
-        forceExitTimer.unref()
-
-        // Close all active sessions
+        // Close all active sessions BEFORE stopping the HTTP server
+        // This ensures all sessions are properly closed before process exit
         const sessionIds = Object.keys(transports)
         if (sessionIds.length > 0) {
           console.log(`Closing ${sessionIds.length} active session(s)...`)
@@ -753,6 +741,19 @@ async function main() {
             })
           )
         }
+
+        // Force close after timeout (use unref to not prevent process exit)
+        const forceExitTimer = setTimeout(() => {
+          console.warn('Forcing shutdown after timeout')
+          process.exit(1)
+        }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
+        forceExitTimer.unref()
+
+        // Stop accepting new connections and wait for server to close
+        httpServer.close(() => {
+          console.log('HTTP server closed')
+          process.exit(0)
+        })
       }
 
       process.on('SIGINT', () => gracefulShutdown('SIGINT'))

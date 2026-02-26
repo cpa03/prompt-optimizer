@@ -148,3 +148,32 @@
   - Defense-in-depth approach for web security
 - **PR**: #705
 
+## Security Improvement (2026-02-26)
+
+### Insecure Random ID Generation - Math.random() replaced with crypto
+- **Status**: Completed
+- **Priority**: High
+- **Type**: Cryptographic security - insecure random number generation
+- **Change**: Replaced `Math.random()` with `crypto.getRandomValues()` for ID generation
+- **Files Modified**: 
+  - `packages/core/src/utils/id.ts` (NEW - secure ID generation utility)
+  - `packages/core/src/utils/index.ts` (export new utility)
+  - `packages/core/src/services/context/repo.ts`
+  - `packages/core/src/services/template/manager.ts`
+  - `packages/core/src/services/favorite/manager.ts`
+  - `packages/core/src/services/llm/adapters/gemini-adapter.ts`
+  - `packages/ui/src/composables/model/useImageModelManager.ts`
+  - `packages/ui/src/composables/model/useTextModelManager.ts`
+  - `packages/ui/src/components/TemplateManager.vue`
+  - `packages/desktop/preload.js`
+- **Rationale**: 
+  - `Math.random()` is NOT cryptographically secure and can be predictable
+  - Used for generating unique IDs (template IDs, context IDs, favorite IDs, stream IDs)
+  - Replaced with `crypto.getRandomValues()` which provides cryptographically secure random values
+  - In Node.js/Electron contexts, also used `crypto.randomBytes()` for desktop preload
+- **Verification**:
+  - Core tests: 1168 passed
+  - UI tests: 309 passed
+  - Build: success
+  - Lint: 0 errors
+
