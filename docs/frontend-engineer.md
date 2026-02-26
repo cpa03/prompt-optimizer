@@ -54,3 +54,13 @@
 - Monitor ErrorBoundary improvements and gather user feedback
 - Consider adding error reporting service integration (e.g., Sentry)
 - Consider this as a frontend-specific improvement (not backend)
+
+## 2026-02-26 Update
+### Accessibility Linting (PR #740)
+- Added `eslint-plugin-vuejs-accessibility` to UI package
+- Updated .eslintrc.json to include the plugin and recommended rules
+- This is a first step toward issue #732 (Add accessibility testing to CI)
+- The plugin catches common a11y issues in Vue templates:
+  - Missing alt text on images
+  - Improper ARIA usage
+  - Keyboard accessibility issues
