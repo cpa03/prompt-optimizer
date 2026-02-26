@@ -46,7 +46,7 @@ export function useModelManager(
       })
     },
     handleModelsUpdated: (modelKey: string) => {
-      console.log(t('toast.info.modelUpdated'), modelKey)
+      toast.success(t('toast.info.modelUpdated') + ' ' + modelKey)
     },
     initModelSelection: async () => {
       try {

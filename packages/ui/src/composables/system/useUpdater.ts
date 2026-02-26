@@ -1,5 +1,6 @@
 import { reactive, onMounted, onUnmounted, nextTick, inject, type Ref } from 'vue'
 
+/* eslint-disable no-console */
 import { isRunningInElectron } from '@prompt-optimizer/core'
 import { usePreferences } from '../storage/usePreferenceManager'
 import { useI18n } from 'vue-i18n'

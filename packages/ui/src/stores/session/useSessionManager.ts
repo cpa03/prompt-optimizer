@@ -10,8 +10,10 @@
  * 设计原则（基于 Codex 审查）：
  * - 不另存 subModePreferences（避免双真源）
  * - 通过 injectSubModeReaders 消费现有状态
- * - 使用 isSwitching 锁防止切换期间的竞态
- */
+  * - 使用 isSwitching 锁防止切换期间的竞态
+  */
+
+/* eslint-disable no-console */
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'

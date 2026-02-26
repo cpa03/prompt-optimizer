@@ -113,11 +113,13 @@ export function useAutoScroll<T extends HTMLElement>(
 
     if (isBottom && !shouldAutoScroll.value) {
       if (debug) {
+        // eslint-disable-next-line no-console
         console.log('User scrolled to bottom, resuming auto-scroll')
       }
       shouldAutoScroll.value = true
     } else if (!isBottom && shouldAutoScroll.value) {
       if (debug) {
+        // eslint-disable-next-line no-console
         console.log('User scrolled up, pausing auto-scroll')
       }
       shouldAutoScroll.value = false
@@ -159,6 +161,7 @@ export function useAutoScroll<T extends HTMLElement>(
 
     if (element) {
       if (debug) {
+        // eslint-disable-next-line no-console
         console.log('Scrolling element to bottom:', {
           scrollHeight: element.scrollHeight,
           element,
@@ -180,6 +183,7 @@ export function useAutoScroll<T extends HTMLElement>(
 
     if (element) {
       if (debug) {
+        // eslint-disable-next-line no-console
         console.log('Force scrolling element to bottom')
       }
 
@@ -218,6 +222,7 @@ export function useAutoScroll<T extends HTMLElement>(
       source,
       () => {
         if (debug) {
+          // eslint-disable-next-line no-console
           console.log(
             'Source changed, triggering scroll, shouldAutoScroll:',
             shouldAutoScroll.value
