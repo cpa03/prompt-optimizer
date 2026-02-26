@@ -73,10 +73,11 @@
 ## Security Analysis (2026-02-25)
 
 ### Issue #617: XSS Vulnerability (v-html)
-- **Status**: Already addressed
-- **Finding**: CategoryManager.vue uses DOMPurify for sanitization before v-html
-- **Evidence**: `sanitizedDeleteWarning` computed property sanitizes input with `DOMPurify.sanitize(name, { ALLOWED_TAGS: [] })`
-- **Conclusion**: Issue was fixed in PR #140
+- **Status**: FIXED (2026-02-26)
+- **Finding**: CategoryManager.vue used v-html to render content
+- **Evidence**: Line 124 used `<p v-html="sanitizedDeleteWarning">` - content was sanitized via DOMPurify but v-html is risky
+- **Fix Applied**: Replaced `v-html` with `v-text` for defense-in-depth
+- **Verification**: No v-html usages remain in Vue files
 
 ### Issue #624: Console Logging
 - **Status**: In Progress (PR #678)
@@ -104,4 +105,22 @@
 - **Rationale**: These headers were already configured in nginx.conf but not in the MCP server itself. Adding them provides defense-in-depth protection.
 
 ## Last Updated
-2026-02-25
+2026-02-26
+
+## Security Fix (2026-02-26)
+
+### Issue #617: XSS Vulnerability - v-html replaced with v-text
+- **Status**: FIXED
+- **Priority**: High
+- **Type**: XSS vulnerability fix
+- **Change**: Replaced `v-html` with `v-text` in CategoryManager.vue (line 124)
+- **Rationale**: Defense-in-depth approach
+  - Although the content was sanitized via DOMPurify, using `v-html` is inherently risky
+  - If translation content changes to include HTML in the future, it could become vulnerable
+  - Using `v-text` treats all content as plain text, preventing any XSS risk
+- **Files Modified**: `packages/ui/src/components/CategoryManager.vue`
+- **Verification**:
+  - No v-html usages remain in Vue files
+  - All 309 UI tests pass
+  - Lint: 0 errors
+

@@ -121,7 +121,7 @@
       :mask-closable="false"
       @positive-click="handleConfirmDelete"
     >
-      <p v-html="sanitizedDeleteWarning"></p>
+      <p v-text="sanitizedDeleteWarning"></p>
       <p v-if="deletingCategoryHasChildren" style="color: var(--n-color-error)">
         {{
           t('favorites.categoryManager.deleteChildrenWarning', {
