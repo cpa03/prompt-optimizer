@@ -9,10 +9,12 @@
   },
   "plugins": [
     "@typescript-eslint",
-    "vue"
+    "vue",
+    "vuejs-accessibility"
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:vuejs-accessibility/recommended",
     "plugin:prettier/recommended"
   ],
   "env": {
