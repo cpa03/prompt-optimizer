@@ -150,6 +150,11 @@
       "runtime": "nodejs20.x",
       "maxDuration": 10,
       "memory": 256
+    },
+    "api/variable-extraction.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 10,
+      "memory": 256
     }
   },
   "github": {
