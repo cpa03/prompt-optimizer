@@ -26,6 +26,7 @@
     "build": "vite build",
     "build:win": "vite build",
     "test": "vitest run",
+    "test:integration": "vitest run tests/integration",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint src --ext .ts,.vue --config .eslintrc.json",
     "lint:fix": "eslint src --ext .ts,.vue --config .eslintrc.json --fix"

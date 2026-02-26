@@ -11,11 +11,13 @@ This document serves as the long-time memory for the Quality Assurance agent.
 - **Label**: quality-assurance
 - **Linked Issue**: #703
 - **Changes**: 
-  - Created integration test utilities at `tests/integration/helpers/`
-  - Added mock utilities for cross-package testing (mocks.ts, test-utils.ts)
-  - Integration tests exist in packages/core/tests/integration/ (124 tests)
-  - Added cross-package test directory structure for future expansion
-- **Notes**: Integration tests in core package pass (124 passed, 105 skipped due to missing API keys)
+  - Created integration test utilities at `tests/integration/test-utils.ts`
+  - Added ModelManager + Storage integration tests (`packages/core/tests/integration/model/storage.integration.test.ts`)
+  - Added Cross-package workflow tests (`packages/core/tests/integration/cross-package-workflows.test.ts`)
+  - Added CI integration test scripts to `package.json` and `packages/ui/package.json`
+  - Updated integration test README with new structure
+- **Tests**: 135+ core integration tests pass, 35+ UI integration tests pass
+- **Notes**: Integration tests run via `pnpm run test:integration` and `pnpm run test:integration:ui`
 
 ### PR #638 - feat(ci): add code coverage gate to CI pipeline
 - **Date**: 2026-02-25

@@ -4,15 +4,22 @@ This directory contains integration tests for cross-package workflows.
 
 ## Structure
 
-- `tests/integration/` - Root-level integration test utilities (work in progress)
-- `packages/core/tests/integration/` - Core package integration tests (124 tests)
-- `packages/ui/tests/` - UI package tests
+- `tests/integration/` - Root-level integration test utilities
+- `tests/integration/test-utils.ts` - Shared mock utilities for cross-package testing
+- `packages/core/tests/integration/` - Core package integration tests (135+ tests)
+- `packages/ui/tests/integration/` - UI package integration tests (35+ tests)
 
 ## Running Integration Tests
 
 ```bash
-# Run all integration tests in core package
-pnpm -F @prompt-optimizer/core test:integration
+# Run all integration tests (core + UI)
+pnpm run test:integration
+
+# Run core integration tests only
+pnpm run test:integration
+
+# Run UI integration tests only
+pnpm run test:integration:ui
 
 # Run specific integration test file
 pnpm -F @prompt-optimizer/core vitest run tests/integration/prompt/service.integration.test.ts
@@ -28,11 +35,11 @@ pnpm -F @prompt-optimizer/core vitest run tests/integration/prompt/service.integ
 - Image adapters
 - Data compatibility
 
-### Cross-Package Workflows (To Be Implemented)
-- PromptService + TemplateManager interactions
-- HistoryManager + Storage persistence
-- ModelManager + LLM adapters coordination
-- UI store + core service integration
+### Cross-Package Workflows (Implemented)
+- ✅ PromptService + TemplateManager interactions
+- ✅ HistoryManager + Storage persistence
+- ✅ ModelManager + Storage coordination
+- ✅ UI store + core service integration
 
 ## Test Environment
 

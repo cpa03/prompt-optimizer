@@ -40,6 +40,8 @@
     "test:fast": "pnpm -F @prompt-optimizer/core build && pnpm -r test --run --passWithNoTests",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
+    "test:integration": "pnpm -F @prompt-optimizer/core test:integration",
+    "test:integration:ui": "pnpm -F @prompt-optimizer/core build && pnpm -F @prompt-optimizer/ui test:integration",
     "clean": "npm-run-all clean:dist clean:vite",
     "clean:dist": "rimraf packages/core/dist packages/ui/dist packages/web/dist packages/extension/dist packages/desktop/dist packages/desktop/web-dist",
     "clean:vite": "rimraf packages/core/node_modules/.vite packages/ui/node_modules/.vite packages/web/node_modules/.vite packages/extension/node_modules/.vite",
