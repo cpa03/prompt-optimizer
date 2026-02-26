@@ -263,7 +263,6 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 /**
-/**
  * Check if a value is a string.
  * Useful for validating string inputs.
  *
@@ -366,6 +365,21 @@ export function isNonEmptyString(value: unknown): value is string {
  */
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
+ * Check if a value is an array.
+ * Useful for validating array inputs and enabling type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isArray(value)) {
+ *   // value is unknown[]
+ * }
+ * ```
+ */
+export function isArray<T>(value: unknown): value is T[] {
+  return Array.isArray(value)
 }
 
 /**
