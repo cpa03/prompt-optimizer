@@ -2,12 +2,19 @@
 
 ## Active Work
 
-### PR #651: Type-safe error handling with isError type guard
-- **Status**: Open
-- **Branch**: rnd/add-iserror-type-guard
+### PR #674: Type-safe error handling in retry.ts
+- **Status**: Open (waiting for Vercel rate limit reset)
+- **Branch**: rnd/retry-ts-type-safety
 - **Priority**: Medium
 - **Domain**: Type Safety / Code Quality
-- **Summary**: Added isError type guard and getErrorMessage utility to replace unsafe `any` usage in error handling
+- **Summary**: Added type-safe error handling with ErrorWithStatus interface and hasStatusProperty type guard
+
+### PR #698: Fix error cause type safety
+- **Status**: Open
+- **Branch**: rnd/fix-error-cause-type-safety
+- **Priority**: Medium  
+- **Domain**: Type Safety / Code Quality
+- **Summary**: Replace unsafe `as any` cast in setErrorCause with proper ES2022 Error type
 
 ### PR #643: Type safety improvements for variable extraction and value generation services
 - **Status**: Merged

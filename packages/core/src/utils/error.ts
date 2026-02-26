@@ -20,9 +20,9 @@ export interface ErrorOptionsWithCause {
  * @param error - The error to set the cause on
  * @param cause - The underlying cause of the error
  */
-export function setErrorCause(error: Error, cause: unknown): void {
+export function setErrorCause(error: Error & { cause?: unknown }, cause: unknown): void {
   if (cause !== undefined) {
-    ;(error as any).cause = cause
+    error.cause = cause
   }
 }
 
