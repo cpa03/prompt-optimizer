@@ -27,7 +27,6 @@ export const useTemporaryVariablesStore = defineStore(
 
     const setVariable = (name: string, value: string): void => {
       if (!isValidVariableName(name)) {
-        console.warn('[temporaryVariables] Ignoring invalid variable name:', name)
         return
       }
       temporaryVariables.value[name] = value
