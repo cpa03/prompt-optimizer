@@ -458,6 +458,81 @@ export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
 }
 
 /**
+ * Check if a value is null.
+ * Useful for explicit null checks.
+ *
+ * @example
+ * ```typescript
+ * if (isNull(value)) {
+ *   // value is null
+ * }
+ * ```
+ */
+export function isNull<T>(value: T | null): value is null {
+  return value === null
+}
+
+/**
+ * Check if a value is undefined.
+ * Useful for explicit undefined checks.
+ *
+ * @example
+ * ```typescript
+ * if (isUndefined(value)) {
+ *   // value is undefined
+ * }
+ * ```
+ */
+export function isUndefined<T>(value: T | undefined): value is undefined {
+  return value === undefined
+}
+
+/**
+ * Check if a value is a Date object.
+ * Useful for validating date inputs.
+ *
+ * @example
+ * ```typescript
+ * if (isDate(value)) {
+ *   // value is Date
+ * }
+ * ```
+ */
+export function isDate(value: unknown): value is Date {
+  return value instanceof Date
+}
+
+/**
+ * Check if a value is an Error object.
+ * Useful for error handling and type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isError(value)) {
+ *   // value is Error
+ * }
+ * ```
+ */
+export function isError(value: unknown): value is Error {
+  return value instanceof Error
+}
+
+/**
+ * Check if a value is an object (not null, not array).
+ * Useful for validating plain objects and other object types.
+ *
+ * @example
+ * ```typescript
+ * if (isObject(value)) {
+ *   // value is Record<string, unknown>
+ * }
+ * ```
+ */
+export function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
  * Assert a condition and throw an error if false.
  * Useful for runtime type assertions with helpful error messages.
  *

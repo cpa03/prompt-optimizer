@@ -10,6 +10,11 @@ import {
   isPlainObject,
   isArray,
   isFunction,
+  isNull,
+  isUndefined,
+  isDate,
+  isError,
+  isObject,
   assert,
   pick,
   omit,
@@ -185,6 +190,99 @@ describe('Type Guards', () => {
       const value: unknown = () => 'test'
       if (isFunction(value)) {
         expect(value()).toBe('test')
+      }
+    })
+  })
+
+  describe('isNull', () => {
+    it('should return true for null', () => {
+      expect(isNull(null)).toBe(true)
+    })
+
+    it('should return false for non-null values', () => {
+      expect(isNull(undefined)).toBe(false)
+      expect(isNull(0)).toBe(false)
+      expect(isNull('')).toBe(false)
+      expect(isNull(false)).toBe(false)
+      expect(isNull({})).toBe(false)
+      expect(isNull([])).toBe(false)
+    })
+  })
+
+  describe('isUndefined', () => {
+    it('should return true for undefined', () => {
+      expect(isUndefined(undefined)).toBe(true)
+    })
+
+    it('should return false for non-undefined values', () => {
+      expect(isUndefined(null)).toBe(false)
+      expect(isUndefined(0)).toBe(false)
+      expect(isUndefined('')).toBe(false)
+      expect(isUndefined(false)).toBe(false)
+      expect(isUndefined({})).toBe(false)
+      expect(isUndefined([])).toBe(false)
+    })
+  })
+
+  describe('isDate', () => {
+    it('should return true for Date objects', () => {
+      expect(isDate(new Date())).toBe(true)
+      expect(isDate(new Date('2024-01-01'))).toBe(true)
+    })
+
+    it('should return false for non-Date values', () => {
+      expect(isDate('2024-01-01')).toBe(false)
+      expect(isDate(1704067200000)).toBe(false)
+      expect(isDate({})).toBe(false)
+      expect(isDate(null)).toBe(false)
+      expect(isDate(undefined)).toBe(false)
+    })
+  })
+
+  describe('isError', () => {
+    it('should return true for Error objects', () => {
+      expect(isError(new Error())).toBe(true)
+      expect(isError(new TypeError())).toBe(true)
+      expect(isError(new RangeError())).toBe(true)
+    })
+
+    it('should return false for non-Error values', () => {
+      expect(isError('error message')).toBe(false)
+      expect(isError({ message: 'error' })).toBe(false)
+      expect(isError(null)).toBe(false)
+      expect(isError(undefined)).toBe(false)
+    })
+  })
+
+  describe('isObject', () => {
+    it('should return true for plain objects', () => {
+      expect(isObject({})).toBe(true)
+      expect(isObject({ a: 1 })).toBe(true)
+      expect(isObject(new Object())).toBe(true)
+    })
+
+    it('should return false for arrays', () => {
+      expect(isObject([])).toBe(false)
+      expect(isObject([1, 2, 3])).toBe(false)
+    })
+
+    it('should return false for null', () => {
+      expect(isObject(null)).toBe(false)
+    })
+
+    it('should return false for primitives', () => {
+      expect(isObject('string')).toBe(false)
+      expect(isObject(42)).toBe(false)
+      expect(isObject(true)).toBe(false)
+      expect(isObject(undefined)).toBe(false)
+      expect(isObject(Symbol('test'))).toBe(false)
+      expect(isObject(123n)).toBe(false)
+    })
+
+    it('should narrow the type', () => {
+      const value: unknown = { key: 'value' }
+      if (isObject(value)) {
+        expect(value.key).toBe('value')
       }
     })
   })
