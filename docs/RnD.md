@@ -2,16 +2,12 @@
 
 ## Active Work
 
-### PR #741: Add unit tests for VariableValueGenerationService
+### PR #722: Add unit tests for VariableExtractionService
 - **Status**: Open
-- **Branch**: rnd/variable-value-generation-unit-tests
+- **Branch**: rnd/704-variable-extraction-unit-tests
 - **Priority**: Medium
 - **Domain**: Innovation / Testing
-- **Summary**: Added unit tests for VariableValueGenerationService covering generation, validation, model errors
-
-### PR #722: Add unit tests for VariableExtractionService
-- **Status**: Merged
-- **Branch**: rnd/704-variable-extraction-unit-tests
+- **Summary**: Added 17 unit tests for VariableExtractionService covering extraction, validation, parsing, performance, and error handling
 
 ### PR #674: Type-safe error handling in retry.ts
 - **Status**: Closed (merged)
@@ -41,11 +37,6 @@
 - **Domain**: DX/Security
 
 ## Implemented Changes
-
-### 2026-02-26
-- PR #723: Added 21 unit tests for VariableValueGenerationService in `packages/core/tests/unit/services/variable-value-generation-service.test.ts`
-- Tests cover: generation, validation (empty prompt, model key, variables), model validation, template handling, JSON parsing, error handling
-- All tests pass (1236 passed), lint passes with 0 new errors
 
 ### 2026-02-26
 - PR #722: Added 17 unit tests for VariableExtractionService in `packages/core/tests/unit/services/variable-extraction-service.test.ts`
