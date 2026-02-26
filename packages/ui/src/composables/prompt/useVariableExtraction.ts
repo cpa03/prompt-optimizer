@@ -2,6 +2,7 @@
  * 变量提取服务 Composable
  *
  * 提供 AI 智能变量提取功能的响应式接口
+ * 包含接受率追踪功能
  */
 
 import { ref, type Ref } from 'vue'
@@ -11,6 +12,60 @@ import { getI18nErrorMessage } from '../../utils/error'
 import type { AppServices } from '../../types/services'
 import { VARIABLE_VALIDATION, isValidVariableName } from '../../types/variable'
 import type { VariableExtractionResponse, ExtractedVariable } from '@prompt-optimizer/core'
+
+/**
+ * 变量提取指标
+ */
+export interface VariableExtractionMetrics {
+  totalExtractions: number
+  totalSuggested: number
+  totalAccepted: number
+  lastExtractionTime?: number
+}
+
+const STORAGE_KEY = 'prompt-optimizer-variable-extraction-metrics'
+
+function loadMetrics(): VariableExtractionMetrics {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return {
+    totalExtractions: 0,
+    totalSuggested: 0,
+    totalAccepted: 0,
+  }
+}
+
+function saveMetrics(metrics: VariableExtractionMetrics): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(metrics))
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+/**
+ * 获取变量提取指标
+ */
+export function getVariableExtractionMetrics(): VariableExtractionMetrics {
+  return loadMetrics()
+}
+
+/**
+ * 重置变量提取指标
+ */
+export function resetVariableExtractionMetrics(): void {
+  saveMetrics({
+    totalExtractions: 0,
+    totalSuggested: 0,
+    totalAccepted: 0,
+  })
+}
 
 /**
  * 变量提取 Composable 返回类型
@@ -86,6 +141,13 @@ export function useVariableExtraction(
       })
 
       extractionResult.value = result
+
+      // Track metrics: extraction requested
+      const metrics = loadMetrics()
+      metrics.totalExtractions++
+      metrics.totalSuggested += result.variables.length
+      metrics.lastExtractionTime = Date.now()
+      saveMetrics(metrics)
 
       if (result.variables.length > 0) {
         showResultDialog.value = true
@@ -201,6 +263,13 @@ export function useVariableExtraction(
     }
 
     showResultDialog.value = false
+
+    // Track metrics: variables accepted
+    if (successCount > 0) {
+      const metrics = loadMetrics()
+      metrics.totalAccepted += successCount
+      saveMetrics(metrics)
+    }
 
     if (successCount > 0) {
       toast.success(t('evaluation.variableExtraction.createSuccess', { count: successCount }))
