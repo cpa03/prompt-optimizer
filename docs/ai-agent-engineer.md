@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #725: Fix graceful shutdown session close order
+- **Issue**: The graceful shutdown function called `httpServer.close()` before closing active sessions, which could cause a race condition where the process exits before sessions are properly closed.
+- **Fix**: Reordered shutdown sequence to close all active sessions BEFORE calling `httpServer.close()`. This ensures sessions are properly cleaned up before the server stops accepting connections.
+- **Files Changed**: `packages/mcp-server/src/index.ts`
+- **Testing**: All 88 tests pass, build succeeds
+
 ### PR #697: Fix graceful shutdown to properly close active sessions
 - **Issue**: The graceful shutdown function was logging that it would close active sessions but never actually calling `close()` on them, leaving sessions in an inconsistent state.
 - **Fix**: Made `gracefulShutdown` async and added actual session close logic using `Promise.all` to close each transport with proper error handling.
@@ -44,6 +50,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 4. **Module-level state**: Watch for race conditions in module initialization.
 5. **Polling vs Locks**: Prefer async/await with in-flight checks over setTimeout polling loops for concurrency control.
 6. **Incomplete shutdown logic**: When logging cleanup actions, ensure the actual cleanup code is implemented (not just the log statements).
+7. **Shutdown sequence**: When gracefully shutting down services with dependencies, ensure dependent resources (like sessions) are closed BEFORE stopping the server that manages them.
 
 ## MCP Server Architecture Patterns
 
@@ -51,7 +58,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 - **HTTP route error handling**: Always wrap async handlers in try-catch, log errors, return proper JSON-RPC error responses
 - **Rate limiting**: Use `RateLimiter` class with sliding window algorithm
 - **Health checks**: `/health` and `/health/ready` endpoints should include rate limiter stats
-- **Graceful shutdown**: Use `unref()` on timers to allow process exit, and ensure all resources (like sessions) are properly cleaned up
+- **Graceful shutdown**: Use `unref()` on timers to allow process exit, and ensure all resources (like sessions) are properly cleaned up. Close dependent resources BEFORE stopping the server that manages them.
 
 ## Key Files
 
