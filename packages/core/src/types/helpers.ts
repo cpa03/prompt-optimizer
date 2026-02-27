@@ -263,6 +263,36 @@ export function isDefined<T>(value: T | null | undefined): value is T {
 }
 
 /**
+ * Check if a value is null.
+ * Useful for explicit null checks and type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isNull(value)) {
+ *   // value is null
+ * }
+ * ```
+ */
+export function isNull(value: unknown): value is null {
+  return value === null
+}
+
+/**
+ * Check if a value is undefined.
+ * Useful for explicit undefined checks and type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isUndefined(value)) {
+ *   // value is undefined
+ * }
+ * ```
+ */
+export function isUndefined(value: unknown): value is undefined {
+  return value === undefined
+}
+
+/**
  * Check if a value is a string.
  * Useful for validating string inputs.
  *
@@ -455,6 +485,51 @@ export function isBigInt(value: unknown): value is bigint {
  */
 export function isPromise<T = unknown>(value: unknown): value is Promise<T> {
   return value instanceof Promise
+}
+
+/**
+ * Check if a value is a Date object.
+ * Useful for validating date inputs and enabling type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isDate(value)) {
+ *   // value is Date
+ * }
+ * ```
+ */
+export function isDate(value: unknown): value is Date {
+  return value instanceof Date
+}
+
+/**
+ * Check if a value is an Error object.
+ * Useful for validating error inputs and enabling type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isError(value)) {
+ *   // value is Error
+ * }
+ * ```
+ */
+export function isError(value: unknown): value is Error {
+  return value instanceof Error
+}
+
+/**
+ * Check if a value is a RegExp object.
+ * Useful for validating regex inputs and enabling type narrowing.
+ *
+ * @example
+ * ```typescript
+ * if (isRegExp(value)) {
+ *   // value is RegExp
+ * }
+ * ```
+ */
+export function isRegExp(value: unknown): value is RegExp {
+  return value instanceof RegExp
 }
 
 /**
