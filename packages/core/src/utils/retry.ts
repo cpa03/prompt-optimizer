@@ -113,9 +113,15 @@ function isRetryableError(error: unknown, customRetryableErrors: string[]): bool
   return false
 }
 
+function getSecureRandom(): number {
+  const array = new Uint32Array(1)
+  crypto.getRandomValues(array)
+  return array[0] / (0xffffffff + 1)
+}
+
 function calculateDelay(attempt: number, baseDelayMs: number, maxDelayMs: number): number {
   const exponentialDelay = baseDelayMs * Math.pow(2, attempt - 1)
-  const jitter = Math.random() * 0.3 * exponentialDelay
+  const jitter = getSecureRandom() * 0.3 * exponentialDelay
   return Math.min(exponentialDelay + jitter, maxDelayMs)
 }
 
