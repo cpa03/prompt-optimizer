@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #774: Use logger instead of console in error handlers
+- **Issue**: Error handlers in start.ts and index.ts used direct `console.error` calls instead of the project's logger utility, creating inconsistency.
+- **Fix**: Replaced `console.error` in start.ts with proper logger, removed redundant console.error in index.ts catch block, fixed pre-existing bug in unhandledRejection handler (wrong argument count to logger.error)
+- **Files Changed**: `packages/mcp-server/src/start.ts`, `packages/mcp-server/src/index.ts`
+- **Testing**: Lint passed, 175 tests passed, build successful
+
 ### PR #750: Use logger instead of console in graceful shutdown
 - **Issue**: The graceful shutdown code used direct `console.log`/`console.warn` calls instead of the project's logger utility, creating inconsistency with the rest of the codebase.
 - **Fix**: Replaced 8 `console.log` calls with `logger.info` and 2 `console.warn` calls with `logger.warn` in `packages/mcp-server/src/index.ts`. This allows proper log level control via the DEBUG environment variable.
@@ -58,6 +64,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 6. **Incomplete shutdown logic**: When logging cleanup actions, ensure the actual cleanup code is implemented (not just the log statements).
 7. **Shutdown sequence**: When gracefully shutting down services with dependencies, ensure dependent resources (like sessions) are closed BEFORE stopping the server that manages them.
 8. **Console vs Logger**: Always use the project's logger utility instead of direct console.log/console.warn calls for consistent log level control.
+9. **Logger argument count**: The logger.error function only accepts 1-2 arguments (`message: string, err?: Error`). Calling it with more arguments will cause TypeScript build errors.
 
 ## MCP Server Architecture Patterns
 

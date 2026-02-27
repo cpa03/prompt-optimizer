@@ -769,8 +769,6 @@ async function main() {
     }
   } catch (error) {
     logger.error('MCP Server startup failed:', error as Error)
-    // Ensure error message is visible even without DEBUG
-    console.error('❌ MCP Server startup failed:', (error as Error).message)
     process.exit(1)
   }
 }
