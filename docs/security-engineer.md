@@ -59,16 +59,15 @@
 
 | Vulnerability | Severity | Status | Notes |
 |---------------|----------|--------|-------|
-| ESLint ajv ReDoS | Moderate | Mitigated | Documented in SECURITY.md, dev-only |
+| ESLint ajv ReDoS | Moderate | RESOLVED | Migrated to ESLint 9.x (PR #779) |
 | minimatch ReDoS | High | Mitigated | Tracked via pnpm audit in CI |
-| ESLint 9.x migration | - | Future | Required for full vulnerability resolution |
 
 ## Action Items
 
 1. Monitor dependency updates via pnpm audit in CI
-2. Plan ESLint 9.x migration to resolve ajv vulnerabilities
-3. Review and address minimatch vulnerabilities via dependency updates
-4. Complete PR #678 for console removal alignment
+2. Review and address minimatch vulnerabilities via dependency updates
+3. Complete PR #678 for console removal alignment
+4. ~~Plan ESLint 9.x migration to resolve ajv vulnerabilities~~ - DONE (PR #779)
 
 ## Security Analysis (2026-02-25)
 
@@ -119,6 +118,35 @@
 
 ## Last Updated
 2026-02-27
+
+## Security Fix (2026-02-27)
+
+### Issue #609: ESLint 8.x to 9.x Migration
+- **Status**: COMPLETED (PR #779)
+- **Priority**: Medium
+- **Type**: Dependency security - ReDoS vulnerability fix
+- **Change**: Migrated ESLint from 8.x to 9.x in packages/ui and packages/mcp-server
+- **Files Modified**:
+  - `packages/ui/package.json` - Updated ESLint dependencies
+  - `packages/ui/eslint.config.js` - NEW - Flat config for ESLint 9
+  - `packages/mcp-server/package.json` - Updated ESLint dependencies
+  - `packages/mcp-server/eslint.config.js` - NEW - Flat config for ESLint 9
+  - `packages/ui/src/composables/model/useImageModelManager.ts` - Fixed unused variable
+- **Dependencies Updated**:
+  - eslint: ^8.57.0 → ^9.17.0
+  - @typescript-eslint/eslint-plugin: ^8.49.0 → ^8.21.0
+  - @typescript-eslint/parser: ^8.49.0 → ^8.21.0
+  - eslint-plugin-vue: ^10.4.0 → ^9.32.0
+  - Added: globals: ^15.14.0
+  - Removed: eslint-config-prettier, eslint-plugin-prettier
+- **Rationale**: 
+  - Resolves ajv ReDoS vulnerability (GHSA-2g4f-4pwh-qvx6)
+  - ESLint 9.x uses flat config instead of .eslintrc.json
+  - Maintains lint compatibility while addressing security vulnerability
+- **Verification**:
+  - UI tests: 309 passed
+  - MCP-server tests: 175 passed
+  - Lint: 0 errors
 
 ## Security Fix (2026-02-26)
 
