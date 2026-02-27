@@ -2,8 +2,16 @@
 
 ## Active Work
 
-### PR #766: Remove debug console.log from useAutoScroll
+### PR #778: Fix unused variable in performance-metrics.ts
 - **Status**: Open
+- **Branch**: rnd/fix-unused-variable-performance-metrics
+- **Priority**: Low
+- **Domain**: DX / Code Quality
+- **Summary**: Removed unused _todayLatencies variable that was causing TS6133 error
+- **Issue**: Related to #618 (excessive 'any' type usage)
+
+### PR #766: Remove debug console.log from useAutoScroll
+- **Status**: Merged
 - **Branch**: rnd/636-remove-debug-logs
 - **Priority**: Medium
 - **Domain**: DX / Code Quality
@@ -47,6 +55,11 @@
 - **Note**: Cannot create PR due to GitHub App workflow permission restrictions
 
 ## Implemented Changes
+
+### 2026-02-27
+- PR #778: Removed unused `_todayLatencies` variable from `packages/core/src/services/analytics/performance-metrics.ts`
+- PR #778: Fixed TS6133 error (declared but never read)
+- Analysis: Verified branch up-to-date, mergeable, lint passes (0 errors), tests pass (1257 passed)
 
 ### 2026-02-27
 - PR #766: Removed debug console.log statements from `packages/ui/src/composables/ui/useAutoScroll.ts`
