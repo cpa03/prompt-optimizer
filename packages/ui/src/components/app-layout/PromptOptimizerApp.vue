@@ -2327,4 +2327,11 @@ onBeforeUnmount(async () => {
     transform: rotate(360deg);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+    border-left-color: var(--primary-color);
+  }
+}
 </style>
