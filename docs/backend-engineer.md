@@ -77,3 +77,22 @@ This document serves as long-term memory for the backend-engineer agent, documen
 - Use dynamic version import from package.json instead of hardcoding
 - Pattern: `import packageJson from '../../package.json' assert { type: 'json' }`
 - Export version as `SERVER_VERSION` for centralized version management
+
+## Issue: Type error in unhandledRejection handler
+**Status**: Completed (PR: fix/mcp-server-unhandled-rejection-logging)
+
+**Problem**: The unhandledRejection handler called logger.error with 4 arguments, but the logger.error function only accepts 2 (message: string, err?: Error). This caused TypeScript build failure.
+
+**Solution Implemented**:
+- Fixed the logger.error call to properly handle the error
+- Converted reason to Error object if it wasn't already an Error
+- Properly typed the error for the logger
+
+**Files Modified**:
+- `packages/mcp-server/src/index.ts`
+
+**Key Learnings**:
+- The logger.error function signature: `error(message: string, err?: Error): void`
+- Process handlers for uncaughtException and unhandledRejection should pass Error objects
+- Convert non-Error reasons to Error using `new Error(String(reason))` for proper error logging
+
