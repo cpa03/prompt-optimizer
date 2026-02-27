@@ -3,7 +3,7 @@ import { z } from 'zod'
 /**
  * Variable extraction types
  */
-export interface ExtractedVariable {
+export interface TemplateExtractedVariable {
   name: string
   pattern: string
   context: string
@@ -16,7 +16,7 @@ export interface ExtractVariablesRequest {
 }
 
 export interface ExtractVariablesResponse {
-  variables: ExtractedVariable[]
+  variables: TemplateExtractedVariable[]
   count: number
 }
 
@@ -101,7 +101,8 @@ const VARIABLE_PATTERNS = {
 /**
  * Common variable name suggestions based on context
  */
-const COMMON_VARIABLE_NAMES = {
+type CommonVariableNames = Record<string, string[]>
+const COMMON_VARIABLE_NAMES: Record<'en' | 'zh', CommonVariableNames> = {
   en: {
     'recipient/target': ['recipient', 'target', 'name', 'person', 'user'],
     'content type': ['content', 'type', 'format', 'style'],
@@ -137,7 +138,7 @@ export function extractVariables(
   prompt: string,
   language: 'zh' | 'en' = 'en'
 ): ExtractVariablesResponse {
-  const variables: ExtractedVariable[] = []
+  const variables: TemplateExtractedVariable[] = []
   const seenNames = new Set<string>()
   const patterns = VARIABLE_PATTERNS[language]
 
@@ -188,12 +189,12 @@ export function extractVariables(
 function calculateConfidence(
   name: string,
   context: string,
-  examples: string[],
+  _examples: string[],
   language: 'zh' | 'en'
 ): number {
   let confidence = 0.5
 
-  const commonVars = COMMON_VARIABLE_NAMES[language][context as keyof typeof COMMON_VARIABLE_NAMES[typeof language]]
+  const commonVars = COMMON_VARIABLE_NAMES[language][context]
   if (commonVars && commonVars.includes(name.toLowerCase())) {
     confidence += 0.3
   }

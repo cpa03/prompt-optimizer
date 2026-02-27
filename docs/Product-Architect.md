@@ -44,6 +44,12 @@ Deliver small, safe, measurable improvements strictly inside the Product-Archite
 
 ## History
 
+### 2026-02-27
+- Fixed TypeScript errors in packages/core/src/services/template/variable-extraction.ts:
+  - Renamed `ExtractedVariable` to `TemplateExtractedVariable` to resolve duplicate export conflict with services/variable-extraction/types.ts
+  - Fixed unused parameter `examples` in calculateConfidence function by prefixing with underscore
+  - Added proper typing to `COMMON_VARIABLE_NAMES` to fix `commonVars` being inferred as `never`
+
 ### 2026-02-26
 - Added `isFunction<T>` type guard to packages/core/src/types/helpers.ts for checking if a value is a callable function
 - Added comprehensive unit tests for helpers.ts type guards in tests/unit/utils/helpers.test.ts
