@@ -45,6 +45,14 @@ Deliver small, safe, measurable improvements strictly inside the Product-Archite
 ## History
 
 ### 2026-02-27
+- Added type-safe error property extraction utilities to packages/core/src/utils/error.ts:
+  - `ErrorWithStatus` interface for errors with code/status properties
+  - `hasErrorStatus(value)` type guard for checking status properties
+  - `hasErrorCode(value)` type guard for checking code property
+  - `getErrorCode(value)` safe extraction of error code
+  - `getErrorStatus(value)` safe extraction of HTTP status
+- Updated packages/core/src/utils/retry.ts to use new type-safe utilities instead of `(error as any)` patterns
+- This removes 2 instances of `as any` type casting in the codebase
 - Added missing type guards to packages/core/src/types/helpers.ts:
   - `isNull(value)` - Check if value is null
   - `isUndefined(value)` - Check if value is undefined  
