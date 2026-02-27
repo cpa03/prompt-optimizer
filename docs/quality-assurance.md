@@ -5,6 +5,20 @@ This document serves as the long-time memory for the Quality Assurance agent.
 
 ## PR Reviews Completed
 
+### PR #769 - fix(mcp-server): resolve logger.error type error for unhandled rejection
+- **Date**: 2026-02-27
+- **Status**: OPEN
+- **Label**: quality-assurance
+- **Linked Issue**: #734 (related to QA work on expanding test coverage)
+- **Changes**:
+  - Fixed TypeScript error in `packages/mcp-server/src/index.ts` line 785
+  - `logger.error` expected 1-2 arguments but was receiving 4
+  - Converted reason to Error object for proper error logging
+  - Enables DTS (declaration file) build to succeed
+- **Tests**: 175 passed
+- **Build**: Succeeds with DTS generation
+- **Notes**: This fix resolves a build failure that was preventing the MCP server package from building successfully, which is a prerequisite for running tests
+
 ### PR #757 - test(web): add unit test coverage for web package
 - **Date**: 2026-02-27
 - **Status**: OPEN
@@ -101,6 +115,18 @@ This document serves as the long-time memory for the Quality Assurance agent.
 - Test command: `pnpm -F @prompt-optimizer/core test --run`
 - Lint command: `pnpm lint`
 - Build command: `pnpm build`
+
+## Investigation Notes
+
+### MCP Server Test Coverage Issue (#734)
+- **Problem**: Tests were failing to run due to build error
+- **Root Cause**: TypeScript type error in `packages/mcp-server/src/index.ts` line 785
+  - `logger.error` was called with 4 arguments but function signature only accepts 1-2
+  - This prevented DTS (declaration file) generation from succeeding
+- **Solution**: Fixed the logger.error call to properly convert the reason to an Error object
+- **Verification**: 
+  - Build now succeeds with DTS generation
+  - All 175 MCP server tests pass
 
 ## Notes
 - Vercel deployment failures appear to be unrelated to test changes
