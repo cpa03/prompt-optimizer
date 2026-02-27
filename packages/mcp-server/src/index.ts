@@ -769,8 +769,6 @@ async function main() {
     }
   } catch (error) {
     logger.error('MCP Server startup failed:', error as Error)
-    // Ensure error message is visible even without DEBUG
-    console.error('❌ MCP Server startup failed:', (error as Error).message)
     process.exit(1)
   }
 }
@@ -781,8 +779,8 @@ process.on('uncaughtException', (error) => {
   process.exit(1)
 })
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason)
+process.on('unhandledRejection', (reason) => {
+  logger.error('Unhandled Rejection', reason instanceof Error ? reason : new Error(String(reason)))
   process.exit(1)
 })
 
