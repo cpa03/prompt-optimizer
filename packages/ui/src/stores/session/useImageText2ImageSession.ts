@@ -6,7 +6,7 @@
  * - 图像生成结果（使用 ImageRef 引用，base64 数据存储在 ImageStorageService）
  */
 
-/* eslint-disable no-console */
+ 
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'

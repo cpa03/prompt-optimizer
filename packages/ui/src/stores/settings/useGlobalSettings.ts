@@ -12,7 +12,7 @@
  * - 若 'global-settings/v1' 不存在或字段缺失，则从旧的 UI_SETTINGS_KEYS 读取并填充
  */
 
-/* eslint-disable no-console */
+ 
 
 import { defineStore } from 'pinia'
 import { ref, watch, type Ref } from 'vue'

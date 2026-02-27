@@ -3,7 +3,7 @@
  * 提供统一的错误处理和类型安全的错误信息提取
  */
 
-/* eslint-disable no-console */
+ 
 import { isRecord } from '@prompt-optimizer/core'
 import { useToast } from '../composables/ui/useToast'
 import { i18n } from '../plugins/i18n'

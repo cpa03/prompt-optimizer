@@ -28,8 +28,8 @@
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
     "typecheck": "vue-tsc --noEmit",
-    "lint": "eslint src --ext .ts,.vue --config .eslintrc.json",
-    "lint:fix": "eslint src --ext .ts,.vue --config .eslintrc.json --fix"
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.19.0",
@@ -64,14 +64,15 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.49.0",
-    "@typescript-eslint/parser": "^8.49.0",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/test-utils": "^2.4.5",
     "@vue/tsconfig": "^0.5.1",
-    "eslint": "^8.57.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0",
     "vue-tsc": "^2.2.12",
-    "eslint-plugin-vue": "^10.4.0",
+    "eslint-plugin-vue": "^9.32.0",
     "jsdom": "^26.0.0",
     "typescript": "^5.3.3",
     "vite": "^7.2.7",

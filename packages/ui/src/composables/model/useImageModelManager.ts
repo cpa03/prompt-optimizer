@@ -610,7 +610,7 @@ export function useImageModelManager() {
     try {
       await refreshDynamicModels()
       toast.success(t('image.model.refreshSuccess'))
-    } catch (error) {
+    } catch (_error) {
       toast.error(t('image.model.refreshError'))
     } finally {
       isLoadingDynamicModels.value = false

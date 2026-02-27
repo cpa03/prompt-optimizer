@@ -406,11 +406,11 @@ const { services, isInitializing } = useAppInitializer()
 // @ts-expect-error - Called for side effects only, not used elsewhere
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const functionModeApi = useFunctionMode(services)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const basicSubModeApi = useBasicSubMode(services)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const proSubModeApi = useProSubMode(services)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const imageSubModeApi = useImageSubMode(services)
 
 // 3.5. 🔧 Step A: 建立路由驱动的单一真源（优先于 state，避免双真源）
