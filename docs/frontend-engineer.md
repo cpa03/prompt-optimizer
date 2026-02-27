@@ -7,7 +7,7 @@
 - Build: Vite
 
 ## Scan Date
-2026-02-25
+2026-02-27
 
 ## Key Findings
 
@@ -16,6 +16,12 @@
 - Build succeeds for UI package
 - Typecheck passes (309 tests)
 - Components properly clean up event listeners (checked ThemeToggleUI, InputWithSelect, FavoriteManager, etc.)
+
+### Status of Issues (2026-02-27)
+- Issue #635 (Memory leak in PromptOptimizerApp.vue): ✅ FIXED - cleanup code present in onBeforeUnmount
+- Issue #636 (Debug logs in production): ✅ FIXED - all console.log properly controlled with DEBUG flags
+- Issue #606 (Error boundaries): ✅ FIXED - ErrorBoundary component with error type detection + global error handler installed
+- Issue #732 (Accessibility testing): 📋 TODO - Add a11y testing to CI pipeline
 
 ### TypeScript Fixes (2026-02-25)
 - Fixed undefined `router` variable in PromptOptimizerApp.vue
@@ -51,6 +57,9 @@
 - Fixed memory leak in PromptOptimizerApp.vue
 
 ## Action Items
+- Issue #732: Add accessibility (a11y) testing to CI pipeline
+  - Requires: eslint-plugin-vuejs-accessibility package installation
+  - Requires: axe-core integration with Playwright
+  - Requires: Creating 20+ a11y test cases
 - Monitor ErrorBoundary improvements and gather user feedback
 - Consider adding error reporting service integration (e.g., Sentry)
-- Consider this as a frontend-specific improvement (not backend)
