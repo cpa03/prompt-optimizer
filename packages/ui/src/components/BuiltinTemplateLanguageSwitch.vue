@@ -235,4 +235,15 @@ defineExpose({
 .language-switch-btn:hover .language-icon {
   transform: scale(1.1);
 }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .language-icon {
+    transition: none;
+  }
+
+  .language-icon-rotating {
+    animation: none;
+  }
+}
 </style>

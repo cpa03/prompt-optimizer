@@ -161,4 +161,16 @@ const handleSelect = (key: string) => {
   cursor: help;
   opacity: 0.6;
 }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .evaluate-button,
+  .evaluate-button :deep(.n-button__icon) {
+    transition: none;
+  }
+
+  .evaluating-icon {
+    animation: none;
+  }
+}
 </style>
