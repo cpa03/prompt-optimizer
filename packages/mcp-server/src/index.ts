@@ -782,7 +782,8 @@ process.on('uncaughtException', (error) => {
 })
 
 process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  const err = reason instanceof Error ? reason : new Error(String(reason))
+  logger.error('Unhandled Rejection at: ' + String(promise), err)
   process.exit(1)
 })
 
