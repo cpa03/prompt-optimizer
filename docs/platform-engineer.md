@@ -81,3 +81,17 @@ Platform Engineering - delivering small, safe, measurable improvements to CI/CD 
 
 ## Last Updated
 2026-02-27
+
+## Platform-Engineer Workflow Changes Applied
+
+**PR #764 status**: Merged but workflow changes not applied due to GitHub App permission. Applying manually now via new PR.
+
+### Current Changes (this PR):
+- **test.yml**: Added `develop` branch to push/PR triggers
+- **docker.yml**: Added `develop` push trigger + updated condition
+- **parallel.yml**: Added `develop` branch to push triggers
+
+### Verification:
+- YAML syntax validated ✓
+- Default branch is `develop` ✓
+- All workflow files now include develop branch ✓
