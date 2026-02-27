@@ -158,9 +158,8 @@ export class PerformanceMetrics {
   }
 
   private calculateSummary(): PerformanceMetricsSummary {
-    const today = getDateKey()
     // Note: todayLatencies reserved for future use
-    const _todayLatencies = this.metrics.dailyLatencies[today] || []
+    // const todayLatencies = this.metrics.dailyLatencies[getDateKey()] || []
 
     const allLatencies: number[] = []
     Object.values(this.metrics.dailyLatencies).forEach((latencies) => {
