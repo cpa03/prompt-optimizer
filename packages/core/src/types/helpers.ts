@@ -513,6 +513,36 @@ export function isDate(value: unknown): value is Date {
  * }
  * ```
  */
+/**
+ * Check if a value is a finite number (not Infinity or -Infinity).
+ * Useful for validating numeric calculations and API responses.
+ *
+ * @example
+ * ```typescript
+ * if (isFiniteNumber(value)) {
+ *   // value is finite number
+ * }
+ * ```
+ */
+export function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && isFinite(value)
+}
+
+/**
+ * Check if a value is NaN.
+ * Useful for distinguishing NaN from other values (since NaN !== NaN).
+ *
+ * @example
+ * ```typescript
+ * if (isNaNValue(value)) {
+ *   // value is NaN
+ * }
+ * ```
+ */
+export function isNaNValue(value: unknown): value is typeof NaN {
+  return Number.isNaN(value)
+}
+
 export { isError } from '../utils/error'
 
 /**
