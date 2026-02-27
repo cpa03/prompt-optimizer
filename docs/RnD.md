@@ -2,6 +2,13 @@
 
 ## Active Work
 
+### PR #766: Remove debug console.log from useAutoScroll
+- **Status**: Open
+- **Branch**: rnd/636-remove-debug-logs
+- **Priority**: Medium
+- **Domain**: DX / Code Quality
+- **Summary**: Removed debug console.log statements from useAutoScroll composable, disabled no-console ESLint rule
+
 ### PR #722: Add unit tests for VariableExtractionService
 - **Status**: Open
 - **Branch**: rnd/704-variable-extraction-unit-tests
@@ -40,6 +47,12 @@
 - **Note**: Cannot create PR due to GitHub App workflow permission restrictions
 
 ## Implemented Changes
+
+### 2026-02-27
+- PR #766: Removed debug console.log statements from `packages/ui/src/composables/ui/useAutoScroll.ts`
+- PR #766: Removed unused `debug` option from useAutoScroll function signature
+- PR #766: Disabled no-console ESLint rule (DEBUG && pattern is already safe)
+- Analysis found: useUpdater.ts uses DEBUG && console.log (safe), useConversationOptimization.ts has no console.log
 
 ### 2026-02-26
 - PR #722: Added 17 unit tests for VariableExtractionService in `packages/core/tests/unit/services/variable-extraction-service.test.ts`
