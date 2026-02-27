@@ -57,6 +57,87 @@ describe('TemplateAnalytics', () => {
     })
   })
 
+  describe('trackAcceptedSuggestion', () => {
+    it('should track total acceptances', () => {
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize', detectedType: 'question', language: 'en' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic', detectedType: 'task', language: 'zh' })
+
+      const result = analytics.getAnalytics()
+      expect(result.totalAcceptances).toBe(2)
+    })
+
+    it('should track by accepted template', () => {
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic' })
+
+      const result = analytics.getAnalytics()
+      expect(result.byAcceptedTemplate['general-optimize']).toBe(2)
+      expect(result.byAcceptedTemplate['user-prompt-basic']).toBe(1)
+    })
+
+    it('should track daily acceptances', () => {
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic' })
+
+      const result = analytics.getAnalytics()
+      const today = new Date().toISOString().split('T')[0]
+      expect(result.dailyAcceptances[today]).toBe(2)
+    })
+  })
+
+  describe('getSummary with acceptance', () => {
+    it('should calculate acceptance rate', () => {
+      analytics.trackSuggestion({ detectedType: 'question', language: 'en' })
+      analytics.trackSuggestion({ detectedType: 'question', language: 'en' })
+      analytics.trackSuggestion({ detectedType: 'task', language: 'zh' })
+      analytics.trackSuggestion({ detectedType: 'task', language: 'zh' })
+      analytics.trackSuggestion({ detectedType: 'task', language: 'zh' })
+
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize', detectedType: 'question' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic', detectedType: 'task' })
+
+      const summary = analytics.getSummary()
+      expect(summary.totalRequests).toBe(5)
+      expect(summary.totalAcceptances).toBe(2)
+      expect(summary.acceptanceRate).toBe(40)
+    })
+
+    it('should return top accepted template', () => {
+      analytics.trackSuggestion({})
+      analytics.trackSuggestion({})
+      analytics.trackSuggestion({})
+
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic' })
+
+      const summary = analytics.getSummary()
+      expect(summary.topAcceptedTemplate).toBe('general-optimize')
+    })
+
+    it('should calculate today acceptance rate', () => {
+      analytics.trackSuggestion({})
+      analytics.trackSuggestion({})
+      analytics.trackSuggestion({})
+      analytics.trackSuggestion({})
+
+      analytics.trackAcceptedSuggestion({ templateId: 'general-optimize' })
+      analytics.trackAcceptedSuggestion({ templateId: 'user-prompt-basic' })
+
+      const summary = analytics.getSummary()
+      expect(summary.todayCount).toBe(4)
+      expect(summary.todayAcceptances).toBe(2)
+      expect(summary.todayAcceptanceRate).toBe(50)
+    })
+
+    it('should return zero acceptance rate when no requests', () => {
+      const summary = analytics.getSummary()
+      expect(summary.acceptanceRate).toBe(0)
+      expect(summary.todayAcceptanceRate).toBe(0)
+    })
+  })
+
   describe('getSummary', () => {
     it('should return summary with top metrics', () => {
       analytics.trackSuggestion({ detectedType: 'question', language: 'en', complexity: 'simple' })
@@ -105,10 +186,13 @@ describe('TemplateAnalytics', () => {
     it('should load existing analytics from storage', async () => {
       const existingAnalytics = {
         totalRequests: 10,
+        totalAcceptances: 3,
         byType: { question: 5, task: 5 },
         byLanguage: { en: 8, zh: 2 },
         byComplexity: { simple: 6, complex: 4 },
+        byAcceptedTemplate: { 'general-optimize': 2, 'user-prompt-basic': 1 },
         dailyCounts: { '2026-02-25': 10 },
+        dailyAcceptances: { '2026-02-25': 3 },
         lastUpdated: Date.now(),
       }
 
@@ -127,7 +211,9 @@ describe('TemplateAnalytics', () => {
 
       const result = analytics.getAnalytics()
       expect(result.totalRequests).toBe(10)
+      expect(result.totalAcceptances).toBe(3)
       expect(result.byType.question).toBe(5)
+      expect(result.byAcceptedTemplate['general-optimize']).toBe(2)
     })
   })
 })

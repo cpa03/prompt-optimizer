@@ -6,6 +6,7 @@
  *
  * Analytics tracking included for measuring feature growth:
  * - Request counts by type, language, complexity
+ * - Acceptance tracking for suggestion effectiveness
  * - Daily usage tracking
  * - Integration with Vercel Analytics / Datadog
  *
@@ -29,6 +30,14 @@ const SECURITY_HEADERS = {
   'Cross-Origin-Resource-Policy': 'same-origin',
   'Cross-Origin-Opener-Policy': 'same-origin',
 }
+
+const ACCEPTANCE_SCHEMA = {
+  templateId: z.string().min(1, 'Template ID is required'),
+  detectedType: z.string().optional(),
+  language: z.enum(['zh', 'en']).optional().default('en'),
+}
+
+import { z } from 'zod'
 
 function generateRequestId() {
   return `tpl_${Date.now()}_${crypto.randomUUID().split('-')[0]}`
@@ -104,6 +113,22 @@ function trackAnalytics(detectedType, language, complexity) {
 }
 
 /**
+ * Track acceptance event
+ */
+function trackAcceptance(templateId, detectedType, language) {
+  try {
+    analytics.trackAcceptedSuggestion({
+      templateId,
+      detectedType,
+      language,
+    })
+    log('debug', 'Acceptance tracked', { templateId, detectedType, language })
+  } catch (error) {
+    log('warn', 'Acceptance tracking failed', { error: error.message })
+  }
+}
+
+/**
  * Main handler function
  */
 export default async function handler(req, res) {
@@ -149,6 +174,41 @@ export default async function handler(req, res) {
     } catch (error) {
       log('error', 'Analytics retrieval error', { error: error.message })
       res.status(500).json(errorResponse('Failed to retrieve analytics', 500))
+      return
+    }
+  }
+
+  // Handle acceptance tracking POST request
+  if (req.method === 'POST' && req.url === '/accept') {
+    try {
+      const result = ACCEPTANCE_SCHEMA.safeParse(req.body)
+      if (!result.success) {
+        const errors = result.error.issues.map((issue) => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        }))
+        res.status(400).json(errorResponse('Validation failed', 400))
+        return
+      }
+
+      const { templateId, detectedType, language } = result.data
+
+      trackAcceptance(templateId, detectedType, language)
+
+      log('info', 'Template acceptance tracked', {
+        templateId,
+        detectedType,
+        language,
+      })
+
+      res.status(200).json(successResponse({ accepted: true }))
+      return
+    } catch (error) {
+      log('error', 'Acceptance tracking error', {
+        error: error.message,
+        stack: error.stack,
+      })
+      res.status(500).json(errorResponse('Internal server error', 500))
       return
     }
   }

@@ -173,6 +173,45 @@ Based on detected type:
 
 ## Latest Enhancement
 
+### Template Suggestion Acceptance Rate Tracking
+**Date**: 2026-02-27
+**PR**: #754
+
+**Files Modified:**
+- `packages/core/src/services/analytics/template-analytics.ts` - Add acceptance tracking
+- `api/template-suggestion.js` - Add /accept endpoint for tracking
+- `packages/core/tests/unit/analytics/template-analytics.test.ts` - Add acceptance tests
+
+**Functionality:**
+- Track when users accept/select suggested templates
+- Calculate acceptance rate (acceptances/requests * 100)
+- Track by accepted template ID for popularity analysis
+- Daily acceptance tracking for time-series analysis
+- Top accepted template in summary
+- Today acceptance rate in summary
+- API endpoint POST /accept for tracking acceptance
+
+**Acceptance Criteria Addressed:**
+- ✅ Track suggestion acceptance rate (Phase 3)
+- ✅ Enable data-driven optimization decisions
+- ✅ Support A/B testing infrastructure foundation
+
+## Process & Patterns
+
+### How to Identify Improvements
+- Check roadmap in this document for pending items
+- Scan issues with "Innovation" or "Growth" labels
+- Look at existing PRs to understand what's been done
+
+### PR Requirements
+- Label: Growth-Innovation-Strategist
+- Linked to issue
+- Up to date with default branch (develop)
+- No conflict
+- Small atomic diff
+- All tests pass
+- Zero new lint warnings
+
 ### Translation & Summarization Pattern Detection
 **Date**: 2026-02-26
 **PR**: #699
