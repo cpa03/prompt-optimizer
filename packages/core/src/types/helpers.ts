@@ -513,9 +513,7 @@ export function isDate(value: unknown): value is Date {
  * }
  * ```
  */
-export function isError(value: unknown): value is Error {
-  return value instanceof Error
-}
+export { isError } from '../utils/error'
 
 /**
  * Check if a value is a RegExp object.
