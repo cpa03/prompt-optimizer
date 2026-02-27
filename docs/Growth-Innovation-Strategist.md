@@ -298,3 +298,43 @@ Based on detected type:
 - ✅ Create extraction service using pattern matching (foundation for AI-powered)
 - ✅ Add API endpoint for variable extraction
 - ✅ Ready for UI integration in VariableEditor
+
+### Performance Metrics API Endpoint
+**Date**: 2026-02-27
+**PR**: #770
+
+**Files Added:**
+- `api/performance-metrics.js` - API endpoint for performance metrics
+
+**Files Modified:**
+- `vercel.json` - Add function configuration for deployment
+
+**Functionality:**
+- GET /analytics returns metrics summary (total, success rate, latency, top model/template)
+- GET /metrics returns full metrics with daily breakdown
+- POST /track allows tracking optimization performance (latency, tokens, success/failure)
+- Security headers and validation following existing API patterns
+- Integration with PerformanceMetrics service from core
+
+**Acceptance Criteria Addressed:**
+- ✅ Add metrics API endpoint (Phase 2 of Issue #735)
+- ✅ Track optimization performance (latency, tokens, success/failure)
+- ✅ Provide summary and full metrics endpoints
+- ✅ Foundation for benchmark runner service
+
+## Issue #735: Prompt Performance Benchmarking Progress
+
+**Phase 1: Performance Metrics Analytics Service**
+- ✅ Complete (PR: #754-related)
+
+**Phase 2: Performance Metrics API Endpoint**
+- ✅ Complete (PR #770)
+
+**Phase 3: Benchmark Runner Service**
+- ⏳ Not started
+
+**Phase 4: Comparison UI in Web App**
+- ⏳ Not started
+
+**Phase 5: Documentation**
+- ⏳ Not started
