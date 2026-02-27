@@ -6,7 +6,7 @@ This index tracks all user stories for Epic 1 (Core Features) of the prompt-opti
 
 **Epic Name**: Core Features  
 **Epic Goal**: Implement essential prompt optimization functionality including input handling, model management, and history tracking  
-**Priority**: P0 (Critical - blocks release)  
+**Priority**: P0-Critical (Critical - blocks release)  
 **Estimated Completion**: 2-3 weeks
 
 ## Story List
@@ -169,4 +169,4 @@ Each story is considered "Done" when:
 
 ---
 
-**Last Updated**: 2026-02-22
+**Last Updated**: 2026-02-27
