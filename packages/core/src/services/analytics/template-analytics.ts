@@ -9,19 +9,25 @@ export interface AnalyticsEvent {
 
 export interface TemplateSuggestionAnalytics {
   totalRequests: number
+  totalAcceptances: number
   byType: Record<string, number>
   byLanguage: Record<string, number>
   byComplexity: Record<string, number>
+  byAcceptedTemplate: Record<string, number>
   dailyCounts: Record<string, number>
+  dailyAcceptances: Record<string, number>
   lastUpdated: number
 }
 
 const analyticsSchema = z.object({
   totalRequests: z.number().default(0),
+  totalAcceptances: z.number().default(0),
   byType: z.record(z.number()).default({}),
   byLanguage: z.record(z.number()).default({}),
   byComplexity: z.record(z.number()).default({}),
+  byAcceptedTemplate: z.record(z.number()).default({}),
   dailyCounts: z.record(z.number()).default({}),
+  dailyAcceptances: z.record(z.number()).default({}),
   lastUpdated: z.number(),
 })
 
@@ -38,10 +44,13 @@ export class TemplateAnalytics {
   constructor(storage?: IStorageProvider) {
     this.analytics = {
       totalRequests: 0,
+      totalAcceptances: 0,
       byType: {},
       byLanguage: {},
       byComplexity: {},
+      byAcceptedTemplate: {},
       dailyCounts: {},
+      dailyAcceptances: {},
       lastUpdated: Date.now(),
     }
     this.storage = storage ?? null
@@ -64,10 +73,13 @@ export class TemplateAnalytics {
     } catch {
       this.analytics = {
         totalRequests: 0,
+        totalAcceptances: 0,
         byType: {},
         byLanguage: {},
         byComplexity: {},
+        byAcceptedTemplate: {},
         dailyCounts: {},
+        dailyAcceptances: {},
         lastUpdated: Date.now(),
       }
     }
@@ -112,16 +124,49 @@ export class TemplateAnalytics {
       (this.analytics.dailyCounts[dateKey] || 0) + 1
   }
 
+  trackAcceptedSuggestion(params: {
+    templateId?: string
+    detectedType?: string
+    language?: string
+  }): void {
+    const dateKey = getDateKey()
+
+    this.analytics.totalAcceptances += 1
+
+    if (params.templateId) {
+      this.analytics.byAcceptedTemplate[params.templateId] =
+        (this.analytics.byAcceptedTemplate[params.templateId] || 0) + 1
+    }
+
+    if (params.detectedType) {
+      this.analytics.byType[params.detectedType] =
+        (this.analytics.byType[params.detectedType] || 0) + 1
+    }
+
+    if (params.language) {
+      this.analytics.byLanguage[params.language] =
+        (this.analytics.byLanguage[params.language] || 0) + 1
+    }
+
+    this.analytics.dailyAcceptances[dateKey] =
+      (this.analytics.dailyAcceptances[dateKey] || 0) + 1
+  }
+
   getAnalytics(): TemplateSuggestionAnalytics {
     return { ...this.analytics }
   }
 
   getSummary(): {
     totalRequests: number
+    totalAcceptances: number
+    acceptanceRate: number
     topType: string | null
     topLanguage: string | null
     topComplexity: string | null
+    topAcceptedTemplate: string | null
     todayCount: number
+    todayAcceptances: number
+    todayAcceptanceRate: number
   } {
     const today = getDateKey()
 
@@ -137,12 +182,29 @@ export class TemplateAnalytics {
       (a, b) => b[1] - a[1]
     )[0]?.[0] || null
 
+    const topAcceptedTemplate = Object.entries(this.analytics.byAcceptedTemplate).sort(
+      (a, b) => b[1] - a[1]
+    )[0]?.[0] || null
+
+    const acceptanceRate = this.analytics.totalRequests > 0
+      ? (this.analytics.totalAcceptances / this.analytics.totalRequests) * 100
+      : 0
+
+    const todayAcceptanceRate = this.analytics.dailyCounts[today] > 0
+      ? ((this.analytics.dailyAcceptances[today] || 0) / this.analytics.dailyCounts[today]) * 100
+      : 0
+
     return {
       totalRequests: this.analytics.totalRequests,
+      totalAcceptances: this.analytics.totalAcceptances,
+      acceptanceRate: Math.round(acceptanceRate * 10) / 10,
       topType,
       topLanguage,
       topComplexity,
+      topAcceptedTemplate,
       todayCount: this.analytics.dailyCounts[today] || 0,
+      todayAcceptances: this.analytics.dailyAcceptances[today] || 0,
+      todayAcceptanceRate: Math.round(todayAcceptanceRate * 10) / 10,
     }
   }
 
@@ -152,6 +214,15 @@ export class TemplateAnalytics {
     complexity?: string
   }): Promise<void> {
     this.trackSuggestion(params)
+    await this.save()
+  }
+
+  async trackAcceptedAndSave(params: {
+    templateId?: string
+    detectedType?: string
+    language?: string
+  }): Promise<void> {
+    this.trackAcceptedSuggestion(params)
     await this.save()
   }
 }
