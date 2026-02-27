@@ -31,10 +31,13 @@
 - **Summary**: Added Raw* types to improve type safety when parsing LLM responses, replacing `any` with `unknown` + type guards
 
 ### Issue #603: Add pnpm security audit to CI pipeline
-- **Status**: PR In Progress
-- **Branch**: rndi-603-pnpm-audit
+- **Status**: Issue created (Issue #748)
+- **Branch**: rnd/603-pnpm-security-audit (local only - push blocked by GitHub App permission)
 - **Priority**: High
 - **Domain**: DX/Security
+- **Summary**: Proposed fix to add pnpm audit --audit-level=moderate step to test.yml
+- **Issue**: https://github.com/cpa03/prompt-optimizer/issues/748
+- **Note**: Cannot create PR due to GitHub App workflow permission restrictions
 
 ## Implemented Changes
 
