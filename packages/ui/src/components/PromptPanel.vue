@@ -715,6 +715,13 @@ defineExpose({
   }
 }
 
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .version-tag-clickable.n-tag--success-type {
+    animation: none;
+  }
+}
+
 /* 评估入口样式 */
 .evaluation-entry {
   display: flex;

@@ -45,6 +45,12 @@ Deliver small, safe, measurable improvements strictly inside the Product-Archite
 ## History
 
 ### 2026-02-27
+- Added missing type guards to packages/core/src/types/helpers.ts:
+  - `isNull(value)` - Check if value is null
+  - `isUndefined(value)` - Check if value is undefined  
+  - `isDate(value)` - Check if value is a Date object
+  - `isError(value)` - Check if value is an Error object
+  - `isRegExp(value)` - Check if value is a RegExp object
 - Fixed TypeScript errors in packages/core/src/services/template/variable-extraction.ts:
   - Renamed `ExtractedVariable` to `TemplateExtractedVariable` to resolve duplicate export conflict with services/variable-extraction/types.ts
   - Fixed unused parameter `examples` in calculateConfidence function by prefixing with underscore

@@ -133,7 +133,8 @@ Working on Issue #608: [Innovation] AI-Native Feature: Smart Prompt Templates vi
 
 ### Phase 3: Analytics
 - ✅ Track feature usage metrics (basic)
-- Track suggestion acceptance rate
+- ✅ Track suggestion acceptance rate (Phase 3)
+- Performance metrics capture (NEW - Phase 1.1)
 - A/B testing infrastructure
 
 ### Phase 4: LLM Enhancement
@@ -172,6 +173,29 @@ Based on detected type:
 - Feature flag controlled for easy rollback
 
 ## Latest Enhancement
+
+### Performance Metrics Analytics Service
+**Date**: 2026-02-27
+
+**Files Added:**
+- `packages/core/src/services/analytics/performance-metrics.ts` - Performance metrics tracking service
+- `packages/core/src/services/analytics/index.ts` - Export updates
+
+**Files Modified:**
+- None
+
+**Functionality:**
+- Track optimization performance metrics (latency, tokens, success/failure)
+- Track by model, template, and optimization mode
+- Daily metrics tracking for time-series analysis
+- Summary statistics (average, median latency, success rate)
+- Storage provider integration for persistence
+- Ready for API endpoint integration
+
+**Acceptance Criteria Addressed:**
+- ✅ Add metrics capture in optimization flow (Phase 1 of Issue #735)
+- ✅ Foundation for benchmark runner service
+- ✅ Historical tracking capability
 
 ### Template Suggestion Acceptance Rate Tracking
 **Date**: 2026-02-27
