@@ -104,8 +104,21 @@
   - `Cross-Origin-Resource-Policy: same-origin` (was missing, now added)
 - **Rationale**: These headers were already configured in nginx.conf but not in the MCP server itself. Adding them provides defense-in-depth protection.
 
+## Security Improvement (2026-02-27)
+
+### Retry Utility - Secure Random Number Generation
+- **Status**: Completed
+- **Priority**: Medium
+- **Type**: Cryptographic consistency improvement
+- **Change**: Replaced `Math.random()` with `crypto.getRandomValues()` in retry utility
+- **File Modified**: `packages/core/src/utils/retry.ts`
+- **Rationale**: 
+  - Although retry jitter doesn't require cryptographic security, using `crypto.getRandomValues()` provides better randomness and aligns with the project's security posture
+  - Previous crypto migration (PR #705) replaced Math.random() in ID generation; this extends that consistency
+  - Provides defense-in-depth approach to random number generation
+
 ## Last Updated
-2026-02-26
+2026-02-27
 
 ## Security Fix (2026-02-26)
 
