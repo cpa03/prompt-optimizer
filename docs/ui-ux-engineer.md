@@ -17,7 +17,7 @@ The codebase already has extensive accessibility support:
 - Focus-visible styles on most interactive elements
 - ARIA attributes on modals, dialogs, and form elements
 - Keyboard navigation support in Icon, ActionButton, Modal components
-- Reduced motion support via `prefers-reduced-motion` media queries
+- Reduced motion support via `prefers-reduced-motion` media queries (45 components)
 - High contrast mode support via `prefers-contrast` media queries
 - Screen reader support with `.sr-only` classes
 
@@ -58,6 +58,19 @@ The codebase already has extensive accessibility support:
 - Uses TypeScript
 
 ## Iteration Log
+
+### 2026-02-27 (Current)
+**Added Reduced Motion Support to More Components** (PR #761)
+- Added prefers-reduced-motion media query to:
+  - `EvaluateButton.vue` - Disables pulse animation during evaluation
+  - `PromptPanel.vue` - Disables version tag pop animation
+  - `BuiltinTemplateLanguageSwitch.vue` - Disables language icon rotation
+- Total components with reduced motion support now: 45
+
+**Accessibility Audit Update:**
+- Scanned all 87 components with @keyframes animations
+- Found 45 components already have prefers-reduced-motion support
+- 42 components still need reduced motion support (identified for future improvements)
 
 ### 2026-02-26 (Current)
 **Accessibility Audit Completed**
