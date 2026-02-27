@@ -68,11 +68,6 @@ export function useAutoScroll<T extends HTMLElement>(
      */
     enabled?: boolean
     /**
-     * 在日志中输出调试信息
-     * @default false
-     */
-    debug?: boolean
-    /**
      * 检测滚动到底部的阈值（像素）
      * @default 10
      */
@@ -86,7 +81,7 @@ export function useAutoScroll<T extends HTMLElement>(
   shouldAutoScroll: Ref<boolean>
   onContentChange: () => void
 } {
-  const { enabled = true, debug = false, threshold = 10 } = options
+  const { enabled = true, threshold = 10 } = options
 
   // 创建要滚动元素的引用
   const elementRef = ref<T | null>(null) as Ref<T | null>
@@ -112,16 +107,8 @@ export function useAutoScroll<T extends HTMLElement>(
     const isBottom = isScrolledToBottom(elementRef.value)
 
     if (isBottom && !shouldAutoScroll.value) {
-      if (debug) {
-        // eslint-disable-next-line no-console
-        console.log('User scrolled to bottom, resuming auto-scroll')
-      }
       shouldAutoScroll.value = true
     } else if (!isBottom && shouldAutoScroll.value) {
-      if (debug) {
-        // eslint-disable-next-line no-console
-        console.log('User scrolled up, pausing auto-scroll')
-      }
       shouldAutoScroll.value = false
     }
   }
@@ -160,14 +147,6 @@ export function useAutoScroll<T extends HTMLElement>(
     const element = elementRef.value
 
     if (element) {
-      if (debug) {
-        // eslint-disable-next-line no-console
-        console.log('Scrolling element to bottom:', {
-          scrollHeight: element.scrollHeight,
-          element,
-        })
-      }
-
       element.scrollTop = element.scrollHeight
     }
   }
@@ -182,11 +161,6 @@ export function useAutoScroll<T extends HTMLElement>(
     const element = elementRef.value
 
     if (element) {
-      if (debug) {
-        // eslint-disable-next-line no-console
-        console.log('Force scrolling element to bottom')
-      }
-
       element.scrollTop = element.scrollHeight
       shouldAutoScroll.value = true
     }
@@ -221,14 +195,6 @@ export function useAutoScroll<T extends HTMLElement>(
     watch(
       source,
       () => {
-        if (debug) {
-          // eslint-disable-next-line no-console
-          console.log(
-            'Source changed, triggering scroll, shouldAutoScroll:',
-            shouldAutoScroll.value
-          )
-        }
-
         scrollToBottom()
       },
       { immediate }
