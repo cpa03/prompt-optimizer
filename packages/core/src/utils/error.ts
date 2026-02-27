@@ -265,8 +265,8 @@ export function classifyError(error: unknown): ErrorClassification {
   }
 
   const err = error instanceof Error ? error : new Error(String(error))
-  const errorCode = (err as any).code
-  const statusCode = (err as any).status ?? (err as any).statusCode
+  const errorCode = getErrorCode(err)
+  const statusCode = getErrorStatus(err)
   const message = err.message.toLowerCase()
 
   result.errorCode = errorCode
@@ -359,6 +359,97 @@ export function classifyError(error: unknown): ErrorClassification {
   }
 
   return result
+}
+
+/**
+ * Type for errors that may have additional properties like code, status, or statusCode.
+ * Used for type-safe extraction of error properties from unknown error sources.
+ */
+export interface ErrorWithStatus {
+  code?: string
+  status?: number
+  statusCode?: number
+}
+
+/**
+ * Type guard to check if an error has a status or statusCode property.
+ * Useful for extracting HTTP status codes from error objects.
+ *
+ * @param value - The value to check
+ * @returns True if the value has status properties
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await fetchData()
+ * } catch (err) {
+ *   if (hasErrorStatus(err)) {
+ *     console.error('Status:', err.status || err.statusCode)
+ *   }
+ * }
+ * ```
+ */
+export function hasErrorStatus(value: unknown): value is ErrorWithStatus {
+  if (!isRecord(value)) {
+    return false
+  }
+  return (
+    typeof (value as ErrorWithStatus).status === 'number' ||
+    typeof (value as ErrorWithStatus).statusCode === 'number'
+  )
+}
+
+/**
+ * Type guard to check if an error has a code property.
+ * Useful for extracting error codes from various error sources.
+ *
+ * @param value - The value to check
+ * @returns True if the value has a string code property
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   await fetchData()
+ * } catch (err) {
+ *   if (hasErrorCode(err)) {
+ *     console.error('Error code:', err.code)
+ *   }
+ * }
+ * ```
+ */
+export function hasErrorCode(value: unknown): value is ErrorWithStatus {
+  if (!isRecord(value)) {
+    return false
+  }
+  return typeof (value as ErrorWithStatus).code === 'string'
+}
+
+/**
+ * Safely extract the error code from an unknown value.
+ * Returns undefined if no error code is found.
+ *
+ * @param value - The value to extract code from
+ * @returns The error code string or undefined
+ */
+export function getErrorCode(value: unknown): string | undefined {
+  if (hasErrorCode(value)) {
+    return value.code
+  }
+  return undefined
+}
+
+/**
+ * Safely extract the HTTP status from an unknown value.
+ * Returns undefined if no status is found.
+ *
+ * @param value - The value to extract status from
+ * @returns The HTTP status number or undefined
+ */
+export function getErrorStatus(value: unknown): number | undefined {
+  if (hasErrorStatus(value)) {
+    return value.status ?? value.statusCode
+  }
+  return undefined
 }
 
 export function isRetryableError(error: unknown): boolean {
