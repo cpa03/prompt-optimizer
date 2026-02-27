@@ -715,7 +715,7 @@ async function main() {
 
       // Improved graceful shutdown for HTTP mode
       const gracefulShutdown = async (signal: string) => {
-        console.log(`Received ${signal}, shutting down gracefully...`)
+        logger.info(`Received ${signal}, shutting down gracefully...`)
 
         stopStaleContextCleanup()
 
@@ -726,16 +726,16 @@ async function main() {
         // This ensures all sessions are properly closed before process exit
         const sessionIds = Object.keys(transports)
         if (sessionIds.length > 0) {
-          console.log(`Closing ${sessionIds.length} active session(s)...`)
+          logger.info(`Closing ${sessionIds.length} active session(s)...`)
           await Promise.all(
             sessionIds.map(async (sessionId) => {
               const transport = transports[sessionId]
               if (transport) {
                 try {
                   await transport.close()
-                  console.log(`Closed session: ${sessionId}`)
+                  logger.info(`Closed session: ${sessionId}`)
                 } catch (error) {
-                  console.warn(`Error closing session ${sessionId}:`, error)
+                  logger.warn(`Error closing session ${sessionId}:`, error)
                 }
               }
             })
@@ -744,14 +744,14 @@ async function main() {
 
         // Force close after timeout (use unref to not prevent process exit)
         const forceExitTimer = setTimeout(() => {
-          console.warn('Forcing shutdown after timeout')
+          logger.warn('Forcing shutdown after timeout')
           process.exit(1)
         }, MCP_CONFIG.server.gracefulShutdownTimeoutMs)
         forceExitTimer.unref()
 
         // Stop accepting new connections and wait for server to close
         httpServer.close(() => {
-          console.log('HTTP server closed')
+          logger.info('HTTP server closed')
           process.exit(0)
         })
       }
@@ -792,13 +792,13 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // 优雅关闭 (stdio mode fallback - HTTP mode registers its own handlers)
 process.on('SIGINT', () => {
-  console.log('Received SIGINT, shutting down gracefully...')
+  logger.info('Received SIGINT, shutting down gracefully...')
   stopStaleContextCleanup()
   process.exit(0)
 })
 
 process.on('SIGTERM', () => {
-  console.log('Received SIGTERM, shutting down gracefully...')
+  logger.info('Received SIGTERM, shutting down gracefully...')
   stopStaleContextCleanup()
   process.exit(0)
 })

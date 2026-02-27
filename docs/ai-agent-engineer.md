@@ -6,6 +6,12 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 
 ## Recent Work
 
+### PR #750: Use logger instead of console in graceful shutdown
+- **Issue**: The graceful shutdown code used direct `console.log`/`console.warn` calls instead of the project's logger utility, creating inconsistency with the rest of the codebase.
+- **Fix**: Replaced 8 `console.log` calls with `logger.info` and 2 `console.warn` calls with `logger.warn` in `packages/mcp-server/src/index.ts`. This allows proper log level control via the DEBUG environment variable.
+- **Files Changed**: `packages/mcp-server/src/index.ts`
+- **Testing**: All 132 tests pass, build succeeds, lint passes
+
 ### PR #725: Fix graceful shutdown session close order
 - **Issue**: The graceful shutdown function called `httpServer.close()` before closing active sessions, which could cause a race condition where the process exits before sessions are properly closed.
 - **Fix**: Reordered shutdown sequence to close all active sessions BEFORE calling `httpServer.close()`. This ensures sessions are properly cleaned up before the server stops accepting connections.
@@ -51,6 +57,7 @@ AI Agent Engineering - delivering small, safe, measurable improvements to the MC
 5. **Polling vs Locks**: Prefer async/await with in-flight checks over setTimeout polling loops for concurrency control.
 6. **Incomplete shutdown logic**: When logging cleanup actions, ensure the actual cleanup code is implemented (not just the log statements).
 7. **Shutdown sequence**: When gracefully shutting down services with dependencies, ensure dependent resources (like sessions) are closed BEFORE stopping the server that manages them.
+8. **Console vs Logger**: Always use the project's logger utility instead of direct console.log/console.warn calls for consistent log level control.
 
 ## MCP Server Architecture Patterns
 
