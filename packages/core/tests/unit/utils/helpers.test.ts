@@ -16,6 +16,8 @@ import {
   objectKeys,
   objectEntries,
   fromEntries,
+  isFiniteNumber,
+  isNaNValue,
 } from '../../../src/types/helpers'
 
 describe('Type Guards', () => {
@@ -69,6 +71,47 @@ describe('Type Guards', () => {
     it('should return false for non-numbers', () => {
       expect(isNumber('42')).toBe(false)
       expect(isNumber(null)).toBe(false)
+    })
+  })
+
+  describe('isFiniteNumber', () => {
+    it('should return true for finite numbers', () => {
+      expect(isFiniteNumber(0)).toBe(true)
+      expect(isFiniteNumber(42)).toBe(true)
+      expect(isFiniteNumber(-3.14)).toBe(true)
+    })
+
+    it('should return false for Infinity', () => {
+      expect(isFiniteNumber(Infinity)).toBe(false)
+      expect(isFiniteNumber(-Infinity)).toBe(false)
+    })
+
+    it('should return false for NaN', () => {
+      expect(isFiniteNumber(NaN)).toBe(false)
+    })
+
+    it('should return false for non-numbers', () => {
+      expect(isFiniteNumber('42')).toBe(false)
+      expect(isFiniteNumber(null)).toBe(false)
+    })
+  })
+
+  describe('isNaNValue', () => {
+    it('should return true for NaN', () => {
+      expect(isNaNValue(NaN)).toBe(true)
+    })
+
+    it('should return false for numbers', () => {
+      expect(isNaNValue(0)).toBe(false)
+      expect(isNaNValue(42)).toBe(false)
+      expect(isNaNValue(-3.14)).toBe(false)
+      expect(isNaNValue(Infinity)).toBe(false)
+    })
+
+    it('should return false for non-numbers', () => {
+      expect(isNaNValue('NaN')).toBe(false)
+      expect(isNaNValue(null)).toBe(false)
+      expect(isNaNValue(undefined)).toBe(false)
     })
   })
 
