@@ -768,25 +768,21 @@ async function main() {
       logger.info('MCP Server running on stdio')
     }
   } catch (error) {
-    // 确保错误信息始终显示，即使没有启用 DEBUG
-    console.error('❌ MCP Server startup failed:')
-    console.error('   ', (error as Error).message)
-
-    // 同时使用 debug 库记录详细信息
-    logger.error('Failed to start MCP Server', error as Error)
-
+    logger.error('MCP Server startup failed:', error as Error)
+    // Ensure error message is visible even without DEBUG
+    console.error('❌ MCP Server startup failed:', (error as Error).message)
     process.exit(1)
   }
 }
 
 // 处理未捕获的异常
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error)
+  logger.error('Uncaught Exception:', error)
   process.exit(1)
 })
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+  logger.error('Unhandled Rejection at:', promise, 'reason:', reason)
   process.exit(1)
 })
 
