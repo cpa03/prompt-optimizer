@@ -22,6 +22,7 @@
  */
 
 import { TIMEOUTS } from '../config/timeouts'
+import { hasErrorCode, hasErrorStatus } from './error'
 
 export interface RetryOptions {
   maxAttempts?: number
@@ -90,12 +91,12 @@ function isRetryableError(error: unknown, customRetryableErrors: string[]): bool
     return false
   }
 
-  const errorCode = (error as any).code
+  const errorCode = hasErrorCode(error) ? error.code : undefined
   const errorName = error.name
   const errorMessage = error.message.toLowerCase()
-  const status = (error as any).status || (error as any).statusCode
+  const status = hasErrorStatus(error) ? (error.status ?? error.statusCode) : undefined
 
-  if (DEFAULT_RETRYABLE_STATUS_CODES.includes(status)) {
+  if (status !== undefined && DEFAULT_RETRYABLE_STATUS_CODES.includes(status)) {
     return true
   }
 

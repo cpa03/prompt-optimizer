@@ -56,6 +56,13 @@
 - Most components properly clean up in onUnmounted
 - Fixed memory leak in PromptOptimizerApp.vue
 
+### ESLint no-console Rule (2026-02-27)
+- Changed no-console from 'off' to 'warn' in packages/ui/.eslintrc.json
+- This prevents future console.log statements from being added to production code
+- Existing console.log statements now show as warnings (297 warnings) for gradual cleanup
+- Lint passes with 0 errors, 297 warnings (expected)
+- Build passes successfully
+
 ## Action Items
 - Issue #732: Add accessibility (a11y) testing to CI pipeline
   - Requires: eslint-plugin-vuejs-accessibility package installation
