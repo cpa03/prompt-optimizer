@@ -2,15 +2,16 @@
 
 ## Active Work
 
-### PR #778: Remove unused variable in performance-metrics.ts
+### PR #778: Fix unused variable in performance-metrics.ts
 - **Status**: Open
 - **Branch**: rnd/fix-unused-variable-performance-metrics
 - **Priority**: Low
-- **Domain**: Code Quality / TypeScript
-- **Summary**: Removed unused `_todayLatencies` variable that was causing TS6133 error (declared but never read)
+- **Domain**: DX / Code Quality
+- **Summary**: Removed unused _todayLatencies variable that was causing TS6133 error
+- **Issue**: Related to #618 (excessive 'any' type usage)
 
 ### PR #766: Remove debug console.log from useAutoScroll
-- **Status**: Open
+- **Status**: Merged
 - **Branch**: rnd/636-remove-debug-logs
 - **Priority**: Medium
 - **Domain**: DX / Code Quality
